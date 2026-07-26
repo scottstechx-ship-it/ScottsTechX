@@ -1,0 +1,6 @@
+{
+  "name": "ScottsTechX WiFi",
+  "description": "Generate and share Wi-Fi QR codes instantly with customizable styles, printable cards, and offline security.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

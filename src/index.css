@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@layer utilities {
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fadeIn {
+    animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+}
+
+/* Print Stylesheet for Printable Tent Cards */
+@media print {
+  /* Hide non-printable UI elements */
+  .no-print,
+  header,
+  footer,
+  nav,
+  button {
+    display: none !important;
+  }
+
+  body, html {
+    background: white !important;
+    color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #printable-card {
+    border: 2px solid #333 !important;
+    box-shadow: none !important;
+    margin: 20px auto !important;
+    page-break-inside: avoid;
+  }
+}
