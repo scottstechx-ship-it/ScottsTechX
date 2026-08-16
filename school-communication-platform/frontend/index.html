@@ -11,14 +11,20 @@
 </script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2956081143917614" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="dns-prefetch" href="https://kalibz-international.netlify.app">
 <meta name="google-site-verification" content="0iFeDjaZvUCjm7CmNRcwsIKmQUKHDLlePEJhRPLuR_M">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalinabiri Secondary School - Ntinda, Kampala</title>
   <link rel="icon" type="image/x-icon" href="/assets/images/logo.ico">
   <link rel="apple-touch-icon" href="/assets/images/logo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
     <style>
         :root {
             --ocean-deep: #0c1829;
@@ -679,7 +685,10 @@
 <script src="/assets/js/site-perf.js" defer></script>
 </head>
 <body>
-        <div class="video-bg hero-photo" style="background:
+        <!-- HERO BACKGROUND: paints instantly as a gradient; the background
+             video is injected AFTER window.load (see script at end of body),
+             so it never delays first paint. Skipped on data-saver/2G. -->
+        <div class="video-bg hero-photo" id="heroBg" style="background:
           radial-gradient(ellipse at 25% 15%, rgba(14,165,233,.25) 0%, transparent 55%),
           radial-gradient(ellipse at 80% 85%, rgba(245,158,11,.14) 0%, transparent 50%),
           linear-gradient(135deg, #0c1829 0%, #10233c 55%, #0c1829 100%);
@@ -1031,9 +1040,12 @@
     </footer>
 
     <script>
-        // Three.js Particle Background
-        (function() {
+        // Three.js Particle Background — runs AFTER load, only if THREE arrived,
+        // and never on phones (saves battery + keeps mobile fast).
+        window.addEventListener('load', function() { setTimeout(function() {
+            if (!window.THREE || window.innerWidth < 768) return;
             const canvas = document.getElementById('three-canvas');
+            if (!canvas) return;
             const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -1105,7 +1117,7 @@
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
             });
-        })();
+        }, 400); });
 
         // Toast Notification System
         function showToast(message, type = 'info') {
@@ -1250,6 +1262,42 @@
     var sec = document.getElementById('gallery');
     if (sec) sec.style.display = 'none';
   });
+})();
+</script>
+<script>
+// DEFERRED HERO VIDEO — the page paints instantly with the gradient, then the
+// background video fades in only after the page has fully loaded. This keeps
+// first paint fast while restoring the cinematic hero.
+(function () {
+  var conn = navigator.connection || {};
+  if (conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '')) return; // respect data saver
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  function inject() {
+    var host = document.getElementById('heroBg');
+    if (!host || host.querySelector('video')) return;
+    var v = document.createElement('video');
+    v.setAttribute('data-keep', '1');
+    v.autoplay = true; v.muted = true; v.loop = true;
+    v.playsInline = true; v.setAttribute('playsinline', '');
+    v.preload = 'auto';
+    v.style.cssText = 'width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease';
+    v.src = 'https://kalibz-international.netlify.app/assets/videos/kalinabiri-kalibz-intro.mp4';
+    v.addEventListener('canplay', function () {
+      v.play().catch(function () {});
+      v.style.opacity = '1';
+    });
+    v.addEventListener('error', function () { v.remove(); }); // gradient stays as fallback
+    host.appendChild(v);
+  }
+  // Run when the DOM is ready + a beat (not window.load — a single slow
+  // third-party asset would delay the video forever). requestIdleCallback
+  // lets the browser paint first, so first paint stays instant.
+  function schedule() {
+    if ('requestIdleCallback' in window) requestIdleCallback(inject, { timeout: 1500 });
+    else setTimeout(inject, 600);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', schedule);
+  else schedule();
 })();
 </script>
 </body>

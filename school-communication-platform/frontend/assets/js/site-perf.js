@@ -15,7 +15,7 @@
 
   function run() {
     // 1. background/video rotators: keep nothing loading in the background
-    document.querySelectorAll('video').forEach(function (v, i) {
+    document.querySelectorAll('video:not([data-keep])').forEach(function (v, i) {
       var visible = v.offsetParent !== null && !v.closest('[style*="display:none"]');
       var isBackground = v.autoplay || v.muted;
       if (!visible || (isBackground && i > 0)) {
