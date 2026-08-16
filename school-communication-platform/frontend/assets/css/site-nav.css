@@ -25,7 +25,8 @@
   backdrop-filter: blur(18px) saturate(160%);
   border-bottom: 1px solid rgba(14,165,233,.18);
 }
-.kn-nav a { text-decoration: none; }
+.kn-nav a, .kn-drawer a, .kn-nav button { text-decoration: none !important; border-bottom: none !important; }
+.kn-drawer a:hover, .kn-drawer a:focus, .kn-drawer a:active { text-decoration: none !important; }
 
 .kn-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .kn-brand img {

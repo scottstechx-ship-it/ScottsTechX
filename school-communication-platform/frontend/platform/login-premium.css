@@ -19,12 +19,16 @@ body {
  * ============================================================ */
 .login-page {
   min-height: 100vh;
-  width: 100vw;
+  min-height: 100dvh;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  overflow: hidden;
+  /* Only clip horizontally — vertical scrolling MUST work on phones,
+     otherwise the Sign In button is unreachable when the keyboard opens. */
+  overflow-x: hidden;
+  overflow-y: auto;
   padding: 24px;
 }
 
@@ -543,9 +547,70 @@ body {
  * RESPONSIVE
  * ============================================================ */
 @media (max-width: 480px) {
-  .login-page { padding: 16px; align-items: flex-start; padding-top: 60px; }
-  .login-card { padding: 32px 24px; border-radius: 20px; }
-  .icon-wrapper { width: 76px; height: 76px; border-radius: 20px; }
-  .icon-wrapper svg { width: 36px; height: 36px; }
-  .ring { width: 400px; height: 400px; margin-top: -200px; margin-left: -200px; }
+  .login-page { padding: 12px; align-items: flex-start; padding-top: 64px; padding-bottom: 40px; }
+  .login-card { padding: 28px 20px; border-radius: 20px; }
+  .icon-wrapper { width: 68px; height: 68px; border-radius: 18px; }
+  .icon-wrapper svg { width: 32px; height: 32px; }
+  /* heavy decorations off on phones = faster paint + no overflow */
+  .ring { display: none; }
+  .orb { filter: blur(50px); opacity: .35; }
+  .login-card, .login-card.tilting { transform: none !important; }
+  /* iOS: 16px inputs prevent auto-zoom that breaks the layout */
+  .input-wrapper input { font-size: 16px !important; min-height: 48px; }
+  .btn-primary { min-height: 50px; font-size: 1rem; }
+}
+/* Ensure inputs and buttons are always tappable and above decorations */
+.login-card form, .login-card .input-group, .login-card .btn-primary { position: relative; z-index: 5; }
+/* ============================================================
+ * SCREEN-FRIENDLY UPGRADES — distinct per-role feel + animations
+ * ============================================================ */
+
+/* staggered entrance: badge, icon, title, fields, button cascade in */
+.login-card .role-badge      { animation: el-in .5s .08s cubic-bezier(.2,.8,.3,1.1) both; }
+.login-card .icon-wrapper    { animation: el-in .5s .16s cubic-bezier(.2,.8,.3,1.1) both; }
+.login-card h1               { animation: el-in .5s .24s cubic-bezier(.2,.8,.3,1.1) both; }
+.login-card .subtitle        { animation: el-in .5s .30s cubic-bezier(.2,.8,.3,1.1) both; }
+.login-card .input-group     { animation: el-in .5s .38s cubic-bezier(.2,.8,.3,1.1) both; }
+.login-card .input-group + .input-group { animation-delay: .46s; }
+.login-card .form-options    { animation: el-in .5s .52s cubic-bezier(.2,.8,.3,1.1) both; }
+.login-card .btn-primary     { animation: el-in .5s .58s cubic-bezier(.2,.8,.3,1.1) both; }
+.login-card .footer-note     { animation: el-in .6s .70s ease both; }
+@keyframes el-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* gently breathing hero icon */
+.icon-wrapper { animation-name: el-in, icon-breathe; animation-duration: .5s, 5s;
+  animation-delay: .16s, 1.2s; animation-iteration-count: 1, infinite;
+  animation-timing-function: cubic-bezier(.2,.8,.3,1.1), ease-in-out; animation-fill-mode: both, none; }
+@keyframes icon-breathe { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-4px) scale(1.03); } }
+
+/* animated gradient sweep across the sign-in button */
+.btn-primary { position: relative; overflow: hidden; }
+.btn-primary::after {
+  content: ''; position: absolute; top: 0; bottom: 0; width: 60%;
+  left: -80%; transform: skewX(-20deg);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent);
+  animation: btn-sheen 3.2s 1.4s ease-in-out infinite;
+}
+@keyframes btn-sheen { 0% { left: -80%; } 45%, 100% { left: 130%; } }
+
+/* input focus lift */
+.input-wrapper input:focus { transform: translateY(-1px); }
+.input-wrapper input { transition: border-color .2s, box-shadow .2s, transform .2s; }
+
+/* per-role background personality (subtle, cheap) */
+.role-admin       .bg-layer::after,
+.role-teacher     .bg-layer::after,
+.role-student     .bg-layer::after,
+.role-parent      .bg-layer::after,
+.role-super_admin .bg-layer::after,
+.role-super-admin .bg-layer::after {
+  content: ''; position: absolute; inset: -40%; opacity: .16; pointer-events: none;
+  background: conic-gradient(from 180deg at 50% 50%, transparent 0deg, var(--role-accent) 90deg, transparent 180deg, var(--role-accent-2) 270deg, transparent 360deg);
+  animation: bg-sweep 26s linear infinite;
+}
+@keyframes bg-sweep { to { transform: rotate(360deg); } }
+
+@media (max-width: 480px) {
+  .bg-layer::after { display: none; }   /* keep phones fast */
+  .btn-primary::after { display: none; }
 }

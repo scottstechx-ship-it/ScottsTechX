@@ -308,5 +308,60 @@
     },
   };
 
-  window.Website = { AdmissionsView, GalleryManager, NewsManager };
+  /* ============================================================
+   * CONTACT MESSAGES INBOX (admin + super admin)
+   * ============================================================ */
+  const ContactInbox = {
+    async render(box) {
+      box.innerHTML = `
+        <div class="card" style="margin-bottom:16px">
+          <h3 style="margin:0">✉️ Website Messages</h3>
+          <div class="doc-meta">Messages sent from the public contact form.</div>
+        </div>
+        <div id="cm-list"></div>`;
+      const listBox = box.querySelector('#cm-list');
+      const badge = (s) => `<span class="badge ${s === 'new' ? 'blue' : s === 'replied' ? 'green' : 'gray'}">${esc(s)}</span>`;
+      async function load() {
+        listBox.innerHTML = '<div class="card"><div class="skeleton" style="height:70px"></div></div>';
+        let msgs = [];
+        try { msgs = (await API.get('/api/website/contact')).messages || []; }
+        catch (e) { listBox.innerHTML = `<div class="card"><div class="doc-meta">${esc(e.message)}</div></div>`; return; }
+        if (!msgs.length) { listBox.innerHTML = '<div class="card" style="text-align:center;padding:36px"><h3>📭 No messages yet</h3><div class="doc-meta">Messages from the website contact form appear here.</div></div>'; return; }
+        listBox.innerHTML = '';
+        for (const m of msgs) {
+          const card = UI.el(`<div class="card" style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start">
+              <div style="min-width:0;flex:1">
+                <div class="doc-name" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${esc(m.name)} ${badge(m.status)}</div>
+                <div class="doc-meta">${m.email ? esc(m.email) + ' · ' : ''}${esc(fmtDT(m.created_at))}${m.subject ? ' · ' + esc(m.subject) : ''}</div>
+                <div class="doc-meta" style="margin-top:6px;white-space:pre-wrap">${esc(m.message)}</div>
+              </div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                ${m.email ? `<a class="btn secondary sm" href="mailto:${esc(m.email)}?subject=Re: ${esc(m.subject || 'Your message to the school')}">↩ Reply</a>` : ''}
+                <button class="btn secondary sm" data-read>${m.status === 'new' ? '✓ Mark read' : '✓ Mark replied'}</button>
+                <button class="btn secondary sm" data-del style="color:#dc2626">🗑</button>
+              </div>
+            </div>
+          </div>`);
+          card.querySelector('[data-read]').onclick = async () => {
+            try { await API.put(`/api/website/contact/${m.id}`, { status: m.status === 'new' ? 'read' : 'replied' }); load(); }
+            catch (e) { UI.toast(e.message, 'error'); }
+          };
+          card.querySelector('[data-del]').onclick = async () => {
+            const ok = await UI.confirmDialog(`Delete the message from ${m.name}?`, { title: 'Delete message', confirmText: 'Delete' });
+            if (!ok) return;
+            try { await API.del(`/api/website/contact/${m.id}`); UI.toast('Message deleted.', 'success'); load(); }
+            catch (e) { UI.toast(e.message, 'error'); }
+          };
+          listBox.appendChild(card);
+        }
+      }
+      if (window.Realtime && window.Realtime.socket) {
+        try { window.Realtime.socket.off('contact:new'); window.Realtime.socket.on('contact:new', () => { UI.toast('New website message!', 'info'); load(); }); } catch {}
+      }
+      load();
+    },
+  };
+
+  window.Website = { AdmissionsView, GalleryManager, NewsManager, ContactInbox };
 })();

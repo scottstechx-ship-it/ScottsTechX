@@ -24,11 +24,14 @@
     parent: 'Parent/Guardian',
   };
 
-  // --- 3D TILT on the card -------------------------------------------------
+  // --- 3D TILT on the card (pointer/mouse devices only — on touch screens
+  // the tilt shifts the card mid-tap and makes buttons hard to press) ------
   const card = document.querySelector('.card');
   const stage = document.querySelector('.stage');
+  const isTouch = window.matchMedia && (window.matchMedia('(hover: none)').matches || window.matchMedia('(pointer: coarse)').matches);
+  const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (card && stage) {
+  if (card && stage && !isTouch && !reducedMotion) {
     // Mouse-driven tilt: rotates the card slightly based on cursor position.
     stage.addEventListener('mousemove', (e) => {
       const rect = stage.getBoundingClientRect();

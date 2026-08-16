@@ -124,6 +124,57 @@ router.delete('/admissions/:id', authenticate, requireStaffAdmin, (req, res) => 
 });
 
 /* ============================================================
+ * CONTACT MESSAGES (public POST -> admin inbox + email)
+ * ============================================================ */
+
+router.post('/contact', rateLimit({ windowMs: 15 * 60 * 1000, max: 12, label: 'contact messages' }), async (req, res) => {
+  const name = cleanString(req.body.name, 150);
+  const message = cleanString(req.body.message, 4000);
+  if (!name || !message) return res.status(400).json({ error: 'Your name and a message are required.' });
+  const email = cleanString(req.body.email, 150);
+  const info = run(
+    'INSERT INTO contact_messages (name, email, phone, subject, message) VALUES (?, ?, ?, ?, ?)',
+    [name, email, cleanString(req.body.phone, 40), cleanString(req.body.subject, 200), message]
+  );
+  const admins = adminUserIds();
+  notifyMany(admins, 'system', `New website message from ${name}`,
+    (cleanString(req.body.subject, 200) || message).slice(0, 120), '/contact-messages');
+  if (io) for (const id of admins) io.to(`user:${id}`).emit('contact:new', { id: info.lastInsertRowid, name });
+  const school = readSettings().school;
+  if (school.email) {
+    sendEmail({
+      to: school.email,
+      subject: `Website contact: ${cleanString(req.body.subject, 200) || name}`,
+      html: `<p><b>From:</b> ${name} ${email ? '(' + email + ')' : ''}</p><p>${message}</p>`,
+    });
+  }
+  res.status(201).json({ message: 'Message sent. The school has been notified and will respond soon.' });
+});
+
+router.get('/contact', authenticate, requireStaffAdmin, (req, res) => {
+  const rows = all('SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT 300');
+  res.json({ messages: rows });
+});
+
+router.put('/contact/:id', authenticate, requireStaffAdmin, (req, res) => {
+  const id = asInt(req.params.id);
+  const row = get('SELECT * FROM contact_messages WHERE id = ?', [id]);
+  if (!row) return res.status(404).json({ error: 'Message not found.' });
+  const status = cleanString(req.body.status, 20);
+  if (!['new', 'read', 'replied'].includes(status)) return res.status(400).json({ error: 'Invalid status.' });
+  run('UPDATE contact_messages SET status = ? WHERE id = ?', [status, id]);
+  res.json({ message: 'Updated.' });
+});
+
+router.delete('/contact/:id', authenticate, requireStaffAdmin, (req, res) => {
+  const id = asInt(req.params.id);
+  if (!get('SELECT id FROM contact_messages WHERE id = ?', [id])) return res.status(404).json({ error: 'Message not found.' });
+  run('DELETE FROM contact_messages WHERE id = ?', [id]);
+  log(req.user, 'CONTACT_DELETED', `Deleted website message #${id}`, req.ip);
+  res.json({ message: 'Message deleted.' });
+});
+
+/* ============================================================
  * GALLERY  (public read, super-admin write)
  * ============================================================ */
 

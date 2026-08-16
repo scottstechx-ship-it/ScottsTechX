@@ -201,15 +201,19 @@
 
   function confirmDialog(message, { title = 'Are you sure?', danger = true, confirmText = 'Confirm' } = {}) {
     return new Promise((resolve) => {
+      // A promise resolves only once — settle guard so closing the dialog after
+      // pressing Confirm cannot override the answer with `false`.
+      let settled = false;
+      const done = (val) => { if (!settled) { settled = true; resolve(val); } };
       const m = openModal({
         title,
         body: `<p>${esc(message)}</p>`,
         foot: `<button class="btn secondary" data-no>Cancel</button>
                <button class="btn ${danger ? 'danger' : ''}" data-yes>${esc(confirmText)}</button>`,
-        onClose: () => resolve(false),
+        onClose: () => done(false),
       });
       m.backdrop.querySelector('[data-no]').onclick = () => m.close();
-      m.backdrop.querySelector('[data-yes]').onclick = () => { m.close(); resolve(true); };
+      m.backdrop.querySelector('[data-yes]').onclick = () => { done(true); m.close(); };
     });
   }
 

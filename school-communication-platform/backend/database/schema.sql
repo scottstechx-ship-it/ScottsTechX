@@ -490,3 +490,16 @@ CREATE TABLE IF NOT EXISTS site_news (
   created_at  TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_site_news_pub ON site_news(published, expires_at);
+
+-- Messages sent from the public website contact forms
+CREATE TABLE IF NOT EXISTS contact_messages (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  name       TEXT NOT NULL,
+  email      TEXT,
+  phone      TEXT,
+  subject    TEXT,
+  message    TEXT NOT NULL,
+  status     TEXT NOT NULL DEFAULT 'new',      -- new|read|replied
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_contact_status ON contact_messages(status);

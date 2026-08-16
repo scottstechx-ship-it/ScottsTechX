@@ -761,6 +761,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="/assets/css/site-nav.css">
 <script src="/assets/js/site-nav.js" defer></script>
+<script src="/assets/js/site-animate.js" defer></script>
+<script src="/assets/js/site-perf.js" defer></script>
 </head>
 <body>
         <video autoplay muted loop playsinline id="kalibz-intro-vid" style="position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;pointer-events:none;">
@@ -871,7 +873,7 @@
         <div class="contact-icon">📍</div>
         <h3>Visit Us</h3>
         <p>Kalinabiri Secondary School<br>Ntinda, Kampala, Uganda</p>
-        <a href="#" class="link">View on Map →</a>
+        <a href="https://www.google.com/maps/search/?api=1&query=Kalinabiri+Secondary+School+Ntinda+Kampala" target="_blank" rel="noopener" class="link">View on Map →</a>
       </div>
     </div>
     <div class="contact-card-wrapper reveal" style="transition-delay:0.1s">
@@ -898,31 +900,65 @@
   <div class="two-column-grid">
     <div class="form-section reveal-left">
       <h2>Send Us a Message</h2>
-      <form onsubmit="event.preventDefault(); alert('Message sent! We will respond soon.');">
+      <form id="contactForm">
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">First Name</label>
-            <input type="text" class="form-input" placeholder="Your first name" required>
+            <input type="text" class="form-input" id="cf-first" placeholder="Your first name" required>
           </div>
           <div class="form-group">
             <label class="form-label">Last Name</label>
-            <input type="text" class="form-input" placeholder="Your last name" required>
+            <input type="text" class="form-input" id="cf-last" placeholder="Your last name" required>
           </div>
         </div>
         <div class="form-group">
           <label class="form-label">Email Address</label>
-          <input type="email" class="form-input" placeholder="your.email@example.com" required>
+          <input type="email" class="form-input" id="cf-email" placeholder="your.email@example.com" required>
         </div>
         <div class="form-group">
           <label class="form-label">Subject</label>
-          <input type="text" class="form-input" placeholder="How can we help?">
+          <input type="text" class="form-input" id="cf-subject" placeholder="How can we help?">
         </div>
         <div class="form-group">
           <label class="form-label">Message</label>
-          <textarea class="form-input" rows="5" placeholder="Your message here..."></textarea>
+          <textarea class="form-input" id="cf-message" rows="5" placeholder="Your message here..." required></textarea>
         </div>
-        <button type="submit" class="btn-primary btn-full"><span>Send Message</span></button>
+        <button type="submit" class="btn-primary btn-full" id="cf-btn"><span>Send Message</span></button>
+        <p id="cf-status" role="status" style="margin-top:12px;font-weight:600;display:none"></p>
       </form>
+      <script>
+      document.getElementById('contactForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var btn = document.getElementById('cf-btn');
+        var status = document.getElementById('cf-status');
+        btn.disabled = true; btn.querySelector('span').textContent = 'Sending…';
+        status.style.display = 'none';
+        try {
+          var res = await fetch('/api/website/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: (document.getElementById('cf-first').value + ' ' + document.getElementById('cf-last').value).trim(),
+              email: document.getElementById('cf-email').value.trim(),
+              subject: document.getElementById('cf-subject').value.trim(),
+              message: document.getElementById('cf-message').value.trim(),
+            }),
+          });
+          var data = await res.json().catch(function(){ return {}; });
+          if (!res.ok) throw new Error(data.error || 'Could not send your message.');
+          status.textContent = '✅ ' + (data.message || 'Message sent! We will respond soon.');
+          status.style.color = '#16a34a'; status.style.display = 'block';
+          this.reset();
+          btn.querySelector('span').textContent = 'Send Message';
+          btn.disabled = false;
+        } catch (err) {
+          status.textContent = '⚠️ ' + err.message;
+          status.style.color = '#dc2626'; status.style.display = 'block';
+          btn.querySelector('span').textContent = 'Send Message';
+          btn.disabled = false;
+        }
+      });
+      </script>
     </div>
     <div class="map-section reveal-right">
       <div class="map-placeholder">

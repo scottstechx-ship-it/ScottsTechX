@@ -35,6 +35,7 @@
     { key: 'fees', label: 'Fees & Payments', icon: '💰', section: 'Academic' },
     { key: 'admissions', label: 'Admissions', icon: '🎓', section: 'Website' },
     { key: 'website-news', label: 'Website News', icon: '📰', section: 'Website' },
+    { key: 'website-contact', label: 'Website Messages', icon: '✉️', section: 'Website' },
     { key: 'notifications', label: 'Notifications', icon: '🔔', section: 'Account' },
     { key: 'profile', label: 'Profile', icon: '👤', section: 'Account' },
   ];
@@ -56,7 +57,7 @@
 
   async function show(key) {
     layout.setActive(key);
-    const titles = { home: 'Home', messages: 'Messages', documents: 'Documents', announcements: 'Announcements', students: 'Students', import: 'Import Students', users: 'Users & Staff', teachers: 'Teachers', parents: 'Parents', classes: 'Classes', subjects: 'Subjects', attendance: 'Attendance', assignments: 'Assignments', exams: 'Exams & Results', timetable: 'Timetable', fees: 'Fees & Payments', admissions: 'Admission Applications', 'website-news': 'Website News', notifications: 'Notifications', profile: 'Profile' };
+    const titles = { home: 'Home', messages: 'Messages', documents: 'Documents', announcements: 'Announcements', students: 'Students', import: 'Import Students', users: 'Users & Staff', teachers: 'Teachers', parents: 'Parents', classes: 'Classes', subjects: 'Subjects', attendance: 'Attendance', assignments: 'Assignments', exams: 'Exams & Results', timetable: 'Timetable', fees: 'Fees & Payments', admissions: 'Admission Applications', 'website-news': 'Website News', 'website-contact': 'Website Messages', notifications: 'Notifications', profile: 'Profile' };
     layout.setTitle(titles[key] || 'Dashboard');
     const content = layout.content;
 
@@ -78,6 +79,7 @@
     if (key === 'fees') return renderFees(content);
     if (key === 'admissions') { content.innerHTML = '<div class="view active"></div>'; return window.Website.AdmissionsView.render(content.firstElementChild); }
     if (key === 'website-news') { content.innerHTML = '<div class="view active"></div>'; return window.Website.NewsManager.render(content.firstElementChild); }
+    if (key === 'website-contact') { content.innerHTML = '<div class="view active"></div>'; return window.Website.ContactInbox.render(content.firstElementChild); }
     if (key === 'notifications') return renderNotifications(content);
     if (key === 'profile') return renderProfile(content);
   }

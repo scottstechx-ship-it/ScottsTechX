@@ -29,6 +29,7 @@
     { key: 'admissions', label: 'Admissions', icon: '🎓', section: 'Website' },
     { key: 'website-gallery', label: 'Website Gallery', icon: '🖼️', section: 'Website' },
     { key: 'website-news', label: 'Website News', icon: '📰', section: 'Website' },
+    { key: 'website-contact', label: 'Website Messages', icon: '✉️', section: 'Website' },
     { key: 'settings', label: 'School Settings', icon: '⚙️', section: 'System' },
     { key: 'permissions', label: 'Permissions', icon: '🔐', section: 'System' },
     { key: 'security', label: 'Security & API', icon: '🛡️', section: 'System' },
@@ -55,7 +56,7 @@
 
   async function show(key) {
     layout.setActive(key);
-    const titles = { home: 'Overview', messages: 'Messages', documents: 'Documents', announcements: 'Announcements', users: 'User Management', students: 'Students', teachers: 'Teachers', parents: 'Parents', classes: 'Classes', admissions: 'Admission Applications', 'website-gallery': 'Website Gallery', 'website-news': 'Website News', settings: 'School Settings', permissions: 'Permissions', security: 'Security & API', backup: 'Backup', logs: 'Activity Logs', notifications: 'Notifications', profile: 'Profile' };
+    const titles = { home: 'Overview', messages: 'Messages', documents: 'Documents', announcements: 'Announcements', users: 'User Management', students: 'Students', teachers: 'Teachers', parents: 'Parents', classes: 'Classes', admissions: 'Admission Applications', 'website-gallery': 'Website Gallery', 'website-news': 'Website News', 'website-contact': 'Website Messages', settings: 'School Settings', permissions: 'Permissions', security: 'Security & API', backup: 'Backup', logs: 'Activity Logs', notifications: 'Notifications', profile: 'Profile' };
     layout.setTitle(titles[key] || 'Dashboard');
     const content = layout.content;
 
@@ -71,6 +72,7 @@
     if (key === 'admissions') { content.innerHTML = '<div class="view active"></div>'; return window.Website.AdmissionsView.render(content.firstElementChild); }
     if (key === 'website-gallery') { content.innerHTML = '<div class="view active"></div>'; return window.Website.GalleryManager.render(content.firstElementChild); }
     if (key === 'website-news') { content.innerHTML = '<div class="view active"></div>'; return window.Website.NewsManager.render(content.firstElementChild); }
+    if (key === 'website-contact') { content.innerHTML = '<div class="view active"></div>'; return window.Website.ContactInbox.render(content.firstElementChild); }
     if (key === 'settings') return renderSettings(content);
     if (key === 'permissions') return renderPermissions(content);
     if (key === 'security') return renderSecurity(content);
