@@ -17,9 +17,14 @@
       this.pollTimer = null;
       this.offRealtime = null;
       this.contacts = null;
+      // incremental-render state: the composer is built ONCE per conversation
+      // and never rebuilt, so typing/keyboard focus is never interrupted.
+      this.renderedConvId = null;
+      this.lastSig = null;
     }
 
     destroy() {
+      document.body.classList.remove('chat-open');
       if (this.pollTimer) clearInterval(this.pollTimer);
       (this.unsubs || []).forEach((u) => { try { u(); } catch {} });
       this.unsubs = [];
@@ -122,7 +127,10 @@
       window.Realtime.joinConversation(convId);
       // mobile: switch to thread view
       const layout = this.container.querySelector('#msg-layout');
-      if (window.innerWidth <= 768) layout.classList.add('thread-open');
+      if (window.innerWidth <= 768) {
+        layout.classList.add('thread-open');
+        document.body.classList.add('chat-open');   // full-screen chat: hide bottom nav
+      }
       await this.loadThread(convId);
       this.loadConversations({ quiet: true });
     }
@@ -135,19 +143,38 @@
         if (!quiet) UI.toast(e.message, 'error');
         return;
       }
+      if (convId !== this.activeConvId) return; // user switched away meanwhile
       const thread = this.container.querySelector('#msg-thread');
       if (!thread) return;
       const conv = data.conversation;
       const msgs = data.messages || [];
-      const title = conv.type === 'class'
-        ? (conv.title || 'Class chat')
-        : (msgs[0] ? '' : '');
-      // title for direct = other participant name (already set on server)
+
+      // Build the thread shell (header + message area + composer) only when
+      // OPENING a conversation. Refreshes/polls/new messages must NEVER
+      // rebuild the composer — that is what killed typing focus and made
+      // the phone keyboard close mid-sentence.
+      if (this.renderedConvId !== convId || !thread.querySelector('#thread-msgs')) {
+        this.buildThreadShell(thread, conv, convId);
+        this.renderedConvId = convId;
+        this.lastSig = null;
+      }
+      const cnt = thread.querySelector('#thread-count');
+      if (cnt) cnt.textContent = `${msgs.length} message${msgs.length === 1 ? '' : 's'}${conv.type === 'channel' ? ' · announcement channel' : ''}`;
+
+      this.renderMessages(msgs, conv);
+
+      // mark as read
+      try { await API.put(`/api/messages/conversations/${convId}/read`); } catch {}
+      window.UI.refreshUnreadCounts();
+    }
+
+    /** Build header + scroll area + composer exactly once per conversation. */
+    buildThreadShell(thread, conv, convId) {
       const head = UI.el(`<div class="thread-head">
         <button class="back" id="back-btn">←</button>
-        <div>
+        <div style="min-width:0">
           <strong>${UI.esc(conv.title || 'Conversation')}</strong>
-          <div style="font-size:12px;color:var(--muted)">${msgs.length} message${msgs.length === 1 ? '' : 's'}${conv.type === 'channel' ? ' · announcement channel' : ''}</div>
+          <div style="font-size:12px;color:var(--muted)" id="thread-count"></div>
         </div>
         <div class="spacer"></div>
         ${conv.type === 'class' ? '<span class="badge blue">Class chat</span>' : ''}
@@ -158,13 +185,10 @@
           <button class="btn secondary sm" id="archive-btn" title="Archive / restore">📦</button>` : ''}
       </div>`);
       const body = UI.el('<div class="thread-messages" id="thread-msgs"></div>');
-      for (const m of msgs) body.appendChild(this.msgBubble(m, conv));
-      body.scrollTop = body.scrollHeight;
-
       const composer = UI.el(`<div class="composer">
         ${this.allowAttachments ? '<button class="btn secondary" id="attach-btn" title="Attach a file">📎</button>' : ''}
-        <textarea id="msg-input" placeholder="Type a message…" rows="1"></textarea>
-        <button class="btn" id="send-btn">Send ➤</button>
+        <textarea id="msg-input" placeholder="Type a message…" rows="1" enterkeyhint="send" autocomplete="off" autocorrect="on"></textarea>
+        <button class="btn send-btn" id="send-btn" title="Send">➤</button>
       </div>`);
       thread.innerHTML = '';
       thread.appendChild(head);
@@ -173,34 +197,96 @@
 
       head.querySelector('#back-btn').onclick = () => {
         this.container.querySelector('#msg-layout').classList.remove('thread-open');
+        document.body.classList.remove('chat-open');
       };
       if (conv.type !== 'channel') {
         head.querySelector('#mute-btn').onclick = async () => {
           const muted = !conv.muted;
-          try { await API.put(`/api/messages/conversations/${convId}/mute`, { muted }); UI.toast(muted ? 'Conversation muted.' : 'Conversation unmuted.', 'success'); conv.muted = muted; this.loadThread(convId, { quiet: true }); }
+          try { await API.put(`/api/messages/conversations/${convId}/mute`, { muted }); UI.toast(muted ? 'Conversation muted.' : 'Conversation unmuted.', 'success'); conv.muted = muted; head.querySelector('#mute-btn').textContent = muted ? '🔕' : '🔔'; }
           catch (e) { UI.toast(e.message, 'error'); }
         };
         head.querySelector('#archive-btn').onclick = async () => {
           const ok = await UI.confirmDialog(conv.archived ? 'Restore this conversation?' : 'Archive this conversation? It will be hidden from your list (recoverable).', { title: 'Archive', confirmText: conv.archived ? 'Restore' : 'Archive', danger: false });
           if (!ok) return;
-          try { await API.put(`/api/messages/conversations/${convId}/archive`, { archived: !conv.archived }); UI.toast('Done.', 'success'); this.loadConversations({ quiet: true }); this.renderEmptyThread(); }
+          try { await API.put(`/api/messages/conversations/${convId}/archive`, { archived: !conv.archived }); UI.toast('Done.', 'success'); this.loadConversations({ quiet: true }); this.renderedConvId = null; this.renderEmptyThread(); }
           catch (e) { UI.toast(e.message, 'error'); }
         };
       }
 
       const input = composer.querySelector('#msg-input');
+      const sendBtn = composer.querySelector('#send-btn');
       const send = () => this.sendMessage(input.value);
-      composer.querySelector('#send-btn').onclick = send;
+      sendBtn.onclick = (e) => { e.preventDefault(); send(); };
+      // keep the keyboard OPEN on phones: never let the send button steal focus
+      sendBtn.addEventListener('pointerdown', (e) => e.preventDefault());
       input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+      });
+      // auto-grow the textarea as you type (up to ~4 lines)
+      input.addEventListener('input', () => {
+        input.style.height = 'auto';
+        input.style.height = Math.min(input.scrollHeight, 116) + 'px';
       });
       if (this.allowAttachments) {
         composer.querySelector('#attach-btn').onclick = () => this.attachFile(convId);
       }
+      // new-messages pill: appears when messages arrive while scrolled up
+      const pill = UI.el('<button class="new-msg-pill" id="new-msg-pill" style="display:none">↓ New messages</button>');
+      thread.appendChild(pill);
+      pill.onclick = () => { body.scrollTop = body.scrollHeight; pill.style.display = 'none'; };
+      body.addEventListener('scroll', () => {
+        if (body.scrollHeight - body.scrollTop - body.clientHeight < 80) pill.style.display = 'none';
+      });
+    }
 
-      // mark as read
-      try { await API.put(`/api/messages/conversations/${convId}/read`); } catch {}
-      window.UI.refreshUnreadCounts();
+    /**
+     * Diff-render the message list. Skips work when nothing changed, preserves
+     * scroll position, autoscrolls only when the reader is near the bottom,
+     * and NEVER touches the composer.
+     */
+    renderMessages(msgs, conv) {
+      const body = this.container.querySelector('#thread-msgs');
+      if (!body) return;
+      const sig = msgs.map((m) => `${m.id}:${m.edited ? 1 : 0}`).join(',');
+      if (sig === this.lastSig) return;              // nothing changed
+      const firstRender = this.lastSig === null;
+      const prevCount = this.lastSig === null ? 0 : this.lastSig.split(',').filter(Boolean).length;
+      this.lastSig = sig;
+
+      const nearBottom = body.scrollHeight - body.scrollTop - body.clientHeight < 140;
+      const prevScroll = body.scrollTop;
+
+      body.innerHTML = '';
+      let lastDay = null;
+      for (const m of msgs) {
+        const day = String(m.created_at || '').slice(0, 10);
+        if (day && day !== lastDay) {
+          lastDay = day;
+          body.appendChild(UI.el(`<div class="day-sep"><span>${UI.esc(this.dayLabel(day))}</span></div>`));
+        }
+        body.appendChild(this.msgBubble(m, conv));
+      }
+
+      if (firstRender || nearBottom) {
+        body.scrollTop = body.scrollHeight;
+      } else {
+        body.scrollTop = prevScroll;                 // reading history: stay put
+        if (msgs.length > prevCount) {
+          const pill = this.container.querySelector('#new-msg-pill');
+          if (pill) pill.style.display = 'block';
+        }
+      }
+    }
+
+    /** Human date label for a YYYY-MM-DD day separator. */
+    dayLabel(day) {
+      const today = new Date();
+      const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      if (day === iso(today)) return 'Today';
+      const y = new Date(today); y.setDate(y.getDate() - 1);
+      if (day === iso(y)) return 'Yesterday';
+      try { return new Date(day + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }); }
+      catch { return day; }
     }
 
     msgBubble(m, conv) {
@@ -362,12 +448,38 @@
       const input = this.container.querySelector('#msg-input');
       const content = (text || '').trim();
       if (!content || !this.activeConvId) return;
+      const convId = this.activeConvId;
+
+      // clear + refocus immediately so the phone keyboard NEVER closes
       input.value = '';
+      input.style.height = 'auto';
+      input.focus();
+
+      // optimistic bubble: the message appears INSTANTLY
+      const body = this.container.querySelector('#thread-msgs');
+      let pending = null;
+      if (body) {
+        pending = UI.el(`<div class="msg-bubble mine pending">
+          <div class="msg-content">${UI.esc(content)}</div>
+          <div class="meta"><span>You</span><span>sending…</span></div>
+        </div>`);
+        body.appendChild(pending);
+        body.scrollTop = body.scrollHeight;
+      }
+
       try {
-        await API.post('/api/messages', { conversationId: this.activeConvId, content });
-        await this.loadThread(this.activeConvId, { quiet: true });
+        await API.post('/api/messages', { conversationId: convId, content });
+        await this.loadThread(convId, { quiet: true });   // replaces the pending bubble with the real one
         this.loadConversations({ quiet: true });
-      } catch (e) { UI.toast(e.message, 'error'); input.value = content; }
+      } catch (e) {
+        if (pending) {
+          pending.classList.add('failed');
+          pending.querySelector('.meta').innerHTML = '<span style="color:#f87171">⚠ failed — tap to retry</span>';
+          pending.style.cursor = 'pointer';
+          pending.onclick = () => { pending.remove(); this.sendMessage(content); };
+        }
+        UI.toast(e.message, 'error');
+      }
     }
 
     async attachFile(convId) {

@@ -340,6 +340,7 @@
       }
       document.body.appendChild(bn);
       bn.querySelectorAll('.bn-item').forEach((b) => b.addEventListener('click', () => {
+        document.body.classList.remove('chat-open');
         onNav(b.dataset.bn);
         content.scrollTop = 0;
       }));
@@ -347,6 +348,7 @@
 
     // events
     sidebar.querySelectorAll('.nav-item[data-nav]').forEach((b) => b.addEventListener('click', () => {
+      document.body.classList.remove('chat-open');
       onNav(b.dataset.nav);
       closeSidebar();
     }));

@@ -435,3 +435,60 @@ html[data-theme="dark"] .topbar .topbar-logout { color: #f87171; }
   .topbar { gap: 6px; padding-left: 10px; padding-right: 10px; }
   .topbar .page-title { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }
+
+/* ============================================================
+   MESSAGING POLISH — smooth chat, keyboard-friendly on phones
+   ============================================================ */
+/* day separators */
+.day-sep { display: flex; align-items: center; gap: 10px; margin: 10px 0 4px; }
+.day-sep::before, .day-sep::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.day-sep span { font-size: 11.5px; font-weight: 700; color: var(--muted); background: var(--card); border: 1px solid var(--border); padding: 3px 12px; border-radius: 999px; white-space: nowrap; }
+
+/* sending / failed states */
+.msg-bubble.pending { opacity: .65; }
+.msg-bubble.failed { opacity: 1; border: 1px solid rgba(248,113,113,.5); }
+
+/* new-messages pill */
+.msg-thread { position: relative; }
+.new-msg-pill {
+  position: absolute; bottom: 76px; left: 50%; transform: translateX(-50%);
+  background: var(--primary); color: #fff; border: none; cursor: pointer;
+  font-weight: 700; font-size: 12.5px; padding: 8px 16px; border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(37,99,235,.4); z-index: 5;
+  animation: pillIn .25s ease;
+}
+@keyframes pillIn { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+/* composer: modern pill input + round send button */
+.composer { background: var(--card); }
+.composer textarea {
+  border-radius: 22px; padding: 10px 16px; line-height: 1.45;
+  font-size: 16px;                    /* prevents iOS zoom-on-focus */
+}
+.composer .send-btn {
+  width: 44px; height: 44px; min-width: 44px; border-radius: 50%;
+  display: grid; place-items: center; font-size: 17px; padding: 0; flex: none;
+}
+.composer .btn.secondary { width: 44px; height: 44px; min-width: 44px; border-radius: 50%; display: grid; place-items: center; padding: 0; flex: none; }
+
+/* smooth scrolling in the thread */
+.thread-messages { scroll-behavior: smooth; overscroll-behavior: contain; }
+.msg-bubble { animation: bubbleIn .18s ease; }
+@keyframes bubbleIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .msg-bubble { animation: none; } .thread-messages { scroll-behavior: auto; } }
+
+/* ---------- PHONES: keyboard-aware chat layout ----------
+   dvh tracks the visual viewport, so when the keyboard opens the composer
+   rises WITH it instead of being covered / jumping around. */
+@media (max-width: 768px) {
+  .msg-layout { height: calc(100dvh - 130px); min-height: 0; }
+  .msg-layout.thread-open { height: calc(100dvh - 76px); }
+  /* while chatting, give the thread the whole screen: hide bottom nav via body class */
+  body.chat-open .bottom-nav { display: none !important; }
+  body.chat-open .content { padding-bottom: 0; }
+  .msg-thread { border-radius: 0; border-left: none; border-right: none; }
+  .composer { padding: 10px 10px calc(10px + env(safe-area-inset-bottom)); position: sticky; bottom: 0; }
+  .thread-messages { padding: 12px; }
+  .thread-head { padding: 10px 12px; }
+  .new-msg-pill { bottom: 84px; }
+}
