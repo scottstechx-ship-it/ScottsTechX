@@ -1,0 +1,551 @@
+/* ============================================================
+ * KALINABIRI SS — ROLE-SPECIFIC LOGIN PAGES (centered card layout)
+ * Shared 3D premium login system
+ * ============================================================ */
+
+/* Reset & base */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; width: 100%; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #e2e8f0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+/* ============================================================
+ * LOGIN PAGE WRAPPER
+ * ============================================================ */
+.login-page {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+}
+
+/* ============================================================
+ * ANIMATED BACKGROUND LAYER
+ * Each role gets a unique gradient palette via CSS variables
+ * ============================================================ */
+.bg-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.bg-layer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  /* Base gradient defined per-role via --role-bg-1/2, --role-accent, --role-accent-2 */
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 20%, var(--role-glow) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80% 80%, var(--role-glow-2) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, var(--role-bg-1) 0%, var(--role-bg-2) 70%);
+  animation: bg-drift 30s ease-in-out infinite alternate;
+}
+@keyframes bg-drift {
+  0%, 100% { filter: hue-rotate(0deg) brightness(1); transform: scale(1); }
+  50%      { filter: hue-rotate(15deg) brightness(1.1); transform: scale(1.02); }
+}
+
+/* ============================================================
+ * FLOATING ORBS — glowing spheres in background
+ * ============================================================ */
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+  z-index: 1;
+  pointer-events: none;
+  transform-style: preserve-3d;
+  animation: orb-float 20s ease-in-out infinite;
+  /* Color defined per-role via CSS variable on page */
+}
+.orb:nth-child(2) { animation-delay: -7s; animation-duration: 24s; }
+.orb:nth-child(3) { animation-delay: -14s; animation-duration: 28s; opacity: 0.3; }
+
+@keyframes orb-float {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33%      { transform: translate3d(30px, -20px, 20px) scale(1.08); }
+  66%      { transform: translate3d(-20px, 30px, -10px) scale(0.95); }
+}
+
+/* ============================================================
+ * GRID OVERLAY — subtle technical texture
+ * ============================================================ */
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.8) 0%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.8) 0%, transparent 70%);
+  animation: grid-shift 40s linear infinite;
+}
+@keyframes grid-shift {
+  0%   { background-position: 0 0; }
+  100% { background-position: 60px 60px; }
+}
+
+/* ============================================================
+ * ROTATING RING — hero element behind the card
+ * ============================================================ */
+.ring {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 600px;
+  height: 600px;
+  margin-top: -300px;
+  margin-left: -300px;
+  z-index: 3;
+  pointer-events: none;
+  transform-style: preserve-3d;
+  animation: ring-rotate 50s linear infinite;
+  border: 1px dashed rgba(255,255,255,0.08);
+  border-radius: 50%;
+}
+.ring::after {
+  content: '';
+  position: absolute;
+  inset: 50px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.04);
+  animation: ring-rotate-reverse 35s linear infinite;
+}
+@keyframes ring-rotate        { from { transform: rotate(0deg); }   to { transform: rotate(360deg); } }
+@keyframes ring-rotate-reverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+
+/* Ring color per role */
+.role-super_admin .ring { border-color: rgba(217,70,239,0.2); }
+.role-super_admin .ring::after { border-color: rgba(217,70,239,0.1); }
+.role-admin .ring { border-color: rgba(6,182,212,0.2); }
+.role-admin .ring::after { border-color: rgba(6,182,212,0.1); }
+.role-teacher .ring { border-color: rgba(245,158,11,0.2); }
+.role-teacher .ring::after { border-color: rgba(245,158,11,0.1); }
+.role-student .ring { border-color: rgba(59,130,246,0.2); }
+.role-student .ring::after { border-color: rgba(59,130,246,0.1); }
+.role-parent .ring { border-color: rgba(16,185,129,0.2); }
+.role-parent .ring::after { border-color: rgba(16,185,129,0.1); }
+
+/* ============================================================
+ * LOGIN STAGE — centered card container
+ * ============================================================ */
+.login-stage {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 420px;
+  transform-style: preserve-3d;
+  animation: card-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes card-enter {
+  from { opacity: 0; transform: translateY(30px) translateZ(-100px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) translateZ(0) scale(1); }
+}
+
+/* ============================================================
+ * LOGIN CARD — glassmorphic form container
+ * ============================================================ */
+.login-card {
+  position: relative;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-radius: 24px;
+  border: 1px solid var(--role-card-border);
+  box-shadow:
+    0 0 80px -20px var(--role-glow),
+    0 32px 64px -12px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  padding: 40px 36px;
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out, box-shadow 0.3s ease;
+}
+.login-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  background: linear-gradient(135deg,
+    rgba(255,255,255,0.06) 0%,
+    rgba(255,255,255,0.02) 50%,
+    transparent 100%);
+  pointer-events: none;
+}
+
+/* Subtle 3D tilt on mouse move (applied via JS) */
+.login-card.tilting {
+  transition: none;
+}
+
+/* ============================================================
+ * ROLE BADGE
+ * ============================================================ */
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  background: var(--role-badge-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--role-badge-border);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--role-badge-color);
+  width: fit-content;
+  margin: 0 auto 24px;
+  animation: badge-float 4s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+.role-badge svg { flex-shrink: 0; }
+@keyframes badge-float {
+  0%, 100% { transform: translateY(0) translateZ(0); }
+  50%      { transform: translateY(-4px) translateZ(10px); }
+}
+
+/* ============================================================
+ * ICON WRAPPER — large floating icon above title
+ * ============================================================ */
+.icon-wrapper {
+  width: 88px;
+  height: 88px;
+  border-radius: 24px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 28px;
+  background: var(--icon-wrapper-bg);
+  border: 1px solid var(--icon-wrapper-border);
+  transform-style: preserve-3d;
+  animation: icon-float 6s ease-in-out infinite;
+  box-shadow:
+    0 20px 40px -10px rgba(0,0,0,0.4),
+    0 12px 24px -12px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.icon-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  background: inherit;
+  filter: blur(20px);
+  opacity: 0.4;
+  z-index: -1;
+}
+.icon-wrapper svg { width: 42px; height: 42px; color: var(--role-accent); }
+@keyframes icon-float {
+  0%, 100% { transform: translateY(0) rotateY(0deg) rotateX(0deg); }
+  25%      { transform: translateY(-10px) rotateY(12deg) rotateX(-2deg); }
+  50%      { transform: translateY(0) rotateY(0deg) rotateX(0deg); }
+  75%      { transform: translateY(6px) rotateY(-8deg) rotateX(3deg); }
+}
+
+/* ============================================================
+ * TYPOGRAPHY
+ * ============================================================ */
+.login-card h1 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  text-align: center;
+  margin-bottom: 6px;
+  background: linear-gradient(135deg, #ffffff 0%, rgba(255,255,255,0.7) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 4px 30px rgba(0,0,0,0.3);
+}
+.subtitle {
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 32px;
+}
+
+/* ============================================================
+ * FORM ELEMENTS
+ * ============================================================ */
+.input-group { margin-bottom: 22px; }
+.input-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.input-icon {
+  position: absolute;
+  left: 16px;
+  width: 20px;
+  height: 20px;
+  color: rgba(255,255,255,0.35);
+  pointer-events: none;
+  transition: color 0.2s ease;
+}
+.input-group:focus-within .input-icon { color: var(--role-input-focus); }
+.input-group input {
+  width: 100%;
+  padding: 14px 16px 14px 52px;
+  font-size: 15px;
+  font-family: inherit;
+  color: #f1f5f9;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.input-group input::placeholder { color: rgba(255,255,255,0.25); }
+.input-group input:focus,
+.input-group input:not(:placeholder-shown) {
+  border-color: var(--role-input-focus);
+  box-shadow: 0 0 0 3px var(--role-input-focus-glow);
+  background: rgba(15, 23, 42, 0.8);
+}
+.input-group input:invalid:not(:placeholder-shown) { border-color: #ef4444; }
+
+/* Password visibility toggle */
+.toggle-visibility {
+  position: absolute;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
+.toggle-visibility:hover { color: #fff; background: rgba(255,255,255,0.05); }
+.toggle-visibility svg { width: 20px; height: 20px; }
+
+/* ============================================================
+ * FORM OPTIONS — remember me / forgot password
+ * ============================================================ */
+.form-options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  font-size: 13.5px;
+}
+.remember-me {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: rgba(255,255,255,0.7);
+}
+.remember-me input { width: 16px; height: 16px; accent-color: var(--role-accent); cursor: pointer; }
+.forgot-link {
+  color: var(--role-accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+.forgot-link:hover { opacity: 0.7; text-decoration: underline; }
+
+/* ============================================================
+ * SUBMIT BUTTON
+ * ============================================================ */
+.btn-primary {
+  width: 100%;
+  padding: 16px 24px;
+  font-size: 15.5px;
+  font-weight: 700;
+  font-family: inherit;
+  letter-spacing: 0.5px;
+  color: #0f172a;
+  background: var(--btn-gradient);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 8px 24px -4px var(--btn-shadow),
+    inset 0 1px 0 rgba(255,255,255,0.2);
+  transition: transform 0.15s, box-shadow 0.2s, filter 0.2s;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.25), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 14px 32px -6px var(--btn-shadow),
+    inset 0 1px 0 rgba(255,255,255,0.25);
+  filter: brightness(1.05);
+}
+.btn-primary:hover::before { opacity: 1; }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.btn-loader {
+  display: none;
+  width: 20px; height: 20px;
+  margin: 0 auto;
+  border: 2.5px solid rgba(15,23,42,0.3);
+  border-top-color: #0f172a;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.btn-primary.loading .btn-text { display: none; }
+.btn-primary.loading .btn-loader { display: block; }
+
+/* ============================================================
+ * FORM MESSAGE
+ * ============================================================ */
+.form-message {
+  margin-top: 18px;
+  font-size: 13.5px;
+  text-align: center;
+  min-height: 20px;
+  animation: msg-in 0.3s ease;
+}
+@keyframes msg-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+.form-message.error { color: #fca5a5; }
+.form-message.success { color: #86efac; }
+
+/* ============================================================
+ * DEMO CREDENTIALS — collapsible section
+ * ============================================================ */
+.demo-accounts {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--demo-border);
+}
+.demo-accounts summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--demo-summary-color);
+  padding: 8px 4px;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: color 0.2s;
+}
+.demo-accounts summary::-webkit-details-marker { display: none; }
+.demo-accounts summary::after {
+  content: '';
+  width: 16px; height: 16px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") center/contain no-repeat;
+  transition: transform 0.2s;
+}
+.demo-accounts summary:hover { color: #fff; }
+.demo-accounts[open] summary::after { transform: rotate(180deg); }
+.demo-list { padding-top: 16px; display: flex; flex-direction: column; gap: 12px; }
+.demo-item {
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--demo-item-border);
+  background: var(--demo-item-bg);
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+.demo-item:hover { border-color: var(--demo-item-border-hover); background: var(--demo-item-bg-hover); transform: translateX(4px); }
+.demo-item strong { display: block; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8); margin-bottom: 8px; }
+.cred-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.demo-item code {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 12.5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--demo-code-bg);
+  color: var(--demo-code-color);
+}
+.demo-item kbd {
+  font-family: inherit;
+  font-size: 12.5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--demo-kbd-border);
+  background: var(--demo-kbd-bg);
+  color: var(--demo-kbd-color);
+}
+
+/* ============================================================
+ * FOOTER NOTE
+ * ============================================================ */
+.footer-note {
+  margin-top: 28px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--footer-color);
+  letter-spacing: 0.2px;
+}
+
+/* ============================================================
+ * ENTRANCE ANIMATIONS FOR FORM ELEMENTS
+ * ============================================================ */
+.input-group { animation: field-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.input-group:nth-child(1) { animation-delay: 0.15s; }
+.input-group:nth-child(2) { animation-delay: 0.25s; }
+.form-options { animation: field-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.35s both; }
+.btn-primary { animation: field-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both; }
+.demo-accounts { animation: field-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both; }
+.footer-note { animation: field-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.65s both; }
+@keyframes field-in {
+  from { opacity: 0; transform: translateY(16px) translateZ(-50px); }
+  to   { opacity: 1; transform: translateY(0) translateZ(0); }
+}
+
+/* ============================================================
+ * REDUCED MOTION
+ * ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================
+ * RESPONSIVE
+ * ============================================================ */
+@media (max-width: 480px) {
+  .login-page { padding: 16px; align-items: flex-start; padding-top: 60px; }
+  .login-card { padding: 32px 24px; border-radius: 20px; }
+  .icon-wrapper { width: 76px; height: 76px; border-radius: 20px; }
+  .icon-wrapper svg { width: 36px; height: 36px; }
+  .ring { width: 400px; height: 400px; margin-top: -200px; margin-left: -200px; }
+}

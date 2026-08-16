@@ -1,0 +1,47 @@
+/* Connected dashboard UX layer: responsive, tactile, accessible. */
+:root{--ux-ring:rgba(37,99,235,.28);--ux-surface:#fff}
+html{scroll-behavior:smooth}
+body{overscroll-behavior-y:none}
+button,.btn,a,.nav-item,.icon-btn,.user-chip,.portal-card,.card{transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s ease,background-color .2s ease,border-color .2s ease,opacity .2s ease}
+button:focus-visible,a:focus-visible,.btn:focus-visible,.nav-item:focus-visible{outline:3px solid var(--ux-ring);outline-offset:2px}
+.card:hover{box-shadow:0 12px 30px rgba(15,23,42,.08)}
+.btn:not(:disabled):active,.icon-btn:active,.nav-item:active{transform:translateY(1px) scale(.99)}
+[data-reveal]{opacity:0;transform:translateY(12px);transition:opacity .45s ease,transform .45s ease}
+[data-reveal].is-visible{opacity:1;transform:none}
+.skeleton{position:relative;overflow:hidden;background:#e2e8f0;border-radius:8px;min-height:1em}
+.skeleton::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);animation:uxShimmer 1.3s infinite}
+@keyframes uxShimmer{100%{transform:translateX(100%)}}
+@media(max-width:900px){
+ .sidebar{position:fixed;left:0;top:0;bottom:0;height:100dvh;transform:translateX(-102%);transition:transform .28s ease;box-shadow:20px 0 45px rgba(15,23,42,.2)}
+ .sidebar.open{transform:translateX(0)}
+ .topbar .hamburger{display:grid;place-items:center;width:40px;height:40px}
+ .content{padding:16px}
+ .grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .grid-3{grid-template-columns:1fr 1fr}
+ .topbar{padding:0 14px}
+ .user-chip .meta{display:none}
+ .mobile-overlay{position:fixed;inset:0;background:rgba(2,6,23,.42);backdrop-filter:blur(2px);z-index:45;opacity:0;pointer-events:none;transition:opacity .25s ease}
+ .mobile-overlay.open{opacity:1;pointer-events:auto}
+}
+@media(max-width:640px){
+ body{font-size:14px}
+ .content{padding:12px 10px 78px}
+ .grid-4,.grid-3,.grid-2{grid-template-columns:1fr}
+ .card{padding:14px;border-radius:14px}
+ .stat-card{min-height:72px}
+ .stat-card .stat-num{font-size:21px}
+ .form-row{grid-template-columns:1fr}
+ .table-wrap{margin-inline:-4px;padding-inline:4px}
+ table.table{min-width:680px}
+ .topbar{height:58px}
+ .topbar .page-title{font-size:15px}
+ .dropdown-menu,.user-menu{position:fixed;left:10px;right:10px;width:auto;top:64px}
+ .modal-backdrop{padding:10px}
+ .modal{max-height:92dvh;border-radius:16px}
+ .modal .modal-body{padding:15px}
+ .modal .modal-foot{padding:12px 15px;flex-wrap:wrap}
+ .modal .modal-foot .btn{flex:1;justify-content:center}
+ .btn{min-height:40px}
+ .bottom-nav{padding-bottom:max(6px,env(safe-area-inset-bottom))}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}[data-reveal]{opacity:1;transform:none}}

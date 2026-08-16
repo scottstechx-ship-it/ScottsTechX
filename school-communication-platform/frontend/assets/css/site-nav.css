@@ -1,0 +1,161 @@
+/* ============================================================
+ * KALINABIRI SS — UNIFIED SITE NAVBAR + MOBILE-FIRST POLISH
+ * One navbar for every public page. Fully responsive.
+ * ============================================================ */
+:root {
+  --kn-bg: #0c1829;
+  --kn-bg-2: #10233c;
+  --kn-accent: #0ea5e9;
+  --kn-accent-2: #38bdf8;
+  --kn-gold: #f59e0b;
+  --kn-text: #e2e8f0;
+  --kn-muted: #94a3b8;
+  --kn-nav-h: 68px;
+}
+
+/* ---------- top navigation ---------- */
+.kn-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 2000;
+  height: var(--kn-nav-h);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+  padding: 0 clamp(12px, 4vw, 48px);
+  background: linear-gradient(135deg, rgba(12,24,41,.92), rgba(16,35,60,.88));
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  border-bottom: 1px solid rgba(14,165,233,.18);
+}
+.kn-nav a { text-decoration: none; }
+
+.kn-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.kn-brand img {
+  width: 42px; height: 42px; border-radius: 11px; object-fit: cover;
+  border: 2px solid rgba(56,189,248,.45); box-shadow: 0 4px 14px rgba(14,165,233,.35);
+  flex: none;
+}
+.kn-brand .kn-brand-txt { line-height: 1.15; min-width: 0; }
+.kn-brand .kn-brand-name {
+  font-weight: 800; font-size: 1.02rem; color: #fff; letter-spacing: .2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.kn-brand .kn-brand-sub { font-size: .72rem; color: var(--kn-accent-2); font-weight: 600; }
+
+.kn-links { display: flex; align-items: center; gap: 2px; list-style: none; margin: 0; padding: 0; }
+.kn-links a {
+  display: flex; align-items: center; gap: 7px;
+  color: var(--kn-muted); font-weight: 600; font-size: .92rem;
+  padding: 9px 13px; border-radius: 10px;
+  transition: color .2s, background .2s, transform .2s;
+}
+.kn-links a i { font-size: .85rem; opacity: .9; }
+.kn-links a:hover { color: #fff; background: rgba(14,165,233,.13); transform: translateY(-1px); }
+.kn-links a.active { color: #fff; background: rgba(14,165,233,.2); box-shadow: inset 0 -2px 0 var(--kn-accent); }
+
+.kn-actions { display: flex; align-items: center; gap: 10px; }
+.kn-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, var(--kn-gold), #fbbf24);
+  color: #0c1829 !important; font-weight: 800; font-size: .9rem;
+  padding: 10px 18px; border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(245,158,11,.35);
+  transition: transform .2s, box-shadow .2s;
+  white-space: nowrap;
+}
+.kn-cta:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(245,158,11,.45); }
+.kn-portal {
+  display: inline-flex; align-items: center; gap: 8px;
+  color: var(--kn-accent-2) !important; font-weight: 700; font-size: .9rem;
+  padding: 10px 14px; border-radius: 999px; border: 1.5px solid rgba(56,189,248,.4);
+  transition: background .2s, transform .2s; white-space: nowrap;
+}
+.kn-portal:hover { background: rgba(14,165,233,.15); transform: translateY(-2px); }
+
+/* hamburger */
+.kn-burger {
+  display: none; flex-direction: column; justify-content: center; gap: 5px;
+  width: 46px; height: 46px; padding: 10px;
+  background: rgba(14,165,233,.12); border: 1px solid rgba(56,189,248,.3);
+  border-radius: 12px; cursor: pointer; flex: none;
+}
+.kn-burger span { display: block; height: 2.5px; border-radius: 2px; background: var(--kn-accent-2); transition: transform .3s, opacity .3s; }
+.kn-burger.open span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+.kn-burger.open span:nth-child(2) { opacity: 0; }
+.kn-burger.open span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+
+/* ---------- mobile drawer ---------- */
+.kn-drawer {
+  position: fixed; top: var(--kn-nav-h); left: 0; right: 0; z-index: 1990;
+  background: linear-gradient(180deg, rgba(12,24,41,.98), rgba(9,17,30,.99));
+  -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(14,165,233,.2);
+  padding: 10px 16px 18px;
+  display: none; flex-direction: column; gap: 4px;
+  max-height: calc(100dvh - var(--kn-nav-h)); overflow-y: auto;
+}
+.kn-drawer.open { display: flex; animation: knDrop .25s ease; }
+@keyframes knDrop { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+.kn-drawer a {
+  display: flex; align-items: center; gap: 12px;
+  color: var(--kn-text); font-weight: 600; font-size: 1rem;
+  padding: 14px 14px; border-radius: 12px;
+  transition: background .2s;
+  min-height: 48px; /* touch target */
+}
+.kn-drawer a:hover, .kn-drawer a:active { background: rgba(14,165,233,.14); }
+.kn-drawer a.active { background: rgba(14,165,233,.2); color: #fff; }
+.kn-drawer a i { width: 22px; text-align: center; color: var(--kn-accent-2); }
+.kn-drawer .kn-drawer-cta {
+  margin-top: 8px; justify-content: center;
+  background: linear-gradient(135deg, var(--kn-gold), #fbbf24);
+  color: #0c1829; font-weight: 800; border-radius: 999px;
+}
+.kn-drawer .kn-drawer-portal {
+  justify-content: center;
+  border: 1.5px solid rgba(56,189,248,.4); border-radius: 999px; color: var(--kn-accent-2);
+}
+.kn-scrim {
+  position: fixed; inset: 0; top: var(--kn-nav-h); z-index: 1980;
+  background: rgba(2,6,23,.55); display: none;
+}
+.kn-scrim.open { display: block; }
+
+/* push page content below the fixed bar */
+body.kn-has-nav { padding-top: var(--kn-nav-h); }
+
+/* ---------- responsive breakpoints ---------- */
+@media (max-width: 1080px) {
+  .kn-links a { padding: 9px 10px; font-size: .88rem; }
+  .kn-links a i { display: none; }
+}
+@media (max-width: 920px) {
+  .kn-links { display: none; }
+  .kn-portal { display: none; }
+  .kn-burger { display: flex; }
+}
+@media (max-width: 560px) {
+  .kn-cta { display: none; }             /* apply lives in the drawer on phones */
+  .kn-brand .kn-brand-sub { display: none; }
+}
+
+/* ============================================================
+ * GLOBAL MOBILE POLISH for the public pages
+ * ============================================================ */
+html { -webkit-text-size-adjust: 100%; }
+img, video { max-width: 100%; height: auto; }
+input, select, textarea, button { font-size: 16px; }  /* prevents iOS zoom */
+
+@media (max-width: 768px) {
+  /* generous tap targets */
+  a, button { -webkit-tap-highlight-color: rgba(14,165,233,.15); }
+  /* tables never overflow the viewport */
+  table { display: block; overflow-x: auto; }
+  /* soften giant headlines on phones */
+  h1 { font-size: clamp(1.7rem, 7.5vw, 2.6rem) !important; }
+  h2 { font-size: clamp(1.35rem, 5.5vw, 2rem) !important; }
+  /* full-width buttons in hero/action groups */
+  .hero-actions { flex-direction: column; align-items: stretch !important; }
+  .hero-actions a { justify-content: center; text-align: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

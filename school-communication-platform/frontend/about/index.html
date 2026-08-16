@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DDYYHL61KR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-DDYYHL61KR');
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2956081143917614" crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — Kalinabiri Secondary School</title>
+  <link rel="icon" type="image/x-icon" href="/assets/images/logo.ico">
+  <link rel="apple-touch-icon" href="/assets/images/logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    /* VIDEO BACKGROUND */
+    .video-bg { position: fixed; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; }
+    .video-overlay { position: fixed; inset: 0; z-index: 1; background: linear-gradient(135deg, rgba(10,31,10,0.7) 0%, rgba(10,31,10,0.5) 50%, rgba(10,31,10,0.8) 100%); }
+    /* Mobile Menu */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    .mobile-menu-btn span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--accent-green);
+      margin: 5px 0;
+      transition: all 0.3s ease;
+    }
+
+    .mobile-menu-btn.active span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .mobile-menu-btn.active span:nth-child(2) { opacity: 0; }
+    .mobile-menu-btn.active span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    @media (max-width: 1000px) {
+      .nav-links {
+        position: fixed;
+        top: 68px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: rgba(10, 31, 10, 0.98);
+        backdrop-filter: blur(20px);
+        padding: 1.5rem;
+        gap: 0.5rem;
+        border-bottom: 1px solid var(--glass-border);
+        transform: translateY(-120%);
+        opacity: 0;
+        transition: all 0.4s ease;
+        pointer-events: none;
+        z-index: 999;
+      }
+      .nav-links.mobile-open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: all;
+      }
+      .nav-links li { width: 100%; text-align: center; }
+      .nav-links a { display: block; padding: 0.75rem; font-size: 1rem; }
+      .navbar { padding: 0.75rem 1.5rem; }
+      .mobile-menu-btn { display: block; }
+      .nav-cta { display: none; }
+    }
+
+
+    .particle { position: absolute; border-radius: 50%; animation: float-particle linear infinite; opacity: 0; }
+    @keyframes float-particle {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.6; }
+      100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* MOBILE NAV */
+    .mobile-nav { display: flex; position: fixed; top: 0; left: 0; right: 0; z-index: 1002; background: rgba(13,43,26,.98); padding: 12px 20px; justify-content: space-between; align-items: center; }
+    .mobile-nav .nav-logo { display: flex; align-items: center; gap: 10px; }
+    .mobile-nav img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+    .mobile-nav .nav-brand { color: #fff; font-weight: 700; font-size: 0.9rem; }
+    .mobile-nav .nav-brand span { display: block; font-size: 0.65rem; color: #4ade80; }
+    .hamburger { display: flex; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 5px; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: #fff; border-radius: 2px; }
+    .mobile-menu { display: none; position: fixed; top: 60px; left: 0; right: 0; background: rgba(13,43,26,.98); z-index: 1001; padding: 16px; }
+    .mobile-menu.active { display: block; }
+    .mobile-menu a { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,.8); text-decoration: none; padding: 12px; border-radius: 8px; font-size: 0.9rem; }
+    .mobile-menu a:hover { background: rgba(74,222,128,.2); }
+    .mobile-menu a.active { background: rgba(74,222,128,.2); color: #4ade80; }
+    .mobile-menu a.apply-btn { background: #0d6b35; color: #fff; font-weight: 600; margin-top: 8px; }
+    .mobile-menu .section-label { font-size: 0.7rem; font-weight: 700; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: 2px; padding: 8px 12px 4px; }
+
+    /* DESKTOP NAV */
+    .desktop-nav { display: flex; position: fixed; top: 0; left: 0; right: 0; z-index: 1002; background: rgba(13,43,26,.97); backdrop-filter: blur(20px); padding: 0 40px; align-items: center; justify-content: space-between; height: 72px; box-shadow: 0 2px 20px rgba(0,0,0,.2); }
+    .desktop-nav .nav-logo { display: flex; align-items: center; gap: 12px; }
+    .desktop-nav img { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; }
+    .desktop-nav .nav-brand { color: #fff; font-weight: 800; font-size: 1.1rem; }
+    .desktop-nav .nav-brand span { display: block; font-size: 0.65rem; color: #4ade80; font-weight: 400; }
+    .desktop-nav .nav-links { display: flex; gap: 4px; }
+    .desktop-nav .nav-links a { color: rgba(255,255,255,.8); text-decoration: none; padding: 8px 16px; border-radius: 8px; font-weight: 500; font-size: 0.9rem; transition: 0.2s; }
+    .desktop-nav .nav-links a:hover { background: rgba(255,255,255,.1); }
+    .desktop-nav .nav-links a.active { color: #4ade80; }
+    .desktop-nav .nav-actions { display: flex; align-items: center; gap: 12px; }
+    .nav-logo-right { display: flex; align-items: center; margin-left: auto; text-decoration: none; transition: transform 0.3s; }
+    .nav-logo-right:hover { transform: scale(1.08); }
+    .btn-portal { background: rgba(255,255,255,.1); color: #fff; border: 1px solid rgba(255,255,255,.3); padding: 8px 20px; border-radius: 50px; font-weight: 600; font-size: 0.85rem; text-decoration: none; transition: 0.2s; }
+    .btn-portal:hover { background: rgba(255,255,255,.2); }
+    .btn-apply { background: linear-gradient(135deg, #0d6b35, #1a8c4a); color: #fff; border: none; padding: 10px 24px; border-radius: 50px; font-weight: 600; font-size: 0.85rem; text-decoration: none; transition: 0.3s; }
+    .btn-apply:hover { transform: translateY(-2px); }
+
+    @media (max-width: 1023px) { .desktop-nav { display: none; } }
+    @media (min-width: 1024px) { .mobile-nav, .mobile-menu { display: none !important; } }
+    @media (max-width: 1023px) { .mobile-nav { display: flex; } }
+
+    /* PAGE BODY */
+    .page-body { position: relative; z-index: 2; padding-top: 72px; }
+    @media (max-width: 1023px) { .page-body { padding-top: 60px; } }
+
+    /* HERO SECTION WITH PARALLAX */
+    .about-hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0a1f0a 0%, #0d2b14 50%, #0a1f0a 100%);
+    }
+    .about-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('https://kalibz-international.netlify.app/assets/videos/7480536090764414213.mp4') center/cover no-repeat;
+      filter: blur(2px) brightness(0.4);
+      transform: scale(1.1);
+      will-change: transform;
+    }
+    .about-hero-bg {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+    .hero-shape {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0;
+      animation: none;
+      display: none;
+    }
+    .hs1 {
+      width: 600px; height: 600px;
+      background: none;
+      top: -200px; right: -100px;
+      animation-delay: 0s;
+    }
+    .hs2 {
+      width: 400px; height: 400px;
+      background: none;
+      bottom: -100px; left: -50px;
+      animation-delay: -4s;
+    }
+    @keyframes hero-shape-float {
+      0%, 100% { transform: none; }
+      50%      { transform: none; }
+    }
+    .about-hero-content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 60px 20px;
+      opacity: 0;
+      transform: translateY(40px);
+      animation: hero-content-reveal 1.2s ease-out 0.3s forwards;
+    }
+    @keyframes hero-content-reveal {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .about-hero-logo {
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      border: 4px solid rgba(255,255,255,0.4);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      margin-bottom: 30px;
+      animation: none;
+    }
+    @keyframes logo-pulse {
+      0%, 100% { box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
+      50%      { box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
+    }
+    @keyframes logo-float {
+      0%, 100% { transform: none; }
+      50%      { transform: none; }
+    }
+    .about-hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      color: #fff;
+      margin-bottom: 20px;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    .about-hero h1 .text-green { color: #4ade80; }
+    .about-hero p {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: rgba(255,255,255,0.85);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+    .scroll-indicator {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: scroll-bounce 2s ease-in-out infinite;
+    }
+    .scroll-indicator span {
+      display: block;
+      width: 30px;
+      height: 50px;
+      border: 2px solid rgba(74,222,128,0.6);
+      border-radius: 20px;
+      position: relative;
+    }
+    .scroll-indicator span::before {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      width: 6px;
+      height: 6px;
+      background: #4ade80;
+      border-radius: 50%;
+      transform: translateX(-50%);
+      animation: scroll-dot 2s ease-in-out infinite;
+    }
+    @keyframes scroll-bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(10px); }
+    }
+    @keyframes scroll-dot {
+      0% { top: 8px; opacity: 1; }
+      100% { top: 30px; opacity: 0; }
+    }
+
+    /* STICKY PAGE NAV */
+    .page-nav-bar {
+      position: sticky;
+      top: 72px;
+      z-index: 100;
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      background: rgba(13,43,26,.97);
+      backdrop-filter: blur(20px);
+      padding: 12px 20px;
+      border-bottom: 1px solid rgba(74,222,128,0.2);
+    }
+    .page-nav-bar .pn-item {
+      color: rgba(255,255,255,.7);
+      text-decoration: none;
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-nav-bar .pn-item::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #4ade80, #22c55e);
+      opacity: 0;
+      transition: opacity 0.3s;
+      border-radius: inherit;
+    }
+    .page-nav-bar .pn-item:hover::before,
+    .page-nav-bar .pn-item.active::before {
+      opacity: 1;
+    }
+    .page-nav-bar .pn-item span,
+    .page-nav-bar .pn-item {
+      position: relative;
+      z-index: 1;
+    }
+    .page-nav-bar .pn-item.active {
+      color: #0a1f0a;
+      font-weight: 600;
+    }
+    .page-nav-bar .pn-item:not(.active):hover {
+      color: #fff;
+    }
+    @media (max-width: 767px) {
+      .page-nav-bar { gap: 2px; padding: 8px 10px; }
+      .page-nav-bar .pn-item { padding: 6px 12px; font-size: 0.75rem; }
+    }
+
+    /* SECTION ANIMATIONS */
+    .about-section {
+      opacity: 0;
+      transform: translateY(60px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      padding: 100px 20px;
+    }
+    .about-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .about-section.alt-bg {
+      background: rgba(0,0,0,0.3);
+    }
+
+    /* ABOUT CONTAINER */
+    .about-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section-label-tag {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #4ade80;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: inline-block;
+      padding: 6px 16px;
+      background: rgba(74,222,128,0.1);
+      border: 1px solid rgba(74,222,128,0.3);
+      border-radius: 50px;
+    }
+    .about-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: #fff;
+      margin-bottom: 24px;
+    }
+    .section-intro {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.7);
+      max-width: 700px;
+      margin-bottom: 60px;
+      line-height: 1.7;
+    }
+
+    /* HISTORY SECTION */
+    .history-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .history-grid { grid-template-columns: 1fr; gap: 40px; }
+    }
+    .history-text .lead-text {
+      font-size: 1.15rem;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+    .history-text p {
+      font-family: 'Inter', sans-serif;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.8;
+      margin-bottom: 16px;
+    }
+
+    /* TIMELINE */
+    .history-timeline {
+      position: relative;
+      padding-left: 30px;
+    }
+    .history-timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, #4ade80, #ffd700, #4ade80);
+      border-radius: 2px;
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 40px;
+      opacity: 0;
+      transform: translateX(-30px);
+      transition: all 0.6s ease;
+    }
+    .timeline-item.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -26px;
+      top: 0;
+      width: 16px;
+      height: 16px;
+      background: #0a1f0a;
+      border: 3px solid #4ade80;
+      border-radius: 50%;
+      box-shadow: 0 0 20px rgba(74,222,128,0.5);
+      transition: all 0.3s;
+    }
+    .timeline-item:hover::before {
+      transform: scale(1.3);
+      box-shadow: 0 0 30px rgba(74,222,128,0.8);
+    }
+    .tl-year {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffd700;
+      margin-bottom: 8px;
+      text-shadow: 0 0 20px rgba(255,215,0,0.3);
+    }
+    .tl-content h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .tl-content p {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.6;
+    }
+
+    /* LEADERSHIP SECTION */
+    .leadership-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 30px;
+    }
+    .leader-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(74,222,128,0.15);
+      border-radius: 20px;
+      padding: 30px;
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      transition: all 0.4s ease;
+      backdrop-filter: blur(10px);
+    }
+    .leader-card:hover {
+      background: rgba(74,222,128,0.08);
+      border-color: rgba(74,222,128,0.4);
+      transform: translateY(-5px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 0 30px rgba(74,222,128,0.1);
+    }
+    .leader-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      position: relative;
+      animation: avatar-float 3s ease-in-out infinite;
+    }
+    .leader-avatar::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4ade80, #22c55e, #4ade80);
+      padding: 3px;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+    }
+    .leader-avatar::after {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0a1f0a 0%, #1a3a1a 50%, #0a1f0a 100%);
+    }
+    .leader-avatar span {
+      position: relative;
+      z-index: 1;
+      font-size: 1.8rem;
+      line-height: 1;
+    }
+    @keyframes avatar-float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(-8px) rotate(2deg); }
+      75% { transform: translateY(-4px) rotate(-2deg); }
+    }
+    .leader-card:nth-child(2) .leader-avatar { animation-delay: -0.5s; }
+    .leader-card:nth-child(3) .leader-avatar { animation-delay: -1s; }
+    .leader-card:nth-child(4) .leader-avatar { animation-delay: -1.5s; }
+    .leader-card:nth-child(5) .leader-avatar { animation-delay: -2s; }
+    .leader-card:nth-child(6) .leader-avatar { animation-delay: -2.5s; }
+    .leader-info { flex: 1; }
+    .leader-role {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #4ade80;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+    .leader-info h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+    .leader-info p {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.7;
+    }
+
+    /* FACILITIES SECTION */
+    .facilities-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    .facility-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(74,222,128,0.1);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      transition: all 0.4s ease;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+    .facility-card:hover {
+      background: rgba(74,222,128,0.08);
+      border-color: rgba(74,222,128,0.3);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.4), 0 0 40px rgba(74,222,128,0.15);
+    }
+    .fac-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      display: inline-block;
+      transition: all 0.4s ease;
+    }
+    .facility-card:hover .fac-icon {
+      transform: scale(1.2) rotate(10deg);
+    }
+    .facility-card h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+    .facility-card p {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.7;
+    }
+
+    /* ACHIEVEMENTS SECTION */
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 24px;
+      margin-bottom: 60px;
+    }
+    .achievement-stat {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(74,222,128,0.15);
+      border-radius: 20px;
+      padding: 30px 20px;
+      text-align: center;
+      transition: all 0.4s ease;
+    }
+    .achievement-stat:hover {
+      background: rgba(74,222,128,0.1);
+      border-color: rgba(74,222,128,0.4);
+      transform: translateY(-8px) scale(1.05);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    .as-number {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      font-weight: 700;
+      color: #ffd700;
+      text-shadow: 0 0 30px rgba(255,215,0,0.4);
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+    .as-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.5;
+    }
+
+    /* TROPHY GALLERY */
+    .trophy-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .trophy-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,215,0,0.15);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      transition: all 0.4s ease;
+    }
+    .trophy-item:hover {
+      background: rgba(255,215,0,0.08);
+      border-color: rgba(255,215,0,0.4);
+      transform: translateX(10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .trophy-icon {
+      font-size: 2.5rem;
+      flex-shrink: 0;
+    }
+    .trophy-info h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .trophy-info p {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.6);
+    }
+
+    /* ACCREDITATION SECTION */
+    .accreditation-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+    .accred-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(74,222,128,0.15);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .accred-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(74,222,128,0.1), transparent);
+      transition: left 0.6s ease;
+    }
+    .accred-card:hover::before {
+      left: 100%;
+    }
+    .accred-card:hover {
+      background: rgba(74,222,128,0.08);
+      border-color: rgba(74,222,128,0.4);
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.35), 0 0 40px rgba(74,222,128,0.15);
+    }
+    .accred-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      display: inline-block;
+      transition: all 0.4s ease;
+    }
+    .accred-card:hover .accred-icon {
+      transform: scale(1.2) rotate(5deg);
+    }
+    .accred-card h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      color: #fff;
+      margin-bottom: 12px;
+    }
+    .accred-card p {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.7;
+    }
+
+    /* FOOTER */
+    .footer {
+      background: linear-gradient(135deg, #0a1f0a 0%, #061208 100%);
+      padding: 60px 20px 30px;
+      position: relative;
+      z-index: 2;
+    }
+    .footer-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 40px;
+    }
+    .footer-logo {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .footer-logo img {
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
+    }
+    .footer-logo strong {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      color: #fff;
+      display: block;
+    }
+    .footer-logo span {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.5);
+    }
+    .footer-col h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: #4ade80;
+      margin-bottom: 20px;
+    }
+    .footer-col a {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      margin-bottom: 10px;
+      transition: all 0.3s;
+    }
+    .footer-col a:hover {
+      color: #4ade80;
+      transform: translateX(5px);
+    }
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 40px auto 0;
+      padding-top: 30px;
+      border-top: 1px solid rgba(74,222,128,0.15);
+      text-align: center;
+    }
+    .footer-bottom p {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.5);
+    }
+
+/* Rotating Video Background */
+#video-rotator-bg { position:fixed;inset:0;z-index:-2;width:100%;height:100%; }
+#video-rotator-bg video { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.5s ease; }
+#video-rotator-bg video.active { opacity:1; }
+.video-overlay { position:fixed;inset:0;z-index:-1;background:linear-gradient(135deg,rgba(10,31,10,0.78) 0%,rgba(10,31,10,0.55) 100%); }
+  </style>
+<link rel="stylesheet" href="/assets/css/theme.css">
+  <script src="/assets/js/theme.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/assets/css/site-nav.css">
+<script src="/assets/js/site-nav.js" defer></script>
+</head>
+<body>
+        <video autoplay muted loop playsinline id="kalibz-intro-vid" style="position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;pointer-events:none;">
+            <source src="https://kalibz-international.netlify.app/assets/videos/kalinabiri-kalibz-intro.mp4" type="video/mp4">
+        </video>
+
+<!-- ENHANCED PARTICLE SYSTEM (removed: green animations) -->
+
+<!-- VIDEO BACKGROUND -->
+<div id="video-rotator-bg">
+        <video id="video-bg" autoplay muted loop playsinline>
+            <source src="https://kalibz-international.netlify.app/assets/videos/kalinabiri-main.mp4" type="video/mp4">
+        </video>
+    </video>
+    <video muted loop playsinline style="display:none">
+      <source src="https://kalibz-international.netlify.app/assets/videos/7495100438790884614.mp4" type="video/mp4">
+    </video>
+    <video muted loop playsinline style="display:none">
+      <source src="https://kalibz-international.netlify.app/assets/videos/7488282586687704375.mp4" type="video/mp4">
+    </video>
+    <video muted loop playsinline style="display:none">
+      <source src="https://kalibz-international.netlify.app/assets/videos/7487326654935682359.mp4" type="video/mp4">
+    </video>
+    <video muted loop playsinline style="display:none">
+      <source src="https://kalibz-international.netlify.app/assets/videos/7480844887697493254.mp4" type="video/mp4">
+    </video>
+    <video muted loop playsinline style="display:none">
+      <source src="https://kalibz-international.netlify.app/assets/videos/7480556749926255878.mp4" type="video/mp4">
+    </video>
+    <video muted loop playsinline style="display:none">
+      <source src="https://kalibz-international.netlify.app/assets/videos/7480536090764414213.mp4" type="video/mp4">
+    </video>
+    <video muted loop playsinline style="display:none">
+      <source src="https://kalibz-international.netlify.app/assets/videos/7479435141761355013.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="video-overlay"></div>
+<div class="video-overlay"></div>
+
+<!-- DESKTOP NAV -->
+<nav class="desktop-nav">
+  <div class="nav-logo"><img src="../assets/images/logo.jpeg" alt="Kalinabiri SS"><div class="nav-brand">Kalinabiri SS<span>Ntinda, Kampala</span></div></div>
+  <div class="nav-links">
+    <a href='/'>Home</a>
+    <a class='active' href='/about/'>About</a>
+    <a href='/academics/'>Academics</a>
+    <a href='/admissions/'>Admissions</a>
+    <a href='/gallery/'>Gallery</a>
+    <a href='/news/'>News</a>
+  </div>
+  <div class="nav-actions">
+    <a class='btn-portal' href='/student-portal/'>Student Portal</a>
+    <a class='btn-apply' href='/admissions/#application-form'>Apply Now</a>
+  </div>
+  <a href="#" class="nav-logo-right" onclick="return false"><img src="https://kalibz-international.netlify.app/assets/images/logo.jpeg" alt="Kalinabiri SS" style="width:44px;height:44px;border-radius:10px;border:2px solid rgba(74,222,128,0.5);object-fit:cover;"></a>
+</nav>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav">
+  <div class="nav-logo"><img src="../assets/images/logo.jpeg" alt="Kalinabiri SS"><div class="nav-brand">Kalinabiri SS<span>About</span></div></div>
+  <button class="hamburger" onclick="document.getElementById('mobileMenu').classList.toggle('active')"><span></span><span></span><span></span></button>
+</div>
+<div class="mobile-menu" id="mobileMenu">
+  <div class="section-label">Navigate</div>
+  <a href='/'>🏠 Home</a>
+  <a class='active' href='/about/'>🏫 About</a>
+  <a href='/academics/'>📚 Academics</a>
+  <a href='/admissions/'>🎓 Admissions</a>
+  <a href='/gallery/'>🖼️ Gallery</a>
+  <a href='/news/'>📰 News</a>
+  <a href='/contact/'>✉️ Contact</a>
+  <div class="section-label">Portals</div>
+  <a href='/student-portal/'>🎓 Student Portal</a>
+  <a class='apply-btn' href='/admissions/#application-form'>📝 Apply Now</a>
+</div>
+
+<div class="page-body">
+
+<!-- PAGE HERO WITH PARALLAX -->
+<div class="about-hero" id="aboutHero">
+  <div class="about-hero-bg">
+    <div class="hero-shape hs1" style="display:none"></div>
+    <div class="hero-shape hs2" style="display:none"></div>
+  </div>
+  <div class="about-hero-content">
+    <img src="../assets/images/logo.jpeg" alt="Kalinabiri SS" class="about-hero-logo">
+    <h1>About <span class="text-green">Kalinabiri</span> Secondary School</h1>
+    <p>Nearly six decades of academic excellence, character formation, and community leadership in the heart of Jinja District, Uganda.</p>
+  </div>
+  <div class="scroll-indicator"><span></span></div>
+</div>
+
+<!-- STICKY PAGE NAV -->
+<div class="page-nav-bar" id="pageNavBar">
+  <a href="#history" class="pn-item active" onclick="scrollToSection(event, 'history')">History</a>
+  <a href="#leadership" class="pn-item" onclick="scrollToSection(event, 'leadership')">Leadership</a>
+  <a href="#facilities" class="pn-item" onclick="scrollToSection(event, 'facilities')">Facilities</a>
+  <a href="#school-life" class="pn-item" onclick="scrollToSection(event, 'school-life')">School Life</a>
+  <a href="#achievements" class="pn-item" onclick="scrollToSection(event, 'achievements')">Achievements</a>
+  <a href="#accreditation" class="pn-item" onclick="scrollToSection(event, 'accreditation')">Accreditation</a>
+</div>
+
+<!-- HISTORY SECTION -->
+<section class="about-section" id="history">
+  <div class="about-container">
+    <div class="section-label-tag">OUR STORY</div>
+    <h2>A Legacy Built Since 1965</h2>
+    <div class="history-grid">
+      <div class="history-text">
+        <p class="lead-text">Kalinabiri Secondary School was founded in 1965 on the historic Kalinabiri hill, overlooking the scenic Busoga region near Lake Victoria. What began as a modest community secondary school has grown into one of Uganda's most respected educational institutions.</p>
+        <p>Named after the hill that shelters our campus, Kalinabiri has for 59 years served as a beacon of hope and opportunity for young people across the region. Our school was established with a clear mission: to provide quality education that develops the whole person — academically, morally, and socially.</p>
+        <p>In the early years, the school operated with just three classrooms and a dedicated staff of five teachers. Today, Kalinabiri SS boasts modern infrastructure, over 60 qualified teachers, and more than 1,200 students from diverse backgrounds across Uganda.</p>
+        <p>Throughout our history, we have remained committed to our core values of discipline, excellence, integrity, and community service. These values, instilled in every student who passes through our gates, have produced generations of graduates who contribute meaningfully to Ugandan society and the world at large.</p>
+      </div>
+      <div class="history-timeline">
+        <div class="timeline-item">
+          <div class="tl-year">1965</div>
+          <div class="tl-content">
+            <h4>School Founded</h4>
+            <p>Established with 3 classrooms, 5 teachers, and 80 students</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-year">1975</div>
+          <div class="tl-content">
+            <h4>First UNEB Examinations</h4>
+            <p>Students sat first UCE examinations with 100% pass rate</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-year">1985</div>
+          <div class="tl-content">
+            <h4>A-Level Program Launched</h4>
+            <p>Introduced Science, Arts, and Commercial combinations at S.5</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-year">1995</div>
+          <div class="tl-content">
+            <h4>Computer Laboratory Opened</h4>
+            <p>First computer lab in the district with 20 machines</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-year">2008</div>
+          <div class="tl-content">
+            <h4>Boarding Facilities Expanded</h4>
+            <p>New dormitories built to accommodate growing demand</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-year">2015</div>
+          <div class="tl-content">
+            <h4>Science Labs Upgraded</h4>
+            <p>Full renovation of Physics, Chemistry, and Biology labs</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-year">2020</div>
+          <div class="tl-content">
+            <h4>Digital Learning Initiative</h4>
+            <p>Tablets and e-learning platforms introduced across all classes</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="tl-year">2026</div>
+          <div class="tl-content">
+            <h4>Online Portal Launched</h4>
+            <p>Student, teacher, and admin portals go live</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MEMORIAL WALL SECTION -->
+<section class="about-section" id="memorial">
+  <div class="about-container">
+    <div class="section-label-tag">IN MEMORIAM</div>
+    <h2>Memorial Wall</h2>
+    <p class="section-intro">Honoring the memory of those who have passed. Their legacy lives on through the lives they touched at Kalinabiri SS.</p>
+    <div class="memorial-wall-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;margin-top:40px;">
+      <div class="memorial-card" style="background:linear-gradient(135deg,rgba(13,43,26,.8),rgba(74,222,128,.1));border:1px solid rgba(74,222,128,.3);border-radius:20px;padding:28px;text-align:center;opacity:0;animation:memorialFadeIn 0.8s ease-out 0.1s forwards;">
+        <div style="font-size:4rem;margin-bottom:16px;">🕯️</div>
+        <h3 style="color:#4ade80;font-size:1.1rem;margin-bottom:8px;">In Loving Memory</h3>
+        <p style="color:rgba(255,255,255,.7);font-size:.9rem;line-height:1.6;">To all former students, teachers, and staff who have departed this life. Your contributions to our school community will never be forgotten.</p>
+      </div>
+      <div class="memorial-card" style="background:linear-gradient(135deg,rgba(13,43,26,.8),rgba(74,222,128,.1));border:1px solid rgba(74,222,128,.3);border-radius:20px;padding:28px;text-align:center;opacity:0;animation:memorialFadeIn 0.8s ease-out 0.3s forwards;">
+        <div style="font-size:4rem;margin-bottom:16px;">📸</div>
+        <h3 style="color:#4ade80;font-size:1.1rem;margin-bottom:8px;">The Kalibz Collection</h3>
+        <p style="color:rgba(255,255,255,.7);font-size:.9rem;line-height:1.6;">Historical photographs from our school archives. These images preserve precious moments and memories from generations past.</p>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
+          <img src="https://kalibz-international.netlify.app/assets/images/kalibz/kalinabiri_ss_7488023454248209719%20%281%29.webp" alt="Historical" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
+          <img src="https://kalibz-international.netlify.app/assets/images/kalibz/kalinabiri_ss_7488023454248209719%20%282%29.webp" alt="Historical" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
+          <img src="https://kalibz-international.netlify.app/assets/images/kalibz/kalinabiri_ss_7488023454248209719.webp" alt="Historical" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
+          <img src="https://kalibz-international.netlify.app/assets/images/kalibz/kalinabiri_ss_7493423355626867973.webp" alt="Memorial" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
+        </div>
+      </div>
+      <div class="memorial-card" style="background:linear-gradient(135deg,rgba(13,43,26,.8),rgba(74,222,128,.1));border:1px solid rgba(74,222,128,.3);border-radius:20px;padding:28px;text-align:center;opacity:0;animation:memorialFadeIn 0.8s ease-out 0.5s forwards;">
+        <div style="font-size:4rem;margin-bottom:16px;">🎓</div>
+        <h3 style="color:#4ade80;font-size:1.1rem;margin-bottom:8px;">Alumni Memorial</h3>
+        <p style="color:rgba(255,255,255,.7);font-size:.9rem;line-height:1.6;">Celebrating the achievements of our graduates. May they rest in peace while their legacies endure through their contributions to society.</p>
+      </div>
+      <div class="memorial-card" style="background:linear-gradient(135deg,rgba(13,43,26,.8),rgba(74,222,128,.1));border:1px solid rgba(74,222,128,.3);border-radius:20px;padding:28px;text-align:center;opacity:0;animation:memorialFadeIn 0.8s ease-out 0.7s forwards;">
+        <div style="font-size:4rem;margin-bottom:16px;">🕊️</div>
+        <h3 style="color:#4ade80;font-size:1.1rem;margin-bottom:8px;">Forever in Our Hearts</h3>
+        <p style="color:rgba(255,255,255,.7);font-size:.9rem;line-height:1.6;">"They that wait for the Lord shall renew their strength. They shall mount up with wings as eagles." — Isaiah 40:31</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LEADERSHIP SECTION -->
+<section class="about-section alt-bg" id="leadership">
+  <div class="about-container">
+    <div class="section-label-tag">LEADERSHIP</div>
+    <h2>Our School Leadership</h2>
+    <p class="section-intro">Meet the dedicated team that drives Kalinabiri SS forward with vision, integrity, and commitment to educational excellence.</p>
+    <div class="leadership-grid">
+      <div class="leader-card">
+        <div class="leader-avatar"><span>👩‍💼</span></div>
+        <div class="leader-info">
+          <div class="leader-role">Head Teacher</div>
+          <h3>Ms. Patricia Mutesi</h3>
+          <p>Provides overall leadership and strategic direction for Kalinabiri SS, overseeing academics, welfare, and school culture.</p>
+          <p style="margin-top:10px;font-size:0.82rem;">
+            <a href="tel:+256792861645" style="color:#4ade80;text-decoration:none;">📞 0792 861 645</a>
+          </p>
+        </div>
+      </div>
+      <div class="leader-card">
+        <div class="leader-avatar"><span>👩‍🏫</span></div>
+        <div class="leader-info">
+          <div class="leader-role">Director of Studies (DOS)</div>
+          <h3>Mrs. Lukwago Rose</h3>
+          <p>Coordinates curriculum delivery, academic calendar, teacher scheduling, and student performance tracking across all levels.</p>
+          <p style="margin-top:10px;font-size:0.82rem;">
+            <a href="tel:+256701120729" style="color:#4ade80;text-decoration:none;">📞 0701 120 729</a>
+          </p>
+        </div>
+      </div>
+      <div class="leader-card">
+        <div class="leader-avatar"><span>👨‍💼</span></div>
+        <div class="leader-info">
+          <div class="leader-role">Assistant DOS</div>
+          <h3>Mr. Ashaba Fredrick</h3>
+          <p>Supports the Director of Studies in academic coordination, examinations, and student academic guidance.</p>
+          <p style="margin-top:10px;font-size:0.82rem;">
+            <a href="tel:+256757805368" style="color:#4ade80;text-decoration:none;">📞 0757 805 368</a>
+          </p>
+        </div>
+      </div>
+      <div class="leader-card">
+        <div class="leader-avatar"><span>✉️</span></div>
+        <div class="leader-info">
+          <div class="leader-role">School Email</div>
+          <h3>General Enquiries</h3>
+          <p>For all general school matters, partnerships, and information requests.</p>
+          <p style="margin-top:10px;font-size:0.82rem;">
+            <a href="mailto:Kalinabiri.ntinda@yahoo.com" style="color:#4ade80;text-decoration:none;">📧 Kalinabiri.ntinda@yahoo.com</a>
+          </p>
+        </div>
+      </div>
+      <div class="leader-card">
+        <div class="leader-avatar"><span>🎓</span></div>
+        <div class="leader-info">
+          <div class="leader-role">Admissions Email</div>
+          <h3>Admissions Office</h3>
+          <p>For applications, admission requirements, and enrollment inquiries for S.1 through S.6.</p>
+          <p style="margin-top:10px;font-size:0.82rem;">
+            <a href="mailto:Kalinabiri@yahoo.com" style="color:#4ade80;text-decoration:none;">📧 Kalinabiri@yahoo.com</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FACILITIES SECTION -->
+<section class="about-section" id="facilities">
+  <div class="about-container">
+    <div class="section-label-tag">OUR CAMPUS</div>
+    <h2>World-Class Facilities</h2>
+    <p class="section-intro">Our campus provides everything students need for academic success, personal growth, and holistic development.</p>
+    <div class="facilities-grid">
+      <div class="facility-card" data-tilt>
+        <div class="fac-icon">🏠</div>
+        <h4>Boarding Houses</h4>
+        <p>Separate, supervised houses for boys and girls with comfortable dorms, common rooms, and 24/7 matron oversight.</p>
+      </div>
+      <div class="facility-card" data-tilt>
+        <div class="fac-icon">🍽️</div>
+        <h4>Dining Hall</h4>
+        <p>Serves 1,200+ students per meal. Balanced menu developed with a qualified nutritionist. Mess system with weekly rotation.</p>
+      </div>
+      <div class="facility-card" data-tilt>
+        <div class="fac-icon">🔬</div>
+        <h4>Science Laboratories</h4>
+        <p>3 fully-equipped labs: Physics, Chemistry, Biology. Each accommodates 40 students simultaneously with individual workstation setups.</p>
+      </div>
+      <div class="facility-card" data-tilt>
+        <div class="fac-icon">💻</div>
+        <h4>Computer Labs</h4>
+        <p>2 labs with 100+ modern computers, internet access, and specialized software for ICT and programming classes.</p>
+      </div>
+      <div class="facility-card" data-tilt>
+        <div class="fac-icon">📚</div>
+        <h4>Library</h4>
+        <p>10,000+ volumes, digital research stations, e-library access, study carrels, and a dedicated reading room for boarding students.</p>
+      </div>
+      <div class="facility-card" data-tilt>
+        <div class="fac-icon">⚽</div>
+        <h4>Sports Complex</h4>
+        <p>Full-size football pitch, basketball court, netball courts, volleyball court, and athletics track. Regular inter-class and inter-school competitions.</p>
+      </div>
+      <div class="facility-card" data-tilt>
+        <div class="fac-icon">🎵</div>
+        <h4>Music & Art Studios</h4>
+        <p>Dedicated rooms for music practice (instruments available), art exhibitions, drama productions, and creative writing sessions.</p>
+      </div>
+      <div class="facility-card" data-tilt>
+        <div class="fac-icon">⛪</div>
+        <h4>School Chapel</h4>
+        <p>Inter-denominational chapel for spiritual gatherings, assemblies, and quiet reflection. Hosts weekly services and special events.</p>
+      </div>
+      <div class="facility-card" data-tilt>
+        <div class="fac-icon">🏥</div>
+        <h4>Medical Clinic</h4>
+        <p>First aid trained staff on duty daily. Sick bay with 6 beds. Referral system to Jinja Regional Referral Hospital for serious cases.</p>
+      </div>
+      <div class="facility-card" data-tilt>
+        <div class="fac-icon">🔧</div>
+        <h4>Technical Workshop</h4>
+        <p>Woodwork and metalwork workshop for practical vocational training. Agriculture demonstration garden for hands-on learning.</p>
+      </div>
+      <div class="facility-card" data-tilt>
+        <div class="fac-icon">📡</div>
+        <h4>ICT Innovation Hub</h4>
+        <p>Robotics, coding clubs, 3D printing, and digital innovation programs. Students compete in national technology competitions.</p>
+      </div>
+      <div class="facility-card" data-tilt>
+        <div class="fac-icon">🛡️</div>
+        <h4>Campus Security</h4>
+        <p>Perimeter wall, 24/7 security guards, CCTV surveillance, controlled gate access. Safe and secure learning environment guaranteed.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCHOOL LIFE / CLUBS SECTION -->
+<section class="about-section alt-bg" id="school-life">
+  <div class="about-container">
+    <div class="section-label-tag">CO-CURRICULAR & STUDENT LIFE</div>
+    <h2>Clubs & Activities</h2>
+    <p class="section-intro">Education at Kalinabiri SS extends well beyond the classroom. Our student-led clubs build leadership, service, environmental awareness, and a sense of belonging.</p>
+    <div class="leadership-grid">
+      <div class="leader-card" style="flex-direction:column;text-align:center;align-items:center;">
+        <div class="leader-avatar"><span>🦁</span></div>
+        <div class="leader-info" style="text-align:center;">
+          <h3>Wildlife Club</h3>
+          <p style="color:rgba(255,255,255,.65);font-size:.88rem;">Conservation, nature walks, animal welfare education, and field trips to national parks.</p>
+        </div>
+      </div>
+      <div class="leader-card" style="flex-direction:column;text-align:center;align-items:center;">
+        <div class="leader-avatar"><span>🤝</span></div>
+        <div class="leader-info" style="text-align:center;">
+          <h3>Interact Club</h3>
+          <p style="color:rgba(255,255,255,.65);font-size:.88rem;">Rotary-supported service club focused on community projects, mentorship, and leadership development.</p>
+        </div>
+      </div>
+      <div class="leader-card" style="flex-direction:column;text-align:center;align-items:center;">
+        <div class="leader-avatar"><span>🕊️</span></div>
+        <div class="leader-info" style="text-align:center;">
+          <h3>Peace Club</h3>
+          <p style="color:rgba(255,255,255,.65);font-size:.88rem;">Conflict resolution, peer mediation, dialogue forums, and peace-building campaigns.</p>
+        </div>
+      </div>
+      <div class="leader-card" style="flex-direction:column;text-align:center;align-items:center;">
+        <div class="leader-avatar"><span>🇺🇬</span></div>
+        <div class="leader-info" style="text-align:center;">
+          <h3>Patriotism Club</h3>
+          <p style="color:rgba(255,255,255,.65);font-size:.88rem;">Civic education, national values, flag ceremonies, and community service activities.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACHIEVEMENTS SECTION -->
+<section class="about-section alt-bg" id="achievements">
+  <div class="about-container">
+    <div class="section-label-tag">TROPHIES & HONORS</div>
+    <h2>Our Achievements</h2>
+    <div class="achievements-grid">
+      <div class="achievement-stat">
+        <div class="as-number" data-count="95">0</div>
+        <div class="as-label">UNEB Pass Rate (2025)</div>
+      </div>
+      <div class="achievement-stat">
+        <div class="as-number" data-count="1">0</div>
+        <div class="as-label">National Science Fair 2025</div>
+      </div>
+      <div class="achievement-stat">
+        <div class="as-number" data-count="78">0</div>
+        <div class="as-label">University Qualifiers (2025)</div>
+      </div>
+      <div class="achievement-stat">
+        <div class="as-number" data-count="12">0</div>
+        <div class="as-label">Debate Championships Won</div>
+      </div>
+      <div class="achievement-stat">
+        <div class="as-number" data-count="5">0</div>
+        <div class="as-label">Regional Athletics Titles</div>
+      </div>
+      <div class="achievement-stat">
+        <div class="as-number" data-count="100">0</div>
+        <div class="as-label">Staff with Teaching Certificate</div>
+      </div>
+    </div>
+    <div class="trophy-gallery">
+      <div class="trophy-item">
+        <div class="trophy-icon">🏆</div>
+        <div class="trophy-info">
+          <h4>Uganda National Science Fair</h4>
+          <p>1st Place — Innovation Category, 2025</p>
+        </div>
+      </div>
+      <div class="trophy-item">
+        <div class="trophy-icon">🎖️</div>
+        <div class="trophy-info">
+          <h4>East African Schools Debate Championship</h4>
+          <p>Best Team — 2024 & 2025</p>
+        </div>
+      </div>
+      <div class="trophy-item">
+        <div class="trophy-icon">🥇</div>
+        <div class="trophy-info">
+          <h4>Jinja District Athletics Championship</h4>
+          <p>Overall Champions — 5 consecutive years</p>
+        </div>
+      </div>
+      <div class="trophy-item">
+        <div class="trophy-icon">📚</div>
+        <div class="trophy-info">
+          <h4>UNEB Best Performing School</h4>
+          <p>Busoga Region — 2023 & 2024</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACCREDITATION SECTION -->
+<section class="about-section" id="accreditation">
+  <div class="about-container">
+    <div class="section-label-tag">OFFICIAL RECOGNITION</div>
+    <h2>Accreditation & Partnerships</h2>
+    <div class="accreditation-grid">
+      <div class="accred-card">
+        <div class="accred-icon">🎓</div>
+        <h4>UNEB Registered</h4>
+        <p>Fully registered and accredited by Uganda National Examinations Board for UCE and UACE examinations.</p>
+      </div>
+      <div class="accred-card">
+        <div class="accred-icon">🏛️</div>
+        <h4>Ministry of Education</h4>
+        <p>Operating under the Ministry of Education and Sports, compliant with all national curriculum standards.</p>
+      </div>
+      <div class="accred-card">
+        <div class="accred-icon">🤝</div>
+        <h4>University Partnerships</h4>
+        <p>Articulation agreements with Makerere, Kyambogo, and Busitema Universities for clear pathways to higher education.</p>
+      </div>
+      <div class="accred-card">
+        <div class="accred-icon">🌍</div>
+        <h4>Cambridge Associate</h4>
+        <p>Affiliated with Cambridge International for teacher training and curriculum development support.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <div class="footer-logo">
+        <img src="../assets/images/logo.jpeg" alt="Kalinabiri SS">
+        <div><strong>Kalinabiri Secondary School</strong><span>Ntinda, Kampala, Uganda</span></div>
+      </div>
+      <p style="margin-top:12px;font-size:0.85rem">Excellence in Education Since 1965</p>
+    </div>
+    <div class="footer-col"><h3>Quick Links</h3>
+      <a href='/'>Home</a>
+      <a href='/academics/'>Academics</a>
+      <a href='/admissions/'>Admissions</a>
+      <a href='/gallery/'>Gallery</a>
+      <a href='/news/'>News</a>
+      <a href='/contact/'>Contact</a>
+    </div>
+    <div class="footer-col"><h3>Portals</h3>
+      <a href='/student-portal/'>Student Portal</a>
+      <a href="../admin-login/">Admin Portal</a>
+      <a href="../teacher-login/teacher-register.html">Teacher Portal</a>
+    </div>
+    <div class="footer-col"><h3>Contact</h3>
+      <a href="tel:+256****3456">📞 +256 700 123 456</a>
+      <a href="mailto:info@kalinabiriss.ac.ug">✉️ info@kalinabiriss.ac.ug</a>
+    </div>
+  </div>
+  <div class="footer-bottom"><p>© 2026 Kalinabiri Secondary School. All Rights Reserved. | Developed by <strong>ScottsTechX</strong></p></div>
+</footer>
+
+</div>
+
+<script>
+// Three.js Particle System (removed: green particle animations)
+(function(){
+  // Particles disabled — page uses the video background instead.
+})();
+
+// Parallax effect for hero section
+(function() {
+  var hero = document.getElementById('aboutHero');
+  var heroContent = hero.querySelector('.about-hero-content');
+  
+  window.addEventListener('scroll', function() {
+    var scrolled = window.pageYOffset;
+    var heroHeight = hero.offsetHeight;
+    
+    if (scrolled < heroHeight) {
+      var parallaxValue = scrolled * 0.5;
+      hero.style.transform = 'translateY(' + parallaxValue + 'px)';
+      heroContent.style.transform = 'translateY(' + (parallaxValue * 0.3) + 'px)';
+      heroContent.style.opacity = 1 - (scrolled / heroHeight) * 0.5;
+    }
+  });
+})();
+
+// Scroll-triggered animations for sections
+(function() {
+  var sections = document.querySelectorAll('.about-section');
+  
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        
+        // Animate timeline items
+        if (entry.target.id === 'history') {
+          var timelineItems = entry.target.querySelectorAll('.timeline-item');
+          timelineItems.forEach(function(item, index) {
+            setTimeout(function() {
+              item.classList.add('visible');
+            }, index * 150);
+          });
+        }
+      }
+    });
+  }, {
+    threshold: 0.15,
+    rootMargin: '0px 0px -50px 0px'
+  });
+  
+  sections.forEach(function(section) {
+    observer.observe(section);
+  });
+})();
+
+// Count up animation for achievement stats
+(function() {
+  var stats = document.querySelectorAll('.as-number');
+  
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var el = entry.target;
+        var target = parseInt(el.getAttribute('data-count'));
+        var duration = 2000;
+        var start = 0;
+        var startTime = performance.now();
+        
+        function updateCount(currentTime) {
+          var elapsed = currentTime - startTime;
+          var progress = Math.min(elapsed / duration, 1);
+          
+          // Easing function
+          var easeOut = 1 - Math.pow(1 - progress, 3);
+          var current = Math.floor(easeOut * target);
+          
+          el.textContent = current + (target === 100 ? '%' : '');
+          
+          if (progress < 1) {
+            requestAnimationFrame(updateCount);
+          }
+        }
+        
+        requestAnimationFrame(updateCount);
+        observer.unobserve(el);
+      }
+    });
+  }, {
+    threshold: 0.5
+  });
+  
+  stats.forEach(function(stat) {
+    observer.observe(stat);
+  });
+})();
+
+// 3D tilt effect for facility cards
+(function() {
+  var cards = document.querySelectorAll('.facility-card');
+  
+  cards.forEach(function(card) {
+    card.addEventListener('mousemove', function(e) {
+      var rect = card.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      
+      var centerX = rect.width / 2;
+      var centerY = rect.height / 2;
+      
+      var rotateX = (y - centerY) / 10;
+      var rotateY = (centerX - x) / 10;
+      
+      card.style.transform = 'perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) scale(1.05)';
+      card.style.boxShadow = (rotateY > 0 ? '-' : '') + Math.abs(rotateY) * 5 + 'px ' + (rotateX > 0 ? '-' : '') + Math.abs(rotateX) * 5 + 'px 30px rgba(74,222,128,0.2)';
+    });
+    
+    card.addEventListener('mouseleave', function() {
+      card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
+      card.style.boxShadow = 'none';
+    });
+  });
+})();
+
+// Smooth scroll for page nav
+function scrollToSection(e, id) {
+  e.preventDefault();
+  var section = document.getElementById(id);
+  if (section) {
+    var offset = section.offsetTop - 120;
+    window.scrollTo({
+      top: offset,
+      behavior: 'smooth'
+    });
+  }
+}
+
+// Update active nav item on scroll
+(function() {
+  var navItems = document.querySelectorAll('.pn-item');
+  var sections = document.querySelectorAll('.about-section');
+  
+  window.addEventListener('scroll', function() {
+    var scrollPos = window.pageYOffset + 200;
+    
+    sections.forEach(function(section, index) {
+      var top = section.offsetTop;
+      var height = section.offsetHeight;
+      var id = section.getAttribute('id');
+      
+      if (scrollPos >= top && scrollPos < top + height) {
+        navItems.forEach(function(item) {
+          item.classList.remove('active');
+          if (item.getAttribute('href') === '#' + id) {
+            item.classList.add('active');
+          }
+        });
+      }
+    });
+  });
+})();
+
+// Add CSS for page body overflow
+document.querySelector('.page-body').style.overflow = 'visible';
+</script>
+
+<script>
+(function() {
+  var rotator = document.getElementById('video-rotator-bg');
+  if (!rotator) return;
+  var videos = rotator.querySelectorAll('video');
+  var current = 0;
+  if (videos[0]) {
+    videos[0].style.opacity = '';
+    videos[0].classList.add('active');
+    videos[0].play().catch(function(){});
+  }
+  videos.forEach(function(v, i) { if (i !== 0) v.style.opacity = '0'; });
+  setInterval(function() {
+    videos[current].classList.remove('active');
+    videos[current].style.opacity = '0';
+    current = (current + 1) % videos.length;
+    videos[current].classList.add('active');
+    videos[current].style.opacity = '1';
+    videos[current].play().catch(function(){});
+  }, 6000);
+})();
+
+    // Mobile Menu Toggle
+    function toggleMobileMenu() {
+      document.getElementById('navLinks').classList.toggle('mobile-open');
+      document.getElementById('mobileBtn').classList.toggle('active');
+    }
+
+</script>
+</body>
+</html>

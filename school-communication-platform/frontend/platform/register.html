@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parent registration — School Portal</title>
+<link rel="stylesheet" href="css/app.css">
+<style>
+  body { display:flex; align-items:center; justify-content:center; min-height:100vh; background:linear-gradient(135deg,#1e3a8a,#2563eb); padding:16px; }
+  .card { background:#fff; border-radius:16px; box-shadow:0 25px 60px rgba(2,6,23,.35); width:100%; max-width:440px; padding:32px; }
+  .card h1 { font-size:20px; margin-bottom:4px; }
+  .sub { color:#64748b; font-size:13.5px; margin-bottom:20px; }
+  .err { background:#fee2e2; color:#b91c1c; border-radius:8px; padding:10px 12px; font-size:13px; margin-bottom:12px; display:none; }
+  .ok { background:#dcfce7; color:#15803d; border-radius:8px; padding:10px 12px; font-size:13px; margin-bottom:12px; display:none; }
+  .devlink { background:#fef3c7; border:1px dashed #f59e0b; border-radius:8px; padding:10px 12px; font-size:12.5px; margin-top:12px; word-break:break-all; display:none; }
+  .back { text-align:center; margin-top:16px; font-size:13px; }
+  .steps { font-size:12px; color:#64748b; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:10px 12px; margin-bottom:18px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>👨‍👧‍👦 Parent registration</h1>
+  <div class="sub">Create a parent account to follow your children's school life.</div>
+  <div class="steps">
+    <strong>How it works:</strong><br>
+    1. Fill in your details below.<br>
+    2. Verify your email address (a link is sent to you).<br>
+    3. The school administration reviews your registration.<br>
+    4. Once approved, you can log in — reports and updates are sent to your email.
+  </div>
+  <div class="err" id="err"></div>
+  <div class="ok" id="ok"></div>
+  <form id="reg-form">
+    <label class="field">Full name <span class="req">*</span>
+      <input id="fullName" autocomplete="name" placeholder="e.g. Mrs. Jane Namuli" required>
+    </label>
+    <label class="field">Email address <span class="req">*</span>
+      <input type="email" id="email" autocomplete="email" placeholder="you@example.com" required>
+    </label>
+    <div class="form-row">
+      <label class="field">Phone
+        <input id="phone" autocomplete="tel" placeholder="+2567…">
+      </label>
+      <label class="field">Password <span class="req">*</span>
+        <input type="password" id="password" autocomplete="new-password" placeholder="min 8 chars, letter + number" required>
+      </label>
+    </div>
+    <label class="field">Address
+      <input id="address" placeholder="Home / work address (optional)">
+    </label>
+    <button class="btn block" type="submit" id="reg-btn" style="padding:12px">Register</button>
+  </form>
+  <div class="devlink" id="devlink"><strong>Development mode — no email server.</strong><br>Verify link: <a id="devlink-a" href="#">open here</a></div>
+  <div class="back">Already registered? <a href="login.html">Sign in</a></div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/theme.js"></script>
+<script>
+  document.getElementById('reg-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const err = document.getElementById('err');
+    const ok = document.getElementById('ok');
+    const dev = document.getElementById('devlink');
+    err.style.display = ok.style.display = dev.style.display = 'none';
+    const pw = document.getElementById('password').value;
+    if (pw.length < 8 || !/[A-Za-z]/.test(pw) || !/[0-9]/.test(pw)) {
+      err.textContent = 'Password must be at least 8 characters with a letter and a number.';
+      err.style.display = 'block';
+      return;
+    }
+    const btn = document.getElementById('reg-btn');
+    btn.disabled = true; btn.textContent = 'Registering…';
+    try {
+      const data = await API.post('/api/auth/register', {
+        fullName: document.getElementById('fullName').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        password: pw,
+        address: document.getElementById('address').value.trim(),
+      });
+      ok.textContent = data.message || 'Registration received.';
+      ok.style.display = 'block';
+      document.getElementById('reg-form').style.display = 'none';
+      if (data.devVerifyLink) {
+        document.getElementById('devlink-a').href = data.devVerifyLink;
+        document.getElementById('devlink-a').textContent = data.devVerifyLink;
+        dev.style.display = 'block';
+      }
+    } catch (ex) {
+      err.textContent = ex.message;
+      err.style.display = 'block';
+    }
+    btn.disabled = false; btn.textContent = 'Register';
+  });
+</script>
+</body>
+</html>

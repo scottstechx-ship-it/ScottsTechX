@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DDYYHL61KR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-DDYYHL61KR');
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2956081143917614" crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us | Kalinabiri Secondary School</title>
+  <link rel="icon" type="image/x-icon" href="/assets/images/logo.ico">
+  <link rel="apple-touch-icon" href="/assets/images/logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* VIDEO BACKGROUND */
+    .video-bg { position: fixed; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; }
+    .video-overlay { position: fixed; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(10,31,10,0.75) 0%, rgba(10,31,10,0.85) 50%, rgba(10,31,10,0.9) 100%); }
+
+    /* MOBILE NAV */
+    .mobile-nav { display: flex; position: fixed; top: 0; left: 0; right: 0; z-index: 1002; background: rgba(13,43,26,.98); padding: 12px 20px; justify-content: space-between; align-items: center; }
+    .mobile-nav .nav-logo { display: flex; align-items: center; gap: 10px; }
+    .mobile-nav img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+    .mobile-nav .nav-brand { color: #fff; font-weight: 700; font-size: 0.9rem; }
+    .mobile-nav .nav-brand span { display: block; font-size: 0.65rem; color: #4ade80; }
+    /* Mobile Menu */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    .mobile-menu-btn span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--accent-green);
+      margin: 5px 0;
+      transition: all 0.3s ease;
+    }
+
+    .mobile-menu-btn.active span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .mobile-menu-btn.active span:nth-child(2) { opacity: 0; }
+    .mobile-menu-btn.active span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    @media (max-width: 1000px) {
+      .nav-links {
+        position: fixed;
+        top: 68px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: rgba(10, 31, 10, 0.98);
+        backdrop-filter: blur(20px);
+        padding: 1.5rem;
+        gap: 0.5rem;
+        border-bottom: 1px solid var(--glass-border);
+        transform: translateY(-120%);
+        opacity: 0;
+        transition: all 0.4s ease;
+        pointer-events: none;
+        z-index: 999;
+      }
+      .nav-links.mobile-open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: all;
+      }
+      .nav-links li { width: 100%; text-align: center; }
+      .nav-links a { display: block; padding: 0.75rem; font-size: 1rem; }
+      .navbar { padding: 0.75rem 1.5rem; }
+      .mobile-menu-btn { display: block; }
+      .nav-cta { display: none; }
+    }
+
+
+    .hamburger { display: flex; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 5px; }
+    .hamburger span { display: block; width: 24px; height: 2px; background: #fff; border-radius: 2px; }
+    .mobile-menu { display: none; position: fixed; top: 60px; left: 0; right: 0; background: rgba(13,43,26,.98); z-index: 1001; padding: 16px; }
+    .mobile-menu.active { display: block; }
+    .mobile-menu a { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,.8); text-decoration: none; padding: 12px; border-radius: 8px; font-size: 0.9rem; transition: 0.2s; }
+    .mobile-menu a:hover { background: rgba(74,222,128,.2); }
+    .mobile-menu a.active { background: rgba(74,222,128,.2); color: #4ade80; }
+    .mobile-menu a.apply-btn { background: #0d6b35; color: #fff; font-weight: 600; margin-top: 8px; }
+    .mobile-menu .section-label { font-size: 0.7rem; font-weight: 700; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: 2px; padding: 8px 12px 4px; }
+
+    /* DESKTOP NAV */
+    .desktop-nav { display: flex; position: fixed; top: 0; left: 0; right: 0; z-index: 1002; background: rgba(13,43,26,.97); backdrop-filter: blur(20px); padding: 0 40px; align-items: center; justify-content: space-between; height: 72px; box-shadow: 0 2px 20px rgba(0,0,0,.2); }
+    .desktop-nav .nav-logo { display: flex; align-items: center; gap: 12px; }
+    .desktop-nav img { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; }
+    .desktop-nav .nav-brand { color: #fff; font-weight: 800; font-size: 1.1rem; }
+    .desktop-nav .nav-brand span { display: block; font-size: 0.65rem; color: #4ade80; font-weight: 400; }
+    .desktop-nav .nav-links { display: flex; gap: 4px; }
+    .desktop-nav .nav-links a { color: rgba(255,255,255,.8); text-decoration: none; padding: 8px 16px; border-radius: 8px; font-weight: 500; font-size: 0.9rem; transition: 0.2s; }
+    .desktop-nav .nav-links a:hover { background: rgba(255,255,255,.1); }
+    .desktop-nav .nav-links a.active { color: #4ade80; }
+    .desktop-nav .nav-actions { display: flex; align-items: center; gap: 12px; }
+    .nav-logo-right { display: flex; align-items: center; margin-left: auto; text-decoration: none; transition: transform 0.3s; }
+    .nav-logo-right:hover { transform: scale(1.08); }
+    .btn-portal { background: rgba(255,255,255,.1); color: #fff; border: 1px solid rgba(255,255,255,.3); padding: 8px 20px; border-radius: 50px; font-weight: 600; font-size: 0.85rem; text-decoration: none; transition: 0.2s; }
+    .btn-portal:hover { background: rgba(255,255,255,.2); }
+    .btn-apply { background: linear-gradient(135deg, #0d6b35, #1a8c4a); color: #fff; border: none; padding: 10px 24px; border-radius: 50px; font-weight: 600; font-size: 0.85rem; text-decoration: none; transition: 0.3s; }
+    .btn-apply:hover { transform: translateY(-2px); }
+
+    @media (max-width: 1023px) { .desktop-nav { display: none; } }
+    @media (min-width: 1024px) { .mobile-nav, .mobile-menu { display: none !important; } }
+    @media (max-width: 1023px) { .mobile-nav { display: flex; } }
+
+    /* PAGE BODY */
+    .page-body { position: relative; z-index: 2; padding-top: 72px; }
+    @media (max-width: 1023px) { .page-body { padding-top: 60px; } }
+
+    /* ============================================
+       HERO / PAGE HEADER - DRAMATIC 3D VERSION
+       ============================================ */
+    .page-header {
+      background: linear-gradient(135deg, #0d2b1a 0%, #1a5c35 50%, #0d6b35 100%);
+      padding: 120px 20px 100px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      perspective: 1000px;
+    }
+    .page-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4z'/%3E%3C/g%3E%3C/svg%3E");
+    }
+    .page-header::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at center, rgba(212,175,55,0.08) 0%, transparent 50%);
+      animation: heroPulse 4s ease-in-out infinite;
+    }
+
+    @keyframes heroPulse {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      transform-style: preserve-3d;
+    }
+
+    .hero-3d-layer {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .hero-particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #d4af37;
+      border-radius: 50%;
+      opacity: 0;
+      animation: heroParticleFloat 6s ease-inアウト infinite;
+    }
+
+    @keyframes heroParticleFloat {
+      0% { opacity: 0; transform: translateY(0) scale(0); }
+      20% { opacity: 0.8; }
+      80% { opacity: 0.3; }
+      100% { opacity: 0; transform: translateY(-200px) scale(1); }
+    }
+
+    .page-header h1 {
+      color: #fff;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 7vw, 4.5rem);
+      margin-bottom: 16px;
+      opacity: 0;
+      transform: translateY(60px) perspective(500px) rotateX(-10deg);
+      animation: heroTitleIn 1s cubic-bezier(0.23, 1, 0.32, 1) 0.2s forwards;
+      text-shadow: 0 4px 30px rgba(0,0,0,0.3), 0 0 60px rgba(212,175,55,0.2);
+      position: relative;
+    }
+
+    @keyframes heroTitleIn {
+      to { opacity: 1; transform: translateY(0) perspective(500px) rotateX(0); }
+    }
+
+    .page-header h1::before {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #d4af37, transparent);
+      animation: heroUnderline 1.2s cubic-bezier(0.23, 1, 0.32, 1) 0.8s forwards;
+    }
+
+    @keyframes heroUnderline {
+      to { width: 200px; }
+    }
+
+    .page-header p {
+      color: rgba(255,255,255,0.85);
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      font-weight: 300;
+      letter-spacing: 2px;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: heroSubtitleIn 0.8s cubic-bezier(0.23, 1, 0.32, 1) 0.6s forwards;
+    }
+
+    @keyframes heroSubtitleIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-scroll-indicator {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      animation: fadeInUp 0.6s ease 1.2s forwards;
+    }
+
+    .hero-scroll-indicator span {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .scroll-mouse {
+      width: 24px;
+      height: 38px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 12px;
+      position: relative;
+    }
+
+    .scroll-mouse::after {
+      content: '';
+      position: absolute;
+      top: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 3px;
+      height: 8px;
+      background: #d4af37;
+      border-radius: 2px;
+      animation: scrollDot 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollDot {
+      0%, 100% { opacity: 1; top: 6px; }
+      50% { opacity: 0.3; top: 18px; }
+    }
+
+    @keyframes fadeInUp {
+      to { opacity: 1; }
+    }
+
+    /* ============================================
+       SCROLL REVEAL ANIMATIONS
+       ============================================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(60px);
+      transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1), transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .reveal.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-60px);
+      transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1), transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .reveal-left.revealed {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(60px);
+      transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1), transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .reveal-right.revealed {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .reveal-scale {
+      opacity: 0;
+      transform: scale(0.8);
+      transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1), transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    .reveal-scale.revealed {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* ============================================
+       SECTIONS
+       ============================================ */
+    .section { padding: 80px 40px; max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; }
+    .section-gray { background: #f8faf9; }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      color: #0d2b1a;
+      margin-bottom: 40px;
+      text-align: center;
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+    .section-title span { color: #0d6b35; }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, #0d6b35, #d4af37);
+      border-radius: 2px;
+    }
+
+    /* ============================================
+       CONTACT CARDS - 3D TILT VERSION
+       ============================================ */
+    .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 40px; }
+
+    .contact-card-wrapper {
+      perspective: 1000px;
+    }
+
+    .contact-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 32px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.4s ease;
+      transform-style: preserve-3d;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .contact-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #0d6b35, #d4af37);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+
+    .contact-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(212,175,55,0.1) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .contact-card:hover::before { transform: scaleX(1); }
+    .contact-card:hover::after { opacity: 1; }
+
+    .contact-card:hover {
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 40px rgba(212,175,55,0.1);
+    }
+
+    .contact-icon { font-size: 3rem; margin-bottom: 16px; transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); }
+    .contact-card:hover .contact-icon { transform: scale(1.2) rotateY(10deg); }
+
+    .contact-card h3 { font-size: 1.1rem; color: #0d2b1a; margin-bottom: 12px; transition: color 0.3s ease; }
+    .contact-card:hover h3 { color: #0d6b6b; }
+
+    .contact-card p { color: #64748b; font-size: 0.9rem; line-height: 1.6; margin-bottom: 16px; }
+    .contact-card .link {
+      color: #0d6b35;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: gap 0.3s ease, color 0.3s ease;
+    }
+    .contact-card .link:hover { text-decoration: underline; gap: 12px; color: #d4af37; }
+
+    /* ============================================
+       TWO COLUMN GRID
+       ============================================ */
+    .two-column-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+    @media (max-width: 900px) { .two-column-grid { grid-template-columns: 1fr; } }
+
+    /* ============================================
+       FORM SECTION - 3D ENHANCED
+       ============================================ */
+    .form-section {
+      background: #fff;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+      transform-style: preserve-3d;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #0d6b35, #d4af37, #0d6b35);
+      background-size: 200% 100%;
+      animation: formGradientShift 3s ease infinite;
+    }
+
+    @keyframes formGradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .form-section:hover {
+      box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 0 30px rgba(212,175,55,0.08);
+    }
+
+    .form-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem;
+      color: #0d2b1a;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .form-section h2::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 40px;
+      height: 3px;
+      background: #d4af37;
+      border-radius: 2px;
+    }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
+
+    .form-group { margin-bottom: 18px; position: relative; }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: #2c3e50;
+      margin-bottom: 6px;
+      transition: color 0.3s ease;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 18px;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      font-size: 0.95rem;
+      transition: 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+      font-family: 'Inter', sans-serif;
+      background: #fafbfb;
+    }
+
+    .form-input:focus {
+      border-color: #0d6b35;
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(13,107,53,0.12), 0 8px 20px rgba(13,107,53,0.08);
+      transform: translateY(-2px);
+      background: #fff;
+    }
+
+    .form-input:focus + .input-glow {
+      opacity: 1;
+    }
+
+    textarea.form-input { resize: vertical; min-height: 140px; }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px 36px;
+      background: linear-gradient(135deg, #0d6b35, #1a8c4a);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #d4af37, #f0d060);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .btn-primary span { position: relative; z-index: 1; }
+
+    .btn-primary:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 12px 30px rgba(13,107,53,0.4), 0 0 20px rgba(212,175,55,0.3);
+    }
+
+    .btn-primary:hover::before { opacity: 1; }
+
+    .btn-primary:active {
+      transform: translateY(-2px) scale(0.98);
+    }
+
+    .btn-full { width: 100%; }
+
+    /* ============================================
+       MAP SECTION
+       ============================================ */
+    .map-section {
+      background: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+      transform-style: preserve-3d;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .map-section:hover {
+      box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+    }
+
+    .map-placeholder {
+      background: linear-gradient(135deg, #0d2b1a, #0d6b35);
+      height: 100%;
+      min-height: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .map-placeholder::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(212,175,55,0.1) 0%, transparent 60%);
+      animation: mapGlow 4s ease-in-out infinite;
+    }
+
+    @keyframes mapGlow {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    .map-placeholder span { font-size: 4rem; margin-bottom: 16px; animation: mapPinBounce 2s ease-in-out infinite; }
+
+    @keyframes mapPinBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .map-placeholder p { color: rgba(255,255,255,0.7); font-size: 1rem; text-align: center; }
+
+    /* ============================================
+       DEPARTMENT GRID - ENHANCED
+       ============================================ */
+    .department-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+
+    .department-card-wrapper {
+      perspective: 1000px;
+    }
+
+    .department-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.4s ease;
+      transform-style: preserve-3d;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .department-card::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #0d6b35, #d4af37);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+
+    .department-card:hover::before { transform: scaleX(1); }
+
+    .department-card:hover {
+      transform: translateY(-8px) rotateX(2deg);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.12), 0 0 30px rgba(212,175,55,0.08);
+    }
+
+    .department-icon { font-size: 2.5rem; margin-bottom: 12px; transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); }
+    .department-card:hover .department-icon { transform: scale(1.15) rotateY(15deg); }
+
+    .department-card h3 { font-size: 1rem; color: #0d2b1a; margin-bottom: 8px; transition: color 0.3s ease; }
+    .department-card:hover h3 { color: #0d6b35; }
+
+    .department-desc { font-size: 0.85rem; color: #64748b; margin-bottom: 12px; }
+    .department-contact { font-size: 0.85rem; color: #0d6b35; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; transition: color 0.3s ease; }
+    .department-card:hover .department-contact { color: #d4af37; }
+
+    /* ============================================
+       FOOTER - ENHANCED
+       ============================================ */
+    .footer {
+      background: #0d2b1a;
+      color: rgba(255,255,255,0.6);
+      padding: 60px 40px 30px;
+      position: relative;
+      z-index: 2;
+      overflow: hidden;
+    }
+
+    .footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #0d6b35, #d4af37, #0d6b35);
+      background-size: 200% 100%;
+      animation: footerGradientShift 4s ease infinite;
+    }
+
+    @keyframes footerGradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    .footer-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 40px;
+    }
+
+    .footer-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .footer-logo img { width: 44px; height: 44px; border-radius: 8px; object-fit: cover; transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1); }
+    .footer-logo:hover img { transform: rotateY(180deg) scale(1.1); }
+
+    .footer-logo strong { color: #fff; transition: color 0.3s ease; }
+    .footer-logo:hover strong { color: #d4af37; }
+
+    .footer-logo span { display: block; font-size: 0.75rem; color: rgba(255,255,255,0.4); }
+    .footer h3 { color: #fff; margin-bottom: 14px; font-size: 1rem; position: relative; padding-bottom: 8px; }
+    .footer h3::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 30px;
+      height: 2px;
+      background: #d4af37;
+      border-radius: 1px;
+    }
+    .footer a { color: rgba(255,255,255,0.6); text-decoration: none; display: block; padding: 3px 0; font-size: 0.85rem; transition: color 0.3s ease, padding-left 0.3s ease; }
+    .footer a:hover { color: #4ade80; padding-left: 8px; }
+    .footer-bottom { text-align: center; padding-top: 30px; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 0.85rem; }
+
+    /* ============================================
+       THREE.JS PARTICLES
+       ============================================ */
+    #particle-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
+    @media (max-width: 768px) { .section { padding: 50px 16px; } }
+
+/* Rotating Video Background */
+#video-rotator-bg { position:fixed;inset:0;z-index:-2;width:100%;height:100%; }
+#video-rotator-bg video { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.5s ease; }
+#video-rotator-bg video.active { opacity:1; }
+.video-overlay { position:fixed;inset:0;z-index:-1;background:linear-gradient(135deg,rgba(10,31,10,0.78) 0%,rgba(10,31,10,0.55) 100%); }
+  </style>
+<link rel="stylesheet" href="/assets/css/theme.css">
+  <script src="/assets/js/theme.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/assets/css/site-nav.css">
+<script src="/assets/js/site-nav.js" defer></script>
+</head>
+<body>
+        <video autoplay muted loop playsinline id="kalibz-intro-vid" style="position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;pointer-events:none;">
+            <source src="https://kalibz-international.netlify.app/assets/videos/kalinabiri-kalibz-intro.mp4" type="video/mp4">
+        </video>
+
+<!-- THREE.JS PARTICLE CANVAS -->
+<canvas id="particle-canvas"></canvas>
+
+<!-- VIDEO BACKGROUND -->
+<div id="video-rotator-bg">
+        <video id="video-bg" autoplay muted loop playsinline>
+            <source src="https://kalibz-international.netlify.app/assets/videos/kalinabiri-main.mp4" type="video/mp4">
+        </video>
+    </video>
+    <video muted loop playsinline style="display:none">
+      <source src="https://kalibz-international.netlify.app/assets/videos/7495100438790884614.mp4" type="video/mp4">
+    </video>
+    <video muted loop playsinline style="display:none">
+      <source src="https://kalibz-international.netlify.app/assets/videos/7488282586687704375.mp4" type="video/mp4">
+    </video>
+    <video muted loop playsinline style="display:none">
+      <source src="https://kalibz-international.netlify.app/assets/videos/7487326654935682359.mp4" type="video/mp4">
+    </video>
+    <video muted loop playsinline style="display:none">
+      <source src="https://kalibz-international.netlify.app/assets/videos/7480844887697493254.mp4" type="video/mp4">
+    </video>
+    <video muted loop playsinline style="display:none">
+      <source src="https://kalibz-international.netlify.app/assets/videos/7480556749926255878.mp4" type="video/mp4">
+    </video>
+    <video muted loop playsinline style="display:none">
+      <source src="https://kalibz-international.netlify.app/assets/videos/7480536090764414213.mp4" type="video/mp4">
+    </video>
+    <video muted loop playsinline style="display:none">
+      <source src="https://kalibz-international.netlify.app/assets/videos/7479435141761355013.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="video-overlay"></div>
+<div class="video-overlay"></div>
+
+<!-- DESKTOP NAV -->
+<nav class="desktop-nav">
+  <div class="nav-logo"><img src="../assets/images/logo.jpeg" alt="Kalinabiri SS"><div class="nav-brand">Kalinabiri SS<span>Ntinda, Kampala</span></div></div>
+  <div class="nav-links">
+    <a href='/'>Home</a>
+    <a href='/about/'>About</a>
+    <a href='/academics/'>Academics</a>
+    <a href='/admissions/'>Admissions</a>
+    <a href='/gallery/'>Gallery</a>
+    <a href='/news/'>News</a>
+    <a class='active' href='/contact/'>Contact</a>
+  </div>
+  <div class="nav-actions">
+    <a class='btn-portal' href='/student-portal/'>Student Portal</a>
+    <a class='btn-apply' href='/admissions/'>Apply Now</a>
+  </div>
+  <a href="#" class="nav-logo-right" onclick="return false"><img src="https://kalibz-international.netlify.app/assets/images/logo.jpeg" alt="Kalinabiri SS" style="width:44px;height:44px;border-radius:10px;border:2px solid rgba(74,222,128,0.5);object-fit:cover;"></a>
+</nav>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav">
+  <div class="nav-logo"><img src="../assets/images/logo.jpeg" alt="Kalinabiri SS"><div class="nav-brand">Kalinabiri SS<span>Contact</span></div></div>
+  <button class="hamburger" onclick="document.getElementById('mobileMenu').classList.toggle('active')"><span></span><span></span><span></span></button>
+</div>
+<div class="mobile-menu" id="mobileMenu">
+  <div class="section-label">Navigate</div>
+  <a href='/'>🏠 Home</a>
+  <a href='/about/'>🏫 About</a>
+  <a href='/academics/'>📚 Academics</a>
+  <a href='/admissions/'>🎓 Admissions</a>
+  <a href='/gallery/'>🖼️ Gallery</a>
+  <a href='/news/'>📰 News</a>
+  <a class='active' href='/contact/'>✉️ Contact</a>
+  <div class="section-label">Portals</div>
+  <a href='/student-portal/'>🎓 Student Portal</a>
+  <a class='apply-btn' href='/admissions/#application-form'>📝 Apply Now</a>
+</div>
+
+<div class="page-body">
+
+<!-- PAGE HEADER - DRAMATIC HERO -->
+<header class="page-header">
+  <!-- Floating gold particles -->
+  <div class="hero-particle" style="left:10%;animation-delay:0s"></div>
+  <div class="hero-particle" style="left:25%;animation-delay:1s"></div>
+  <div class="hero-particle" style="left:40%;animation-delay:2s"></div>
+  <div class="hero-particle" style="left:55%;animation-delay:0.5s"></div>
+  <div class="hero-particle" style="left:70%;animation-delay:1.5s"></div>
+  <div class="hero-particle" style="left:85%;animation-delay:2.5s"></div>
+  <div class="hero-particle" style="left:95%;animation-delay:3s"></div>
+
+  <div class="hero-content">
+    <h1>Contact Us</h1>
+    <p>We'd Love to Hear from You</p>
+  </div>
+
+  <div class="hero-scroll-indicator">
+    <span>Scroll</span>
+    <div class="scroll-mouse"></div>
+  </div>
+</header>
+
+<!-- CONTACT CARDS -->
+<section class="section">
+  <div class="contact-grid">
+    <div class="contact-card-wrapper reveal">
+      <div class="contact-card" data-tilt>
+        <div class="contact-icon">📍</div>
+        <h3>Visit Us</h3>
+        <p>Kalinabiri Secondary School<br>Ntinda, Kampala, Uganda</p>
+        <a href="#" class="link">View on Map →</a>
+      </div>
+    </div>
+    <div class="contact-card-wrapper reveal" style="transition-delay:0.1s">
+      <div class="contact-card" data-tilt>
+        <div class="contact-icon">📞</div>
+        <h3>Call Us</h3>
+        <p>+256 700 123 456<br>+256 772 000 000</p>
+        <a href="tel:+256700123456" class="link">Call Now →</a>
+      </div>
+    </div>
+    <div class="contact-card-wrapper reveal" style="transition-delay:0.2s">
+      <div class="contact-card" data-tilt>
+        <div class="contact-icon">✉️</div>
+        <h3>Email Us</h3>
+        <p>info@kalinabiriss.ac.ug<br>admissions@kalinabiriss.ac.ug</p>
+        <a href="mailto:info@kalinabiriss.ac.ug" class="link">Send Email →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT FORM + MAP -->
+<section class="section section-gray">
+  <div class="two-column-grid">
+    <div class="form-section reveal-left">
+      <h2>Send Us a Message</h2>
+      <form onsubmit="event.preventDefault(); alert('Message sent! We will respond soon.');">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input type="text" class="form-input" placeholder="Your first name" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name</label>
+            <input type="text" class="form-input" placeholder="Your last name" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" class="form-input" placeholder="your.email@example.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subject</label>
+          <input type="text" class="form-input" placeholder="How can we help?">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea class="form-input" rows="5" placeholder="Your message here..."></textarea>
+        </div>
+        <button type="submit" class="btn-primary btn-full"><span>Send Message</span></button>
+      </form>
+    </div>
+    <div class="map-section reveal-right">
+      <div class="map-placeholder">
+        <span>📍</span>
+        <p>Kalinabiri Secondary School<br>Ntinda, Kampala, Uganda</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEPARTMENT CONTACTS -->
+<section class="section">
+  <h2 class="section-title reveal">Department Contacts</h2>
+  <div class="department-grid">
+    <div class="department-card-wrapper reveal" style="transition-delay:0s">
+      <div class="department-card" data-tilt>
+        <div class="department-icon">🎓</div>
+        <h3>Admissions</h3>
+        <p class="department-desc">S.1 - S.4 Admissions & Enquiries</p>
+        <p class="department-contact">📧 admissions@kalinabiriss.ac.ug</p>
+        <p class="department-contact">📞 +256 700 123 456</p>
+      </div>
+    </div>
+    <div class="department-card-wrapper reveal" style="transition-delay:0.1s">
+      <div class="department-card" data-tilt>
+        <div class="department-icon">📖</div>
+        <h3>Academics</h3>
+        <p class="department-desc">S.5 - S.6 Academic Affairs</p>
+        <p class="department-contact">📧 academics@kalinabiriss.ac.ug</p>
+        <p class="department-contact">📞 +256 772 000 000</p>
+      </div>
+    </div>
+    <div class="department-card-wrapper reveal" style="transition-delay:0.2s">
+      <div class="department-card" data-tilt>
+        <div class="department-icon">💰</div>
+        <h3>Finance & Fees</h3>
+        <p class="department-desc">Fee Inquiries & Payment Plans</p>
+        <p class="department-contact">📧 finance@kalinabiriss.ac.ug</p>
+        <p class="department-contact">📞 +256 700 000 001</p>
+      </div>
+    </div>
+    <div class="department-card-wrapper reveal" style="transition-delay:0.3s">
+      <div class="department-card" data-tilt>
+        <div class="department-icon">🏠</div>
+        <h3>Boarding</h3>
+        <p class="department-desc">Boarding Facilities & Welfare</p>
+        <p class="department-contact">📧 boarding@kalinabiriss.ac.ug</p>
+        <p class="department-contact">📞 +256 772 000 001</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer reveal">
+  <div class="footer-grid">
+    <div class="footer-logo">
+      <img src="../assets/images/logo.jpeg" alt="Kalinabiri SS">
+      <div><strong>Kalinabiri Secondary School</strong><span>Ntinda, Kampala</span></div>
+    </div>
+    <div>
+      <h3>Quick Links</h3>
+      <a href='/'>Home</a>
+      <a href='/about/'>About</a>
+      <a href='/academics/'>Academics</a>
+      <a href='/admissions/'>Admissions</a>
+      <a href='/gallery/'>Gallery</a>
+      <a href='/news/'>News</a>
+    </div>
+    <div>
+      <h3>Portals</h3>
+      <a href='/student-portal/'>Student Portal</a>
+      <a href="../admin-login/">Admin</a>
+      <a href="../teacher-login/teacher-register.html">Teacher</a>
+    </div>
+    <div>
+      <h3>Contact</h3>
+      <a href="tel:+256700123456">📞 +256 700 123 456</a>
+      <a href="mailto:info@kalinabiriss.ac.ug">✉️ info@kalinabiriss.ac.ug</a>
+    </div>
+  </div>
+  <div class="footer-bottom"><p>© 2026 Kalinabiri Secondary School. All Rights Reserved. | Developed by <strong>ScottsTechX</strong></p></div>
+</footer>
+
+<script>
+// ============================================
+// THREE.JS ADVANCED PARTICLES WITH GOLD ACCENT
+// ============================================
+(function() {
+  var canvas = document.getElementById('particle-canvas');
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 1000);
+  var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+  renderer.setSize(innerWidth, innerHeight);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+
+  // Green particles
+  var greenGeo = new THREE.BufferGeometry();
+  var greenPositions = [];
+  var greenColors = [];
+
+  for (var i = 0; i < 500; i++) {
+    greenPositions.push(
+      (Math.random() - 0.5) * 100,
+      (Math.random() - 0.5) * 100,
+      (Math.random() - 0.5) * 100
+    );
+    greenColors.push(0.05, 0.65, 0.35); // Deep green
+  }
+
+  greenGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(greenPositions), 3));
+  greenGeo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(greenColors), 3));
+
+  var greenMaterial = new THREE.PointsMaterial({
+    size: 0.12,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.7,
+    blending: THREE.AdditiveBlending
+  });
+
+  var greenParticles = new THREE.Points(greenGeo, greenMaterial);
+  scene.add(greenParticles);
+
+  // Gold particles
+  var goldGeo = new THREE.BufferGeometry();
+  var goldPositions = [];
+  var goldColors = [];
+
+  for (var i = 0; i < 150; i++) {
+    goldPositions.push(
+      (Math.random() - 0.5) * 100,
+      (Math.random() - 0.5) * 100,
+      (Math.random() - 0.5) * 100
+    );
+    goldColors.push(0.83, 0.69, 0.22); // Gold #d4af37
+  }
+
+  goldGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(goldPositions), 3));
+  goldGeo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(goldColors), 3));
+
+  var goldMaterial = new THREE.PointsMaterial({
+    size: 0.18,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.85,
+    blending: THREE.AdditiveBlending
+  });
+
+  var goldParticles = new THREE.Points(goldGeo, goldMaterial);
+  scene.add(goldParticles);
+
+  // Floating gold orbs
+  var orbGeo = new THREE.SphereGeometry(0.3, 16, 16);
+  var orbMat = new THREE.MeshBasicMaterial({
+    color: 0xd4af37,
+    transparent: true,
+    opacity: 0.15,
+    blending: THREE.AdditiveBlending
+  });
+
+  for (var i = 0; i < 15; i++) {
+    var orb = new THREE.Mesh(orbGeo, orbMat.clone());
+    orb.position.set(
+      (Math.random() - 0.5) * 80,
+      (Math.random() - 0.5) * 80,
+      (Math.random() - 0.5) * 80
+    );
+    orb.userData = {
+      speed: 0.005 + Math.random() * 0.01,
+      amplitude: 0.5 + Math.random() * 1.5,
+      phase: Math.random() * Math.PI * 2
+    };
+    scene.add(orb);
+  }
+
+  camera.position.z = 35;
+
+  var mouseX = 0, mouseY = 0;
+  var targetX = 0, targetY = 0;
+
+  document.addEventListener('mousemove', function(e) {
+    mouseX = (e.clientX / innerWidth - 0.5) * 2;
+    mouseY = (e.clientY / innerHeight - 0.5) * 2;
+  });
+
+  // Scroll-based camera movement
+  var scrollProgress = 0;
+  window.addEventListener('scroll', function() {
+    scrollProgress = window.scrollY / (document.body.scrollHeight - innerHeight);
+  });
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    var time = Date.now() * 0.0005;
+
+    greenParticles.rotation.y += 0.0003;
+    greenParticles.rotation.x += 0.0001;
+    goldParticles.rotation.y -= 0.0004;
+    goldParticles.rotation.x += 0.0002;
+
+    // Orbit gold orbs
+    scene.children.forEach(function(child) {
+      if (child.userData && child.userData.speed) {
+        child.position.x += Math.sin(time * child.userData.speed * 10 + child.userData.phase) * child.userData.amplitude * 0.02;
+        child.position.y += Math.cos(time * child.userData.speed * 8 + child.userData) * child.userData.amplitude * 0.015;
+      }
+    });
+
+    targetX += (mouseX * 6 - targetX) * 0.02;
+    targetY += (-mouseY * 6 - targetY) * 0.02;
+
+    camera.position.x += (targetX - camera.position.x) * 0.03;
+    camera.position.y += (targetY - camera.position.y) * 0.03;
+
+    // Scroll-based Z movement
+    camera.position.z = 35 + scrollProgress * 10;
+
+    camera.lookAt(scene.position);
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  window.addEventListener('resize', function() {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+})();
+
+// ============================================
+// 3D CARD TILT EFFECT
+// ============================================
+document.querySelectorAll('[data-tilt]').forEach(function(card) {
+  card.addEventListener('mousemove', function(e) {
+    var rect = card.getBoundingClientRect();
+    var x = e.clientX - rect.left;
+    var y = e.clientY - rect.top;
+    var centerX = rect.width / 2;
+    var centerY = rect.height / 2;
+    var rotateX = (y - centerY) / centerY * -8;
+    var rotateY = (x - centerX) / centerX * 8;
+
+    card.style.transform = 'perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg) translateZ(10px)';
+    card.style.setProperty('--mouse-x', (x / rect.width * 100) + '%');
+    card.style.setProperty('--mouse-y', (y / rect.height * 100) + '%');
+  });
+
+  card.addEventListener('mouseleave', function() {
+    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
+  });
+});
+
+// ============================================
+// SCROLL REVEAL ANIMATIONS
+// ============================================
+var revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+
+var revealObserver = new IntersectionObserver(function(entries) {
+  entries.forEach(function(entry) {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('revealed');
+    }
+  });
+}, {
+  threshold: 0.1,
+  rootMargin: '0px 0px -50px 0px'
+});
+
+revealElements.forEach(function(el) {
+  revealObserver.observe(el);
+});
+
+// ============================================
+// SMOOTH SCROLL FOR INTERNAL LINKS
+// ============================================
+document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+  anchor.addEventListener('click', function(e) {
+    e.preventDefault();
+    var target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
+<script>
+(function() {
+  var rotator = document.getElementById('video-rotator-bg');
+  if (!rotator) return;
+  var videos = rotator.querySelectorAll('video');
+  var current = 0;
+  if (videos[0]) {
+    videos[0].style.opacity = '';
+    videos[0].classList.add('active');
+    videos[0].play().catch(function(){});
+  }
+  videos.forEach(function(v, i) { if (i !== 0) v.style.opacity = '0'; });
+  setInterval(function() {
+    videos[current].classList.remove('active');
+    videos[current].style.opacity = '0';
+    current = (current + 1) % videos.length;
+    videos[current].classList.add('active');
+    videos[current].style.opacity = '1';
+    videos[current].play().catch(function(){});
+  }, 6000);
+})();
+
+    // Mobile Menu Toggle
+    function toggleMobileMenu() {
+      document.getElementById('navLinks').classList.toggle('mobile-open');
+      document.getElementById('mobileBtn').classList.toggle('active');
+    }
+
+</script>
+</body>
+</html>

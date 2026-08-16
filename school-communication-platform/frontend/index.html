@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DDYYHL61KR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-DDYYHL61KR');
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2956081143917614" crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalinabiri Secondary School - Ntinda, Kampala</title>
+  <link rel="icon" type="image/x-icon" href="/assets/images/logo.ico">
+  <link rel="apple-touch-icon" href="/assets/images/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --ocean-deep: #0c1829;
+            --ocean-dark: #12233d;
+            --ocean-mid: #1a3a5c;
+            --ocean-light: #2d5a87;
+            --teal: #0ea5e9;
+            --teal-bright: #38bdf8;
+            --teal-dim: rgba(14,165,233,0.15);
+            --gold: #f59e0b;
+            --gold-dim: #d97706;
+            --glass-bg: rgba(26,58,92,0.35);
+            --glass-border: rgba(14,165,233,0.2);
+            --text-light: #e8f4f8;
+            --text-muted: #7eb8c9;
+            --text-dim: #4a8aa8;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--ocean-deep);
+            color: var(--text-light);
+            overflow-x: hidden;
+        }
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+
+        /* Video Background */
+        .video-bg {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; z-index: -2; overflow: hidden;
+        }
+        .video-bg video { width: 100%; height: 100%; object-fit: cover; }
+        .video-overlay {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(12,24,41,0.75) 0%, rgba(26,58,92,0.65) 50%, rgba(12,24,41,0.8) 100%);
+            z-index: -1;
+        }
+        #three-canvas {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; z-index: 0; pointer-events: auto;
+        }
+
+        /* Toast Notifications */
+        .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+    /* Mobile Menu */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    .mobile-menu-btn span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--accent-green);
+      margin: 5px 0;
+      transition: all 0.3s ease;
+    }
+
+    .mobile-menu-btn.active span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    .mobile-menu-btn.active span:nth-child(2) { opacity: 0; }
+    .mobile-menu-btn.active span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    @media (max-width: 1000px) {
+      .nav-links {
+        position: fixed;
+        top: 68px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: rgba(10, 31, 10, 0.98);
+        backdrop-filter: blur(20px);
+        padding: 1.5rem;
+        gap: 0.5rem;
+        border-bottom: 1px solid var(--glass-border);
+        transform: translateY(-120%);
+        opacity: 0;
+        transition: all 0.4s ease;
+        pointer-events: none;
+        z-index: 999;
+      }
+      .nav-links.mobile-open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: all;
+      }
+      .nav-links li { width: 100%; text-align: center; }
+      .nav-links a { display: block; padding: 0.75rem; font-size: 1rem; }
+      .navbar { padding: 0.75rem 1.5rem; }
+      .mobile-menu-btn { display: block; }
+      .nav-cta { display: none; }
+    }
+
+
+        .toast {
+            padding: 14px 22px; border-radius: 12px; font-size: 14px; font-weight: 500;
+            display: flex; align-items: center; gap: 10px;
+            animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid transparent;
+            min-width: 260px; max-width: 380px;
+        }
+        .toast.success { background: rgba(16,185,129,0.85); color: #fff; border-color: rgba(74,222,128,0.4); }
+        .toast.error { background: rgba(239,68,68,0.85); color: #fff; border-color: rgba(248,113,113,0.4); }
+        .toast.info { background: rgba(14,165,233,0.85); color: #fff; border-color: rgba(56,189,248,0.4); }
+        @keyframes toastIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes toastOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100px); opacity: 0; } }
+
+        /* ═══════════════════════════════════════
+           3D ANIMATED NAVBAR
+        ═══════════════════════════════════════ */
+        .navbar-3d {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            height: 72px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 48px;
+            background: linear-gradient(135deg, rgba(12,24,41,0.85) 0%, rgba(26,58,92,0.75) 100%);
+            backdrop-filter: blur(24px) saturate(180%);
+            border-bottom: 1px solid rgba(14,165,233,0.15);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        .navbar-3d::before {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(14,165,233,0.5), transparent);
+        }
+        .navbar-3d.scrolled {
+            padding: 0 48px;
+            background: linear-gradient(135deg, rgba(12,24,41,0.95) 0%, rgba(26,58,92,0.9) 100%);
+            box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(14,165,233,0.1);
+            height: 64px;
+        }
+
+        /* Logo */
+        .nav-logo-3d {
+            display: flex; align-items: center; gap: 14px;
+            transform-style: preserve-3d;
+            transition: transform 0.4s;
+        }
+        .nav-logo-3d:hover { transform: translateZ(10px) scale(1.02); }
+        .logo-icon-3d {
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, var(--teal), #0284c7);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: #fff;
+            box-shadow: 0 4px 16px rgba(14,165,233,0.4), 0 0 0 1px rgba(56,189,248,0.3) inset;
+            transform: translateZ(20px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative; overflow: hidden;
+        }
+        .logo-icon-3d::after {
+            content: '';
+            position: absolute; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%);
+            animation: logoShine 3s ease-in-out infinite;
+        }
+        @keyframes logoShine {
+            0%, 100% { transform: translateX(-100%) rotate(45deg); }
+            50% { transform: translateX(100%) rotate(45deg); }
+        }
+        .nav-logo-3d:hover .logo-icon-3d {
+            box-shadow: 0 8px 30px rgba(14,165,233,0.6), 0 0 0 2px rgba(56,189,248,0.5) inset;
+            transform: translateZ(30px) rotateY(5deg);
+        }
+        .logo-text-3d {
+            transform: translateZ(15px);
+            transition: transform 0.4s;
+        }
+        .logo-text-3d .brand-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px; font-weight: 700;
+            color: var(--text-light);
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .logo-text-3d .brand-sub {
+            font-size: 10px; color: var(--teal-bright);
+            letter-spacing: 2px; text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        /* 3D Nav Links */
+        .nav-links-3d {
+            display: flex; align-items: center; gap: 4px;
+            list-style: none;
+            transform-style: preserve-3d;
+        }
+        .nav-link-item {
+            position: relative;
+            transform-style: preserve-3d;
+        }
+        .nav-link-item a {
+            display: block;
+            padding: 10px 20px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 14px; font-weight: 500;
+            letter-spacing: 0.3px;
+            border-radius: 10px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            transform: translateZ(0);
+        }
+        .nav-link-item a .link-text { position: relative; z-index: 1; }
+        .nav-link-item a .link-icon {
+            display: inline-flex; margin-right: 8px;
+            transition: transform 0.3s;
+        }
+        .nav-link-item a::before {
+            content: '';
+            position: absolute; inset: 0;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--teal), #0284c7);
+            opacity: 0;
+            transform: translateZ(-5px) scale(0.8);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 20px rgba(14,165,233,0.3);
+        }
+        .nav-link-item a:hover::before,
+        .nav-link-item a.active::before {
+            opacity: 1;
+            transform: translateZ(0) scale(1);
+        }
+        .nav-link-item a:hover,
+        .nav-link-item a.active {
+            color: #fff;
+            transform: translateZ(15px);
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .nav-link-item a:hover .link-icon {
+            transform: translateY(-2px) scale(1.1);
+        }
+        .nav-link-item a.active {
+            font-weight: 700;
+        }
+        /* Hover underline bar */
+        .nav-link-item a .hover-bar {
+            position: absolute;
+            bottom: 4px; left: 50%; right: 50%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--gold), var(--gold-dim));
+            border-radius: 2px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateZ(5px);
+        }
+        .nav-link-item a:hover .hover-bar {
+            left: 20%; right: 20%;
+        }
+
+        /* CTA Button */
+        .nav-cta-3d {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, var(--teal), #0284c7);
+            color: #fff;
+            font-weight: 700; font-size: 13px;
+            text-decoration: none;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transform: translateZ(20px);
+            box-shadow: 0 4px 20px rgba(14,165,233,0.3), 0 0 0 1px rgba(56,189,248,0.2) inset;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative; overflow: hidden;
+        }
+        .nav-cta-3d::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .nav-cta-3d:hover::before { opacity: 1; }
+        .nav-cta-3d:hover {
+            transform: translateZ(30px) translateY(-3px);
+            box-shadow: 0 12px 40px rgba(14,165,233,0.5), 0 0 0 1px rgba(56,189,248,0.4) inset;
+        }
+        .nav-cta-3d:active {
+            transform: translateZ(15px) translateY(-1px);
+        }
+
+        /* Mobile Toggle */
+        .mobile-toggle-3d {
+            display: none;
+            font-size: 24px;
+            color: var(--teal-bright);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.3s;
+            transform: translateZ(10px);
+        }
+        .mobile-toggle-3d:hover { background: rgba(14,165,233,0.15); }
+
+        /* Mobile Nav */
+        .mobile-nav-menu {
+            display: none;
+            position: fixed;
+            top: 72px; left: 0; right: 0;
+            background: linear-gradient(180deg, rgba(12,24,41,0.98) 0%, rgba(26,58,92,0.98) 100%);
+            backdrop-filter: blur(20px);
+            z-index: 999;
+            padding: 20px 16px;
+            border-bottom: 1px solid rgba(14,165,233,0.15);
+            transform-style: preserve-3d;
+            max-height: calc(100vh - 72px);
+            overflow-y: auto;
+        }
+        .mobile-nav-menu.open { display: block; animation: slideDown 0.3s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .mobile-nav-menu a {
+            display: flex; align-items: center; gap: 12px;
+            color: var(--text-muted); text-decoration: none;
+            padding: 14px 16px; border-radius: 12px; font-weight: 500;
+            transition: all 0.3s;
+            margin-bottom: 4px;
+        }
+        .mobile-nav-menu a:hover, .mobile-nav-menu a.active {
+            background: rgba(14,165,233,0.15); color: var(--teal-bright);
+        }
+        .mobile-nav-menu a i { font-size: 18px; width: 24px; text-align: center; }
+        .mobile-nav-menu .mobile-cta {
+            margin-top: 16px;
+            border-top: 1px solid rgba(14,165,233,0.1);
+            padding-top: 16px;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .mobile-nav-menu .mobile-cta a {
+            font-weight: 700; text-align: center; justify-content: center;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            text-align: center;
+            padding: 120px 24px 80px;
+            z-index: 1;
+        }
+        .hero-content { max-width: 800px; }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(14,165,233,0.1);
+            border: 1px solid rgba(14,165,233,0.3);
+            padding: 8px 20px; border-radius: 50px;
+            font-size: 13px; font-weight: 600;
+            color: var(--teal-bright);
+            text-transform: uppercase; letter-spacing: 2px;
+            margin-bottom: 28px;
+            backdrop-filter: blur(10px);
+        }
+        .hero h1 {
+            font-size: clamp(42px, 6vw, 78px);
+            font-weight: 700;
+            color: var(--text-light);
+            line-height: 1.1; margin-bottom: 22px;
+        }
+        .hero h1 span { color: var(--teal-bright); }
+        .hero p {
+            font-size: clamp(16px, 2vw, 19px);
+            color: var(--text-muted);
+            line-height: 1.7; margin-bottom: 38px;
+            max-width: 600px; margin-left: auto; margin-right: auto;
+        }
+        .hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+        .btn-primary {
+            padding: 15px 36px;
+            background: linear-gradient(135deg, var(--teal), #0284c7);
+            color: #fff; font-weight: 700; font-size: 14px;
+            text-decoration: none; border-radius: 12px;
+            text-transform: uppercase; letter-spacing: 1px;
+            display: inline-flex; align-items: center; gap: 9px;
+            transition: all 0.3s; border: none; cursor: pointer;
+            box-shadow: 0 4px 20px rgba(14,165,233,0.3);
+        }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(14,165,233,0.4); }
+        .btn-gold {
+            padding: 15px 36px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+            color: var(--ocean-deep); font-weight: 700; font-size: 14px;
+            text-decoration: none; border-radius: 12px;
+            text-transform: uppercase; letter-spacing: 1px;
+            display: inline-flex; align-items: center; gap: 9px;
+            transition: all 0.3s; border: none; cursor: pointer;
+            box-shadow: 0 4px 20px rgba(245,158,11,0.3);
+        }
+        .btn-gold:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(245,158,11,0.4); }
+        .btn-outline {
+            padding: 15px 36px;
+            background: rgba(14,165,233,0.08);
+            color: var(--teal-bright); font-weight: 700; font-size: 14px;
+            text-decoration: none; border-radius: 12px;
+            text-transform: uppercase; letter-spacing: 1px;
+            display: inline-flex; align-items: center; gap: 9px;
+            transition: all 0.3s;
+            border: 1px solid rgba(14,165,233,0.3); cursor: pointer;
+        }
+        .btn-outline:hover { background: rgba(14,165,233,0.15); transform: translateY(-3px); }
+
+        .scroll-indicator {
+            position: absolute; bottom: 36px; left: 50%;
+            transform: translateX(-50%);
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            color: var(--text-muted); font-size: 12px;
+            letter-spacing: 2px;
+            animation: bounce 2s infinite;
+        }
+        .scroll-indicator i { font-size: 20px; color: var(--gold); }
+        @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); } 40% { transform: translateX(-50%) translateY(-10px); } 60% { transform: translateX(-50%) translateY(-5px); } }
+
+        /* Stats Strip */
+        .stats-strip { padding: 64px 24px; position: relative; z-index: 1; }
+        .stats-grid {
+            max-width: 1100px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+        }
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px; padding: 36px 24px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-style: preserve-3d;
+        }
+        .stat-card:hover {
+            transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateZ(20px);
+            border-color: rgba(14,165,233,0.5);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 30px rgba(14,165,233,0.1);
+        }
+        .stat-card .stat-icon { font-size: 36px; color: var(--gold); margin-bottom: 14px; }
+        .stat-card .stat-number { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 700; color: var(--text-light); margin-bottom: 6px; }
+        .stat-card .stat-label { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; }
+
+        /* Portals Section */
+        .portals-section { padding: 80px 24px 100px; position: relative; z-index: 1; }
+        .section-header { text-align: center; margin-bottom: 60px; }
+        .section-header .section-tag {
+            display: inline-block; font-size: 12px; font-weight: 700;
+            color: var(--teal-bright); text-transform: uppercase;
+            letter-spacing: 3px; margin-bottom: 14px;
+        }
+        .section-header h2 { font-size: clamp(32px, 4vw, 48px); color: var(--text-light); margin-bottom: 16px; }
+        .section-header p { font-size: 16px; color: var(--text-muted); max-width: 550px; margin: 0 auto; line-height: 1.6; }
+        .portals-grid {
+            max-width: 1100px; margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+        }
+        .portal-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 40px 28px;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            cursor: pointer; text-decoration: none; display: block;
+            position: relative; overflow: hidden;
+        }
+        .portal-card::before {
+            content: '';
+            position: absolute; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(14,165,233,0.06) 0%, transparent 60%);
+            opacity: 0; transition: opacity 0.4s;
+        }
+        .portal-card:hover::before { opacity: 1; }
+        .portal-card:hover {
+            transform: perspective(1000px) rotateX(5deg) rotateY(-5deg) translateZ(15px);
+            border-color: var(--teal);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.4), 0 0 40px rgba(14,165,233,0.1);
+        }
+        .portal-card .card-icon {
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, var(--ocean-mid), var(--ocean-light));
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 22px; font-size: 32px; color: var(--gold);
+            transition: all 0.4s;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .portal-card:hover .card-icon {
+            background: linear-gradient(135deg, var(--teal), #0284c7);
+            color: #fff; transform: scale(1.1) translateZ(10px);
+            box-shadow: 0 8px 30px rgba(14,165,233,0.4);
+        }
+        .portal-card h3 { font-size: 20px; color: var(--text-light); margin-bottom: 10px; }
+        .portal-card p { font-size: 14px; color: var(--text-muted); line-height: 1.5; margin-bottom: 22px; }
+        .portal-card .card-link {
+            font-size: 13px; font-weight: 700;
+            color: var(--teal-bright); text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: inline-flex; align-items: center; gap: 8px;
+            transition: all 0.3s;
+        }
+        .portal-card:hover .card-link { gap: 14px; color: var(--gold); }
+
+/* Gallery Section */
+        .gallery-section { padding: 80px 24px 100px; position: relative; z-index: 1; }
+        .gallery-grid {
+            max-width: 1100px; margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .gallery-item {
+            position: relative; border-radius: 16px; overflow: hidden;
+            aspect-ratio: 16/10;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: all 0.4s;
+        }
+        .gallery-item:hover {
+            transform: translateZ(20px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            border-color: var(--teal);
+        }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .gallery-item:hover img { transform: scale(1.08); }
+        .gallery-item .gallery-overlay {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(12,24,41,0.9));
+            transform: translateY(100%); transition: transform 0.4s;
+        }
+        .gallery-item:hover .gallery-overlay { transform: translateY(0); }
+        .gallery-overlay h4 { font-size: 16px; color: var(--text-light); margin-bottom: 4px; }
+        .gallery-overlay p { font-size: 13px; color: var(--text-muted); }
+
+        /* Contact Strip */
+        .contact-strip {
+            padding: 60px 24px; position: relative; z-index: 1;
+            background: rgba(12,24,41,0.5);
+            border-top: 1px solid rgba(14,165,233,0.1);
+            border-bottom: 1px solid rgba(14,165,233,0.1);
+        }
+        .contact-grid {
+            max-width: 1100px; margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 40px;
+        }
+        .contact-item { display: flex; align-items: flex-start; gap: 16px; }
+        .contact-item .contact-icon {
+            width: 50px; height: 50px;
+            background: rgba(245,158,11,0.1);
+            border: 1px solid rgba(245,158,11,0.2);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: var(--gold); flex-shrink: 0;
+        }
+        .contact-item h4 {
+            font-size: 14px; font-family: 'Inter', sans-serif;
+            font-weight: 700; color: var(--text-light);
+            margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .contact-item p { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
+
+        /* Footer */
+        .footer { padding: 60px 24px 30px; position: relative; z-index: 1; background: rgba(12,24,41,0.5); }
+        .footer-grid {
+            max-width: 1100px; margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 48px; margin-bottom: 48px;
+        }
+        .footer-brand .footer-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+        .footer-logo i { font-size: 28px; color: var(--teal-bright); }
+        .footer-logo span { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--text-light); }
+        .footer-brand p { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; }
+        .footer-social { display: flex; gap: 12px; }
+        .footer-social a {
+            width: 40px; height: 40px;
+            background: rgba(14,165,233,0.08);
+            border: 1px solid rgba(14,165,233,0.15);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-muted); font-size: 16px;
+            transition: all 0.3s;
+        }
+        .footer-social a:hover { background: var(--teal); color: #fff; border-color: var(--teal); }
+        .footer-col h4 {
+            font-size: 13px; font-weight: 700; color: var(--text-light);
+            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px;
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 10px; }
+        .footer-col ul li a { color: var(--text-muted); text-decoration: none; font-size: 14px; transition: color 0.3s; }
+        .footer-col ul li a:hover { color: var(--teal-bright); }
+        .footer-bottom {
+            border-top: 1px solid rgba(14,165,233,0.08);
+            padding-top: 24px; text-align: center;
+            font-size: 13px; color: var(--text-muted);
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 12px;
+        }
+        .footer-bottom a { color: var(--gold); text-decoration: none; }
+
+        /* Scroll Reveal */
+        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar-3d { padding: 0 20px; }
+            .nav-links-3d { display: none; }
+            .nav-cta-3d { display: none; }
+            .mobile-toggle-3d { display: flex; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+            .footer-bottom { justify-content: center; text-align: center; }
+            .hero { padding: 100px 20px 60px; }
+            .hero h1 { font-size: clamp(36px, 8vw, 58px); }
+            .hero p { font-size: clamp(15px, 3vw, 18px); }
+            .hero-actions { flex-direction: column; align-items: center; gap: 12px; }
+            .hero-actions a { width: 100%; max-width: 300px; justify-content: center; }
+            .portals-grid { grid-template-columns: 1fr; max-width: 400px; }
+            .portal-card { padding: 32px 24px; }
+            .gallery-grid { grid-template-columns: 1fr; max-width: 400px; }
+            .gallery-item { aspect-ratio: 4/3; }
+            .academics-grid { grid-template-columns: 1fr; max-width: 400px; }
+            .contact-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr; max-width: 300px; }
+            .footer-grid { grid-template-columns: 1fr; max-width: 300px; }
+            .hero { padding: 90px 16px 50px; }
+            .hero h1 { font-size: clamp(32px, 9vw, 48px); }
+            .section-header h2 { font-size: clamp(28px, 7vw, 40px); }
+            .btn-primary, .btn-gold, .btn-outline { padding: 14px 28px; font-size: 13px; }
+            .nav-logo-3d .brand-name { font-size: 16px; }
+            .nav-logo-3d .brand-sub { font-size: 11px; }
+            .logo-text-3d { gap: 2px; }
+        }
+    </style>
+<link rel="stylesheet" href="assets/css/site-ux.css">
+<link rel="stylesheet" href="/assets/css/site-nav.css">
+<script src="/assets/js/site-nav.js" defer></script>
+</head>
+<body>
+    <!-- Video Background — kalinabiri-kalibz-intro.mp4 from the Netlify-hosted
+         production assets (the only mirror that's publicly reachable). preload="metadata"
+         so the page doesn't fetch the full video up-front. poster= provides an
+         instant frame for slow connections. The CSS .video-bg already covers object-fit. -->
+        <div class="video-bg">
+            <video id="heroVideo" autoplay muted loop playsinline preload="metadata" poster="/assets/images/logo.jpeg">
+                <source src="https://kalibz-international.netlify.app/assets/videos/kalinabiri-kalibz-intro.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="video-overlay"></div>
+    <canvas id="three-canvas"></canvas>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- 3D Animated Navigation -->
+        <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-star"></i>
+                Excellence in Education Since 1995
+            </div>
+                        <h1>Kalinabiri <span>Secondary School</span></h1>
+                        <p>Nurturing minds, building character, and shaping leaders in the heart of Ntinda, Kampala, Uganda.</p>
+                        <div class="hero-actions">
+                                    <a class='btn-primary' href='platform/login-student.html'>
+                                        <i class="fas fa-user-graduate"></i> Student Portal
+                                    </a>
+                                    <a href="/admissions/" class="btn-gold">
+                                        <i class="fas fa-pen-to-square"></i> Apply Now
+                                    </a>
+                                    <a href="platform/login-teacher.html" class="btn-outline">
+                                        <i class="fas fa-chalkboard-teacher"></i> Teacher Portal
+                                    </a>
+                                </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>Scroll Down</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- Stats Strip -->
+        <section class="stats-strip">
+            <div class="stats-grid">
+                <div class="stat-card reveal">
+                    <i class="fas fa-users stat-icon"></i>
+                    <div class="stat-number" data-count="850">0</div>
+                    <div class="stat-label">Students</div>
+                </div>
+                <div class="stat-card reveal">
+                    <i class="fas fa-chalkboard-teacher stat-icon"></i>
+                    <div class="stat-number" data-count="45">0</div>
+                    <div class="stat-label">Qualified Teachers</div>
+                </div>
+                <div class="stat-card reveal">
+                    <i class="fas fa-book-open stat-icon"></i>
+                    <div class="stat-number" data-count="18">0</div>
+                    <div class="stat-label">O &amp; A-Level Subjects</div>
+                </div>
+                <div class="stat-card reveal">
+                    <i class="fas fa-award stat-icon"></i>
+                    <div class="stat-number" data-count="30">0</div>
+                    <div class="stat-label">Years of Excellence</div>
+                </div>
+            </div>
+        </section>
+
+    <!-- Portals Section -->
+    <section class="portals-section" id="portals">
+        <div class="section-header">
+            <div class="section-tag">Our Portals</div>
+            <h2>Access Your Dashboard</h2>
+            <p>Choose your portal to access your personalized dashboard, results, attendance, and more.</p>
+        </div>
+        <div class="portals-grid">
+            <a href="platform/login-student.html" class="portal-card reveal">
+                <div class="card-icon"><i class="fas fa-user-graduate"></i></div>
+                <h3>Student Portal</h3>
+                <p>View classes, attendance, announcements, message teachers, and access the Communication Center.</p>
+                <div class="card-link">Enter Portal <i class="fas fa-arrow-right"></i></div>
+            </a>
+            <a href="platform/login-teacher.html" class="portal-card reveal">
+                <div class="card-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                <h3>Teacher Portal</h3>
+                <p>Manage classes, take attendance, post announcements, and message students, parents, and admins.</p>
+                <div class="card-link">Enter Portal <i class="fas fa-arrow-right"></i></div>
+            </a>
+            <a href="platform/login-parent.html" class="portal-card reveal">
+                <div class="card-icon"><i class="fas fa-users"></i></div>
+                <h3>Parent Portal</h3>
+                <p>Track your child's attendance, classes, and teachers. Message them directly via the Communication Center.</p>
+                <div class="card-link">Enter Portal <i class="fas fa-arrow-right"></i></div>
+            </a>
+            <a class='portal-card reveal' href='/gallery/'>
+                <div class="card-icon"><i class="fas fa-images"></i></div>
+                <h3>School Gallery</h3>
+                <p>Explore moments from our school events, sports days, concerts, graduation, and more.</p>
+                <div class="card-link">View Gallery <i class="fas fa-arrow-right"></i></div>
+            </a>
+        </div>
+        <div style="text-align:center; margin-top: 32px;">
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;"><i class="fas fa-lock"></i> Administrative Access</p>
+            <div style="display:inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
+                <a href="platform/login-admin.html" class="btn btn-primary" style="background: var(--accent); color: var(--primary); padding: 12px 24px; border-radius: 8px; font-weight: 600; text-decoration: none;">
+                    <i class="fas fa-school"></i> School Admin Dashboard
+                </a>
+                <a href="platform/login-super-admin.html" class="btn btn-secondary" style="background: rgba(255,255,255,0.1); color: var(--text); padding: 12px 24px; border-radius: 8px; font-weight: 600; text-decoration: none; border: 1px solid var(--border);">
+                    <i class="fas fa-shield-halved"></i> Super Admin Dashboard
+                </a>
+            </div>
+        </div>
+    </section>
+
+<!-- A-Level Subject Combinations (inlined) -->
+    <section class="academics-section" id="combinations">
+        <div class="section-header">
+            <div class="section-tag">UACE Curriculum 2026</div>
+            <h2>A-Level Subject Combinations</h2>
+            <p>Choose your path to academic excellence — Sciences or Arts &amp; Humanities.</p>
+        </div>
+        <div class="track-tabs" style="display:flex;justify-content:center;gap:12px;margin-bottom:32px;flex-wrap:wrap">
+            <div class="track-tab active" data-track="home-science" style="padding:12px 28px;border-radius:50px;cursor:pointer;font-weight:600;font-size:.9rem;background:rgba(14,165,233,0.22);border:1px solid rgba(56,189,248,0.5);color:var(--teal-bright);transition:.3s"><i class="fas fa-flask"></i> Science Track</div>
+            <div class="track-tab" data-track="home-arts" style="padding:12px 28px;border-radius:50px;cursor:pointer;font-weight:600;font-size:.9rem;background:rgba(245,158,11,0.10);border:1px solid rgba(245,158,11,0.30);color:rgba(232,244,248,0.75);transition:.3s"><i class="fas fa-palette"></i> Arts &amp; Humanities</div>
+        </div>
+        <div class="combos-section active" id="home-science">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;max-width:1200px;margin:0 auto;padding:0 20px">
+                <div class="combo-card" style="background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(14,165,233,0.03));border:1px solid rgba(56,189,248,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0ea5e9,#38bdf8)"></div>
+                    <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:var(--teal-bright)">PCM / ICT</h3>
+                    <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">Physics · Chemistry · Mathematics · ICT</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:var(--teal-bright)"></i> Engineering · Software · Architecture</div>
+                </div>
+                <div class="combo-card" style="background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(14,165,233,0.03));border:1px solid rgba(56,189,248,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0ea5e9,#38bdf8)"></div>
+                    <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:var(--teal-bright)">BCM / Sub-Math</h3>
+                    <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">Biology · Chemistry · Mathematics · Sub-Math</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:var(--teal-bright)"></i> Medicine · Pharmacy · Nursing</div>
+                </div>
+                <div class="combo-card" style="background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(14,165,233,0.03));border:1px solid rgba(56,189,248,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0ea5e9,#38bdf8)"></div>
+                    <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:var(--teal-bright)">PCB / Sub-Math</h3>
+                    <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">Physics · Chemistry · Biology · Sub-Math</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:var(--teal-bright)"></i> Medicine · Veterinary · Public Health</div>
+                </div>
+                <div class="combo-card" style="background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(14,165,233,0.03));border:1px solid rgba(56,189,248,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0ea5e9,#38bdf8)"></div>
+                    <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:var(--teal-bright)">MEG / ICT</h3>
+                    <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">Mathematics · Economics · Geography · ICT</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:var(--teal-bright)"></i> Actuarial · Banking · GIS</div>
+                </div>
+                <div class="combo-card" style="background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(14,165,233,0.03));border:1px solid rgba(56,189,248,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0ea5e9,#38bdf8)"></div>
+                    <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:var(--teal-bright)">PEM / ICT</h3>
+                    <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">Physics · Economics · Mathematics · ICT</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:var(--teal-bright)"></i> Quantitative Finance · Statistics</div>
+                </div>
+                <div class="combo-card" style="background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(14,165,233,0.03));border:1px solid rgba(56,189,248,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0ea5e9,#38bdf8)"></div>
+                    <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:var(--teal-bright)">BCP / Sub-Math</h3>
+                    <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">Biology · Chemistry · Physics · Sub-Math</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:var(--teal-bright)"></i> Engineering · Agriculture · Env. Sci.</div>
+                </div>
+            </div>
+        </div>
+        <div class="combos-section" id="home-arts" style="display:none">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;max-width:1200px;margin:0 auto;padding:0 20px">
+                <div class="combo-card" style="background:linear-gradient(135deg,rgba(245,158,11,0.12),rgba(245,158,11,0.03));border:1px solid rgba(245,158,11,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div>
+                    <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:#fbbf24">HEG / ICT</h3>
+                    <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">History · Economics · Geography · ICT</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:#fbbf24"></i> Law · Public Admin · Diplomatic Service</div>
+                </div>
+                <div class="combo-card" style="background:linear-gradient(135deg,rgba(245,158,11,0.12),rgba(245,158,11,0.03));border:1px solid rgba(245,158,11,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div>
+                    <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:#fbbf24">DEG / Art</h3>
+                    <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">Divinity · Economics · Geography · Fine Art</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:#fbbf24"></i> Theology · Design · Heritage Studies</div>
+                </div>
+                <div class="combo-card" style="background:linear-gradient(135deg,rgba(245,158,11,0.12),rgba(245,158,11,0.03));border:1px solid rgba(245,158,11,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div>
+                    <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:#fbbf24">HED / ICT</h3>
+                    <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">History · Economics · Divinity · ICT</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:#fbbf24"></i> Law · Public Policy · Archiving</div>
+                </div>
+                <div class="combo-card" style="background:linear-gradient(135deg,rgba(245,158,11,0.12),rgba(245,158,11,0.03));border:1px solid rgba(245,158,11,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div>
+                    <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:#fbbf24">LEG / Sub-Math</h3>
+                    <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">Literature · Economics · Geography · Sub-Math</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:#fbbf24"></i> Law · Publishing · Media</div>
+                </div>
+                <div class="combo-card" style="background:linear-gradient(135deg,rgba(245,158,11,0.12),rgba(245,158,11,0.03));border:1px solid rgba(245,158,11,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div>
+                    <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:#fbbf24">HEL / Sub-Math</h3>
+                    <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">History · Economics · Literature · Sub-Math</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:#fbbf24"></i> Law · Journalism · Public History</div>
+                </div>
+                <div class="combo-card" style="background:linear-gradient(135deg,rgba(245,158,11,0.12),rgba(245,158,11,0.03));border:1px solid rgba(245,158,11,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
+                    <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div>
+                    <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:#fbbf24">DIV / Luganda / Lit</h3>
+                    <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">Divinity · Luganda · Literature</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:#fbbf24"></i> Cultural Studies · Translation · Education</div>
+                </div>
+            </div>
+        </div>
+        <div style="text-align:center;margin-top:36px">
+            <a href="/admissions/" class="btn-primary"><i class="fas fa-pen-to-square"></i> Apply for Admission →</a>
+        </div>
+    </section>
+
+<!-- Faculty / HODs Strip -->
+    <section class="hods-strip-section" id="hods-strip" style="padding:80px 40px;background:linear-gradient(135deg,rgba(14,165,233,0.08),rgba(56,189,248,0.02))">
+        <div class="section-header" style="text-align:center;margin-bottom:40px">
+            <div class="section-tag" style="display:inline-block;background:rgba(14,165,233,0.15);border:1px solid rgba(56,189,248,0.4);color:var(--teal-bright);padding:6px 18px;border-radius:50px;font-size:.75rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px">Our Faculty</div>
+            <h2 style="font-size:2.2rem;margin-bottom:10px;color:#fff">Heads of Departments</h2>
+            <p style="color:rgba(232,244,248,0.7);font-size:1.05rem;max-width:720px;margin:0 auto">Six specialist departments led by experienced HODs, supported by a faculty of 45+ qualified teachers.</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;max-width:1200px;margin:0 auto">
+            <div class="hod-card" style="background:rgba(26,58,92,0.4);border:1px solid rgba(56,189,248,0.25);border-radius:16px;padding:22px;text-align:center;backdrop-filter:blur(8px)">
+                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#fff"><i class="fas fa-flask"></i></div>
+                <div style="font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--teal-bright);text-transform:uppercase;margin-bottom:4px">Sciences</div>
+                <div style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px">HOD — Sciences</div>
+                <div style="font-size:.82rem;color:rgba(232,244,248,0.65)">Physics · Chemistry · Biology</div>
+            </div>
+            <div class="hod-card" style="background:rgba(26,58,92,0.4);border:1px solid rgba(56,189,248,0.25);border-radius:16px;padding:22px;text-align:center;backdrop-filter:blur(8px)">
+                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#fff"><i class="fas fa-square-root-variable"></i></div>
+                <div style="font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--teal-bright);text-transform:uppercase;margin-bottom:4px">Mathematics</div>
+                <div style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px">HOD — Mathematics</div>
+                <div style="font-size:.82rem;color:rgba(232,244,248,0.65)">Pure &amp; Applied</div>
+            </div>
+            <div class="hod-card" style="background:rgba(26,58,92,0.4);border:1px solid rgba(56,189,248,0.25);border-radius:16px;padding:22px;text-align:center;backdrop-filter:blur(8px)">
+                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#fff"><i class="fas fa-globe-africa"></i></div>
+                <div style="font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--teal-bright);text-transform:uppercase;margin-bottom:4px">Humanities</div>
+                <div style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px">HOD — Humanities</div>
+                <div style="font-size:.82rem;color:rgba(232,244,248,0.65)">History · Geography · Divinity</div>
+            </div>
+            <div class="hod-card" style="background:rgba(26,58,92,0.4);border:1px solid rgba(56,189,248,0.25);border-radius:16px;padding:22px;text-align:center;backdrop-filter:blur(8px)">
+                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#fff"><i class="fas fa-language"></i></div>
+                <div style="font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--teal-bright);text-transform:uppercase;margin-bottom:4px">Languages</div>
+                <div style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px">HOD — Languages</div>
+                <div style="font-size:.82rem;color:rgba(232,244,248,0.65)">English · Luganda · French</div>
+            </div>
+            <div class="hod-card" style="background:rgba(26,58,92,0.4);border:1px solid rgba(56,189,248,0.25);border-radius:16px;padding:22px;text-align:center;backdrop-filter:blur(8px)">
+                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#fff"><i class="fas fa-laptop-code"></i></div>
+                <div style="font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--teal-bright);text-transform:uppercase;margin-bottom:4px">ICT</div>
+                <div style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px">HOD — ICT</div>
+                <div style="font-size:.82rem;color:rgba(232,244,248,0.65)">Computer Studies · Programming</div>
+            </div>
+            <div class="hod-card" style="background:rgba(26,58,92,0.4);border:1px solid rgba(56,189,248,0.25);border-radius:16px;padding:22px;text-align:center;backdrop-filter:blur(8px)">
+                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#fff"><i class="fas fa-futbol"></i></div>
+                <div style="font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--teal-bright);text-transform:uppercase;margin-bottom:4px">Sports</div>
+                <div style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px">HOD — Sports</div>
+                <div style="font-size:.82rem;color:rgba(232,244,248,0.65)">PE · Football · Athletics</div>
+            </div>
+        </div>
+    </section>
+
+<!-- Gallery Section -->
+    <section class="gallery-section" id="gallery">
+        <div class="section-header">
+            <div class="section-tag">School Life</div>
+            <h2>Moments at Kalinabiri</h2>
+            <p>Capturing the spirit, achievements, and daily life at Kalinabiri Secondary School.</p>
+        </div>
+        <div class="gallery-grid" id="homeGalleryGrid">
+            <div class="gallery-item reveal">
+                <img src="https://kalibz-international.netlify.app/assets/images/kalibz/school%20buildings.jpg" alt="School Buildings" onerror="this.src='https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&q=80'" loading="lazy">
+                <div class="gallery-overlay">
+                    <h4>School Buildings</h4>
+                    <p>Our modern campus facilities</p>
+                </div>
+            </div>
+            <div class="gallery-item reveal">
+                <img src="https://kalibz-international.netlify.app/assets/images/kalibz/award%20winning.jpg" alt="Award Winning" onerror="this.src='https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&q=80'" loading="lazy">
+                <div class="gallery-overlay">
+                    <h4>National Robotics Champions</h4>
+                    <p>June 26 2025 Winners</p>
+                </div>
+            </div>
+            <div class="gallery-item reveal">
+                <img src="https://kalibz-international.netlify.app/assets/images/kalibz/class%20rooms.jpg" alt="Classrooms" onerror="this.src='https://images.unsplash.com/photo-1571260899304-3755977927d7?w=600&q=80'" loading="lazy">
+                <div class="gallery-overlay">
+                    <h4>Classroom Activities</h4>
+                    <p>Engaged learning in action</p>
+                </div>
+            </div>
+            <div class="gallery-item reveal">
+                <img src="https://kalibz-international.netlify.app/assets/images/kalibz/class%20rooms%20%282%29.jpg" alt="Students Learning" onerror="this.src='https://images.unsplash.com/photo-1529390079861-591de354faf5?w=600&q=80'" loading="lazy">
+                <div class="gallery-overlay">
+                    <h4>Students Learning</h4>
+                    <p>Hands-on science education</p>
+                </div>
+            </div>
+            <div class="gallery-item reveal">
+                <img src="https://kalibz-international.netlify.app/assets/images/kalibz/kalinabiri%20students.jpg" alt="Kalinabiri Students" onerror="this.src='https://images.unsplash.com/photo-1509062522246-3755977927d7?w=600&q=80'" loading="lazy">
+                <div class="gallery-overlay">
+                    <h4>Our Students</h4>
+                    <p>Proud Kalinabiri learners</p>
+                </div>
+            </div>
+            <div class="gallery-item reveal">
+                <img src="https://kalibz-international.netlify.app/assets/images/kalibz/projects.jpg" alt="Student Projects" onerror="this.src='https://images.unsplash.com/photo-1544717305-2782549b5136?w=600&q=80'" loading="lazy">
+                <div class="gallery-overlay">
+                    <h4>Student Projects</h4>
+                    <p>Innovation and creativity</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Strip -->
+    <section class="contact-strip" id="contact">
+        <div class="contact-grid">
+            <div class="contact-item">
+                <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                <div>
+                    <h4>Location</h4>
+                    <p>Kalinabiri Road, Ntinda<br>Kampala, Uganda</p>
+                </div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon"><i class="fas fa-phone-alt"></i></div>
+                <div>
+                    <h4>Phone</h4>
+                    <p>+256 414 286 100<br>+256 700 123 456</p>
+                </div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                <div>
+                    <h4>Email</h4>
+                    <p>info@kalinabiriss.ac.ug<br>admissions@kalinabiriss.ac.ug</p>
+                </div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon"><i class="fas fa-clock"></i></div>
+                <div>
+                    <h4>Hours</h4>
+                    <p>Mon - Fri: 7:30AM - 5:00PM<br>Sat: 8:00AM - 12:00PM</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Kalinabiri SS</span>
+                </div>
+                <p>Nurturing minds, building character, and shaping the leaders of tomorrow since 1995. Kalinabiri Secondary School is committed to academic excellence and holistic development.</p>
+                <div class="footer-social">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                            <h4>Quick Links</h4>
+                            <ul>
+                                <li><a href="#home">Home</a></li>
+                                <li><a href="#portals">Portals</a></li>
+                                <li><a href="#combinations">A-Level Combinations</a></li>
+                                <li><a href="#hods-strip">Faculty &amp; HODs</a></li>
+                                <li><a href="#gallery">Gallery</a></li>
+                                <li><a href="#contact">Contact</a></li>
+                                <li><a href="/admissions/" style="color:var(--gold);font-weight:700;">Apply Now →</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-col">
+                            <h4>Academics</h4>
+                            <ul>
+                                <li><a href="#combinations">A-Level Subject Combinations</a></li>
+                                                                <li><a href="/about/">Subjects Offered</a></li>
+                                                                <li><a href="/calendar/">Academic Calendar</a></li>
+                                                                <li><a href="/gallery/">School Life</a></li>
+                                                            </ul>
+                                                        </div>
+                                                        <div class="footer-col">
+                                                            <h4>Administration</h4>
+                                                            <ul>
+                                                                <li><a href="#hods-strip">Teaching Staff</a></li>
+                                                                <li><a href="/about/">About the School</a></li>
+                                                                <li><a href="/contact/">Contact the Office</a></li>
+                                                                <li><a href="/admissions/">Admissions</a></li>
+                                                            </ul>
+                                                        </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Kalinabiri Secondary School. All rights reserved.</p>
+            <p>Designed with <i class="fas fa-heart" style="color:var(--teal);"></i> in Kampala</p>
+        </div>
+    </footer>
+
+    <script>
+        // Three.js Particle Background
+        (function() {
+            const canvas = document.getElementById('three-canvas');
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 30;
+
+            const isMobile = window.innerWidth < 768;
+                        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                        // Mobile + reduced-motion users skip the WebGL layer entirely.
+                        // It saves ~150ms of GPU setup and the render loop, which is the
+                        // biggest single perf win on phones. The dark gradient background
+                        // stays — that's CSS, free. We reuse the `canvas` const from
+                        // above (line ~1175) rather than re-declaring — re-declaring in
+                        // the same scope is a SyntaxError that bails the whole IIFE.
+                        if (isMobile || prefersReducedMotion) {
+                            if (canvas) canvas.style.display = 'none';
+                            return; // exit the IIFE before WebGL setup runs
+                        }
+                        const particleCount = 800;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+
+            for (let i = 0; i < particleCount; i++) {
+                positions[i * 3] = (Math.random() - 0.5) * 80;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 80;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 80;
+                // Ocean teal/blue color scheme
+                const t = Math.random();
+                colors[i * 3] = 0.05 + t * 0.2;      // R
+                colors[i * 3 + 1] = 0.4 + t * 0.4;   // G
+                colors[i * 3 + 2] = 0.7 + t * 0.3;   // B
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: window.innerWidth < 768 ? 0.12 : 0.18,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.75,
+                blending: THREE.AdditiveBlending
+            });
+
+            const particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+
+            const mouse = { x: 0, y: 0 };
+            document.addEventListener('mousemove', (e) => {
+                mouse.x = (e.clientX / window.innerWidth - 0.5) * 2;
+                mouse.y = -(e.clientY / window.innerHeight - 0.5) * 2;
+            });
+
+            function animate() {
+                requestAnimationFrame(animate);
+                particles.rotation.x += 0.0003;
+                particles.rotation.y += 0.0005;
+                particles.position.x += mouse.x * 0.002;
+                particles.position.y += mouse.y * 0.002;
+                renderer.render(scene, camera);
+            }
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        })();
+
+        // Toast Notification System
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast ' + type;
+            const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
+            toast.innerHTML = '<i class="fas ' + icon + '"></i> ' + message;
+            container.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3200);
+        }
+        window.showToast = showToast;
+
+        // Animated Counters
+        function animateCounter(el) {
+            const target = parseInt(el.dataset.count);
+            const duration = 2000;
+            const start = performance.now();
+            function update(now) {
+                const progress = Math.min((now - start) / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                el.textContent = Math.round(target * eased) + '+';
+                if (progress < 1) requestAnimationFrame(update);
+            }
+            requestAnimationFrame(update);
+        }
+
+        // Scroll Reveal
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry && entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    if (entry.target.querySelector('.stat-number')) {
+                        entry.target.querySelectorAll('.stat-number').forEach(animateCounter);
+                    }
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar3d');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Active nav link
+        function setActive(el) {
+            document.querySelectorAll('.nav-links-3d a, .mobile-nav-menu a').forEach(a => a.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        // 3D Card Tilt Effect
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) document.querySelectorAll('.portal-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = (y - centerY) / 15;
+                const rotateY = (centerX - x) / 15;
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateZ(0)';
+            });
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    
+    // Mobile Menu Toggle
+    function toggleMobileMenu() {
+      document.getElementById('navLinks').classList.toggle('mobile-open');
+      document.getElementById('mobileBtn').classList.toggle('active');
+    }
+
+</script>
+    <script>
+    // A-Level tab switcher (inlined on homepage)
+    (function(){
+      var tabs = document.querySelectorAll('#combinations .track-tab');
+      var sci  = document.getElementById('home-science');
+      var arts = document.getElementById('home-arts');
+      if (!tabs.length || !sci || !arts) return;
+      tabs.forEach(function(tab){
+        tab.addEventListener('click', function(){
+          tabs.forEach(function(t){
+            t.classList.remove('active');
+            t.style.background = 'rgba(245,158,11,0.10)';
+            t.style.borderColor = 'rgba(245,158,11,0.30)';
+            t.style.color = 'rgba(232,244,248,0.75)';
+          });
+          tab.classList.add('active');
+          tab.style.background = 'rgba(14,165,233,0.22)';
+          tab.style.borderColor = 'rgba(56,189,248,0.5)';
+          tab.style.color = 'var(--teal-bright)';
+          if (tab.dataset.track === 'home-science') {
+            sci.style.display = 'block';
+            arts.style.display = 'none';
+          } else {
+            sci.style.display = 'none';
+            arts.style.display = 'block';
+          }
+        });
+      });
+    })();
+    </script>
+<script>
+// Live gallery — replaces the static grid when the school has managed images.
+(function () {
+  fetch('/api/website/gallery').then(function (r) { return r.json(); }).then(function (data) {
+    var imgs = (data && data.images) || [];
+    if (!imgs.length) return;   // keep the static fallback grid
+    var grid = document.getElementById('homeGalleryGrid');
+    if (!grid) return;
+    function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+    grid.innerHTML = imgs.slice(0, 6).map(function (im) {
+      return '<div class="gallery-item reveal is-visible">' +
+        '<img src="' + esc(im.src) + '" alt="' + esc(im.title) + '" loading="lazy" onerror="this.closest(\'.gallery-item\').remove()">' +
+        '<div class="gallery-overlay"><h4>' + esc(im.title) + '</h4><p>' + esc(im.caption || '') + '</p></div></div>';
+    }).join('');
+    grid.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('visible', 'is-visible'); el.style.opacity = 1; el.style.transform = 'none'; });
+  }).catch(function () { /* static grid remains */ });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DDYYHL61KR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-DDYYHL61KR');
+</script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2956081143917614" crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Portal — Kalinabiri Secondary School</title>
+  <link rel="icon" type="image/x-icon" href="/assets/images/logo.ico">
+  <link rel="apple-touch-icon" href="/assets/images/logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    :root {
+      --green: #0a1f0a;
+      --green-mid: #1a4d2e;
+      --green-light: #2d7a4a;
+      --accent: #4ade80;
+      --accent-2: #ffd700;
+      --bg: #0a1f0a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .video-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(135deg, rgba(10,31,10,0.8) 0%, rgba(10,31,10,0.5) 100%);
+    }
+
+    /* SPLIT LAYOUT */
+    .auth-split {
+      display: flex;
+      width: 100%;
+      max-width: 980px;
+      min-height: 600px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+      position: relative;
+      z-index: 10;
+    }
+
+    .auth-side {
+      flex: 1;
+      padding: 44px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* LEFT: REGISTER - green brand panel */
+    .auth-register-side {
+      background: linear-gradient(160deg, #0a1f0a 0%, #1a4d2e 100%);
+      border-right: 1px solid rgba(74,222,128,0.15);
+    }
+
+    /* RIGHT: LOGIN - glass panel */
+    .auth-login-side {
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(20px);
+      display: none;
+    }
+    .auth-login-side.active,
+    .auth-register-side.active {
+      display: flex;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 380px;
+    }
+
+    /* LOGO */
+    .auth-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .auth-logo-img {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      border: 2px solid rgba(74,222,128,0.35);
+      object-fit: cover;
+    }
+    .auth-logo-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .auth-logo-sub {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.45);
+    }
+
+    /* BRAND HEADLINE (left panel) */
+    .brand-headline h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+    .brand-headline h1 span {
+      display: block;
+      color: #4ade80;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .brand-headline p {
+      color: rgba(255,255,255,0.6);
+      font-size: 0.88rem;
+      line-height: 1.7;
+      margin-bottom: 24px;
+    }
+
+    /* FEATURE PERKS */
+    .brand-perks {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+    .brand-perk {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(74,222,128,0.08);
+      border: 1px solid rgba(74,222,128,0.18);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.75rem;
+      color: #4ade80;
+      font-weight: 600;
+    }
+
+    /* RIGHT SIDE HEADING */
+    .auth-heading {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #4ade80;
+      margin: 0 0 6px;
+    }
+    .auth-sub {
+      color: rgba(255,255,255,0.45);
+      font-size: 0.85rem;
+      margin: 0 0 24px;
+    }
+
+    /* FORM FIELDS */
+    .form-group { margin-bottom: 13px; }
+    .form-label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 5px;
+    }
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid rgba(74,222,128,0.18);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+      color: #fff;
+      background: rgba(255,255,255,0.07);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-input::placeholder { color: rgba(255,255,255,0.25); }
+    .form-input:focus {
+      border-color: #4ade80;
+      box-shadow: 0 0 0 3px rgba(74,222,128,0.1);
+      background: rgba(255,255,255,0.1);
+    }
+
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .form-row-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .form-check {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.4);
+      cursor: pointer;
+    }
+    .form-check input { accent-color: #4ade80; width: 14px; height: 14px; }
+    .forgot-link {
+      font-size: 0.8rem;
+      color: #4ade80;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .forgot-link:hover { text-decoration: underline; }
+
+    /* BUTTON */
+    .btn-auth {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-accent {
+      background: linear-gradient(135deg, #0a1f0a, #1a4d2e);
+      color: #4ade80;
+      border: 2px solid #4ade80;
+      box-shadow: 0 4px 18px rgba(74,222,128,0.18);
+    }
+    .btn-accent:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(74,222,128,0.28);
+    }
+    .btn-accent:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    .btn-arr { transition: transform 0.2s; }
+    .btn-auth:hover .btn-arr { transform: translateX(4px); }
+
+    /* SPINNER */
+    .btn-spin {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(74,222,128,0.3);
+      border-top-color: #4ade80;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* BANNER */
+    .t-banner {
+      display: none;
+      padding: 11px 14px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      align-items: center;
+      gap: 8px;
+    }
+    .t-banner.show { display: flex; }
+    .t-banner.err { background: rgba(220,38,38,0.15); border: 1.5px solid rgba(220,38,38,0.3); color: #fca5a5; }
+    .t-banner.ok { background: rgba(22,163,74,0.15); border: 1.5px solid rgba(22,163,74,0.3); color: #86efac; }
+
+    /* SWITCH LINK */
+    .auth-switch {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.35);
+    }
+    .auth-switch a { color: #4ade80; text-decoration: none; font-weight: 600; }
+    .auth-switch a:hover { text-decoration: underline; }
+
+    .auth-dev {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.15);
+    }
+    .auth-dev strong { color: rgba(255,255,255,0.25); }
+
+    /* BACK LINK */
+    .back-link {
+      display: block;
+      margin-bottom: 20px;
+    }
+    .back-link a {
+      color: rgba(255,255,255,0.35);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.2s;
+    }
+    .back-link a:hover { color: #4ade80; }
+
+    /* RESPONSIVE */
+    @media (max-width: 720px) {
+      .auth-split { flex-direction: column; }
+      .auth-side { padding: 32px 24px; }
+      .form-row-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+<link rel="stylesheet" href="/assets/css/theme.css">
+  <script src="/assets/js/theme.js"></script>
+</head>
+<body>
+
+<div class="video-overlay"></div>
+<canvas id="webgl-bg" style="position:fixed;inset:0;z-index:-1;pointer-events:none;"></canvas>
+
+<div class="auth-split">
+
+  <!-- LEFT: REGISTER (brand panel) -->
+  <div class="auth-side auth-register-side" id="registerSide">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <img src="/assets/images/logo.jpeg" alt="Kalinabiri SS" class="auth-logo-img">
+        <div>
+          <div class="auth-logo-title">Kalinabiri SS</div>
+          <div class="auth-logo-sub">Teacher Portal</div>
+        </div>
+      </div>
+
+      <div class="brand-headline">
+        <h1><span>Apply for</span>Teacher Account</h1>
+        <p>Join our dedicated team of educators. Your application will be reviewed by the administration.</p>
+      </div>
+
+      <div class="brand-perks">
+        <div class="brand-perk">📚 Class Mgmt</div>
+        <div class="brand-perk">📝 Assignments</div>
+        <div class="brand-perk">📊 Grades</div>
+        <div class="brand-perk">🔬 Research</div>
+        <div class="brand-perk">🤖 AI Bot</div>
+        <div class="brand-perk">📅 Timetable</div>
+      </div>
+
+      <div class="back-link">
+        <a href='/dashboard-access.html'>← Back to Website</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: REGISTER FORM -->
+  <div class="auth-side auth-login-side" id="registerFormSide" style="display:none;">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <img src="/assets/images/logo.jpeg" alt="Kalinabiri SS" class="auth-logo-img">
+        <div>
+          <div class="auth-logo-title">Kalinabiri SS</div>
+          <div class="auth-logo-sub">Teacher Portal</div>
+        </div>
+      </div>
+
+      <h2 class="auth-heading">Teacher Registration</h2>
+      <p class="auth-sub">Apply for a teacher account</p>
+
+      <div class="t-banner" id="regBanner"><span id="regBannerIcon"></span><span id="regBannerText"></span></div>
+
+      <form id="teacherRegForm">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="regName" class="form-input" placeholder="Dr. Jane Namuguzi" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <input type="text" id="regUsername" class="form-input" placeholder="jnamuguzi" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" id="regEmail" class="form-input" placeholder="jane@kalinabiriss.ac.ug" required>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Phone</label>
+            <input type="tel" id="regPhone" class="form-input" placeholder="+256 700 123 456" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="regPassword" class="form-input" placeholder="Min. 8 chars" minlength="8" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Qualifications</label>
+          <input type="text" id="regQual" class="form-input" placeholder="B.Ed, MSc. Mathematics" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Subjects You Teach</label>
+          <input type="text" id="regSubjects" class="form-input" placeholder="Mathematics, Physics" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 16px;">
+          <label class="form-check">
+            <input type="checkbox" id="regTerms" required>
+            I agree to the <a href="#" target="_blank">terms and conditions</a>
+          </label>
+        </div>
+
+        <button type="submit" class="btn-auth btn-accent" id="regBtn">
+          <span>Submit Application</span>
+          <span class="btn-arr">→</span>
+        </button>
+      </form>
+
+      <div class="auth-switch">
+        Already have an account?
+        <a href="#" onclick="showLogin();return false;">Sign In →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: LOGIN FORM -->
+  <div class="auth-side auth-login-side" id="loginSide">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <img src="/assets/images/logo.jpeg" alt="Kalinabiri SS" class="auth-logo-img">
+        <div>
+          <div class="auth-logo-title">Kalinabiri SS</div>
+          <div class="auth-logo-sub">Teacher Portal</div>
+        </div>
+      </div>
+
+      <h2 class="auth-heading">Teacher Sign In</h2>
+      <p class="auth-sub">Access your teaching dashboard</p>
+
+      <div class="t-banner" id="loginBanner"><span id="loginBannerIcon"></span><span id="loginBannerText"></span></div>
+
+      <form id="teacherLoginForm">
+        <div class="form-group">
+          <label class="form-label">Username or Email</label>
+          <input type="text" id="loginUsername" class="form-input" placeholder="teacher@kalinabiriss.ac.ug" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="loginPassword" class="form-input" placeholder="••••••••••" required>
+        </div>
+
+        <div class="form-row-between">
+          <label class="form-check"><input type="checkbox" id="remember"> Remember me</label>
+          <a href="#" class="forgot-link" onclick="showReset();return false">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-auth btn-accent" id="loginBtn">
+          <span>Sign In to Dashboard</span>
+          <span class="btn-arr">→</span>
+        </button>
+      </form>
+
+      <div class="auth-switch">
+        Want to teach here?
+        <a href="#" onclick="showRegister();return false;">Apply as Teacher →</a>
+      </div>
+
+      <div class="back-link" style="margin-top:16px;">
+        <a href='/'>← Back to Website</a>
+      </div>
+
+      <div class="auth-dev">Developed by <strong>ScottsTechX</strong> | © 2026</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const API_BASE = '/api';
+
+function showBanner(id, icon, text, type) {
+  const b = document.getElementById(id);
+  document.getElementById(id + 'Icon').textContent = icon;
+  document.getElementById(id + 'Text').textContent = text;
+  b.className = 't-banner show ' + type;
+}
+function hideBanner(id) { document.getElementById(id).classList.remove('show'); }
+
+function showLogin() {
+  document.getElementById('registerSide').classList.remove('active');
+  document.getElementById('registerFormSide').style.display = 'none';
+  document.getElementById('loginSide').classList.add('active');
+}
+function showRegister() {
+  document.getElementById('loginSide').classList.remove('active');
+  document.getElementById('registerFormSide').style.display = 'flex';
+  document.getElementById('registerSide').classList.add('active');
+}
+function showReset() {
+  showBanner('loginBanner', '📧', 'Contact admin to reset your password.', 'ok');
+}
+
+// Init: show login
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('loginSide').classList.add('active');
+});
+
+// Auth guard: redirect if already logged in as teacher
+(function() {
+  if (localStorage.getItem('kalinabiri_role') === 'teacher') {
+    window.location.href = '../teacher-dashboard/';
+  } else if (localStorage.getItem('kalinabiri_role') === 'admin') {
+    window.location.href = '../admin-dashboard/';
+  }
+})();
+
+// ── REGISTER ──
+document.getElementById('teacherRegForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('regBtn');
+  hideBanner('regBanner');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="btn-spin"></span><span>Submitting...</span>';
+
+  const formData = {
+    username: document.getElementById('regUsername').value.trim(),
+    email: document.getElementById('regEmail').value.trim(),
+    password: document.getElementById('regPassword').value,
+    fullName: document.getElementById('regName').value.trim(),
+    phone: document.getElementById('regPhone').value.trim(),
+    subjects: document.getElementById('regSubjects').value.trim(),
+    assignedClasses: ''
+  };
+
+  try {
+    formData.role = 'teacher';
+    formData.first_name = (document.getElementById('regName').value.trim().split(/\s+/)[0]) || '';
+    formData.last_name = document.getElementById('regName').value.trim().split(/\s+/).slice(1).join(' ') || '';
+    formData.subjects_taught = formData.subjects;
+    const res = await fetch(API_BASE + '/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showBanner('regBanner', '✅', 'Application submitted! Redirecting to sign in...', 'ok');
+      btn.innerHTML = '<span>Success!</span>';
+      setTimeout(showLogin, 1500);
+    } else {
+      showBanner('regBanner', '⚠️', data.error || data.message || 'Registration failed.', 'err');
+      btn.disabled = false;
+      btn.innerHTML = '<span>Submit Application</span><span class="btn-arr">→</span>';
+    }
+  } catch(err) {
+    showBanner('regBanner', '⚠️', 'Network error. Please try again.', 'err');
+    btn.disabled = false;
+    btn.innerHTML = '<span>Submit Application</span><span class="btn-arr">→</span>';
+  }
+});
+
+// ── LOGIN ──
+document.getElementById('teacherLoginForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('loginBtn');
+  hideBanner('loginBanner');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="btn-spin"></span><span>Signing in...</span>';
+
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value;
+
+  try {
+    const res = await fetch(API_BASE + '/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (res.ok && data.token) {
+      if (data.user && data.user.role === 'admin') {
+        showBanner('loginBanner', '⚠️', 'Admin accounts use the Admin Portal.', 'err');
+        btn.disabled = false;
+        btn.innerHTML = '<span>Sign In to Dashboard</span><span class="btn-arr">→</span>';
+        return;
+      }
+      showBanner('loginBanner', '✅', 'Login successful — loading dashboard...', 'ok');
+      localStorage.setItem('kalinabiri_token', data.token);
+      localStorage.setItem('kalinabiri_user', JSON.stringify(data.user));
+      localStorage.setItem('kalinabiri_role', data.user.role || 'teacher');
+      setTimeout(() => { window.location.href = '../teacher-dashboard/'; }, 800);
+    } else {
+      showBanner('loginBanner', '⚠️', data.error || data.message || 'Invalid credentials.', 'err');
+      btn.disabled = false;
+      btn.innerHTML = '<span>Sign In to Dashboard</span><span class="btn-arr">→</span>';
+    }
+  } catch(err) {
+    showBanner('loginBanner', '⚠️', 'Cannot connect to server. Please try again.', 'err');
+    btn.disabled = false;
+    btn.innerHTML = '<span>Sign In to Dashboard</span><span class="btn-arr">→</span>';
+  }
+});
+</script>
+<script>
+(function(){
+  var canvas=document.getElementById('webgl-bg');
+  if(!canvas||!window.THREE)return;
+  var renderer=new THREE.WebGLRenderer({canvas:canvas,alpha:true,antialias:true});
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  var scene=new THREE.Scene();
+  var camera=new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,.1,1000);
+  camera.position.z=30;
+  var geo=new THREE.BufferGeometry;
+  var count=window.innerWidth<768?500:1500;
+  var pos=new Float32Array(count*3);
+  var col=new Float32Array(count*3);
+  var colors=[[.0,.96,.83],[.48,.18,.97],[.97,.18,1],[1,.84,0]];
+  for(var i=0;i<count*3;i++){pos[i]=(Math.random()-.5)*80;var c=colors[Math.floor(Math.random()*colors.length)];col[i]=c[i%3]}
+  geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+  var mat=new THREE.PointsMaterial({size:.18,vertexColors:true,transparent:true,opacity:.85,sizeAttenuation:true});
+  scene.add(new THREE.Points(geo,mat));
+  var mouse={x:0,y:0};
+  document.addEventListener('mousemove',function(e){mouse.x=(e.clientX/window.innerWidth)*2-1;mouse.y=-(e.clientY/window.innerHeight)*2+1});
+  function animate(){requestAnimationFrame(animate);camera.position.x+=(mouse.x*5-camera.position.x)*.03;camera.position.y+=(mouse.y*5-camera.position.y)*.03;camera.lookAt(scene.position);renderer.render(scene,camera)}animate();
+  window.addEventListener('resize',function(){camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight)})})();
+
+    // Mobile Menu Toggle
+    function toggleMobileMenu() {
+      document.getElementById('navLinks').classList.toggle('mobile-open');
+      document.getElementById('mobileBtn').classList.toggle('active');
+    }
+
+</script>
+</body>
+</html>

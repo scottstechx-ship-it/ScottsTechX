@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://kalinabiri-ss.netlify.app/sitemap.xml

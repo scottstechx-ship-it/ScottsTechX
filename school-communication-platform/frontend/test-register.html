@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head><title>Test Register</title><link rel="stylesheet" href="/assets/css/theme.css">
+  <script src="/assets/js/theme.js"></script>
+</head>
+<body>
+<h1 id="result">Testing...</h1>
+<script>
+var data = {
+  fullName: 'Browser Test',
+  role: 'teacher',
+  first_name: 'Browser',
+  last_name: 'Test',
+  username: 'btest' + Date.now(),
+  email: 'btest' + Date.now() + '@test.com',
+  password: 'pass1234',
+  phone: '0770000005',
+  subjects_taught: 'History',
+  assignedClasses: ''
+};
+fetch('/api/auth/register', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify(data)
+}).then(function(r) { return r.text(); })
+  .then(function(d) {
+    document.getElementById('result').textContent = 'OK: ' + d;
+    console.log('OK: ' + d);
+  })
+  .catch(function(e) {
+    document.getElementById('result').textContent = 'ERR: ' + e.message;
+    console.log('ERR: ' + e.message);
+  });
+</script>
+</body>
+</html>

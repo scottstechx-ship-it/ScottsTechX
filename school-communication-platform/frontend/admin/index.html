@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Admin Dashboard</title>
+<script>try{var t=localStorage.getItem('scp_theme');if(t==='dark'||((!t||t==='system')&&window.matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.setAttribute('data-theme','dark');}catch(e){}</script>
+<link rel="stylesheet" href="../css/app.css">
+<link rel="stylesheet" href="../css/platform-ux.css">
+<style>
+/* Admin Dashboard - Teal/Cyan Theme Override */
+:root {
+  --admin-primary: #06b6d4;
+  --admin-primary-dark: #0891b2;
+  --admin-primary-light: #a5f3fc;
+  --admin-primary-bg: #06141b;
+}
+[data-theme="dark"] {
+  --admin-primary: #22d3ee;
+  --admin-primary-dark: #06b6d4;
+  --admin-primary-light: #164e63;
+  --admin-primary-bg: #030b10;
+}
+:root {
+  --primary: var(--admin-primary);
+  --primary-dark: var(--admin-primary-dark);
+  --primary-light: var(--admin-primary-light);
+}
+.stat-icon.ic-teal { background: var(--admin-primary-light); color: var(--admin-primary); }
+.stat-icon.ic-teal::before { background: var(--admin-primary); }
+.card .stat-icon.ic-teal { background: var(--admin-primary-light); color: var(--admin-primary); }
+.badge.teal { background: var(--admin-primary-light); color: var(--admin-primary); }
+.btn { background: var(--admin-primary); }
+.btn:hover { background: var(--admin-primary-dark); }
+.sidebar .nav-item.active { background: var(--admin-primary); }
+.sidebar .brand .logo { background: var(--admin-primary); }
+.topbar { border-bottom-color: var(--admin-primary-light); }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#content">Skip to content</a>
+<script src="../js/config.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/theme.js"></script>
+<script src="../js/ui.js"></script>
+<script src="../js/socket-client.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="../js/components/messaging.js"></script>
+<script src="../js/components/documents.js"></script>
+<script src="../js/components/announcements.js"></script>
+<script src="../js/components/academics.js"></script>
+<script src="../js/components/website.js"></script>
+<script src="../js/components/users.js"></script>
+<script src="../js/ux.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

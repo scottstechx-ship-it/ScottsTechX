@@ -1,0 +1,10 @@
+{
+  "type": "module",
+  "scripts": {
+    "start": "node serve.cjs",
+    "dev": "node --watch serve.cjs"
+  },
+  "dependencies": {
+    "netlify": "^26.1.0"
+  }
+}
