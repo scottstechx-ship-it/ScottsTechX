@@ -89,9 +89,23 @@ app.use(express.static(frontendDir, {
 app.use('/docs', express.static(path.join(__dirname, '..', 'docs')));
 app.get('/docs', (req, res) => res.redirect('/docs/api.html'));
 
+// ---- SEO conveniences ------------------------------------------------------
+// Accept the sitemap with or without the .xml extension (Search Console
+// submissions and humans both get the right file either way).
+app.get(['/sitemap', '/sitemap.txt', '/sitemaps.xml'], (req, res) => res.redirect(301, '/sitemap.xml'));
+
 // ---- 404 & error handlers -------------------------------------------------
 app.use((req, res) => {
-  res.status(404).json({ error: 'Endpoint not found.' });
+  // APIs get JSON; page visits get a friendly HTML 404 that links home.
+  if (req.path.startsWith('/api/') || (req.headers.accept || '').includes('application/json')) {
+    return res.status(404).json({ error: 'Endpoint not found.' });
+  }
+  res.status(404).send(`<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Page not found — Kalinabiri SS</title>
+<style>body{font-family:Inter,system-ui,sans-serif;background:#060d1f;color:#e2e8f0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
+a{color:#38bdf8;font-weight:700;text-decoration:none;border:1px solid rgba(56,189,248,.4);padding:10px 22px;border-radius:999px;display:inline-block;margin-top:18px}
+h1{font-size:3.4rem;margin-bottom:4px}p{color:#94a3b8}</style></head>
+<body><div><h1>404</h1><p>That page doesn't exist or has moved.</p><a href="/">← Back to the school website</a></div></body></html>`);
 });
 
 app.use((err, req, res, next) => {
