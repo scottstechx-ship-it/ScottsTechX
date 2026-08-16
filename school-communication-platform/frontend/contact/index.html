@@ -1233,5 +1233,67 @@ document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
     }
 
 </script>
+
+<!-- crafted with pride -->
+<div class="stx-sig" aria-hidden="true">
+  <span class="stx-dot">·</span>
+  <span class="stx-reveal">
+    <span class="stx-name">Richard</span>
+    <span class="stx-brand">ScottsTechX</span>
+  </span>
+</div>
+<style>
+.stx-sig {
+  display: flex; justify-content: center; align-items: center;
+  padding: 10px 0 14px; position: relative; z-index: 3;
+  -webkit-user-select: none; user-select: none;
+}
+.stx-sig .stx-dot {
+  color: rgba(148, 163, 184, .28); font-size: 14px; cursor: default;
+  padding: 6px 14px; transition: opacity .4s ease;
+}
+.stx-sig .stx-reveal {
+  position: absolute; left: 50%; transform: translateX(-50%) translateY(6px) scale(.92);
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  opacity: 0; pointer-events: none;
+  transition: opacity .6s cubic-bezier(.2,.7,.3,1), transform .6s cubic-bezier(.2,.7,.3,1);
+  white-space: nowrap;
+}
+.stx-sig:hover .stx-dot, .stx-sig.stx-open .stx-dot { opacity: 0; }
+.stx-sig:hover .stx-reveal, .stx-sig.stx-open .stx-reveal {
+  opacity: 1; transform: translateX(-50%) translateY(0) scale(1);
+}
+.stx-sig .stx-name {
+  font-family: Georgia, 'Times New Roman', serif; font-style: italic;
+  font-size: 15px; font-weight: 700; letter-spacing: .12em;
+  background: linear-gradient(100deg, #64748b 0%, #e2e8f0 28%, #38bdf8 50%, #e2e8f0 72%, #64748b 100%);
+  background-size: 220% auto;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  animation: stxShimmer 3.2s linear infinite;
+}
+.stx-sig .stx-brand {
+  font-size: 8.5px; font-weight: 600; letter-spacing: .34em; text-transform: uppercase;
+  color: rgba(148, 163, 184, .5); margin-top: 1px;
+}
+@keyframes stxShimmer { to { background-position: -220% center; } }
+@media (prefers-reduced-motion: reduce) { .stx-sig .stx-name { animation: none; } }
+</style>
+<script>
+(function () {
+  var sig = document.currentScript.previousElementSibling.previousElementSibling;
+  if (!sig || !sig.classList || !sig.classList.contains('stx-sig')) {
+    sig = document.querySelector('.stx-sig');
+  }
+  if (!sig) return;
+  var taps = 0, timer = null;
+  sig.addEventListener('click', function () {
+    taps++;
+    clearTimeout(timer);
+    timer = setTimeout(function () { taps = 0; }, 500);
+    if (taps >= 2) { sig.classList.toggle('stx-open'); taps = 0; }
+  });
+})();
+</script>
 </body>
 </html>
