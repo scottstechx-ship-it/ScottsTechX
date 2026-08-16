@@ -279,13 +279,13 @@ function runSeed() {
 
     // ---------------- settings ----------------
     setSetting('school', {
-      name: 'St. Mark\'s College (DEMO)',
-      motto: 'Knowledge, Discipline, Service',
+      name: 'Kalinabiri Secondary School',
+      motto: 'Excellence in Education Since 1995',
       logo: null,
-      phone: '+256 700 000 000',
-      email: 'info@demo.school.test',
-      address: 'P.O. Box 1234, Kampala, Uganda',
-      website: 'https://www.demodemo.school',
+      phone: '+256 414 286 100',
+      email: 'Kalinabiri@yahoo.com',
+      address: 'Kalinabiri Road, Ntinda, Kampala, Uganda',
+      website: 'https://www.kalinabiriss.ac.ug',
       academicYears: ['2025', '2026'],
       currentAcademicYear: '2026',
       streams: ['A', 'B', 'C'],

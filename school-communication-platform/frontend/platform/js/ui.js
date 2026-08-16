@@ -55,7 +55,17 @@
       container.appendChild(img);
     };
     img.onerror = () => {
-      container.textContent = '🎓';
+      // fall back to the website logo, then the 🎓 mark
+      const site = new Image();
+      site.onload = () => {
+        container.innerHTML = '';
+        container.classList.add('has-logo');
+        site.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;border-radius:9px';
+        container.appendChild(site);
+      };
+      site.onerror = () => { container.textContent = '🎓'; };
+      site.src = '/assets/images/logo.jpeg';
+      site.alt = 'School logo';
     };
     img.src = logoUrl() + '?t=' + Date.now();
     img.alt = 'School logo';
@@ -256,13 +266,14 @@
     const sidebar = el(`<aside class="sidebar">
       <div class="brand">
         <div class="logo" id="brand-logo">🎓</div>
-        <div>
-          <div class="name" id="school-name">School</div>
+        <div style="min-width:0">
+          <div class="name" id="school-name">Kalinabiri SS</div>
           <div class="role-tag">${esc(user.role.replace('_', ' '))} portal</div>
         </div>
       </div>
       <nav id="side-nav"></nav>
-      <div class="sidebar-foot">Demo build · v1.0</div>
+      <button class="nav-item sidebar-logout" id="sidebar-logout"><span class="ic">🚪</span><span>Log out</span></button>
+      <div class="sidebar-foot" id="school-motto">Kalinabiri Secondary School</div>
     </aside>`);
     const navWrap = sidebar.querySelector('#side-nav');
     let lastSection = null;
@@ -278,9 +289,11 @@
 
     // topbar
     const topbar = el(`<div class="topbar">
-      <button class="hamburger" id="hamburger">☰</button>
+      <button class="hamburger" id="hamburger" aria-label="Open menu">☰</button>
       <div class="page-title" id="page-title">${esc(title || 'Dashboard')}</div>
       <div class="spacer"></div>
+      <button class="icon-btn" id="theme-btn" title="Switch theme (light / dark / system)" aria-label="Switch theme">🌓</button>
+      <button class="icon-btn topbar-logout" id="logout-btn" title="Log out" aria-label="Log out">🚪</button>
       <div class="dropdown" id="notif-drop">
         <button class="icon-btn" id="notif-btn">🔔<span class="count-dot" id="notif-dot" style="display:none">0</span></button>
         <div class="dropdown-menu" id="notif-menu"></div>
@@ -328,11 +341,21 @@
     }
 
     // events
-    sidebar.querySelectorAll('.nav-item').forEach((b) => b.addEventListener('click', () => {
+    sidebar.querySelectorAll('.nav-item[data-nav]').forEach((b) => b.addEventListener('click', () => {
       onNav(b.dataset.nav);
-      sidebar.classList.remove('open');
+      closeSidebar();
     }));
-    topbar.querySelector('#hamburger').onclick = () => sidebar.classList.toggle('open');
+
+    // mobile sidebar: hamburger + backdrop scrim + Escape all close it
+    const scrim = el('<div class="sidebar-scrim" id="sidebar-scrim"></div>');
+    document.body.appendChild(scrim);
+    function openSidebar() { sidebar.classList.add('open'); scrim.classList.add('open'); }
+    function closeSidebar() { sidebar.classList.remove('open'); scrim.classList.remove('open'); }
+    topbar.querySelector('#hamburger').onclick = () => {
+      sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+    };
+    scrim.onclick = closeSidebar;
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSidebar(); });
 
     // render avatar image if the user has a photo
     const chipAvatar = topbar.querySelector('#user-chip .avatar');
@@ -379,12 +402,38 @@
     topbar.querySelector('#user-menu').querySelector('[data-um="profile"]').onclick = () => onNav('profile');
     topbar.querySelector('#user-menu').querySelector('[data-um="notifications"]').onclick = () => onNav('notifications');
 
-    // school name + logo
+    // always-visible topbar buttons: theme toggle + logout
+    const doLogout = async () => {
+      const sure = await confirmDialog('Log out of your dashboard?', { title: 'Log out', confirmText: 'Log out' });
+      if (!sure) return;
+      try { await API.post('/api/auth/logout'); } catch {}
+      API.logout();
+    };
+    topbar.querySelector('#logout-btn').onclick = doLogout;
+    const themeBtn = topbar.querySelector('#theme-btn');
+    const themeIcon = () => ({ light: '☀️', dark: '🌙', system: '🌓' }[window.Theme.current() || 'system'] || '🌓');
+    themeBtn.textContent = themeIcon();
+    themeBtn.onclick = () => {
+      const order = ['system', 'light', 'dark'];
+      const next = order[(order.indexOf(window.Theme.current()) + 1) % order.length];
+      window.Theme.set(next);
+      themeBtn.textContent = themeIcon();
+      refreshThemeLabel();
+      UI.toast(`Theme: ${next}`, 'info');
+    };
+    document.addEventListener('theme:changed', () => { themeBtn.textContent = themeIcon(); });
+
+    // sidebar logout (same confirm flow as the topbar button)
+    sidebar.querySelector('#sidebar-logout').onclick = doLogout;
+
+    // school name + motto + logo (same identity as the public website)
     try {
       const s = await API.get('/api/settings/public');
       if (s.school && s.school.name) {
         sidebar.querySelector('#school-name').textContent = s.school.name;
         document.title = s.school.name + ' — ' + (user.role.replace('_', ' '));
+        const motto = sidebar.querySelector('#school-motto');
+        if (motto) motto.textContent = s.school.motto || s.school.name;
       }
     } catch { /* keep default */ }
     applySchoolLogo(sidebar.querySelector('#brand-logo'));

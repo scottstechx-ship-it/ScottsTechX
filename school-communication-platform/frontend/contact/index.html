@@ -121,8 +121,8 @@
     @media (max-width: 1023px) { .mobile-nav { display: flex; } }
 
     /* PAGE BODY */
-    .page-body { position: relative; z-index: 2; padding-top: 72px; }
-    @media (max-width: 1023px) { .page-body { padding-top: 60px; } }
+    .page-body { position: relative; z-index: 2; padding-top: 8px; }
+    @media (max-width: 1023px) { .page-body { padding-top: 4px; } }
 
     /* ============================================
        HERO / PAGE HEADER - DRAMATIC 3D VERSION
@@ -804,43 +804,8 @@
 <div class="video-overlay"></div>
 
 <!-- DESKTOP NAV -->
-<nav class="desktop-nav">
-  <div class="nav-logo"><img src="../assets/images/logo.jpeg" alt="Kalinabiri SS"><div class="nav-brand">Kalinabiri SS<span>Ntinda, Kampala</span></div></div>
-  <div class="nav-links">
-    <a href='/'>Home</a>
-    <a href='/about/'>About</a>
-    <a href='/academics/'>Academics</a>
-    <a href='/admissions/'>Admissions</a>
-    <a href='/gallery/'>Gallery</a>
-    <a href='/news/'>News</a>
-    <a class='active' href='/contact/'>Contact</a>
-  </div>
-  <div class="nav-actions">
-    <a class='btn-portal' href='/student-portal/'>Student Portal</a>
-    <a class='btn-apply' href='/admissions/'>Apply Now</a>
-  </div>
-  <a href="#" class="nav-logo-right" onclick="return false"><img src="https://kalibz-international.netlify.app/assets/images/logo.jpeg" alt="Kalinabiri SS" style="width:44px;height:44px;border-radius:10px;border:2px solid rgba(74,222,128,0.5);object-fit:cover;"></a>
-</nav>
-
-<!-- MOBILE NAV -->
-<div class="mobile-nav">
-  <div class="nav-logo"><img src="../assets/images/logo.jpeg" alt="Kalinabiri SS"><div class="nav-brand">Kalinabiri SS<span>Contact</span></div></div>
-  <button class="hamburger" onclick="document.getElementById('mobileMenu').classList.toggle('active')"><span></span><span></span><span></span></button>
+<button class="hamburger" onclick="document.getElementById('mobileMenu').classList.toggle('active')"><span></span><span></span><span></span></button>
 </div>
-<div class="mobile-menu" id="mobileMenu">
-  <div class="section-label">Navigate</div>
-  <a href='/'>🏠 Home</a>
-  <a href='/about/'>🏫 About</a>
-  <a href='/academics/'>📚 Academics</a>
-  <a href='/admissions/'>🎓 Admissions</a>
-  <a href='/gallery/'>🖼️ Gallery</a>
-  <a href='/news/'>📰 News</a>
-  <a class='active' href='/contact/'>✉️ Contact</a>
-  <div class="section-label">Portals</div>
-  <a href='/student-portal/'>🎓 Student Portal</a>
-  <a class='apply-btn' href='/admissions/#application-form'>📝 Apply Now</a>
-</div>
-
 <div class="page-body">
 
 <!-- PAGE HEADER - DRAMATIC HERO -->

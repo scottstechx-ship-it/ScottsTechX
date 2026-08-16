@@ -29,11 +29,21 @@
   }
 
   function build() {
-    // Remove any legacy navbars the page may still carry
-    ['.navbar-3d', '.mobile-nav-menu', 'nav.navbar', '.desktop-nav', '.mobile-nav', '.top-nav'].forEach(function (sel) {
+    // Remove any legacy navbars the page may still carry so the unified
+    // navbar is the ONLY navigation on every page (desktop AND mobile).
+    ['.navbar-3d', '.mobile-nav-menu', 'nav.navbar', '.desktop-nav', '.mobile-nav',
+      '.top-nav', '.mobile-menu', '#mobileMenu', '#mobileNavMenu'].forEach(function (sel) {
       document.querySelectorAll(sel).forEach(function (el) {
         if (!el.closest('.kn-nav')) el.remove();
       });
+    });
+    // bare <nav> elements (e.g. the gallery page) that aren't ours
+    document.querySelectorAll('nav').forEach(function (el) {
+      if (!el.classList.contains('kn-nav') && !el.closest('.kn-nav')) el.remove();
+    });
+    // orphaned hamburger buttons left outside a removed nav
+    document.querySelectorAll('.hamburger, .mobile-menu-btn, .mobile-toggle-3d').forEach(function (el) {
+      if (!el.closest('.kn-nav') && !el.closest('.topbar')) el.remove();
     });
 
     var nav = document.createElement('nav');

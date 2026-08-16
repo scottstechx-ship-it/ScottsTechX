@@ -120,8 +120,8 @@
     @media (max-width: 1023px) { .mobile-nav { display: flex; } }
 
     /* PAGE BODY */
-    .page-body { position: relative; z-index: 2; padding-top: 72px; }
-    @media (max-width: 1023px) { .page-body { padding-top: 60px; } }
+    .page-body { position: relative; z-index: 2; padding-top: 8px; }
+    @media (max-width: 1023px) { .page-body { padding-top: 4px; } }
 
     /* HERO */
     .adm-hero {
@@ -258,40 +258,8 @@
 <div class="video-overlay"></div>
 
 <!-- DESKTOP NAV -->
-<nav class="desktop-nav">
-  <div class="nav-logo"><img src="../assets/images/logo.jpeg" alt="Kalinabiri SS"><div class="nav-brand">Kalinabiri SS<span>Ntinda, Kampala</span></div></div>
-  <div class="nav-links">
-    <a href='/'>Home</a>
-    <a href='/about/'>About</a>
-    <a href='/academics/'>Academics</a>
-    <a class='active' href='/admissions/'>Admissions</a>
-    <a href='/gallery/'>Gallery</a>
-    <a href='/news/'>News</a>
-  </div>
-  <div class="nav-actions">
-    <a class='btn-portal' href='/student-portal/'>Student Portal</a>
-    <a href="#application-form" class="btn-apply">Apply Now</a>
-  </div>
-  <a href="#" class="nav-logo-right" onclick="return false"><img src="https://kalibz-international.netlify.app/assets/images/logo.jpeg" alt="Kalinabiri SS" style="width:44px;height:44px;border-radius:10px;border:2px solid rgba(74,222,128,0.5);object-fit:cover;"></a>
-</nav>
-
-<!-- MOBILE NAV -->
-<div class="mobile-nav">
-  <div class="nav-logo"><img src="../assets/images/logo.jpeg" alt="Kalinabiri SS"><div class="nav-brand">Kalinabiri SS<span>Admissions</span></div></div>
-  <button class="hamburger" onclick="document.getElementById('mobileMenu').classList.toggle('active')"><span></span><span></span><span></span></button>
+<button class="hamburger" onclick="document.getElementById('mobileMenu').classList.toggle('active')"><span></span><span></span><span></span></button>
 </div>
-<div class="mobile-menu" id="mobileMenu">
-  <a href='/'>🏠 Home</a>
-  <a href='/about/'>🏫 About</a>
-  <a href='/academics/'>📚 Academics</a>
-  <a href='/admissions/'>🎓 Admissions</a>
-  <a href='/gallery/'>🖼️ Gallery</a>
-  <a href='/news/'>📰 News</a>
-  <a href='/contact/'>✉️ Contact</a>
-  <a href='/student-portal/'>🎓 Student Portal</a>
-  <a href="#application-form" class="apply-btn">📝 Apply Now</a>
-</div>
-
 <div class="page-body">
 
 <!-- HERO -->

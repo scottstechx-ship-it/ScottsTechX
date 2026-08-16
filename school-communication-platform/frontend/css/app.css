@@ -409,3 +409,29 @@ html[data-theme="dark"] .toast.error { background: #b91c1c; }
   padding: 10px 16px; border-radius: 0 0 10px 0; z-index: 300; font-weight: 700;
 }
 .skip-link:focus { left: 0; }
+
+/* ---------- mobile sidebar scrim + topbar quick actions ---------- */
+.sidebar-scrim { display: none; }
+@media (max-width: 768px) {
+  .sidebar-scrim.open {
+    display: block; position: fixed; inset: 0; z-index: 49;
+    background: rgba(2, 6, 23, .55);
+  }
+  .sidebar { z-index: 50; }
+  .sidebar.open { transform: none; }
+}
+.topbar .icon-btn { min-width: 40px; min-height: 40px; }
+.topbar .topbar-logout { color: #dc2626; }
+html[data-theme="dark"] .topbar .topbar-logout { color: #f87171; }
+.sidebar .sidebar-logout {
+  margin: 8px 10px 4px; width: calc(100% - 20px);
+  color: #fca5a5 !important; border: 1px solid rgba(248, 113, 113, .25);
+  border-radius: 10px;
+}
+.sidebar .sidebar-logout:hover { background: rgba(239, 68, 68, .15) !important; }
+@media (max-width: 480px) {
+  /* keep the topbar uncluttered on small phones: hide the user text, keep avatar */
+  .topbar .user-chip .meta { display: none; }
+  .topbar { gap: 6px; padding-left: 10px; padding-right: 10px; }
+  .topbar .page-title { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
