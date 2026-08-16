@@ -34,6 +34,10 @@
     var toObserve = [];
     targets.forEach(function (el, i) {
       if (el.classList.contains('ka-reveal') || el.closest('.kn-nav, .kn-drawer')) return;
+      // NEVER double-animate: if the page has its own reveal system on this
+      // element (.reveal / .reveal-left / …), leave it alone — two competing
+      // opacity:0 classes can leave content invisible forever.
+      if (/(^|\s)(reveal|reveal-left|reveal-right|reveal-scale|revealed)(\s|$)/.test(el.className)) return;
       el.classList.add('ka-reveal');
       // small stagger within groups for a cascade feel
       el.style.transitionDelay = Math.min((i % 6) * 60, 300) + 'ms';
@@ -93,4 +97,29 @@
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
+
+  // FAILSAFE: nothing may stay invisible. If any reveal-style element is still
+  // hidden 2.5s after load (missed observer, JS error elsewhere, odd scroll
+  // restoration), force it visible.
+  function forceShow() {
+    document.querySelectorAll(
+      '.ka-reveal:not(.ka-in), .reveal:not(.revealed), .reveal-left:not(.revealed), ' +
+      '.reveal-right:not(.revealed), .reveal-scale:not(.revealed), ' +
+      '.about-section:not(.visible), .timeline-item:not(.visible), .memorial-card:not(.visible)'
+    ).forEach(function (el) {
+      el.classList.add('ka-in', 'revealed', 'visible');
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    });
+  }
+  setTimeout(forceShow, 2500);
+  // catch-all: any still-invisible content wrapper after 4s becomes visible
+  setTimeout(function () {
+    document.querySelectorAll('section, .card, [class*="card"], [class*="item"], [class*="section"]').forEach(function (el) {
+      if (el.children.length && parseFloat(getComputedStyle(el).opacity) < 0.1) {
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+      }
+    });
+  }, 4000);
 })();
