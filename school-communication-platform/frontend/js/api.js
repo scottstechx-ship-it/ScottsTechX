@@ -14,9 +14,19 @@
   function setUser(u) { u ? localStorage.setItem(USER_KEY, JSON.stringify(u)) : localStorage.removeItem(USER_KEY); }
 
   function logout() {
+    // Send each role back to ITS OWN premium login page (fall back to the
+    // portal gateway for unknown roles), never the generic demo login.
+    const role = (getUser() || {}).role;
+    const ROLE_LOGIN = {
+      super_admin: '/platform/login-super-admin.html',
+      admin: '/platform/login-admin.html',
+      teacher: '/platform/login-teacher.html',
+      student: '/platform/login-student.html',
+      parent: '/platform/login-parent.html',
+    };
     setToken(null);
     setUser(null);
-    location.href = BASE + '/login.html';
+    location.href = ROLE_LOGIN[role] || '/dashboard-access.html';
   }
 
   async function request(path, { method = 'GET', body, form, auth = true, raw = false } = {}) {

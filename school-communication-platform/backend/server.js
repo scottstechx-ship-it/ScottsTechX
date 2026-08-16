@@ -68,7 +68,7 @@ app.get('/api/health', (req, res) => {
 // ---- static frontend (optional — can be hosted separately) ---------------
 const frontendDir = path.join(__dirname, '..', 'frontend');
 app.use(express.static(frontendDir, { extensions: ['html'], index: 'index.html' }));
-app.get('/', (req, res) => res.redirect('/login.html'));
+// The public website (frontend/index.html) is served at '/' by the static handler.
 
 // ---- API docs (rendered HTML) -------------------------------------------
 app.use('/docs', express.static(path.join(__dirname, '..', 'docs')));

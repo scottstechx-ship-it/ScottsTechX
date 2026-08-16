@@ -811,47 +811,52 @@ test('admin can create and delete a user, but cannot touch super admins', async 
   assert.strictEqual(del.status, 200);
 });
 
-test('parent self-registration → verify → pending blocked → approve → login', async () => {
-  const reg = await api('/api/auth/register', { method: 'POST', body: { fullName: 'Mrs. Test Parent', email: 'ptest@test.local', phone: '+256700001234', password: 'Parent@123' } });
-  assert.strictEqual(reg.status, 200);
-  assert.ok(reg.data.devVerifyLink, 'dev verify link');
+test('parent self-registration → student codes → pending blocked → approve → emailed credentials login', async () => {
+  // registration requires a valid student code (guardianship proof)
+  const badCode = await api('/api/auth/register', { method: 'POST', body: { fullName: 'Mrs. Test Parent', email: 'ptest@test.local', studentCodes: 'STU-NOPE-99' } });
+  assert.strictEqual(badCode.status, 400, 'invalid student code rejected');
 
-  // cannot log in before verifying
-  const beforeVerify = await api('/api/auth/login', { method: 'POST', body: { username: 'ptest@test.local', password: 'Parent@123' } });
-  assert.strictEqual(beforeVerify.status, 403);
+  const reg = await api('/api/auth/register', { method: 'POST', body: { fullName: 'Mrs. Test Parent', email: 'ptest@test.local', phone: '+256700001234', studentCodes: 'STU-2024-001' } });
+  assert.strictEqual(reg.status, 200, JSON.stringify(reg.data));
 
-  const token = new URL(reg.data.devVerifyLink).searchParams.get('token');
-  const verify = await api('/api/auth/verify-email', { method: 'POST', body: { token } });
-  assert.strictEqual(verify.status, 200);
+  // cannot log in while pending (no password exists yet anyway)
+  const pendingLogin = await api('/api/auth/login', { method: 'POST', body: { username: 'ptest@test.local', password: 'anything' } });
+  assert.ok([401, 403].includes(pendingLogin.status));
 
-  // still blocked while pending
-  const pendingLogin = await api('/api/auth/login', { method: 'POST', body: { username: 'ptest@test.local', password: 'Parent@123' } });
-  assert.strictEqual(pendingLogin.status, 403);
-
-  // admin sees it in pending
+  // admin sees it in pending WITH the claimed children listed
   const pending = await api('/api/parents/pending', { token: tokens.admin });
   const row = pending.data.pending.find((p) => p.email === 'ptest@test.local');
   assert.ok(row, 'parent appears in pending');
+  assert.ok((row.claimed_children || []).some((c) => c.student_code === 'STU-2024-001'), 'claimed child listed for admin verification');
 
-  // admin approves
+  // admin approves -> credentials generated (returned when email is not configured)
   const approve = await api(`/api/parents/${row.id}/approve`, { method: 'POST', token: tokens.admin });
   assert.strictEqual(approve.status, 200, JSON.stringify(approve.data));
+  const creds = approve.data.credentials;
+  assert.ok(creds && creds.password && creds.username && creds.parentCode, 'credentials generated at approval');
 
-  // now login works
-  const login = await api('/api/auth/login', { method: 'POST', body: { username: 'ptest@test.local', password: 'Parent@123' } });
+  // login works with username AND with the parent code
+  const login = await api('/api/auth/login', { method: 'POST', body: { username: creds.username, password: creds.password } });
   assert.strictEqual(login.status, 200);
+  assert.strictEqual(login.data.user.mustChangePassword, true, 'forced password change');
+  const codeLogin = await api('/api/auth/login', { method: 'POST', body: { username: creds.parentCode, password: creds.password } });
+  assert.strictEqual(codeLogin.status, 200, 'parent code works as login identifier');
+
+  // the claimed child is linked automatically
+  const kids = await api('/api/parents/children', { token: login.data.token });
+  assert.ok(JSON.stringify(kids.data).includes('STU-2024-001'), 'child linked after approval');
 });
 
 test('rejected parents cannot log in', async () => {
-  const reg = await api('/api/auth/register', { method: 'POST', body: { fullName: 'Mr. Reject Me', email: 'rejectme@test.local', password: 'Reject@123' } });
-  const token = new URL(reg.data.devVerifyLink).searchParams.get('token');
-  await api('/api/auth/verify-email', { method: 'POST', body: { token } });
+  const reg = await api('/api/auth/register', { method: 'POST', body: { fullName: 'Mr. Reject Me', email: 'rejectme@test.local', studentCodes: 'STU-2024-002' } });
+  assert.strictEqual(reg.status, 200, JSON.stringify(reg.data));
   const pending = await api('/api/parents/pending', { token: tokens.admin });
   const row = pending.data.pending.find((p) => p.email === 'rejectme@test.local');
+  assert.ok(row, 'pending row exists');
   const reject = await api(`/api/parents/${row.id}/reject`, { method: 'POST', token: tokens.admin });
   assert.strictEqual(reject.status, 200);
-  const login = await api('/api/auth/login', { method: 'POST', body: { username: 'rejectme@test.local', password: 'Reject@123' } });
-  assert.strictEqual(login.status, 403);
+  const login = await api('/api/auth/login', { method: 'POST', body: { username: 'rejectme@test.local', password: 'whatever' } });
+  assert.ok([401, 403].includes(login.status));
 });
 
 test('import auto-generates login codes + credentials CSV', async () => {

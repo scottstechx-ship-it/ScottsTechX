@@ -416,14 +416,204 @@ router.get('/', authenticate, requireStaffAdmin, (req, res) => {
   res.json({ imports });
 });
 
-/** GET /api/imports/template.csv — downloadable starter template. */
+/**
+ * GET /api/imports/template.csv?type=students|teachers|fees
+ * Downloadable starter templates showing EXACTLY how to organise the data.
+ * Codes/usernames/passwords may be left blank — the system generates them.
+ */
 router.get('/template.csv', authenticate, requireStaffAdmin, (req, res) => {
-  const header = 'Full Name,Student ID,Class,Stream,Gender,Date of Birth,Parent Name,Parent Phone,Parent Email,Address,Enrollment Date,Username,Password\n';
-  const sample = 'Sarah Namuli,STU-2026-100,Senior 2,A,Female,2010-04-12,John Namuli,+256700000030,john@example.com,Kampala,,sarah2026,Student@123\n';
-  const sample2 = 'Brian Mukasa,STU-2026-101,Senior 2,A,Male,2009-07-19,Peter Mukasa,+256700000031,,Entebbe,2026-02-01,,\n';
+  const type = cleanString(req.query.type, 20) || 'students';
+  let filename, content;
+  if (type === 'teachers') {
+    filename = 'teacher-import-template.csv';
+    content =
+      'Full Name,Staff ID,Email,Phone,Subjects,Qualification,Date Joined\n' +
+      'Ms. Grace Atim,TCH-2026-01,grace@example.com,+256700000040,"Mathematics, Physics",BSc Education,2024-02-01\n' +
+      'Mr. Peter Okoth,,peter@example.com,+256700000041,English,BA Arts with Education,\n' +
+      '"# Staff ID is optional - leave blank and the system generates one (e.g. TCH-2026-07).",,,,,,\n' +
+      '"# Each teacher automatically gets a login account: username = staff ID, default password, forced change on first login.",,,,,,\n';
+  } else if (type === 'fees') {
+    filename = 'fees-import-template.csv';
+    content =
+      'Fee Name,Amount,Year,Term,Class\n' +
+      'Term 1 Tuition,850000,2026,Term 1,Senior 1 A\n' +
+      'Term 1 Tuition,900000,2026,Term 1,Senior 2 A\n' +
+      'Development Fee,150000,2026,Term 1,\n' +
+      '"# Leave Class blank to apply the fee to ALL classes.",,,,\n' +
+      '"# Amount is in UGX with no commas. Each row becomes a fee structure automatically assigned to its class students.",,,,\n';
+  } else {
+    filename = 'student-import-template.csv';
+    content =
+      'Full Name,Student ID,Class,Stream,Gender,Date of Birth,Parent Name,Parent Phone,Parent Email,Address,Enrollment Date,Username,Password\n' +
+      'Sarah Namuli,STU-2026-100,Senior 2,A,Female,2010-04-12,John Namuli,+256700000030,john@example.com,Kampala,,sarah2026,Student@123\n' +
+      'Brian Mukasa,,Senior 2,A,Male,2009-07-19,Peter Mukasa,+256700000031,,Entebbe,2026-02-01,,\n' +
+      '"# Student ID / Username / Password are optional - leave blank and the system generates them automatically.",,,,,,,,,,,,\n' +
+      '"# Students log in with their username OR student code + password (changed on first login).",,,,,,,,,,,,\n';
+  }
   res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-  res.setHeader('Content-Disposition', 'attachment; filename="student-import-template.csv"');
-  res.send(header + sample + sample2);
+  res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+  res.send(content);
+});
+
+// ---------------------------------------------------------------------------
+// One-step TEACHER import: upload -> validate -> create accounts + codes
+// ---------------------------------------------------------------------------
+function parseSpreadsheet(file) {
+  const ext = (file.originalname.split('.').pop() || '').toLowerCase();
+  if (!IMPORT_TYPES.includes(ext)) throw Object.assign(new Error('Only Excel (.xlsx, .xls) and CSV (.csv) files are supported.'), { status: 400 });
+  let rows;
+  if (ext === 'csv') {
+    const text = fs.readFileSync(file.path, 'utf8');
+    const wb = XLSX.read(text, { type: 'string' });
+    rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
+  } else {
+    const wb = XLSX.readFile(file.path);
+    rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
+  }
+  return rows
+    .map((r) => {
+      const o = {};
+      for (const k of Object.keys(r)) o[String(k).trim().toLowerCase()] = typeof r[k] === 'number' ? r[k] : String(r[k]).trim();
+      return o;
+    })
+    // skip helper/comment rows from the template
+    .filter((r) => !String(Object.values(r)[0] || '').startsWith('#'));
+}
+function pick(row, ...names) {
+  for (const n of names) {
+    if (row[n] !== undefined && row[n] !== '') return row[n];
+  }
+  return '';
+}
+
+function nextTeacherCode() {
+  const year = new Date().getFullYear();
+  for (let i = 1; i < 10000; i++) {
+    const code = `TCH-${year}-${String(i).padStart(2, '0')}`;
+    if (!get('SELECT id FROM teachers WHERE staff_code = ?', [code])) return code;
+  }
+  return 'TCH-' + Date.now().toString(36).toUpperCase();
+}
+
+router.post('/teachers', authenticate, requireStaffAdmin, upload.single('file'), handleUploadErrors, (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'Choose a file to upload.' });
+  let rows;
+  try { rows = parseSpreadsheet(req.file); }
+  catch (e) { try { fs.unlinkSync(req.file.path); } catch {} return res.status(e.status || 400).json({ error: e.message }); }
+  try { fs.unlinkSync(req.file.path); } catch {}
+  if (!rows.length) return res.status(400).json({ error: 'The file contains no data rows.' });
+  if (rows.length > 1000) return res.status(400).json({ error: `Too many rows (${rows.length}). Maximum is 1000.` });
+
+  const school = require('../services/settingsService').readSettings().school;
+  const defaultPassword = school.defaultTeacherPassword || 'Teacher@123';
+  let imported = 0;
+  const failures = [];
+  const credentials = [];
+
+  tx(() => {
+    rows.forEach((row, i) => {
+      const fullName = cleanString(pick(row, 'full name', 'name', 'teacher'), 120);
+      if (!fullName) { failures.push({ row: i + 2, name: '(blank)', reason: 'Full name is required' }); return; }
+      const email = cleanString(pick(row, 'email', 'email address'), 160).toLowerCase();
+      if (email && !isEmail(email)) { failures.push({ row: i + 2, name: fullName, reason: `Invalid email "${email}"` }); return; }
+      if (email && get('SELECT id FROM users WHERE lower(email) = lower(?)', [email])) {
+        failures.push({ row: i + 2, name: fullName, reason: `Email "${email}" already registered` }); return;
+      }
+      let staffCode = cleanString(pick(row, 'staff id', 'staff code', 'staff no', 'code'), 30).toUpperCase();
+      if (staffCode && get('SELECT id FROM teachers WHERE upper(staff_code) = ?', [staffCode])) {
+        failures.push({ row: i + 2, name: fullName, reason: `Staff ID "${staffCode}" already exists` }); return;
+      }
+      if (!staffCode) staffCode = nextTeacherCode();
+      // username = staff code, lowercased & cleaned (login also works with the code itself)
+      let username = staffCode.toLowerCase().replace(/[^a-z0-9_.-]/g, '');
+      let n = 1;
+      while (get('SELECT id FROM users WHERE username = ?', [username])) username = staffCode.toLowerCase().replace(/[^a-z0-9_.-]/g, '') + '_' + n++;
+
+      const info = run(
+        `INSERT INTO users (full_name, email, phone, username, password_hash, role, status, registration_status, email_verified, must_change_password)
+         VALUES (?, ?, ?, ?, ?, 'teacher', 'active', 'approved', 1, 1)`,
+        [fullName, email || null, cleanString(pick(row, 'phone', 'phone number'), 30) || null, username, bcrypt.hashSync(defaultPassword, 10)]
+      );
+      run(
+        `INSERT INTO teachers (user_id, staff_code, full_name, subjects, phone, email, qualification, date_joined, status)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'active')`,
+        [info.lastInsertRowid, staffCode, fullName,
+          cleanString(pick(row, 'subjects', 'subject'), 300) || null,
+          cleanString(pick(row, 'phone', 'phone number'), 30) || null,
+          email || null,
+          cleanString(pick(row, 'qualification'), 200) || null,
+          normalizeDate(pick(row, 'date joined', 'joined')).value || null]
+      );
+      credentials.push({ name: fullName, username, staffCode, password: defaultPassword });
+      imported++;
+    });
+  });
+
+  const info2 = run('INSERT INTO imports (filename, kind, status, counts, credentials, created_by) VALUES (?, \'teachers\', \'imported\', ?, ?, ?)',
+    [req.file.originalname, JSON.stringify({ imported, failed: failures.length }), JSON.stringify(credentials), req.user.id]);
+  log(req.user, 'TEACHER_IMPORTED', `Imported ${imported} teachers from "${req.file.originalname}" (${failures.length} failed)`, req.ip);
+  res.json({
+    message: `Import complete: ${imported} teacher${imported === 1 ? '' : 's'} imported. Each was given a staff code + login (username = staff code, default password, changed on first login).`,
+    importId: info2.lastInsertRowid,
+    counts: { imported, failed: failures.length },
+    failures: failures.slice(0, 100),
+    credentials: credentials.slice(0, 200),
+  });
+});
+
+// ---------------------------------------------------------------------------
+// One-step FEES import: each row -> fee structure (+ auto-assign to class)
+// ---------------------------------------------------------------------------
+router.post('/fees', authenticate, requireStaffAdmin, upload.single('file'), handleUploadErrors, (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'Choose a file to upload.' });
+  let rows;
+  try { rows = parseSpreadsheet(req.file); }
+  catch (e) { try { fs.unlinkSync(req.file.path); } catch {} return res.status(e.status || 400).json({ error: e.message }); }
+  try { fs.unlinkSync(req.file.path); } catch {}
+  if (!rows.length) return res.status(400).json({ error: 'The file contains no data rows.' });
+  if (rows.length > 500) return res.status(400).json({ error: `Too many rows (${rows.length}). Maximum is 500.` });
+
+  let imported = 0, assigned = 0;
+  const failures = [];
+
+  tx(() => {
+    rows.forEach((row, i) => {
+      const name = cleanString(pick(row, 'fee name', 'name', 'fee'), 150);
+      const amount = parseFloat(String(pick(row, 'amount', 'amount (ugx)')).replace(/[^\d.]/g, ''));
+      if (!name || !amount || amount <= 0) { failures.push({ row: i + 2, name: name || '(blank)', reason: 'Fee name and a positive amount are required' }); return; }
+      const year = cleanString(String(pick(row, 'year', 'academic year')), 10) || String(new Date().getFullYear());
+      const term = cleanString(pick(row, 'term'), 30) || null;
+      const className = cleanString(pick(row, 'class', 'class name'), 60);
+      let classId = null;
+      if (className) {
+        classId = classForName(className, cleanString(pick(row, 'stream'), 10), year) ||
+                  classForName(className, cleanString(pick(row, 'stream'), 10), '2026');
+        if (!classId) { failures.push({ row: i + 2, name, reason: `Class "${className}" not found` }); return; }
+      }
+      const info = run(
+        'INSERT INTO fee_structures (name, amount, academic_year, term, class_id) VALUES (?, ?, ?, ?, ?)',
+        [name, amount, year, term, classId]
+      );
+      imported++;
+      // auto-assign to the class's active students (or ALL active students when no class)
+      const students = classId
+        ? all("SELECT id FROM students WHERE class_id = ? AND status = 'active'", [classId])
+        : all("SELECT id FROM students WHERE status = 'active'");
+      for (const s of students) {
+        run('INSERT OR IGNORE INTO student_fees (student_id, fee_structure_id, amount) VALUES (?, ?, ?)', [s.id, info.lastInsertRowid, amount]);
+        assigned++;
+      }
+    });
+  });
+
+  run('INSERT INTO imports (filename, kind, status, counts, created_by) VALUES (?, \'fees\', \'imported\', ?, ?)',
+    [req.file.originalname, JSON.stringify({ imported, failed: failures.length, assigned }), req.user.id]);
+  log(req.user, 'FEES_IMPORTED', `Imported ${imported} fee structures from "${req.file.originalname}" (${assigned} student assignments)`, req.ip);
+  res.json({
+    message: `Import complete: ${imported} fee structure${imported === 1 ? '' : 's'} created and assigned to ${assigned} student record${assigned === 1 ? '' : 's'}.`,
+    counts: { imported, failed: failures.length, assigned },
+    failures: failures.slice(0, 100),
+  });
 });
 
 module.exports = router;

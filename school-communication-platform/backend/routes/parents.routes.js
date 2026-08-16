@@ -211,7 +211,7 @@ router.get('/', authenticate, requireStaffAdmin, (req, res) => {
 /** POST /api/parents — create a parent (+ account + optional child links). */
 router.post('/', authenticate, requireStaffAdmin, (req, res) => {
   const fullName = cleanString(req.body.fullName, 120);
-  const parentCode = cleanString(req.body.parentCode, 40);
+  let parentCode = cleanString(req.body.parentCode, 40);
   const phone = cleanString(req.body.phone, 30);
   const email = cleanString(req.body.email, 160);
   const address = cleanString(req.body.address, 300);
@@ -220,7 +220,10 @@ router.post('/', authenticate, requireStaffAdmin, (req, res) => {
   const password = cleanString(req.body.password, 200);
   const childIds = Array.isArray(req.body.childIds) ? req.body.childIds.map(asInt).filter(Boolean) : [];
 
-  if (!fullName || !parentCode) return res.status(400).json({ error: 'fullName and parentCode are required.' });
+  if (!fullName) return res.status(400).json({ error: 'fullName is required.' });
+  if (!parentCode) {
+    parentCode = 'PAR-' + Date.now().toString(36).toUpperCase() + Math.floor(Math.random() * 90 + 10);
+  }
   if (email && !isEmail(email)) return res.status(400).json({ error: 'Invalid email.' });
   if (phone && !isPhone(phone)) return res.status(400).json({ error: 'Invalid phone.' });
   if (get('SELECT id FROM parents WHERE parent_code = ?', [parentCode])) {
@@ -268,6 +271,15 @@ router.get('/pending', authenticate, requireStaffAdmin, (req, res) => {
      WHERE u.registration_status = 'pending'
      ORDER BY u.created_at DESC`
   );
+  // include the claimed children so the admin can verify guardianship
+  for (const p of pending) {
+    p.claimed_children = all(
+      `SELECT s.full_name, s.student_code, c.name AS class_name, c.stream
+       FROM parent_students ps JOIN students s ON s.id = ps.student_id
+       LEFT JOIN classes c ON c.id = s.class_id
+       WHERE ps.parent_id = ?`, [p.id]
+    );
+  }
   res.json({ pending });
 });
 
@@ -344,7 +356,11 @@ module.exports.parentUserIdsForClass = parentUserIdsForClass;
 // Parent registration approval workflow (admin)
 // ===========================================================================
 
-/** POST /api/parents/:id/approve — approve a registration (admin). */
+/**
+ * POST /api/parents/:id/approve — approve a registration (admin).
+ * Generates the real credentials NOW and emails them:
+ * username + parent code + a fresh random password (change forced on login).
+ */
 router.post('/:id/approve', authenticate, requireStaffAdmin, (req, res) => {
   const id = asInt(req.params.id);
   const p = get('SELECT * FROM parents WHERE id = ?', [id]);
@@ -354,16 +370,57 @@ router.post('/:id/approve', authenticate, requireStaffAdmin, (req, res) => {
   if (u.registration_status === 'rejected') {
     return res.status(400).json({ error: 'This registration was previously rejected. Edit the parent to approve it.' });
   }
-  run('UPDATE users SET registration_status = \'approved\', status = \'active\' WHERE id = ?', [u.id]);
+
+  // Fresh credentials: readable random password, forced change on first login.
+  const crypto = require('crypto');
+  const words = ['Lion', 'Eagle', 'Cedar', 'River', 'Acacia', 'Sunrise', 'Kites', 'Baobab'];
+  const password = words[crypto.randomInt(words.length)] + '@' + crypto.randomInt(1000, 9999);
+  run(
+    `UPDATE users SET registration_status = 'approved', status = 'active',
+      password_hash = ?, must_change_password = 1 WHERE id = ?`,
+    [bcrypt.hashSync(password, 10), u.id]
+  );
+
+  const children = all(
+    `SELECT s.full_name, s.student_code FROM parent_students ps JOIN students s ON s.id = ps.student_id WHERE ps.parent_id = ?`, [p.id]
+  );
+  const childList = children.map((c) => `${c.full_name} (${c.student_code})`).join(', ') || '—';
+
   notify(u.id, 'account', 'Your registration was approved',
-    'Welcome! You can now log in with your parent account.', '/');
-  log(req.user, 'PARENT_APPROVED', `Approved parent registration for ${p.full_name}`, req.ip);
-  sendEmail({
+    'Welcome! Check your email for your login details.', '/');
+  log(req.user, 'PARENT_APPROVED', `Approved parent registration for ${p.full_name}; credentials emailed`, req.ip);
+
+  const base = require('../config/env').FRONTEND_URL;
+  const mail = sendEmail({
     to: u.email,
-    subject: 'Your parent account was approved',
-    html: `<p>Hello ${p.full_name},</p><p>Your parent registration has been approved. You can now log in to view your children's school information.</p><p><a href="${require('../config/env').FRONTEND_URL}/login.html">Log in here</a></p>`,
-  }).catch(() => {});
-  res.json({ message: `Parent ${p.full_name} approved. They can now log in.` });
+    subject: 'Your parent account is approved — login details inside',
+    html: `<p>Hello ${p.full_name},</p>
+      <p>Your parent registration has been <b>approved</b>. Linked children: ${childList}</p>
+      <p>Your login details:</p>
+      <table cellpadding="6" style="border-collapse:collapse;border:1px solid #ddd">
+        <tr><td><b>Username</b></td><td>${u.username}</td></tr>
+        <tr><td><b>Parent code</b></td><td>${p.parent_code} (you can also log in with this)</td></tr>
+        <tr><td><b>Temporary password</b></td><td>${password}</td></tr>
+      </table>
+      <p>For security you will be asked to set a new password the first time you log in.</p>
+      <p><a href="${base}/platform/login-parent.html">Log in here</a></p>`,
+  });
+
+  mail.then((sent) => {
+    res.json({
+      message: `Parent ${p.full_name} approved. ` + (sent.sent
+        ? 'Login details were emailed to them.'
+        : 'Email is not configured — share these credentials with them securely.'),
+      // Surface credentials to the admin ONLY when the email could not be
+      // sent, so the parent can still receive them.
+      credentials: sent.sent ? undefined : { username: u.username, parentCode: p.parent_code, password },
+    });
+  }).catch(() => {
+    res.json({
+      message: `Parent ${p.full_name} approved. Email failed — share these credentials securely.`,
+      credentials: { username: u.username, parentCode: p.parent_code, password },
+    });
+  });
 });
 
 /** POST /api/parents/:id/reject — reject a registration (admin). */

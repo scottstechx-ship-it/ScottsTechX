@@ -936,3 +936,13 @@ body.light-mode .admin-sidebar, body.light-mode .portal-sidebar { background: rg
   .admin-topbar { padding: 0 16px; }
   .admin-search { width: 180px; }
 }
+
+/* ---------- top-bar mobile fit ---------- */
+.top-bar-inner { flex-wrap: wrap; gap: 6px 14px; }
+.top-bar-left { flex-wrap: wrap; gap: 8px 16px; }
+@media (max-width: 700px) {
+  .top-bar-right { display: none; }              /* social row hides on phones */
+  .top-bar-left { width: 100%; justify-content: flex-start; }
+  .top-bar-item a { font-size: 0.78rem; }
+  .top-bar { padding: 6px 10px; }
+}

@@ -100,10 +100,19 @@ router.post('/login', (req, res) => {
     return res.status(400).json({ error: 'Enter your username or email and password.' });
   }
 
-  const u = get(
+  // Identifier can be a username, an email, OR a unique code
+  // (student code, staff code, parent code) — whichever the user has.
+  let u = get(
     'SELECT * FROM users WHERE username = ? OR lower(email) = lower(?)',
     [ident, ident]
   );
+  if (!u) {
+    const viaCode =
+      get('SELECT user_id FROM students WHERE upper(student_code) = upper(?) AND user_id IS NOT NULL', [ident]) ||
+      get('SELECT user_id FROM teachers WHERE upper(staff_code) = upper(?) AND user_id IS NOT NULL', [ident]) ||
+      get('SELECT user_id FROM parents  WHERE upper(parent_code) = upper(?) AND user_id IS NOT NULL', [ident]);
+    if (viaCode) u = get('SELECT * FROM users WHERE id = ?', [viaCode.user_id]);
+  }
   if (!u || !bcrypt.compareSync(pw, u.password_hash)) {
     log(null, 'LOGIN_FAILED', `Failed login attempt for "${ident}"`, req.ip);
     return res.status(401).json({ error: 'Incorrect username/email or password.' });
@@ -364,59 +373,78 @@ router.post('/register', (req, res) => {
   const fullName = cleanString((req.body || {}).fullName, 120);
   const email = cleanString((req.body || {}).email, 160).toLowerCase();
   const phone = cleanString((req.body || {}).phone, 30);
-  const password = cleanString((req.body || {}).password, 200);
   const address = cleanString((req.body || {}).address, 300);
+  // Student codes prove guardianship: one code per child, from the school.
+  let codes = (req.body || {}).studentCodes;
+  if (typeof codes === 'string') codes = codes.split(/[\s,;]+/);
+  codes = [...new Set((codes || []).map((c) => cleanString(c, 30).toUpperCase()).filter(Boolean))];
 
-  if (!fullName || !email || !password) {
-    return res.status(400).json({ error: 'Full name, email and password are required.' });
+  if (!fullName || !email) {
+    return res.status(400).json({ error: 'Full name and email are required.' });
   }
   if (!isEmail(email)) return res.status(400).json({ error: 'Enter a valid email address.' });
   if (phone && !isPhone(phone)) return res.status(400).json({ error: 'Enter a valid phone number.' });
-  const pwErr = passwordError(password, { strong: env.STRONG_PASSWORDS });
-  if (pwErr) return res.status(400).json({ error: pwErr });
+  if (!codes.length) {
+    return res.status(400).json({ error: 'Enter at least one student code. Your child\'s code is on their admission letter or report card — or ask the school office.' });
+  }
+  if (codes.length > 10) return res.status(400).json({ error: 'A maximum of 10 student codes can be linked at once.' });
+
+  // Every code must match a real student.
+  const students = [];
+  for (const code of codes) {
+    const s = get('SELECT id, full_name, student_code FROM students WHERE upper(student_code) = ?', [code]);
+    if (!s) return res.status(400).json({ error: `Student code "${code}" was not found. Check the code and try again.` });
+    students.push(s);
+  }
 
   if (get('SELECT id FROM users WHERE lower(email) = lower(?)', [email])) {
     // Do not reveal whether the account exists; behave as success.
-    return res.status(200).json({ message: 'Registration received. If your email is not already registered, a verification link has been sent to it.' });
+    return res.status(200).json({ message: 'Registration received. The school administration will review it and email you your login details once approved.' });
   }
 
-  const userId = tx(() => {
+  const parentCode = 'PAR-' + Date.now().toString(36).toUpperCase() + crypto2.randomBytes(2).toString('hex').toUpperCase();
+  const username = 'parent_' + Date.now().toString(36) + '_' + crypto2.randomBytes(3).toString('hex');
+  // A random placeholder password — the REAL password is generated at
+  // approval time and emailed; nobody can log in while pending anyway.
+  const placeholder = crypto2.randomBytes(24).toString('hex');
+
+  tx(() => {
     const info = run(
       `INSERT INTO users (full_name, email, phone, username, password_hash, role, status, registration_status, email_verified, must_change_password)
-       VALUES (?, ?, ?, ?, ?, 'parent', 'active', 'pending', 0, 0)`,
-      [fullName, email, phone || null, 'parent_' + Date.now().toString(36), bcrypt.hashSync(password, 10)]
+       VALUES (?, ?, ?, ?, ?, 'parent', 'active', 'pending', 1, 0)`,
+      [fullName, email, phone || null, username, bcrypt.hashSync(placeholder, 10)]
     );
-    // unique username: parent_<timestamp>_<random>
-    const username = 'parent_' + Date.now().toString(36) + '_' + crypto2.randomBytes(3).toString('hex');
-    run('UPDATE users SET username = ? WHERE id = ?', [username, info.lastInsertRowid]);
-    run(
+    const userId = info.lastInsertRowid;
+    const p = run(
       `INSERT INTO parents (user_id, parent_code, full_name, phone, email, address, status)
        VALUES (?, ?, ?, ?, ?, ?, 'active')`,
-      [info.lastInsertRowid, 'PAR-' + Date.now().toString(36).toUpperCase(), fullName, phone || null, email, address || null]
+      [userId, parentCode, fullName, phone || null, email, address || null]
     );
-    return info.lastInsertRowid;
+    // Link the claimed children now — the admin sees exactly which students
+    // this person claims to guard before approving.
+    for (const s of students) {
+      run('INSERT OR IGNORE INTO parent_students (parent_id, student_id) VALUES (?, ?)', [p.lastInsertRowid, s.id]);
+    }
   });
 
-  // send verification email
-  const token = createVerificationToken(userId);
-  const verifyLink = `${env.FRONTEND_URL}/verify-email.html?token=${token}`;
+  const childList = students.map((s) => `${s.full_name} (${s.student_code})`).join(', ');
+  const admins = all("SELECT id FROM users WHERE role IN ('admin','super_admin') AND status = 'active'").map((r) => r.id);
+  notifyMany(admins, 'account', 'New parent registration to review',
+    `${fullName} (${email}) claims guardianship of: ${childList}. Approve or reject in Parents.`, '/parents');
+  log(null, 'PARENT_REGISTERED', `Parent registration: ${fullName} <${email}> for ${childList}`, req.ip);
+
+  // Acknowledgement email (no credentials yet — those come after approval).
   sendEmail({
     to: email,
-    subject: 'Verify your email — school parent registration',
-    html: `<p>Hello ${fullName},</p><p>Thank you for registering as a parent. Please verify your email address:</p>
-      <p><a href="${verifyLink}">Verify my email</a> (valid for 24 hours).</p>
-      <p>After verification, the school administration will review and approve your account before you can log in.</p>`,
-  }).then((sent) => {
-    // Notify admins there is a registration to approve.
-    const admins = all("SELECT id FROM users WHERE role IN ('admin','super_admin') AND status = 'active'").map((r) => r.id);
-    notifyMany(admins, 'account', 'New parent registration', `${fullName} registered and is awaiting approval.`, '/parents');
+    subject: 'Registration received — parent account pending approval',
+    html: `<p>Hello ${fullName},</p>
+      <p>We received your parent registration for: <b>${childList}</b>.</p>
+      <p>The school administration will verify that you are the guardian and approve your account.
+      Your login details (username, parent code and password) will be sent to this email once approved.</p>`,
+  }).catch(() => {});
 
-    res.json({
-      message: 'Registration received. Please verify your email to continue.',
-      devVerifyLink: (!sent.sent && env.NODE_ENV !== 'production') ? verifyLink : undefined,
-    });
-  }).catch(() => {
-    res.json({ message: 'Registration received. Please verify your email to continue.' });
+  res.json({
+    message: 'Registration received! The school will verify your details and approve your account. Your login details will be emailed to you after approval.',
   });
 });
 

@@ -29,10 +29,15 @@
     return (name || '?').split(/\s+/).map((w) => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
   }
 
-  /** Authenticated avatar URL for a user, or null when none is set. */
+  /**
+   * Avatar URL for a user, or null when none is set.
+   * <img> tags cannot send auth headers, so the JWT rides along as a
+   * query parameter (the endpoint validates it exactly like a header).
+   */
   function avatarUrl(user) {
     if (user && user.profilePicture) {
-      return `${API.base}/api/users/${user.id}/avatar?ts=${Date.now()}`;
+      const tok = encodeURIComponent(API.getToken() || '');
+      return `${API.base}/api/users/${user.id}/avatar?token=${tok}&ts=${Date.now()}`;
     }
     return null;
   }

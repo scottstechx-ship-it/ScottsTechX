@@ -139,7 +139,7 @@ async function switchView(w, key) {
     const stuText = await switchView(window, 'students');
     check('student management renders', stuText.includes('Add student') && stuText.includes('Import'));
     const impText = await switchView(window, 'import');
-    check('import wizard opens', impText.includes('Step 1 of 6') || impText.includes('Upload'));
+    check('import center opens', impText.includes('Import Center') && impText.includes('Teachers') && impText.includes('Fees'));
     const attText = await switchView(window, 'attendance');
     check('attendance view renders', attText.includes('Load roster'));
     const feesText = await switchView(window, 'fees');

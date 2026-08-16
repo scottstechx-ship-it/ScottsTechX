@@ -31,8 +31,10 @@ button:focus-visible,a:focus-visible,.btn:focus-visible,.nav-item:focus-visible{
  .stat-card{min-height:72px}
  .stat-card .stat-num{font-size:21px}
  .form-row{grid-template-columns:1fr}
- .table-wrap{margin-inline:-4px;padding-inline:4px}
- table.table{min-width:680px}
+ .table-wrap{margin-inline:-4px;padding-inline:4px;overflow-x:auto}
+ .table-wrap table.table{min-width:640px}
+ .table-responsive table.table{min-width:0;width:100%}
+ .table-responsive{overflow-x:hidden}
  .topbar{height:58px}
  .topbar .page-title{font-size:15px}
  .dropdown-menu,.user-menu{position:fixed;left:10px;right:10px;width:auto;top:64px}

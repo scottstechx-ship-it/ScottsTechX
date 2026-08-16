@@ -62,7 +62,7 @@ router.get('/', authenticate, requireRole('super_admin', 'admin', 'teacher'), (r
 /** POST /api/students — create a student (+ login account). */
 router.post('/', authenticate, requireStaffAdmin, (req, res) => {
   const fullName = cleanString(req.body.fullName, 120);
-  const studentCode = cleanString(req.body.studentCode, 40);
+  let studentCode = cleanString(req.body.studentCode, 40);
   const classId = asInt(req.body.classId);
   const stream = cleanString(req.body.stream, 20);
   const gender = cleanString(req.body.gender, 20);
@@ -76,8 +76,16 @@ router.post('/', authenticate, requireStaffAdmin, (req, res) => {
   const email = cleanString(req.body.email, 160);
   const password = cleanString(req.body.password, 200);
 
-  if (!fullName || !studentCode) {
-    return res.status(400).json({ error: 'fullName and studentCode are required.' });
+  if (!fullName) {
+    return res.status(400).json({ error: 'fullName is required.' });
+  }
+  // Student code: use the provided one or auto-generate the next available.
+  if (!studentCode) {
+    const year = new Date().getFullYear();
+    for (let i = 1; i < 100000; i++) {
+      const candidate = `STU-${year}-${String(i).padStart(3, '0')}`;
+      if (!get('SELECT id FROM students WHERE student_code = ?', [candidate])) { studentCode = candidate; break; }
+    }
   }
   if (classId && !get('SELECT id FROM classes WHERE id = ?', [classId])) {
     return res.status(400).json({ error: 'Selected class does not exist.' });

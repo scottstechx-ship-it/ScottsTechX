@@ -755,7 +755,11 @@
 #video-rotator-bg video { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.5s ease; }
 #video-rotator-bg video.active { opacity:1; }
 .video-overlay { position:fixed;inset:0;z-index:-1;background:linear-gradient(135deg,rgba(10,31,10,0.78) 0%,rgba(10,31,10,0.55) 100%); }
-  </style>
+  
+    /* prevent reveal animations from widening the page on phones */
+    html, body { overflow-x: hidden; }
+    .two-column-grid > * { max-width: 100%; }
+    </style>
 <link rel="stylesheet" href="/assets/css/theme.css">
   <script src="/assets/js/theme.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">

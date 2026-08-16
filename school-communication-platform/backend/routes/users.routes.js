@@ -83,8 +83,26 @@ router.post('/', authenticate, requireRole('super_admin', 'admin'), (req, res) =
   res.status(201).json({ message: 'User created successfully.', user: u });
 });
 
-/** GET /api/users/:id/avatar — authenticated avatar image (any active user may view). */
-router.get('/:id/avatar', authenticate, (req, res) => {
+/**
+ * GET /api/users/:id/avatar — avatar image.
+ * <img> tags cannot send an Authorization header, so this endpoint also
+ * accepts the JWT as a ?token= query parameter (validated the same way).
+ * Avatar filenames are random UUIDs, contain no personal data, and are
+ * only discoverable to logged-in users, so this is a safe trade-off.
+ */
+router.get('/:id/avatar', (req, res) => {
+  // auth: Bearer header OR ?token= query param
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : cleanString(req.query.token, 600);
+  if (!token) return res.status(401).json({ error: 'Authentication required.' });
+  try {
+    const jwt = require('jsonwebtoken');
+    const payload = jwt.verify(token, env.JWT_SECRET);
+    const viewer = get('SELECT id, status FROM users WHERE id = ?', [payload.sub]);
+    if (!viewer || viewer.status !== 'active') return res.status(401).json({ error: 'Authentication required.' });
+  } catch {
+    return res.status(401).json({ error: 'Authentication required.' });
+  }
   const id = asInt(req.params.id);
   const u = get('SELECT profile_picture FROM users WHERE id = ?', [id]);
   const name = u && u.profile_picture;

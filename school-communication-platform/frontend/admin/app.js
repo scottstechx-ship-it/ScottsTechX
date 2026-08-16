@@ -22,7 +22,7 @@
     { key: 'documents', label: 'Documents', icon: '📄', section: 'Main' },
     { key: 'announcements', label: 'Announcements', icon: '📢', section: 'Main' },
     { key: 'students', label: 'Students', icon: '🧑‍🎓', section: 'Management' },
-    { key: 'import', label: 'Import Students', icon: '📥', section: 'Management' },
+    { key: 'import', label: 'Import Center', icon: '📥', section: 'Management' },
     { key: 'users', label: 'Users & Staff', icon: '👥', section: 'Management' },
     { key: 'teachers', label: 'Teachers', icon: '👩‍🏫', section: 'Management' },
     { key: 'parents', label: 'Parents', icon: '👨‍👧‍👦', section: 'Management' },
@@ -57,7 +57,7 @@
 
   async function show(key) {
     layout.setActive(key);
-    const titles = { home: 'Home', messages: 'Messages', documents: 'Documents', announcements: 'Announcements', students: 'Students', import: 'Import Students', users: 'Users & Staff', teachers: 'Teachers', parents: 'Parents', classes: 'Classes', subjects: 'Subjects', attendance: 'Attendance', assignments: 'Assignments', exams: 'Exams & Results', timetable: 'Timetable', fees: 'Fees & Payments', admissions: 'Admission Applications', 'website-news': 'Website News', 'website-contact': 'Website Messages', notifications: 'Notifications', profile: 'Profile' };
+    const titles = { home: 'Home', messages: 'Messages', documents: 'Documents', announcements: 'Announcements', students: 'Students', import: 'Import Center', users: 'Users & Staff', teachers: 'Teachers', parents: 'Parents', classes: 'Classes', subjects: 'Subjects', attendance: 'Attendance', assignments: 'Assignments', exams: 'Exams & Results', timetable: 'Timetable', fees: 'Fees & Payments', admissions: 'Admission Applications', 'website-news': 'Website News', 'website-contact': 'Website Messages', notifications: 'Notifications', profile: 'Profile' };
     layout.setTitle(titles[key] || 'Dashboard');
     const content = layout.content;
 
@@ -67,7 +67,7 @@
     if (key === 'announcements') return renderAnnouncements(content);
     if (key === 'students') return renderStudents(content);
     if (key === 'users') return renderUsers(content);
-    if (key === 'import') return openImportWizard();
+    if (key === 'import') return renderImportCenter(content);
     if (key === 'teachers') return renderTeachers(content);
     if (key === 'parents') return renderParents(content);
     if (key === 'classes') return renderClasses(content);
@@ -321,7 +321,7 @@
             const exam = (await API.get(`/api/exams/${e.id}`)).exam;
             const res = (exam.results || []).find((r) => r.student_id === id);
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${UI.esc(e.title)}</td><td>${UI.esc(e.subject || '')}</td><td>${res ? res.marks : '—'}</td><td>${res ? UI.esc(res.grade || '—') : '—'}</td>`;
+            tr.innerHTML = `<td data-label="Exam">${UI.esc(e.title)}</td><td data-label="Subject">${UI.esc(e.subject || '')}</td><td data-label="Marks">${res ? res.marks : '—'}</td><td data-label="Grade">${res ? UI.esc(res.grade || '—') : '—'}</td>`;
             tbody.appendChild(tr);
           }
         } catch (e) { body.innerHTML = `<div class="doc-meta">${UI.esc(e.message)}</div>`; }
@@ -336,7 +336,7 @@
         body.innerHTML = '<div class="doc-meta">Loading…</div>';
         if (student.class_id) {
           const entries = (await API.get(`/api/timetable?classId=${student.class_id}`)).entries || [];
-          body.innerHTML = entries.length ? `<div class="table-responsive"><table class="table"><thead><tr><th>Day</th><th>Time</th><th>Subject</th><th>Room</th></tr></thead><tbody>${entries.map((e) => `<tr><td>${UI.esc(e.day)}</td><td>${UI.esc(e.start_time)}-${UI.esc(e.end_time)}</td><td>${UI.esc(e.subject || '—')}</td><td>${UI.esc(e.room || '—')}</td></tr>`).join('')}</tbody></table></div>`
+          body.innerHTML = entries.length ? `<div class="table-responsive"><table class="table"><thead><tr><th>Day</th><th>Time</th><th>Subject</th><th>Room</th></tr></thead><tbody>${entries.map((e) => `<tr><td data-label="Day">${UI.esc(e.day)}</td><td data-label="Time">${UI.esc(e.start_time)}-${UI.esc(e.end_time)}</td><td data-label="Subject">${UI.esc(e.subject || '—')}</td><td data-label="Room">${UI.esc(e.room || '—')}</td></tr>`).join('')}</tbody></table></div>`
             : '<div class="doc-meta">No timetable for this class.</div>';
         } else body.innerHTML = '<div class="doc-meta">Student has no class assigned.</div>';
       }
@@ -408,6 +408,106 @@
   }
 
   // ----------------------------------------------------------------- BULK IMPORT WIZARD
+  // ---------- IMPORT CENTER: students, teachers, fees + templates ----------
+  async function downloadTemplate(type) {
+    try {
+      const res = await fetch(`${API.base}/api/imports/template.csv?type=${type}`, {
+        headers: { Authorization: 'Bearer ' + API.getToken() },
+      });
+      if (!res.ok) throw new Error('Could not download the template.');
+      const blob = await res.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${type}-import-template.csv`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+    } catch (e) { UI.toast(e.message, 'error'); }
+  }
+
+  function simpleImport(kind, endpoint, title, help) {
+    const modal = UI.openModal({
+      title,
+      wide: true,
+      body: `<p>${help}</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">
+          <button class="btn secondary sm" data-tpl>⬇ Download ${kind} template</button>
+        </div>
+        <input type="file" id="si-file" accept=".csv,.xlsx,.xls">
+        <div id="si-result" style="margin-top:14px"></div>`,
+      foot: '<button class="btn secondary" data-cancel>Close</button>',
+    });
+    modal.backdrop.querySelector('[data-cancel]').onclick = () => modal.close();
+    modal.backdrop.querySelector('[data-tpl]').onclick = () => downloadTemplate(kind);
+    modal.backdrop.querySelector('#si-file').onchange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const result = modal.backdrop.querySelector('#si-result');
+      result.innerHTML = '<div class="doc-meta">⏳ Importing… please wait.</div>';
+      const form = new FormData();
+      form.append('file', file);
+      try {
+        const r = await API.upload(endpoint, form);
+        let html = `<div class="card" style="background:var(--success-light)"><b>✅ ${UI.esc(r.message)}</b></div>`;
+        if (r.credentials && r.credentials.length) {
+          html += `<div class="card" style="margin-top:10px"><b>Login codes created:</b>
+            <div class="table-responsive"><table class="table"><thead><tr><th>Name</th><th>Code</th><th>Username</th><th>Password</th></tr></thead>
+            <tbody>${r.credentials.map((c) => `<tr><td data-label="Name">${UI.esc(c.name)}</td><td data-label="Code">${UI.esc(c.staffCode || c.username)}</td><td data-label="Username">${UI.esc(c.username)}</td><td data-label="Password">${UI.esc(c.password)}</td></tr>`).join('')}</tbody></table></div>
+            <div class="doc-meta" style="margin-top:6px">Each person must change the password on first login. Save this list — passwords are not shown again.</div></div>`;
+        }
+        if (r.failures && r.failures.length) {
+          html += `<div class="card" style="margin-top:10px;background:var(--danger-light)"><b>⚠️ ${r.failures.length} row(s) skipped:</b>
+            ${r.failures.slice(0, 20).map((f) => `<div class="doc-meta">Row ${f.row}: ${UI.esc(f.name)} — ${UI.esc(f.reason)}</div>`).join('')}</div>`;
+        }
+        result.innerHTML = html;
+      } catch (err) {
+        result.innerHTML = `<div class="card" style="background:var(--danger-light)">⚠️ ${UI.esc(err.message)}</div>`;
+      }
+      e.target.value = '';
+    };
+  }
+
+  async function renderImportCenter(content) {
+    content.innerHTML = `<div class="view active"></div>`;
+    const box = content.firstElementChild;
+    box.innerHTML = `
+      <div class="card" style="margin-bottom:14px">
+        <h3 style="margin:0 0 4px">📥 Import Center</h3>
+        <div class="doc-meta">Bulk-load school data from Excel/CSV. Download a template first to see exactly how to organise the columns — codes, usernames and passwords are generated automatically, accounts are created, and roles are assigned.</div>
+      </div>
+      <div class="grid-3" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
+        <div class="card">
+          <h3>🧑‍🎓 Students</h3>
+          <div class="doc-meta" style="margin:6px 0 12px">Guided 6-step wizard: upload → map columns → validate → preview → import. Student codes + logins auto-generated.</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" id="imp-students">Start student import</button>
+            <button class="btn secondary" data-tpl="students">⬇ Template</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3>👩‍🏫 Teachers</h3>
+          <div class="doc-meta" style="margin:6px 0 12px">One-step import: each teacher gets a staff code + login account (username = staff code) with a default password changed on first login.</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" id="imp-teachers">Import teachers</button>
+            <button class="btn secondary" data-tpl="teachers">⬇ Template</button>
+          </div>
+        </div>
+        <div class="card">
+          <h3>💰 Fees</h3>
+          <div class="doc-meta" style="margin:6px 0 12px">Each row becomes a fee structure, automatically assigned to that class's students (or all students when class is blank).</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" id="imp-fees">Import fees</button>
+            <button class="btn secondary" data-tpl="fees">⬇ Template</button>
+          </div>
+        </div>
+      </div>`;
+    box.querySelectorAll('[data-tpl]').forEach((b) => { b.onclick = () => downloadTemplate(b.dataset.tpl); });
+    box.querySelector('#imp-students').onclick = () => openImportWizard();
+    box.querySelector('#imp-teachers').onclick = () => simpleImport('teachers', '/api/imports/teachers',
+      '👩‍🏫 Import teachers', 'Upload an Excel/CSV of teachers. Staff IDs may be left blank — the system generates them. Every teacher automatically gets a login account and the teacher role.');
+    box.querySelector('#imp-fees').onclick = () => simpleImport('fees', '/api/imports/fees',
+      '💰 Import fee structures', 'Upload an Excel/CSV of fees. Each row becomes a fee structure assigned to its class (leave Class blank to apply to all classes).');
+  }
+
   async function openImportWizard() {
     let step = 1;
     let importId = null;
@@ -435,7 +535,8 @@
       body.innerHTML = `<p>Upload an Excel (.xlsx) or CSV file containing student information.</p>
         <input type="file" id="imp-file" accept=".csv,.xlsx,.xls">
         <p class="doc-meta" style="margin-top:10px">Tip: download a starter template below.</p>
-        <a class="btn secondary sm" href="${API.base}/api/imports/template.csv" target="_blank">⬇ Download template</a>`;
+        <button class="btn secondary sm" id="imp-tpl-btn">⬇ Download template</button>`;
+      body.querySelector('#imp-tpl-btn').onclick = () => downloadTemplate('students');
       body.querySelector('#imp-file').onchange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -765,10 +866,13 @@
         wrap.style.display = 'block';
         list.innerHTML = '';
         for (const p of pending) {
+          const kids = (p.claimed_children || []).map((c) => `${c.full_name} (${c.student_code}${c.class_name ? ', ' + c.class_name + ' ' + (c.stream || '') : ''})`).join('; ');
           const row = UI.el(`<div class="doc-item">
             <div style="flex:1;min-width:0">
-              <div class="doc-name">${UI.esc(p.full_name)} ${p.email_verified ? '<span class="badge green">email verified</span>' : '<span class="badge amber">email not verified</span>'}</div>
+              <div class="doc-name">${UI.esc(p.full_name)} <span class="badge blue">pending approval</span></div>
               <div class="doc-meta">${UI.esc(p.email || '')} · ${UI.esc(p.phone || '—')} · registered ${UI.timeAgo(p.registered_at)}</div>
+              <div class="doc-meta" style="margin-top:4px">👨‍👧 Claims guardianship of: <b>${UI.esc(kids || 'no children listed')}</b></div>
+              <div class="doc-meta" style="color:var(--warning)">Verify with the class teacher / school records before approving. Login details are emailed automatically on approval.</div>
             </div>
             <div class="doc-actions">
               <button class="btn success sm" data-ap="${p.id}">✓ Approve</button>
