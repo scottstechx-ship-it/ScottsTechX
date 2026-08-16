@@ -816,9 +816,6 @@
 <script src="/assets/js/site-perf.js" defer></script>
 </head>
 <body>
-        <video autoplay muted loop playsinline id="kalibz-intro-vid" style="position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;pointer-events:none;">
-            <source src="https://kalibz-international.netlify.app/assets/videos/kalinabiri-kalibz-intro.mp4" type="video/mp4">
-        </video>
 
 <!-- VIDEO BACKGROUND -->
 <style>
@@ -843,21 +840,12 @@
     pointer-events: none;
 }
 </style>
-<video class="video-bg" autoplay muted loop playsinline>
-  <source src="https://kalibz-international.netlify.app/assets/videos/kalinabiri-main.mp4" type="video/mp4">
-</video>
 <div class="video-overlay"></div>
     <canvas id="three-canvas"></canvas>
 
     <main>
         <!-- Memorial & History Gallery -->
-        <section id="videos">
-            <div class="section-header">
-                <h2>Video Collection</h2>
-                <div class="section-line"></div>
-            </div>
-            <div class="video-grid" id="managedVideos"></div>
-        </section>
+        
 
         <section id="photos">
             <div class="section-header">
@@ -871,25 +859,6 @@
     <footer>
         <p>&copy; 2024 Kalinabiri Secondary School. All rights reserved.</p>
     </footer>
-
-    <!-- Video Modal -->
-    <div class="modal" id="videoModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle">Video Title</h3>
-                <button class="modal-close" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="modal-video">
-                <video id="modalVideoPlayer" controls autoplay>
-                    <source src="" type="video/mp4">
-                </video>
-            </div>
-            <div class="modal-nav">
-                <button onclick="prevVideo()">&#9664; Previous</button>
-                <button onclick="nextVideo()">Next &#9654;</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Image Lightbox -->
     <div class="lightbox" id="lightbox">
@@ -999,72 +968,6 @@
         // Mobile Menu
         function toggleMenu() {
             document.querySelector('.nav-links').classList.toggle('active');
-        }
-
-        // Video Modal
-        const videoCards = document.querySelectorAll('.video-card');
-        const modal = document.getElementById('videoModal');
-        const modalVideo = document.getElementById('modalVideoPlayer');
-        const modalTitle = document.getElementById('modalTitle');
-        let currentVideoIndex = 0;
-
-        const videoTitles = [
-            'School Assembly Highlights',
-            'Science Fair 2024',
-            'Sports Day Competitions',
-            'Music Recital',
-            'Graduation Ceremony',
-            'Debate Competition',
-            'Cultural Day Celebrations',
-            'Annual Prize Day'
-        ];
-
-        videoCards.forEach((card, index) => {
-            card.addEventListener('click', () => {
-                currentVideoIndex = index;
-                openVideo(index);
-            });
-
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const rotateX = (y - centerY) / 20;
-                const rotateY = (centerX - x) / 20;
-                
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
-                card.style.boxShadow = '0 20px 40px rgba(0,0,0,0.4)';
-            });
-
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)';
-                card.style.boxShadow = 'none';
-            });
-        });
-
-        function openVideo(index) {
-            const videoSrc = `https://kalibz-international.netlify.app/assets/videos/${['7480536090764414213.mp4', '7479435141761355013.mp4', '7480556749926255878.mp4', '7480844887697493254.mp4', '7487326654935682359.mp4', '7488282586687704375.mp4', '7495100438790884614.mp4', '7627031670927002901.mp4'][index]}`;
-            modalTitle.textContent = videoTitles[index];
-            modalVideo.querySelector('source').src = videoSrc;
-            modalVideo.load();
-            modal.classList.add('active');
-        }
-
-        function closeModal() {
-            modal.classList.remove('active');
-            modalVideo.pause();
-        }
-
-        function nextVideo() {
-            currentVideoIndex = (currentVideoIndex + 1) % 8;
-            openVideo(currentVideoIndex);
-        }
-
-        function prevVideo() {
-            currentVideoIndex = (currentVideoIndex - 1 + 8) % 8;
-            openVideo(currentVideoIndex);
         }
 
         // Image Lightbox
@@ -1208,47 +1111,7 @@
         });
       }
     }
-
-    // ---- VIDEOS ----
-    var vgrid = document.getElementById('managedVideos');
-    if (vgrid) {
-      if (!vids.length) {
-        var section = document.getElementById('videos');
-        if (section) section.style.display = 'none';   // hide the whole section when empty
-      } else {
-        vgrid.innerHTML = vids.map(function (v, i) {
-          return '<div class="video-card visible" data-vindex="' + i + '">' +
-            '<div class="video-thumbnail">' +
-              '<video src="' + esc(v.src) + '" preload="metadata" muted playsinline></video>' +
-              '<div class="play-overlay"></div>' +
-            '</div>' +
-            '<div class="video-info"><h3 class="video-title">' + esc(v.title) + '</h3>' +
-            '<span class="video-category">' + esc(v.category || '') + '</span></div></div>';
-        }).join('');
-        vgrid.querySelectorAll('.video-card').forEach(function (card, i) {
-          card.style.cursor = 'pointer';
-          card.addEventListener('click', function () {
-            var ov = document.createElement('div');
-            ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(2,6,23,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px';
-            ov.innerHTML =
-              '<div style="width:min(920px,96vw);display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">' +
-                '<strong style="color:#fff;font-size:1rem">' + esc(vids[i].title) + '</strong>' +
-                '<button style="background:rgba(255,255,255,.12);border:none;color:#fff;font-size:20px;width:42px;height:42px;border-radius:10px;cursor:pointer">✕</button>' +
-              '</div>' +
-              '<video src="' + esc(vids[i].src) + '" controls autoplay playsinline style="width:min(920px,96vw);max-height:78vh;border-radius:14px;background:#000"></video>';
-            function close() { var vd = ov.querySelector('video'); if (vd) vd.pause(); ov.remove(); document.body.style.overflow = ''; }
-            ov.querySelector('button').addEventListener('click', close);
-            ov.addEventListener('click', function (e) { if (e.target === ov) close(); });
-            document.body.appendChild(ov);
-            document.body.style.overflow = 'hidden';
-          });
-        });
-      }
-    }
-  }).catch(function () {
-    var section = document.getElementById('videos');
-    if (section) section.style.display = 'none';
-  });
+  }).catch(function () { /* photos stay static on error */ });
 })();
 </script>
 </body>

@@ -679,15 +679,11 @@
 <script src="/assets/js/site-perf.js" defer></script>
 </head>
 <body>
-    <!-- Video Background — kalinabiri-kalibz-intro.mp4 from the Netlify-hosted
-         production assets (the only mirror that's publicly reachable). preload="metadata"
-         so the page doesn't fetch the full video up-front. poster= provides an
-         instant frame for slow connections. The CSS .video-bg already covers object-fit. -->
-        <div class="video-bg">
-            <video id="heroVideo" autoplay muted loop playsinline preload="metadata" poster="/assets/images/logo.jpeg">
-                <source src="https://kalibz-international.netlify.app/assets/videos/kalinabiri-kalibz-intro.mp4" type="video/mp4">
-            </video>
-        </div>
+        <div class="video-bg hero-photo" style="background:
+          radial-gradient(ellipse at 25% 15%, rgba(14,165,233,.25) 0%, transparent 55%),
+          radial-gradient(ellipse at 80% 85%, rgba(245,158,11,.14) 0%, transparent 50%),
+          linear-gradient(135deg, #0c1829 0%, #10233c 55%, #0c1829 100%);
+          background-size: cover; background-position: center;"></div>
         <div class="video-overlay"></div>
     <canvas id="three-canvas"></canvas>
 

@@ -215,7 +215,11 @@
 #video-rotator-bg { position:fixed;inset:0;z-index:-2;width:100%;height:100%; }
 #video-rotator-bg video { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.5s ease; }
 #video-rotator-bg video.active { opacity:1; }
-.video-overlay { position:fixed;inset:0;z-index:-1;background:linear-gradient(135deg,rgba(10,31,10,0.78) 0%,rgba(10,31,10,0.55) 100%); }
+.video-overlay { position:fixed;inset:0;z-index:-1;
+      background:
+        radial-gradient(ellipse at 20% 10%, rgba(13,107,53,.35) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 90%, rgba(212,175,55,.12) 0%, transparent 50%),
+        linear-gradient(135deg, #0a1f0a 0%, #0d2b1a 55%, #0a1f0a 100%); }
   </style>
 <link rel="stylesheet" href="/assets/css/theme.css">
   <script src="/assets/js/theme.js"></script>
@@ -226,38 +230,6 @@
 <script src="/assets/js/site-perf.js" defer></script>
 </head>
 <body>
-        <video autoplay muted loop playsinline id="kalibz-intro-vid" style="position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;pointer-events:none;">
-            <source src="https://kalibz-international.netlify.app/assets/videos/kalinabiri-kalibz-intro.mp4" type="video/mp4">
-        </video>
-
-<!-- VIDEO BACKGROUND -->
-<div id="video-rotator-bg">
-        <video id="video-bg" autoplay muted loop playsinline>
-            <source src="https://kalibz-international.netlify.app/assets/videos/kalinabiri-main.mp4" type="video/mp4">
-        </video>
-    </video>
-    <video muted loop playsinline style="display:none">
-      <source src="https://kalibz-international.netlify.app/assets/videos/7495100438790884614.mp4" type="video/mp4">
-    </video>
-    <video muted loop playsinline style="display:none">
-      <source src="https://kalibz-international.netlify.app/assets/videos/7488282586687704375.mp4" type="video/mp4">
-    </video>
-    <video muted loop playsinline style="display:none">
-      <source src="https://kalibz-international.netlify.app/assets/videos/7487326654935682359.mp4" type="video/mp4">
-    </video>
-    <video muted loop playsinline style="display:none">
-      <source src="https://kalibz-international.netlify.app/assets/videos/7480844887697493254.mp4" type="video/mp4">
-    </video>
-    <video muted loop playsinline style="display:none">
-      <source src="https://kalibz-international.netlify.app/assets/videos/7480556749926255878.mp4" type="video/mp4">
-    </video>
-    <video muted loop playsinline style="display:none">
-      <source src="https://kalibz-international.netlify.app/assets/videos/7480536090764414213.mp4" type="video/mp4">
-    </video>
-    <video muted loop playsinline style="display:none">
-      <source src="https://kalibz-international.netlify.app/assets/videos/7479435141761355013.mp4" type="video/mp4">
-    </video>
-  </div>
   <div class="video-overlay"></div>
 <div class="video-overlay"></div>
 
@@ -647,28 +619,7 @@ async function submitApplication(e) {
 </script>
 
 <script>
-(function() {
-  var rotator = document.getElementById('video-rotator-bg');
-  if (!rotator) return;
-  var videos = rotator.querySelectorAll('video');
-  var current = 0;
-  if (videos[0]) {
-    videos[0].style.opacity = '';
-    videos[0].classList.add('active');
-    videos[0].play().catch(function(){});
-  }
-  videos.forEach(function(v, i) { if (i !== 0) v.style.opacity = '0'; });
-  setInterval(function() {
-    videos[current].classList.remove('active');
-    videos[current].style.opacity = '0';
-    current = (current + 1) % videos.length;
-    videos[current].classList.add('active');
-    videos[current].style.opacity = '1';
-    videos[current].play().catch(function(){});
-  }, 6000);
-})();
-
-    // Mobile Menu Toggle
+// Mobile Menu Toggle
     function toggleMobileMenu() {
       document.getElementById('navLinks').classList.toggle('mobile-open');
       document.getElementById('mobileBtn').classList.toggle('active');

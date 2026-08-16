@@ -592,6 +592,19 @@
       box-shadow: 0 20px 60px rgba(0,0,0,0.12);
     }
 
+    .map-live {
+      position: relative; height: 100%; min-height: 400px;
+      border-radius: inherit; overflow: hidden; background: #0d2b1a;
+    }
+    .map-live iframe { width: 100%; height: 100%; min-height: 400px; }
+    .map-directions {
+      position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+      background: #0d6b35; color: #fff; font-weight: 700; font-size: .9rem;
+      padding: 10px 22px; border-radius: 999px; text-decoration: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,.35); white-space: nowrap;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .map-directions:hover { transform: translateX(-50%) translateY(-2px); box-shadow: 0 12px 30px rgba(0,0,0,.45); }
     .map-placeholder {
       background: linear-gradient(135deg, #0d2b1a, #0d6b35);
       height: 100%;
@@ -757,7 +770,11 @@
 #video-rotator-bg { position:fixed;inset:0;z-index:-2;width:100%;height:100%; }
 #video-rotator-bg video { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.5s ease; }
 #video-rotator-bg video.active { opacity:1; }
-.video-overlay { position:fixed;inset:0;z-index:-1;background:linear-gradient(135deg,rgba(10,31,10,0.78) 0%,rgba(10,31,10,0.55) 100%); }
+.video-overlay { position:fixed;inset:0;z-index:-1;
+      background:
+        radial-gradient(ellipse at 20% 10%, rgba(13,107,53,.35) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 90%, rgba(212,175,55,.12) 0%, transparent 50%),
+        linear-gradient(135deg, #0a1f0a 0%, #0d2b1a 55%, #0a1f0a 100%); }
   
     /* prevent reveal animations from widening the page on phones */
     html, body { overflow-x: hidden; }
@@ -772,41 +789,9 @@
 <script src="/assets/js/site-perf.js" defer></script>
 </head>
 <body>
-        <video autoplay muted loop playsinline id="kalibz-intro-vid" style="position:fixed;inset:0;width:100%;height:100%;object-fit:cover;z-index:-3;pointer-events:none;">
-            <source src="https://kalibz-international.netlify.app/assets/videos/kalinabiri-kalibz-intro.mp4" type="video/mp4">
-        </video>
 
 <!-- THREE.JS PARTICLE CANVAS -->
 <canvas id="particle-canvas"></canvas>
-
-<!-- VIDEO BACKGROUND -->
-<div id="video-rotator-bg">
-        <video id="video-bg" autoplay muted loop playsinline>
-            <source src="https://kalibz-international.netlify.app/assets/videos/kalinabiri-main.mp4" type="video/mp4">
-        </video>
-    </video>
-    <video muted loop playsinline style="display:none">
-      <source src="https://kalibz-international.netlify.app/assets/videos/7495100438790884614.mp4" type="video/mp4">
-    </video>
-    <video muted loop playsinline style="display:none">
-      <source src="https://kalibz-international.netlify.app/assets/videos/7488282586687704375.mp4" type="video/mp4">
-    </video>
-    <video muted loop playsinline style="display:none">
-      <source src="https://kalibz-international.netlify.app/assets/videos/7487326654935682359.mp4" type="video/mp4">
-    </video>
-    <video muted loop playsinline style="display:none">
-      <source src="https://kalibz-international.netlify.app/assets/videos/7480844887697493254.mp4" type="video/mp4">
-    </video>
-    <video muted loop playsinline style="display:none">
-      <source src="https://kalibz-international.netlify.app/assets/videos/7480556749926255878.mp4" type="video/mp4">
-    </video>
-    <video muted loop playsinline style="display:none">
-      <source src="https://kalibz-international.netlify.app/assets/videos/7480536090764414213.mp4" type="video/mp4">
-    </video>
-    <video muted loop playsinline style="display:none">
-      <source src="https://kalibz-international.netlify.app/assets/videos/7479435141761355013.mp4" type="video/mp4">
-    </video>
-  </div>
   <div class="video-overlay"></div>
 <div class="video-overlay"></div>
 
@@ -931,9 +916,18 @@
       </script>
     </div>
     <div class="map-section reveal-right">
-      <div class="map-placeholder">
-        <span>📍</span>
-        <p>Kalinabiri Secondary School<br>Ntinda, Kampala, Uganda</p>
+      <!-- Real GPS map — Google Maps embed centred on Kalinabiri SS, Ntinda.
+           No API key needed for the free embed. Lazy-loaded for speed. -->
+      <div class="map-live">
+        <iframe
+          title="Kalinabiri Secondary School location map"
+          src="https://www.google.com/maps?q=Kalinabiri%20Secondary%20School%2C%20Ntinda%2C%20Kampala%2C%20Uganda&z=16&output=embed"
+          width="100%" height="100%" style="border:0;min-height:400px;display:block"
+          allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <a class="map-directions" target="_blank" rel="noopener"
+           href="https://www.google.com/maps/dir/?api=1&destination=Kalinabiri%20Secondary%20School%2C%20Ntinda%2C%20Kampala">
+          🧭 Get directions
+        </a>
       </div>
     </div>
   </div>
@@ -1221,28 +1215,7 @@ document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
 </script>
 
 <script>
-(function() {
-  var rotator = document.getElementById('video-rotator-bg');
-  if (!rotator) return;
-  var videos = rotator.querySelectorAll('video');
-  var current = 0;
-  if (videos[0]) {
-    videos[0].style.opacity = '';
-    videos[0].classList.add('active');
-    videos[0].play().catch(function(){});
-  }
-  videos.forEach(function(v, i) { if (i !== 0) v.style.opacity = '0'; });
-  setInterval(function() {
-    videos[current].classList.remove('active');
-    videos[current].style.opacity = '0';
-    current = (current + 1) % videos.length;
-    videos[current].classList.add('active');
-    videos[current].style.opacity = '1';
-    videos[current].play().catch(function(){});
-  }, 6000);
-})();
-
-    // Mobile Menu Toggle
+// Mobile Menu Toggle
     function toggleMobileMenu() {
       document.getElementById('navLinks').classList.toggle('mobile-open');
       document.getElementById('mobileBtn').classList.toggle('active');

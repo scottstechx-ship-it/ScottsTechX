@@ -322,13 +322,6 @@ function runSeed() {
       ['MRS. ASIIMWE SHAROM', 'Staff', `${REMOTE}/images/kalibz/MRS.%20ASIIMWE%20SHAROM.jpg`, 'image', 'Staff', 8],
       ['School Bus', 'Transport', `${REMOTE}/images/kalibz/school%20bus.jpg`, 'image', 'Transport', 9],
       ['School Environment', 'Campus', `${REMOTE}/images/kalibz/school%20enviroment.jpg`, 'image', 'Campus', 10],
-      ['School Life Video I', '', `${REMOTE}/videos/7480536090764414213.mp4`, 'video', 'School Life', 20],
-      ['School Life Video II', '', `${REMOTE}/videos/7479435141761355013.mp4`, 'video', 'School Life', 21],
-      ['School Life Video III', '', `${REMOTE}/videos/7480556749926255878.mp4`, 'video', 'School Life', 22],
-      ['School Events', '', `${REMOTE}/videos/7480844887697493254.mp4`, 'video', 'Events', 23],
-      ['Academics in Action', '', `${REMOTE}/videos/7487326654935682359.mp4`, 'video', 'Academics', 24],
-      ['Sports & Activities', '', `${REMOTE}/videos/7488282586687704375.mp4`, 'video', 'Sports', 25],
-      ['Campus Tour', '', `${REMOTE}/videos/7495100438790884614.mp4`, 'video', 'Campus', 26],
     ];
     for (const [title, caption, url, type, cat, sort] of media) {
       run('INSERT OR IGNORE INTO site_gallery (title, caption, url, media_type, category, sort_order) VALUES (?, ?, ?, ?, ?, ?)',

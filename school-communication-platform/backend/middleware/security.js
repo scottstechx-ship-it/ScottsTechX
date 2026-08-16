@@ -23,7 +23,7 @@ function securityHeaders(req, res, next) {
       // three.js (cdnjs), analytics & ads used by the public site
       "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://www.googletagmanager.com https://pagead2.googlesyndication.com",
       "connect-src 'self' ws: wss: https://www.googletagmanager.com https://*.google-analytics.com https://pagead2.googlesyndication.com",
-      "frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com",
+      "frame-src https://www.google.com https://maps.google.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com",
       "object-src 'none'",
       "frame-ancestors 'self'",
     ].join('; ')

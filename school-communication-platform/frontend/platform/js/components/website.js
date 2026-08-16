@@ -115,12 +115,9 @@
           <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
             <div>
               <h3 style="margin:0">🖼️ Website Gallery</h3>
-              <div class="doc-meta">Everything shown on the public home page and gallery page — images AND videos. Delete anything here and it disappears from the website.</div>
+              <div class="doc-meta">These pictures appear on the public home page and gallery page. Delete anything here and it disappears from the website instantly.</div>
             </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
-              <button class="btn" id="g-add">+ Add image</button>
-              <button class="btn secondary" id="g-add-video">+ Add video</button>
-            </div>
+            <button class="btn" id="g-add">+ Add image</button>
           </div>
         </div>
         <div id="g-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px"></div>`;
@@ -210,7 +207,6 @@
       }
 
       box.querySelector('#g-add').onclick = () => openForm(null, false);
-      box.querySelector('#g-add-video').onclick = () => openForm(null, true);
       load();
     },
   };
