@@ -348,6 +348,9 @@ function runSeed() {
 
 function ensureSeeded() {
   if (!env.SEED_DEMO_DATA) return;
+  // Seed ONLY a brand-new database. An existing database is NEVER reseeded or
+  // overwritten — every change an admin makes (news, gallery, users, settings,
+  // messages…) survives server restarts and redeploys.
   if (!seeded()) runSeed();
 }
 

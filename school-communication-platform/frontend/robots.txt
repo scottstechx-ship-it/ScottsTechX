@@ -1,3 +1,10 @@
 User-agent: *
 Allow: /
-Sitemap: https://kalinabiri-ss.netlify.app/sitemap.xml
+Disallow: /platform/
+Disallow: /admin/
+Disallow: /super-admin/
+Disallow: /teacher/
+Disallow: /student/
+Disallow: /parent/
+Disallow: /api/
+Sitemap: https://kalinabiri-school-platform.onrender.com/sitemap.xml

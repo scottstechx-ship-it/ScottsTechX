@@ -6,7 +6,10 @@ services:
   - type: web
     name: kalinabiri-school-platform
     runtime: node
-    plan: free                       # upgrade to "starter" + disk for persistent data
+    plan: free   # ⚠ FREE TIER = data resets on each deploy/restart.
+                 # For a REAL school: switch to "starter", uncomment the disk
+                 # below and the two env vars — then ALL data (users, news,
+                 # gallery, messages, fees) survives forever.
     branch: arena/01a007fd-scottstechx
     rootDir: school-communication-platform
     buildCommand: npm install

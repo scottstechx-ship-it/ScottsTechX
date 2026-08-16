@@ -1,289 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalinabiri SS - Portal Access</title>
-    <link rel="icon" type="image/x-icon" href="/assets/images/logo.ico">
-    <link rel="apple-touch-icon" href="/assets/images/logo.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/assets/css/themes.css">
-    <link rel="stylesheet" href="/assets/css/portal.css">
-    <style>
-        body { padding: 0; }
-        .portal-hero {
-            min-height: 100vh;
-            padding: 80px 20px 40px;
-            background: var(--gradient);
-            position: relative;
-            overflow: hidden;
-        }
-        .portal-hero::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 20% 30%, rgba(74, 222, 128, 0.18), transparent 50%),
-                        radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.12), transparent 50%);
-            pointer-events: none;
-        }
-        .portal-hero > * { position: relative; z-index: 1; }
-        .hero-header {
-            text-align: center;
-            margin-bottom: 48px;
-        }
-        .hero-logo {
-            width: 96px;
-            height: 96px;
-            border-radius: 22px;
-            object-fit: cover;
-            border: 3px solid var(--accent);
-            box-shadow: 0 12px 40px rgba(74, 222, 128, 0.3);
-            margin-bottom: 24px;
-        }
-        .hero-title {
-            font-size: clamp(2rem, 4vw, 3rem);
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--accent), var(--accent-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px;
-        }
-        .hero-subtitle {
-            color: var(--text-muted);
-            font-size: 16px;
-            margin-bottom: 4px;
-        }
-        .hero-tagline {
-            color: var(--text-muted);
-            font-style: italic;
-            font-size: 14px;
-        }
-        .hero-cta {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 24px;
-            flex-wrap: wrap;
-        }
-        .hero-cta .btn {
-            padding: 14px 28px;
-            font-size: 15px;
-        }
-        .portal-grid {
-            max-width: 1100px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-        .portal-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 28px;
-            text-decoration: none;
-            color: inherit;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            position: relative;
-            overflow: hidden;
-        }
-        .portal-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(74, 222, 128, 0.06), transparent 60%);
-            opacity: 0;
-            transition: opacity 0.4s;
-        }
-        .portal-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--accent);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3), 0 0 0 1px var(--accent);
-        }
-        .portal-card:hover::before { opacity: 1; }
-        .portal-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 999px;
-            background: rgba(74, 222, 128, 0.15);
-            color: var(--accent);
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 16px;
-        }
-        .portal-icon {
-            width: 64px;
-            height: 64px;
-            border-radius: 16px;
-            background: var(--bg-hover);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            color: var(--accent);
-            margin-bottom: 16px;
-        }
-        .portal-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-        .portal-desc {
-            color: var(--text-muted);
-            font-size: 13px;
-            margin-bottom: 18px;
-            flex: 1;
-        }
-        .portal-action {
-            color: var(--accent);
-            font-weight: 600;
-            font-size: 13px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .portal-card:hover .portal-action { gap: 10px; }
-        .site-footer {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-muted);
-            font-size: 13px;
-            border-top: 1px solid var(--border);
-        }
-        .site-footer a { color: var(--accent); }
-        .quick-tips {
-            max-width: 700px;
-            margin: 32px auto 0;
-            padding: 20px 24px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            display: flex;
-            gap: 16px;
-            align-items: flex-start;
-        }
-        .quick-tips-icon {
-            color: var(--info);
-            font-size: 20px;
-            margin-top: 2px;
-        }
-        .quick-tips-text {
-            flex: 1;
-            font-size: 14px;
-            color: var(--text-muted);
-        }
-        .quick-tips-text strong { color: var(--text); }
-        .quick-tips-text code {
-            background: rgba(74,222,128,0.12);
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 12.5px;
-            color: var(--accent);
-            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-        }
-        @media (max-width: 640px) {
-            .portal-hero { padding: 60px 16px 24px; }
-            .hero-title { font-size: 1.7rem; }
-        }
-    </style>
-<script src="/assets/js/site-animate.js" defer></script>
+<meta charset="UTF-8">
+<meta name="google-site-verification" content="0iFeDjaZvUCjm7CmNRcwsIKmQUKHDLlePEJhRPLuR_M">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Portals — Kalinabiri Secondary School</title>
+<meta name="description" content="Sign in to the Kalinabiri SS student, teacher, parent or admin portal.">
+<link rel="icon" type="image/x-icon" href="/assets/images/logo.ico">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #060d1f; color: #e2e8f0;
+    min-height: 100vh; min-height: 100dvh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: clamp(16px, 4vw, 40px); position: relative; overflow-x: hidden;
+  }
+  .orb { position: fixed; width: 46vmax; height: 46vmax; border-radius: 50%; filter: blur(80px); opacity: .3; z-index: 0; pointer-events: none; }
+  .orb.a { top: -14%; left: -10%; background: radial-gradient(circle, #2563eb, #1e3a8a 60%, transparent 75%); }
+  .orb.b { bottom: -16%; right: -12%; background: radial-gradient(circle, #0ea5e9, #0c4a6e 60%, transparent 75%); }
+
+  .wrap { position: relative; z-index: 1; width: 100%; max-width: 760px; }
+  .brand { display: flex; align-items: center; gap: 14px; justify-content: center; margin: 10px 0 6px; }
+  .brand img { width: 58px; height: 58px; border-radius: 14px; object-fit: cover; border: 2px solid rgba(56,189,248,.4); }
+  .brand h1 { font-size: clamp(1.25rem, 4.5vw, 1.7rem); font-weight: 800; color: #fff; }
+  .sub { text-align: center; color: #7d8db1; font-size: .92rem; margin-bottom: 26px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 14px; }
+  .card {
+    display: flex; align-items: center; gap: 14px; text-decoration: none;
+    background: linear-gradient(160deg, rgba(15,28,52,.9), rgba(9,17,34,.92));
+    border: 1px solid rgba(56,189,248,.18); border-radius: 18px;
+    padding: 18px; color: #e2e8f0; min-height: 76px;
+    transition: transform .2s, border-color .2s, box-shadow .2s;
+    animation: cardIn .5s cubic-bezier(.2,.9,.3,1.15) both;
+  }
+  .card:nth-child(2) { animation-delay: .06s; } .card:nth-child(3) { animation-delay: .12s; }
+  .card:nth-child(4) { animation-delay: .18s; } .card:nth-child(5) { animation-delay: .24s; }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .card:hover { transform: translateY(-3px); border-color: var(--ac, #38bdf8); box-shadow: 0 14px 34px rgba(2,6,23,.5), 0 0 24px var(--glow, rgba(56,189,248,.15)); }
+  .card .ic { width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center; font-size: 24px; flex: none; background: var(--icbg, rgba(56,189,248,.14)); }
+  .card b { font-size: 1.02rem; color: #fff; display: block; }
+  .card small { color: #7d8db1; font-size: .8rem; }
+  .card .go { margin-left: auto; color: var(--ac, #38bdf8); font-weight: 800; font-size: 1.1rem; }
+  .card.student { --ac: #3b82f6; --glow: rgba(59,130,246,.18); --icbg: rgba(59,130,246,.15); }
+  .card.teacher { --ac: #f59e0b; --glow: rgba(245,158,11,.16); --icbg: rgba(245,158,11,.14); }
+  .card.parent  { --ac: #10b981; --glow: rgba(16,185,129,.16); --icbg: rgba(16,185,129,.14); }
+  .card.admin   { --ac: #06b6d4; --glow: rgba(6,182,212,.16); --icbg: rgba(6,182,212,.14); }
+  .card.sadmin  { --ac: #d946ef; --glow: rgba(217,70,239,.16); --icbg: rgba(217,70,239,.14); }
+
+  .foot { margin-top: 26px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .foot a { color: #93c5fd; text-decoration: none; font-weight: 700; font-size: .9rem;
+    background: rgba(37,99,235,.12); border: 1px solid rgba(59,130,246,.28);
+    padding: 10px 20px; border-radius: 999px; transition: background .2s; }
+  .foot a:hover { background: rgba(37,99,235,.28); }
+  .note { text-align: center; color: #556488; font-size: .78rem; margin-top: 22px; line-height: 1.6; }
+  @media (prefers-reduced-motion: reduce) { .card { animation: none; } }
+</style>
 </head>
-<body data-theme-nav="replace" data-theme-footer="replace">
-    <main class="portal-hero">
-        <header class="hero-header">
-            <img src="/assets/images/logo.png" alt="Kalinabiri SS" class="hero-logo">
-            <h1 class="hero-title">Kalinabiri Secondary School</h1>
-            <p class="hero-subtitle">Ntinda, Kampala, Uganda</p>
-            <p class="hero-tagline">"Discipline is the Bridge between Goals and Accomplishment"</p>
-            <div class="hero-cta">
-                <a href="/" class="btn btn-secondary"><i class="fas fa-globe"></i> Public Website</a>
-                <a href="/admissions/" class="btn btn-primary"><i class="fas fa-user-plus"></i> Apply Now</a>
-            </div>
-        </header>
+<body>
+  <div class="orb a"></div><div class="orb b"></div>
+  <div class="wrap">
+    <div class="brand">
+      <img src="/assets/images/logo.jpeg" alt="Kalinabiri SS" onerror="this.style.display='none'">
+      <h1>Kalinabiri SS Portals</h1>
+    </div>
+    <p class="sub">Choose your portal to sign in</p>
 
-        <nav class="portal-grid" aria-label="Portal access">
-            <a href="/platform/login-student.html" class="portal-card">
-                <span class="portal-badge">Student</span>
-                <div class="portal-icon"><i class="fas fa-user-graduate"></i></div>
-                <h2 class="portal-title">Student Portal</h2>
-                <p class="portal-desc">Register as a new student or sign in to access your dashboard &mdash; results, attendance, subjects, and messages.</p>
-                <span class="portal-action">Open Portal <i class="fas fa-arrow-right"></i></span>
-            </a>
+    <div class="grid">
+      <a class="card student" href="/platform/login-student.html">
+        <span class="ic">🧑‍🎓</span><span><b>Student Portal</b><small>Assignments, results, timetable</small></span><span class="go">→</span>
+      </a>
+      <a class="card teacher" href="/platform/login-teacher.html">
+        <span class="ic">👩‍🏫</span><span><b>Teacher Portal</b><small>Classes, attendance, exams</small></span><span class="go">→</span>
+      </a>
+      <a class="card parent" href="/platform/login-parent.html">
+        <span class="ic">👨‍👧</span><span><b>Parent Portal</b><small>Your children's progress</small></span><span class="go">→</span>
+      </a>
+      <a class="card admin" href="/platform/login-admin.html">
+        <span class="ic">🏫</span><span><b>Admin Portal</b><small>School management</small></span><span class="go">→</span>
+      </a>
+      <a class="card sadmin" href="/platform/login-super-admin.html">
+        <span class="ic">🛡️</span><span><b>Super Admin</b><small>Full platform control</small></span><span class="go">→</span>
+      </a>
+    </div>
 
-            <a href="/platform/login-teacher.html" class="portal-card">
-                <span class="portal-badge">Teacher</span>
-                <div class="portal-icon"><i class="fas fa-chalkboard-teacher"></i></div>
-                <h2 class="portal-title">Teacher Portal</h2>
-                <p class="portal-desc">Register as a teacher or sign in to access your teaching dashboard &mdash; classes, assessments, attendance.</p>
-                <span class="portal-action">Open Portal <i class="fas fa-arrow-right"></i></span>
-            </a>
-
-            <a href="/platform/login-parent.html" class="portal-card">
-                <span class="portal-badge">Parent</span>
-                <div class="portal-icon"><i class="fas fa-users"></i></div>
-                <h2 class="portal-title">Parent Portal</h2>
-                <p class="portal-desc">Register as a parent or sign in to monitor your child's progress, attendance, fees, and announcements.</p>
-                <span class="portal-action">Open Portal <i class="fas fa-arrow-right"></i></span>
-            </a>
-
-            <a href="/platform/login-admin.html" class="portal-card">
-                <span class="portal-badge">Admin</span>
-                <div class="portal-icon"><i class="fas fa-shield-halved"></i></div>
-                <h2 class="portal-title">Admin Portal</h2>
-                <p class="portal-desc">Sign in as administrator to manage users, classes, announcements, and the entire school system.</p>
-                <span class="portal-action">Open Portal <i class="fas fa-arrow-right"></i></span>
-            </a>
-
-            <a href="/platform/login-admin.html" class="portal-card">
-                <span class="portal-badge">School Admin</span>
-                <div class="portal-icon"><i class="fas fa-school"></i></div>
-                <h2 class="portal-title">School Admin Dashboard</h2>
-                <p class="portal-desc">Unified school administration &mdash; manage teachers, students, classes, attendance, and the entire school system.</p>
-                <span class="portal-action">Open Dashboard <i class="fas fa-arrow-right"></i></span>
-            </a>
-
-            <a href="/platform/login-super-admin.html" class="portal-card">
-                <span class="portal-badge">Super Admin</span>
-                <div class="portal-icon"><i class="fas fa-cogs"></i></div>
-                <h2 class="portal-title">Super Admin Dashboard</h2>
-                <p class="portal-desc">Full system access &mdash; manage users, classes, announcements, moderation, audit logs, and system settings.</p>
-                <span class="portal-action">Open Dashboard <i class="fas fa-arrow-right"></i></span>
-            </a>
-        </nav>
-
-        <div class="quick-tips">
-            <i class="fas fa-lightbulb quick-tips-icon"></i>
-            <div class="quick-tips-text">
-                <strong>New here?</strong> Use the portal that matches your role to register or sign in. After login you'll be redirected to your dashboard automatically.
-                <br><br>
-                <strong>Demo credentials:</strong>
-                <code>superadmin / SuperAdmin@123</code> &middot;
-                <code>admin / Admin@123</code> &middot;
-                <code>teacher1 / Teacher@123</code> &middot;
-                <code>student1 / Student@123</code> &middot;
-                <code>parent1 / Parent@123</code>
-            </div>
-        </div>
-
-        <footer class="site-footer">
-            <p>Developed by <a href="https://fredscottsbulls.github.io/scottechx-site/" target="_blank" rel="noopener">ScottsTechX</a> &copy; 2026 Kalinabiri Secondary School</p>
-        </footer>
-    </main>
-
-    <script src="/assets/js/theme-manager.js"></script>
-    <script src="/assets/js/theme-toolbar.js"></script>
-    <script src="/assets/js/theme.js"></script>
+    <div class="foot">
+      <a href="/">← School website</a>
+      <a href="/platform/register.html">Parent? Register here</a>
+    </div>
+    <p class="note">Students &amp; teachers: sign in with your username or code and password.<br>Kalinabiri Secondary School · Ntinda, Kampala</p>
+  </div>
 </body>
 </html>

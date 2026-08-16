@@ -7,7 +7,10 @@ services:
   - type: web
     name: kalinabiri-school-platform
     runtime: node
-    plan: free                       # upgrade to "starter" to add a persistent disk
+    plan: free   # ⚠ FREE TIER = data resets on each deploy/restart.
+                 # For a REAL school: switch to "starter", uncomment the disk
+                 # below and the two env vars — then ALL data (users, news,
+                 # gallery, messages, fees) survives forever.
     rootDir: school-communication-platform
     buildCommand: npm install
     startCommand: node backend/server.js

@@ -27,6 +27,9 @@ const { securityHeaders, corsHandler, rateLimit } = require('./middleware/securi
 
 app.use(securityHeaders);
 app.use(corsHandler);
+// gzip/brotli-style compression: HTML/CSS/JS/JSON shrink 60-80% -> much
+// faster loads, especially on mobile data.
+app.use(require('compression')());
 app.use(express.json({ limit: '2mb' }));
 
 // General API rate limit
@@ -67,7 +70,19 @@ app.get('/api/health', (req, res) => {
 
 // ---- static frontend (optional — can be hosted separately) ---------------
 const frontendDir = path.join(__dirname, '..', 'frontend');
-app.use(express.static(frontendDir, { extensions: ['html'], index: 'index.html' }));
+app.use(express.static(frontendDir, {
+  extensions: ['html'],
+  index: 'index.html',
+  // cache static assets in the browser: instant repeat visits.
+  // HTML stays revalidated so content updates appear immediately.
+  setHeaders(res, filePath) {
+    if (/\.(css|js|png|jpe?g|webp|gif|ico|svg|woff2?)$/i.test(filePath)) {
+      res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
+    } else {
+      res.setHeader('Cache-Control', 'no-cache');
+    }
+  },
+}));
 // The public website (frontend/index.html) is served at '/' by the static handler.
 
 // ---- API docs (rendered HTML) -------------------------------------------
