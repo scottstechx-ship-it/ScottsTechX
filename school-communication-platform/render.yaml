@@ -1,0 +1,42 @@
+# ============================================================
+# RENDER BLUEPRINT — Kalinabiri SS School Communication Platform
+# Deploys the Node/Express + SQLite + Socket.IO app that serves
+# both the public website and all five dashboards.
+# ============================================================
+services:
+  - type: web
+    name: kalinabiri-school-platform
+    runtime: node
+    plan: free                       # upgrade to "starter" to add a persistent disk
+    rootDir: school-communication-platform
+    buildCommand: npm install
+    startCommand: node backend/server.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true          # Render generates a strong random secret
+      - key: JWT_EXPIRES_IN
+        value: 12h
+      - key: STRONG_PASSWORDS
+        value: "true"
+      - key: SEED_DEMO_DATA
+        value: "true"                # demo accounts on first boot; set false for a real school
+      - key: MAX_FILE_SIZE_MB
+        value: "15"
+      - key: RATE_LIMIT_PER_MINUTE
+        value: "600"
+      - key: LOGIN_RATE_LIMIT_PER_15MIN
+        value: "20"
+      # --- With a persistent disk (starter plan), uncomment these so the
+      #     database and uploads survive restarts/deploys: ---
+      # - key: DATABASE_PATH
+      #   value: /var/data/school.db
+      # - key: UPLOAD_DIR
+      #   value: /var/data/uploads
+    # disk:                          # requires a paid plan; free tier is ephemeral
+    #   name: school-data
+    #   mountPath: /var/data
+    #   sizeGB: 1
