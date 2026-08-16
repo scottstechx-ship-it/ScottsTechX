@@ -1,0 +1,41 @@
+# ============================================================
+# RENDER BLUEPRINT — Kalinabiri SS School Communication Platform
+# Dashboard -> New -> Blueprint -> pick this repo + branch
+# ============================================================
+services:
+  - type: web
+    name: kalinabiri-school-platform
+    runtime: node
+    plan: free                       # upgrade to "starter" + disk for persistent data
+    branch: arena/01a007fd-scottstechx
+    rootDir: school-communication-platform
+    buildCommand: npm install
+    startCommand: node backend/server.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 12h
+      - key: STRONG_PASSWORDS
+        value: "true"
+      - key: SEED_DEMO_DATA
+        value: "true"
+      - key: MAX_FILE_SIZE_MB
+        value: "15"
+      - key: RATE_LIMIT_PER_MINUTE
+        value: "600"
+      - key: LOGIN_RATE_LIMIT_PER_15MIN
+        value: "20"
+      # --- Uncomment with a persistent disk (starter plan) ---
+      # - key: DATABASE_PATH
+      #   value: /var/data/school.db
+      # - key: UPLOAD_DIR
+      #   value: /var/data/uploads
+    # disk:
+    #   name: school-data
+    #   mountPath: /var/data
+    #   sizeGB: 1
