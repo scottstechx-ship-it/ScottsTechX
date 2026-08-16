@@ -161,10 +161,8 @@
         .fees-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.06); margin-top: 24px; }
         .fees-table th { background: var(--dark); color: #fff; padding: 16px 20px; text-align: left; font-size: 0.85rem; font-weight: 600; }
         .fees-table td { padding: 14px 20px; border-bottom: 1px solid #f0f0f0; font-size: 0.9rem; color: #1a1a1a; }
-        /* Right-align currency cells (the 2nd, 3rd, 4th columns: Tuition,
-           Boarding, Total). The first column is the program name — keep
-           it left-aligned. CSS can't pick columns by name, so we use
-           nth-child: 1 = label, 2/3/4 = currency. */
+        /* Right-align currency cells (Tuition, Total). The first column
+           is the program name — keep it left-aligned. */
         .fees-table td:nth-child(n+2) { text-align: right; font-variant-numeric: tabular-nums; }
         /* Subtle zebra striping so wide rows are easier to scan. */
         .fees-table tbody tr:nth-child(even) td { background: #fafbfa; }
@@ -360,7 +358,6 @@
       <tr>
         <th>Program</th>
         <th>Tuition</th>
-        <th>Boarding</th>
         <th>Total Per Term</th>
       </tr>
     </thead>
@@ -368,38 +365,17 @@
       <tr>
         <td><strong>S.1 – S.4 (Day)</strong></td>
         <td>UGX 850,000</td>
-        <td>—</td>
         <td><strong>UGX 1,200,000</strong></td>
-      </tr>
-      <tr>
-        <td><strong>S.1 – S.4 (Boarding)</strong></td>
-        <td>UGX 850,000</td>
-        <td>UGX 1,400,000</td>
-        <td><strong>UGX 2,500,000</strong></td>
       </tr>
       <tr>
         <td><strong>S.5 – S.6 Arts (Day)</strong></td>
         <td>UGX 950,000</td>
-        <td>—</td>
         <td><strong>UGX 1,400,000</strong></td>
-      </tr>
-      <tr>
-        <td><strong>S.5 – S.6 Arts (Boarding)</strong></td>
-        <td>UGX 950,000</td>
-        <td>UGX 1,500,000</td>
-        <td><strong>UGX 2,700,000</strong></td>
       </tr>
       <tr>
         <td><strong>S.5 – S.6 Sciences (Day)</strong></td>
         <td>UGX 1,050,000</td>
-        <td>—</td>
         <td><strong>UGX 1,500,000</strong></td>
-      </tr>
-      <tr>
-        <td><strong>S.5 – S.6 Sciences (Boarding)</strong></td>
-        <td>UGX 1,050,000</td>
-        <td>UGX 1,600,000</td>
-        <td><strong>UGX 2,900,000</strong></td>
       </tr>
     </tbody>
   </table>
@@ -486,12 +462,11 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>Program *</label>
-          <select class="form-control" id="program" required>
-            <option value="">Day or Boarding</option>
-            <option>Day Student</option>
-            <option>Boarding Student</option>
+          <label>Program</label>
+          <select class="form-control" id="program">
+            <option selected>Day Student</option>
           </select>
+          <small style="color:#64748b;font-size:.78rem;display:block;margin-top:4px">Kalinabiri SS is a day school.</small>
         </div>
         <div class="form-group">
           <label>Combination (S.5/S.6 only)</label>

@@ -47,27 +47,27 @@ if (heroStats) statsObserver.observe(heroStats);
 // ── CHAT BOT ──
 const chatKnowledge = [
   { q: /admission|apply|join|register/i, a: '📋 ADMISSIONS: S.1 applications open for 2026! Visit our admissions page or call +256 700 000 000. Requirements: PLE results, birth certificate, photos, and vaccination records.' },
-  { q: /fee|tuition|charge|money/i, a: '💰 FEES: Day students approx. UGX 1,200,000/term. Boarding approx. UGX 2,500,000/term. Payments accepted at school office or via mobile money. Contact accounts for payment plans.' },
+  { q: /fee|tuition|charge|money/i, a: '💰 FEES: Day students approx. UGX 1,200,000/term. Payments accepted at the school office or via mobile money. Contact the office for payment plans.' },
   { q: /location|address|where/i, a: '📍 We\'re located in Nabitali, Jinja District, along the Jinja–Iganga highway. About 15km from Jinja town. Look for our signpost at the junction!' },
   { q: /contact|phone|email|reach/i, a: '📞 Phone: +256 700 000 000\n✉️ Email: info@kalinabiriss.ac.ug\n🏠 Office hours: Mon-Fri, 7:30am - 5:00pm' },
   { q: /uniform|dress|code/i, a: '👔 Our school colors are GREEN & GOLD. Students must wear the official Kalinabiri SS uniform. Navy skirt/trousers, green shirt/tie, gold scarf for girls. PE kit required.' },
-  { q: /time|hours|schedule|day/i, a: '⏰ School runs: Mon-Fri 7:30am - 5:00pm. Boarding students have prep time 7-9pm. Saturday classes for S.4-S.6. Drop-off/pickup at main gate.' },
+  { q: /time|hours|schedule|day/i, a: '⏰ School runs: Mon-Fri 7:30am - 5:00pm. Saturday classes for S.4-S.6. Drop-off/pickup at the main gate.' },
   { q: /subject|science|arts|commerce/i, a: '📚 We offer Science (Biology, Chemistry, Physics, Math), Arts (History, Geography, Literature, Languages), and Commercial (Economics, Accounting, Business). Electives available at S.5-S.6.' },
   { q: /teacher|staff|employ/i, a: '👨‍🏫 We have 60+ qualified teachers across all departments. Interested in joining? Send your CV to jobs@kalinabiriss.ac.ug. Currently recruiting for Chemistry and Mathematics.' },
   { q: /sport|game|football|soccer/i, a: '⚽ Our sports program includes: Football (boys), Netball (girls), Volleyball, Athletics, Basketball. Inter-class competitions held termly. Major matches on Saturdays!' },
   { q: /result|exam|performance|grade/i, a: '📊 Check the results portal for student academic reports. Overall pass rate: 95%. 80% of our students qualify for university. Top performers receive scholarships.' },
   { q: /uniform|dress|code/i, a: '👔 School uniform: Navy skirt/trousers + green shirt + gold tie. Sweater with school emblem in cold weather. PE kit: white shirt + shorts. No jewelry or artificial hair for students.' },
-  { q: /library|book|read/i, a: '📖 Our library has 10,000+ volumes, computer stations, and a reading area. Open 7am-9pm for boarding students. Inter-library loans available. E-resources accessible via school network.' },
+  { q: /library|book|read/i, a: '📖 Our library has 10,000+ volumes, computer stations, and a reading area. Open during school hours. E-resources accessible via the school network.' },
   { q: /lab|science|computer/i, a: '🔬 We have 3 fully-equipped Science labs (Physics, Chemistry, Biology), 2 Computer labs with 100+ machines, and an ICT innovation center for practical sessions.' },
   { q: /term|date|holiday|break/i, a: '📅 2026 Term Dates:\nTerm 1: Mar 2 - Apr 24\nTerm 2: May 4 - Jul 31\nTerm 3: Sep 6 - Nov 27\nMid-term breaks announced per term.' },
   { q: /exam|uneb|mock|assessment/i, a: '📝 We conduct regular assessments, mock exams for S.4 and S.6, and prepare students for UCE and UACE via UNEB. Mock exams usually in Aug (S.4) and Oct (S.6).' },
-  { q: /boarding|hostel|dorm/i, a: '🏠 Boarding facilities available for both boys and girls. Spacious dorms, supervised prep sessions, feeding included. Mess hall serves balanced meals. In-substance visitation only.' },
+  { q: /boarding|hostel|dorm/i, a: '🏫 Kalinabiri SS is a DAY school — we do not offer boarding. School runs Mon–Fri 7:30am–5:00pm with lunch provided on campus.' },
   { q: /meal|food|feeding/i, a: '🍽️ Students receive breakfast, lunch, and supper. Special dietary needs accommodated with notice. Mess menu rotates weekly. Students may bring snacks for break time only.' },
   { q: /security|safe|guard/i, a: '🔒 Campus secured with perimeter fence, 24/7 security guards, and CCTV. Visitors sign in at gate. No unauthorized persons on campus after 8pm. Drugs and weapons strictly prohibited.' },
   { q: /medical|clinic|health|sick/i, a: '🏥 School has a sick bay with first aid trained staff. Serious cases referred to Jinja Regional Referral Hospital. Medical history forms required at enrollment. Health insurance encouraged.' },
   { q: /transport|bus|shuttle/i, a: '🚌 School bus service available for students within 20km radius (fee applies). Routes cover Jinja town, Njeru, and surrounding areas. Contact transport office for route schedule.' },
 ];
-const defaultAnswer = '🤖 I\'m here to help! Try asking about: Admissions, Fees, Location, Contact, Uniform, Schedule, Subjects, Sports, Boarding, or Exam info. You can also call us at +256 700 000 000!';
+const defaultAnswer = '🤖 I\'m here to help! Try asking about: Admissions, Fees, Location, Contact, Uniform, Schedule, Subjects, Sports, or Exam info. You can also call us at 0792 861 645!';
 
 function toggleChat() {
   document.getElementById('chatWindow').classList.toggle('open');
