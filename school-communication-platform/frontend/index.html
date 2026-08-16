@@ -943,50 +943,7 @@
             <h2>Moments at Kalinabiri</h2>
             <p>Capturing the spirit, achievements, and daily life at Kalinabiri Secondary School.</p>
         </div>
-        <div class="gallery-grid" id="homeGalleryGrid">
-            <div class="gallery-item reveal">
-                <img src="https://kalibz-international.netlify.app/assets/images/kalibz/school%20buildings.jpg" alt="School Buildings" onerror="this.src='https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&q=80'" loading="lazy">
-                <div class="gallery-overlay">
-                    <h4>School Buildings</h4>
-                    <p>Our modern campus facilities</p>
-                </div>
-            </div>
-            <div class="gallery-item reveal">
-                <img src="https://kalibz-international.netlify.app/assets/images/kalibz/award%20winning.jpg" alt="Award Winning" onerror="this.src='https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&q=80'" loading="lazy">
-                <div class="gallery-overlay">
-                    <h4>National Robotics Champions</h4>
-                    <p>June 26 2025 Winners</p>
-                </div>
-            </div>
-            <div class="gallery-item reveal">
-                <img src="https://kalibz-international.netlify.app/assets/images/kalibz/class%20rooms.jpg" alt="Classrooms" onerror="this.src='https://images.unsplash.com/photo-1571260899304-3755977927d7?w=600&q=80'" loading="lazy">
-                <div class="gallery-overlay">
-                    <h4>Classroom Activities</h4>
-                    <p>Engaged learning in action</p>
-                </div>
-            </div>
-            <div class="gallery-item reveal">
-                <img src="https://kalibz-international.netlify.app/assets/images/kalibz/class%20rooms%20%282%29.jpg" alt="Students Learning" onerror="this.src='https://images.unsplash.com/photo-1529390079861-591de354faf5?w=600&q=80'" loading="lazy">
-                <div class="gallery-overlay">
-                    <h4>Students Learning</h4>
-                    <p>Hands-on science education</p>
-                </div>
-            </div>
-            <div class="gallery-item reveal">
-                <img src="https://kalibz-international.netlify.app/assets/images/kalibz/kalinabiri%20students.jpg" alt="Kalinabiri Students" onerror="this.src='https://images.unsplash.com/photo-1509062522246-3755977927d7?w=600&q=80'" loading="lazy">
-                <div class="gallery-overlay">
-                    <h4>Our Students</h4>
-                    <p>Proud Kalinabiri learners</p>
-                </div>
-            </div>
-            <div class="gallery-item reveal">
-                <img src="https://kalibz-international.netlify.app/assets/images/kalibz/projects.jpg" alt="Student Projects" onerror="this.src='https://images.unsplash.com/photo-1544717305-2782549b5136?w=600&q=80'" loading="lazy">
-                <div class="gallery-overlay">
-                    <h4>Student Projects</h4>
-                    <p>Innovation and creativity</p>
-                </div>
-            </div>
-        </div>
+        <div class="gallery-grid" id="homeGalleryGrid"></div>
     </section>
 
     <!-- Contact Strip -->
@@ -1275,21 +1232,27 @@
     })();
     </script>
 <script>
-// Live gallery — replaces the static grid when the school has managed images.
+// Live gallery — the home page mirrors the managed Website Gallery.
 (function () {
+  function esc(x) { var d = document.createElement('div'); d.textContent = x == null ? '' : String(x); return d.innerHTML; }
   fetch('/api/website/gallery').then(function (r) { return r.json(); }).then(function (data) {
     var imgs = (data && data.images) || [];
-    if (!imgs.length) return;   // keep the static fallback grid
     var grid = document.getElementById('homeGalleryGrid');
     if (!grid) return;
-    function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+    if (!imgs.length) {
+      var sec = document.getElementById('gallery');
+      if (sec) sec.style.display = 'none';
+      return;
+    }
     grid.innerHTML = imgs.slice(0, 6).map(function (im) {
-      return '<div class="gallery-item reveal is-visible">' +
-        '<img src="' + esc(im.src) + '" alt="' + esc(im.title) + '" loading="lazy" onerror="this.closest(\'.gallery-item\').remove()">' +
+      return '<div class="gallery-item reveal is-visible" style="opacity:1;transform:none">' +
+        '<img src="' + esc(im.src) + '" alt="' + esc(im.title) + '" loading="lazy">' +
         '<div class="gallery-overlay"><h4>' + esc(im.title) + '</h4><p>' + esc(im.caption || '') + '</p></div></div>';
     }).join('');
-    grid.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('visible', 'is-visible'); el.style.opacity = 1; el.style.transform = 'none'; });
-  }).catch(function () { /* static grid remains */ });
+  }).catch(function () {
+    var sec = document.getElementById('gallery');
+    if (sec) sec.style.display = 'none';
+  });
 })();
 </script>
 </body>

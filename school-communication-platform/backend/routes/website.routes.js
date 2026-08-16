@@ -23,8 +23,17 @@ let io = null;
 function setIO(server) { io = server; }
 
 const IMAGE_EXT = /\.(png|jpe?g|webp|gif)$/i;
+const VIDEO_EXT = /\.(mp4|webm|mov|mkv)$/i;
 
 function isImageFile(name) { return IMAGE_EXT.test(name || ''); }
+function isVideoFile(name) { return VIDEO_EXT.test(name || ''); }
+function mediaMime(name) {
+  const ext = (name.split('.').pop() || '').toLowerCase();
+  return {
+    png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', gif: 'image/gif',
+    mp4: 'video/mp4', webm: 'video/webm', mov: 'video/quicktime', mkv: 'video/x-matroska',
+  }[ext] || 'application/octet-stream';
+}
 
 function adminUserIds() {
   return all("SELECT id FROM users WHERE role IN ('super_admin','admin') AND status = 'active'").map((u) => u.id);
@@ -179,24 +188,45 @@ router.delete('/contact/:id', authenticate, requireStaffAdmin, (req, res) => {
  * ============================================================ */
 
 router.get('/gallery', (req, res) => {
-  const rows = all('SELECT id, title, caption, filename, url, category, sort_order, created_at FROM site_gallery ORDER BY sort_order, id DESC');
+  const rows = all('SELECT id, title, caption, filename, url, media_type, category, sort_order, created_at FROM site_gallery ORDER BY sort_order, id DESC');
+  const items = rows.map((r) => ({
+    ...r,
+    media_type: r.media_type || (r.filename && isVideoFile(r.filename) ? 'video' : 'image'),
+    src: r.filename ? `/api/website/gallery/${r.id}/image` : r.url,
+  }));
   res.json({
-    images: rows.map((r) => ({
-      ...r,
-      src: r.filename ? `/api/website/gallery/${r.id}/image` : r.url,
-    })),
+    images: items.filter((i) => i.media_type !== 'video'),
+    videos: items.filter((i) => i.media_type === 'video'),
+    items,
   });
 });
 
-// Serve an uploaded gallery image publicly (images only; UUID filenames).
+// Serve an uploaded gallery file publicly (image or video; UUID filenames).
 router.get('/gallery/:id/image', (req, res) => {
   const row = get('SELECT filename FROM site_gallery WHERE id = ?', [asInt(req.params.id)]);
-  if (!row || !row.filename || !isImageFile(row.filename)) return res.status(404).json({ error: 'Image not found.' });
+  if (!row || !row.filename || (!isImageFile(row.filename) && !isVideoFile(row.filename))) {
+    return res.status(404).json({ error: 'Media not found.' });
+  }
   const filePath = path.join(env.UPLOAD_DIR, row.filename);
-  if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'Image file missing.' });
-  const ext = path.extname(row.filename).toLowerCase();
-  res.setHeader('Content-Type', ext === '.png' ? 'image/png' : ext === '.webp' ? 'image/webp' : ext === '.gif' ? 'image/gif' : 'image/jpeg');
+  if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'Media file missing.' });
+  res.setHeader('Content-Type', mediaMime(row.filename));
   res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.setHeader('Accept-Ranges', 'bytes');
+  // range support so videos can seek
+  const stat = fs.statSync(filePath);
+  const range = req.headers.range;
+  if (range && isVideoFile(row.filename)) {
+    const m = /bytes=(\d+)-(\d*)/.exec(range);
+    if (m) {
+      const start = parseInt(m[1], 10);
+      const end = m[2] ? parseInt(m[2], 10) : stat.size - 1;
+      res.status(206);
+      res.setHeader('Content-Range', `bytes ${start}-${end}/${stat.size}`);
+      res.setHeader('Content-Length', end - start + 1);
+      return fs.createReadStream(filePath, { start, end }).pipe(res);
+    }
+  }
+  res.setHeader('Content-Length', stat.size);
   fs.createReadStream(filePath).pipe(res);
 });
 
@@ -205,21 +235,26 @@ router.post('/gallery', authenticate, requireRole('super_admin'), upload.single(
   if (!title) return res.status(400).json({ error: 'Title is required.' });
   const url = cleanString(req.body.url, 500);
   let filename = null;
+  let mediaType = 'image';
   if (req.file) {
-    if (!isImageFile(req.file.filename)) {
+    if (isVideoFile(req.file.filename)) mediaType = 'video';
+    else if (isImageFile(req.file.filename)) mediaType = 'image';
+    else {
       try { fs.unlinkSync(req.file.path); } catch {}
-      return res.status(400).json({ error: 'Only image files (png, jpg, webp, gif) are allowed in the gallery.' });
+      return res.status(400).json({ error: 'Only images (png, jpg, webp, gif) or videos (mp4, webm, mov, mkv) are allowed in the gallery.' });
     }
     filename = req.file.filename;
+  } else if (url) {
+    mediaType = isVideoFile(url) ? 'video' : 'image';
   }
-  if (!filename && !url) return res.status(400).json({ error: 'Upload an image file or provide an image URL.' });
+  if (!filename && !url) return res.status(400).json({ error: 'Upload a file or provide a media URL.' });
   const info = run(
-    'INSERT INTO site_gallery (title, caption, filename, url, category, sort_order, created_by) VALUES (?, ?, ?, ?, ?, ?, ?)',
-    [title, cleanString(req.body.caption, 300), filename, filename ? null : url,
+    'INSERT INTO site_gallery (title, caption, filename, url, media_type, category, sort_order, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    [title, cleanString(req.body.caption, 300), filename, filename ? null : url, mediaType,
       cleanString(req.body.category, 40) || 'general', asInt(req.body.sortOrder) || 0, req.user.id]
   );
-  log(req.user, 'GALLERY_ADDED', `Added gallery image "${title}"`, req.ip);
-  res.status(201).json({ message: 'Image added to the gallery.', image: get('SELECT * FROM site_gallery WHERE id = ?', [info.lastInsertRowid]) });
+  log(req.user, 'GALLERY_ADDED', `Added gallery ${mediaType} "${title}"`, req.ip);
+  res.status(201).json({ message: `${mediaType === 'video' ? 'Video' : 'Image'} added to the gallery.`, image: get('SELECT * FROM site_gallery WHERE id = ?', [info.lastInsertRowid]) });
 });
 
 router.put('/gallery/:id', authenticate, requireRole('super_admin'), upload.single('file'), handleUploadErrors, (req, res) => {
@@ -229,13 +264,14 @@ router.put('/gallery/:id', authenticate, requireRole('super_admin'), upload.sing
   let filename = row.filename;
   let url = row.url;
   if (req.file) {
-    if (!isImageFile(req.file.filename)) {
+    if (!isImageFile(req.file.filename) && !isVideoFile(req.file.filename)) {
       try { fs.unlinkSync(req.file.path); } catch {}
-      return res.status(400).json({ error: 'Only image files are allowed.' });
+      return res.status(400).json({ error: 'Only image or video files are allowed.' });
     }
     if (filename) { try { fs.unlinkSync(path.join(env.UPLOAD_DIR, filename)); } catch {} }
     filename = req.file.filename;
     url = null;
+    run('UPDATE site_gallery SET media_type = ? WHERE id = ?', [isVideoFile(filename) ? 'video' : 'image', id]);
   } else if (req.body.url !== undefined && cleanString(req.body.url, 500)) {
     if (filename) { try { fs.unlinkSync(path.join(env.UPLOAD_DIR, filename)); } catch {} }
     filename = null;

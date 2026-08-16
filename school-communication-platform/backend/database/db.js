@@ -29,6 +29,7 @@ function ensureColumn(table, column, ddl) {
 }
 
 ensureColumn('documents', 'expire_date', 'TEXT');
+ensureColumn('site_gallery', 'media_type', "TEXT DEFAULT 'image'");
 ensureColumn('announcements', 'expire_date', 'TEXT');
 
 /** conversations.type gained 'broadcast' and 'channel' — rebuild if old CHECK. */

@@ -447,28 +447,7 @@
                     z-index: 2;
                 }
 
-                .image-card::before {
-                    content: '';
-                    position: absolute;
-                    inset: 0;
-                    z-index: 1;
-                    transition: opacity 0.4s ease;
-                }
-
-                /* Blue-family palette — no greens/pinks/oranges. Each card
-                   picks a shade so the grid feels varied but cohesive. */
-                .image-card:nth-child(1)::before  { background: linear-gradient(135deg, #0c4a6e 0%, #0369a1 100%); }
-                .image-card:nth-child(2)::before  { background: linear-gradient(135deg, #075985 0%, #0284c7 100%); }
-                .image-card:nth-child(3)::before  { background: linear-gradient(135deg, #0369a1 0%, #0ea5e9 100%); }
-                .image-card:nth-child(4)::before  { background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%); }
-                .image-card:nth-child(5)::before  { background: linear-gradient(135deg, #0ea5e9 0%, #7dd3fc 100%); }
-                .image-card:nth-child(6)::before  { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); }
-                .image-card:nth-child(7)::before  { background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%); }
-                .image-card:nth-child(8)::before  { background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%); }
-                .image-card:nth-child(9)::before  { background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%); }
-                .image-card:nth-child(10)::before { background: linear-gradient(135deg, #082f49 0%, #0ea5e9 100%); }
-                .image-card:nth-child(11)::before { background: linear-gradient(135deg, #155e75 0%, #0891b2 100%); }
-                .image-card:nth-child(12)::before { background: linear-gradient(135deg, #164e63 0%, #06b6d4 100%); }
+                .image-card::before { content: none; }
 
                 /* Reveal direction: cards from even positions slide up; odd
                    positions slide in from a tiny horizontal offset. This
@@ -871,231 +850,12 @@
 
     <main>
         <!-- Memorial & History Gallery -->
-        <div class="memorial-gallery">
-            <div class="section-header">
-                <h2>In Memoriam & History</h2>
-                <p>Cherishing the legacy of Kalinabiri SS through the Kalibz collection</p>
-            </div>
-<div class="memorial-grid">
-                <div class="memorial-item">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/school%20buildings.jpg" alt="School Buildings">
-                    <div class="memorial-info">
-                        <span class="memorial-badge">Campus</span>
-                        <h3>School Buildings</h3>
-                        <span>Main campus structures</span>
-                    </div>
-                </div>
-                <div class="memorial-item">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/class%20rooms.jpg" alt="Classrooms">
-                    <div class="memorial-info">
-                        <span class="memorial-badge">Academics</span>
-                        <h3>Classrooms</h3>
-                        <span>Learning spaces</span>
-                    </div>
-                </div>
-                <div class="memorial-item">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/MRS.%20ASIIMWE%20SHAROM.jpg" alt="MRS. ASIIMWE SHAROM">
-                    <div class="memorial-info">
-                        <span class="memorial-badge">Staff</span>
-                        <h3>MRS. ASIIMWE SHAROM</h3>
-                        <span>Staff member</span>
-                    </div>
-                </div>
-                <div class="memorial-item">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/projects.jpg" alt="Student Projects">
-                    <div class="memorial-info">
-                        <span class="memorial-badge">Innovation</span>
-                        <h3>Student Projects</h3>
-                        <span>Student innovation</span>
-                    </div>
-                </div>
-                <div class="memorial-item">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/school%20bus.jpg" alt="School Bus">
-                    <div class="memorial-info">
-                        <span class="memorial-badge">Transport</span>
-                        <h3>School Bus</h3>
-                        <span>School transport</span>
-                    </div>
-                </div>
-                <div class="memorial-item">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/school%20enviroment.jpg" alt="School Environment">
-                    <div class="memorial-info">
-                        <span class="memorial-badge">Campus</span>
-                        <h3>School Environment</h3>
-                        <span>Campus scenery</span>
-                    </div>
-                </div>
-                <div class="memorial-item">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/award%20winning.jpg" alt="Award">
-                    <div class="memorial-info">
-                        <span class="memorial-badge">Achievement</span>
-                        <h3>Award Winning</h3>
-                        <span>Awards and recognition</span>
-                    </div>
-                </div>
-                <div class="memorial-item">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/kalinabiri%20students.jpg" alt="Students">
-                    <div class="memorial-info">
-                        <span class="memorial-badge">Students</span>
-                        <h3>Kalinabiri Students</h3>
-                        <span>Student body</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="hero">
-            <h1>Media Gallery</h1>
-            <p>Explore moments from Kalinabiri Secondary School</p>
-            <div class="stats">
-                <div class="stat">
-                    <div class="stat-number">10</div>
-                    <div class="stat-label">Videos</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-number">50+</div>
-                    <div class="stat-label">Photos</div>
-                </div>
-            </div>
-        </div>
-
         <section id="videos">
             <div class="section-header">
                 <h2>Video Collection</h2>
                 <div class="section-line"></div>
             </div>
-            <div class="video-grid">
-                <div class="video-card" data-index="0">
-                    <div class="video-thumbnail">
-                        <video muted preload="metadata">
-                            <source src="https://kalibz-international.netlify.app/assets/videos/7480536090764414213.mp4" type="video/mp4">
-                        </video>
-                        <div class="play-overlay"></div>
-                        <span class="video-duration">2:45</span>
-                    </div>
-                    <div class="video-info">
-                        <h3 class="video-title">School Assembly Highlights</h3>
-                        <span class="video-category">Events</span>
-                    </div>
-                </div>
-                <div class="video-card" data-index="1">
-                    <div class="video-thumbnail">
-                        <video muted preload="metadata">
-                            <source src="https://kalibz-international.netlify.app/assets/videos/7479435141761355013.mp4" type="video/mp4">
-                        </video>
-                        <div class="play-overlay"></div>
-                        <span class="video-duration">1:30</span>
-                    </div>
-                    <div class="video-info">
-                        <h3 class="video-title">Science Fair 2024</h3>
-                        <span class="video-category">Academics</span>
-                    </div>
-                </div>
-                <div class="video-card" data-index="2">
-                    <div class="video-thumbnail">
-                        <video muted preload="metadata">
-                            <source src="https://kalibz-international.netlify.app/assets/videos/7480556749926255878.mp4" type="video/mp4">
-                        </video>
-                        <div class="play-overlay"></div>
-                        <span class="video-duration">3:20</span>
-                    </div>
-                    <div class="video-info">
-                        <h3 class="video-title">Sports Day Competitions</h3>
-                        <span class="video-category">Sports</span>
-                    </div>
-                </div>
-                <div class="video-card" data-index="3">
-                    <div class="video-thumbnail">
-                        <video muted preload="metadata">
-                            <source src="https://kalibz-international.netlify.app/assets/videos/7480844887697493254.mp4" type="video/mp4">
-                        </video>
-                        <div class="play-overlay"></div>
-                        <span class="video-duration">4:10</span>
-                    </div>
-                    <div class="video-info">
-                        <h3 class="video-title">Music Recital</h3>
-                        <span class="video-category">Arts</span>
-                    </div>
-                </div>
-                <div class="video-card" data-index="4">
-                    <div class="video-thumbnail">
-                        <video muted preload="metadata">
-                            <source src="https://kalibz-international.netlify.app/assets/videos/7487326654935682359.mp4" type="video/mp4">
-                        </video>
-                        <div class="play-overlay"></div>
-                        <span class="video-duration">2:55</span>
-                    </div>
-                    <div class="video-info">
-                        <h3 class="video-title">Graduation Ceremony</h3>
-                        <span class="video-category">Events</span>
-                    </div>
-                </div>
-                <div class="video-card" data-index="5">
-                    <div class="video-thumbnail">
-                        <video muted preload="metadata">
-                            <source src="https://kalibz-international.netlify.app/assets/videos/7488282586687704375.mp4" type="video/mp4">
-                        </video>
-                        <div class="play-overlay"></div>
-                        <span class="video-duration">1:45</span>
-                    </div>
-                    <div class="video-info">
-                        <h3 class="video-title">Debate Competition</h3>
-                        <span class="video-category">Academics</span>
-                    </div>
-                </div>
-                <div class="video-card" data-index="6">
-                    <div class="video-thumbnail">
-                        <video muted preload="metadata">
-                            <source src="https://kalibz-international.netlify.app/assets/videos/7495100438790884614.mp4" type="video/mp4">
-                        </video>
-                        <div class="play-overlay"></div>
-                        <span class="video-duration">3:00</span>
-                    </div>
-                    <div class="video-info">
-                        <h3 class="video-title">Cultural Day Celebrations</h3>
-                        <span class="video-category">Culture</span>
-                    </div>
-                </div>
-                <div class="video-card" data-index="7">
-                    <div class="video-thumbnail">
-                        <video muted preload="metadata">
-                            <source src="https://kalibz-international.netlify.app/assets/videos/7627031670927002901.mp4" type="video/mp4">
-                        </video>
-                        <div class="play-overlay"></div>
-                        <span class="video-duration">5:15</span>
-                    </div>
-                    <div class="video-info">
-                        <h3 class="video-title">Annual Prize Day</h3>
-                        <span class="video-category">Events</span>
-                    </div>
-                </div>
-                <div class="video-card kalibz-video" data-index="8">
-                    <div class="video-thumbnail">
-                        <video muted preload="metadata">
-                            <source src="https://kalibz-international.netlify.app/assets/videos/kalibz/A%20real%20life%20story%20-%20Part%20I.mp4" type="video/mp4">
-                        </video>
-                        <div class="play-overlay"></div>
-                        <span class="video-duration">Video</span>
-                    </div>
-                    <div class="video-info">
-                        <h3 class="video-title">A Real Life Story - Part I</h3>
-                        <span class="video-category">Kalibz</span>
-                    </div>
-                </div>
-                <div class="video-card kalibz-video" data-index="9">
-                    <div class="video-thumbnail">
-                        <video muted preload="metadata">
-                            <source src="https://kalibz-international.netlify.app/assets/videos/kalibz/Entrepreneurship%20Class%20Project.mp4" type="video/mp4">
-                        </video>
-                        <div class="play-overlay"></div>
-                        <span class="video-duration">Video</span>
-                    </div>
-                    <div class="video-info">
-                        <h3 class="video-title">Entrepreneurship Class Project</h3>
-                        <span class="video-category">Kalibz</span>
-                    </div>
-                </div>
-            </div>
+            <div class="video-grid" id="managedVideos"></div>
         </section>
 
         <section id="photos">
@@ -1103,92 +863,7 @@
                 <h2>Photo Gallery</h2>
                 <div class="section-line"></div>
             </div>
-<div class="image-gallery" id="managedGallery">
-                <div class="image-card" data-index="0">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/school%20buildings.jpg" alt="School Buildings">
-                    <div class="image-overlay">
-                        <h3>School Buildings</h3>
-                        <span>Campus</span>
-                    </div>
-                </div>
-                <div class="image-card" data-index="1">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/class%20rooms.jpg" alt="Classrooms">
-                    <div class="image-overlay">
-                        <h3>Classrooms</h3>
-                        <span>Academics</span>
-                    </div>
-                </div>
-                <div class="image-card" data-index="2">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/class%20rooms%20%282%29.jpg" alt="Classrooms II">
-                    <div class="image-overlay">
-                        <h3>Learning Spaces</h3>
-                        <span>Academics</span>
-                    </div>
-                </div>
-                <div class="image-card" data-index="3">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/class%20rooms%20%283%29.jpg" alt="Classrooms III">
-                    <div class="image-overlay">
-                        <h3>Modern Classrooms</h3>
-                        <span>Academics</span>
-                    </div>
-                </div>
-                <div class="image-card" data-index="4">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/MRS.%20ASIIMWE%20SHAROM.jpg" alt="MRS. ASIIMWE SHAROM">
-                    <div class="image-overlay">
-                        <h3>MRS. ASIIMWE SHAROM</h3>
-                        <span>Staff</span>
-                    </div>
-                </div>
-                <div class="image-card" data-index="5">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/projects.jpg" alt="Student Projects">
-                    <div class="image-overlay">
-                        <h3>Student Projects</h3>
-                        <span>Innovation</span>
-                    </div>
-                </div>
-                <div class="image-card" data-index="6">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/school%20bus.jpg" alt="School Bus">
-                    <div class="image-overlay">
-                        <h3>School Bus</h3>
-                        <span>Transport</span>
-                    </div>
-                </div>
-                <div class="image-card" data-index="7">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/school%20enviroment.jpg" alt="School Environment">
-                    <div class="image-overlay">
-                        <h3>School Environment</h3>
-                        <span>Campus</span>
-                    </div>
-                </div>
-                <div class="image-card" data-index="8">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/school%20property.jpg" alt="School Property">
-                    <div class="image-overlay">
-                        <h3>School Property</h3>
-                        <span>Facilities</span>
-                    </div>
-                </div>
-                <div class="image-card" data-index="9">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/shool%20property.jpg" alt="School Property II">
-                    <div class="image-overlay">
-                        <h3>School Property II</h3>
-                        <span>Facilities</span>
-                    </div>
-                </div>
-                <div class="image-card" data-index="10">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/smartnes%20and%20team%20work.jpg" alt="Smartness and Teamwork">
-                    <div class="image-overlay">
-                        <h3>Smartness and Teamwork</h3>
-                        <span>Students</span>
-                    </div>
-                </div>
-                <div class="image-card" data-index="11">
-                    <img src="https://kalibz-international.netlify.app/assets/images/kalibz/award%20winning.jpg" alt="Award Winning">
-                    <div class="image-overlay">
-                        <h3>Award Winning</h3>
-                        <span>Achievements</span>
-                    </div>
-                </div>
-            </div>
+<div class="image-gallery" id="managedGallery"></div>
         </section>
     </main>
 
@@ -1498,33 +1173,81 @@
 
 </script>
 <script>
-// Live managed gallery — when the super admin has added images through the
-// dashboard, they replace the static defaults here automatically.
+// Live managed gallery — ALL photos and videos come from the school's
+// managed gallery (dashboard -> Website Gallery). Deleting an item there
+// removes it here instantly.
 (function () {
+  function esc(x) { var d = document.createElement('div'); d.textContent = x == null ? '' : String(x); return d.innerHTML; }
+
   fetch('/api/website/gallery').then(function (r) { return r.json(); }).then(function (data) {
     var imgs = (data && data.images) || [];
-    if (!imgs.length) return;   // keep static images until the school adds its own
+    var vids = (data && data.videos) || [];
+
+    // ---- PHOTOS ----
     var grid = document.getElementById('managedGallery');
-    if (!grid) return;
-    function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
-    grid.innerHTML = imgs.map(function (im, i) {
-      return '<div class="image-card" data-index="' + i + '">' +
-        '<img src="' + esc(im.src) + '" alt="' + esc(im.title) + '" loading="lazy" onerror="this.closest(\'.image-card\').remove()">' +
-        '<div class="image-overlay"><h3>' + esc(im.title) + '</h3><span>' + esc(im.category || im.caption || '') + '</span></div></div>';
-    }).join('');
-    // simple lightbox for managed images
-    grid.querySelectorAll('.image-card').forEach(function (card, i) {
-      card.style.cursor = 'zoom-in';
-      card.addEventListener('click', function () {
-        var overlay = document.createElement('div');
-        overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(2,6,23,.92);display:flex;align-items:center;justify-content:center;padding:24px;cursor:zoom-out';
-        overlay.innerHTML = '<img src="' + esc(imgs[i].src) + '" alt="" style="max-width:96vw;max-height:90vh;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.6)">';
-        overlay.addEventListener('click', function () { overlay.remove(); document.body.style.overflow = ''; });
-        document.body.appendChild(overlay);
-        document.body.style.overflow = 'hidden';
-      });
-    });
-  }).catch(function () { /* static grid remains */ });
+    if (grid) {
+      if (!imgs.length) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#94a3b8">📷 No photos yet — the school will add them soon.</div>';
+      } else {
+        grid.innerHTML = imgs.map(function (im, i) {
+          return '<div class="image-card visible" data-index="' + i + '">' +
+            '<img src="' + esc(im.src) + '" alt="' + esc(im.title) + '" loading="lazy">' +
+            '<div class="image-overlay"><h3>' + esc(im.title) + '</h3><span>' + esc(im.category || im.caption || '') + '</span></div></div>';
+        }).join('');
+        grid.querySelectorAll('.image-card').forEach(function (card, i) {
+          card.style.cursor = 'zoom-in';
+          card.addEventListener('click', function () {
+            var ov = document.createElement('div');
+            ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(2,6,23,.94);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out';
+            ov.innerHTML = '<img src="' + esc(imgs[i].src) + '" alt="" style="max-width:96vw;max-height:88vh;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.6)">';
+            ov.addEventListener('click', function () { ov.remove(); document.body.style.overflow = ''; });
+            document.body.appendChild(ov);
+            document.body.style.overflow = 'hidden';
+          });
+        });
+      }
+    }
+
+    // ---- VIDEOS ----
+    var vgrid = document.getElementById('managedVideos');
+    if (vgrid) {
+      if (!vids.length) {
+        var section = document.getElementById('videos');
+        if (section) section.style.display = 'none';   // hide the whole section when empty
+      } else {
+        vgrid.innerHTML = vids.map(function (v, i) {
+          return '<div class="video-card visible" data-vindex="' + i + '">' +
+            '<div class="video-thumbnail">' +
+              '<video src="' + esc(v.src) + '" preload="metadata" muted playsinline></video>' +
+              '<div class="play-overlay"></div>' +
+            '</div>' +
+            '<div class="video-info"><h3 class="video-title">' + esc(v.title) + '</h3>' +
+            '<span class="video-category">' + esc(v.category || '') + '</span></div></div>';
+        }).join('');
+        vgrid.querySelectorAll('.video-card').forEach(function (card, i) {
+          card.style.cursor = 'pointer';
+          card.addEventListener('click', function () {
+            var ov = document.createElement('div');
+            ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(2,6,23,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px';
+            ov.innerHTML =
+              '<div style="width:min(920px,96vw);display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">' +
+                '<strong style="color:#fff;font-size:1rem">' + esc(vids[i].title) + '</strong>' +
+                '<button style="background:rgba(255,255,255,.12);border:none;color:#fff;font-size:20px;width:42px;height:42px;border-radius:10px;cursor:pointer">✕</button>' +
+              '</div>' +
+              '<video src="' + esc(vids[i].src) + '" controls autoplay playsinline style="width:min(920px,96vw);max-height:78vh;border-radius:14px;background:#000"></video>';
+            function close() { var vd = ov.querySelector('video'); if (vd) vd.pause(); ov.remove(); document.body.style.overflow = ''; }
+            ov.querySelector('button').addEventListener('click', close);
+            ov.addEventListener('click', function (e) { if (e.target === ov) close(); });
+            document.body.appendChild(ov);
+            document.body.style.overflow = 'hidden';
+          });
+        });
+      }
+    }
+  }).catch(function () {
+    var section = document.getElementById('videos');
+    if (section) section.style.display = 'none';
+  });
 })();
 </script>
 </body>

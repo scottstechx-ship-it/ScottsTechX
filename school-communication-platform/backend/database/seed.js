@@ -306,6 +306,35 @@ function runSeed() {
     setSetting('security', { strongPasswords: true, sessionExpiryDays: 1, loginRateLimit: 20, allowParentRegistration: false });
     setSetting('api', { apiDocsUrl: '/docs/api.html', maxFileSizeMB: env.MAX_FILE_SIZE / 1024 / 1024 });
     setSetting('backup', { autoBackup: false, lastBackupAt: null });
+
+    // ---------------- website gallery (managed media) ----------------
+    // The school's existing photos/videos become manageable records so the
+    // super admin can edit or remove every one of them from the dashboard.
+    const REMOTE = 'https://kalibz-international.netlify.app/assets';
+    const media = [
+      ['School Buildings', 'Our modern campus facilities', `${REMOTE}/images/kalibz/school%20buildings.jpg`, 'image', 'Campus', 1],
+      ['National Robotics Champions', 'June 2025 winners', `${REMOTE}/images/kalibz/award%20winning.jpg`, 'image', 'Achievements', 2],
+      ['Classroom Activities', 'Engaged learning in action', `${REMOTE}/images/kalibz/class%20rooms.jpg`, 'image', 'Academics', 3],
+      ['Students Learning', 'Hands-on science education', `${REMOTE}/images/kalibz/class%20rooms%20%282%29.jpg`, 'image', 'Academics', 4],
+      ['Modern Classrooms', 'Learning spaces', `${REMOTE}/images/kalibz/class%20rooms%20%283%29.jpg`, 'image', 'Academics', 5],
+      ['Our Students', 'Proud Kalinabiri learners', `${REMOTE}/images/kalibz/kalinabiri%20students.jpg`, 'image', 'Students', 6],
+      ['Student Projects', 'Innovation and creativity', `${REMOTE}/images/kalibz/projects.jpg`, 'image', 'Innovation', 7],
+      ['MRS. ASIIMWE SHAROM', 'Staff', `${REMOTE}/images/kalibz/MRS.%20ASIIMWE%20SHAROM.jpg`, 'image', 'Staff', 8],
+      ['School Bus', 'Transport', `${REMOTE}/images/kalibz/school%20bus.jpg`, 'image', 'Transport', 9],
+      ['School Environment', 'Campus', `${REMOTE}/images/kalibz/school%20enviroment.jpg`, 'image', 'Campus', 10],
+      ['School Life Video I', '', `${REMOTE}/videos/7480536090764414213.mp4`, 'video', 'School Life', 20],
+      ['School Life Video II', '', `${REMOTE}/videos/7479435141761355013.mp4`, 'video', 'School Life', 21],
+      ['School Life Video III', '', `${REMOTE}/videos/7480556749926255878.mp4`, 'video', 'School Life', 22],
+      ['School Events', '', `${REMOTE}/videos/7480844887697493254.mp4`, 'video', 'Events', 23],
+      ['Academics in Action', '', `${REMOTE}/videos/7487326654935682359.mp4`, 'video', 'Academics', 24],
+      ['Sports & Activities', '', `${REMOTE}/videos/7488282586687704375.mp4`, 'video', 'Sports', 25],
+      ['Campus Tour', '', `${REMOTE}/videos/7495100438790884614.mp4`, 'video', 'Campus', 26],
+    ];
+    for (const [title, caption, url, type, cat, sort] of media) {
+      run('INSERT OR IGNORE INTO site_gallery (title, caption, url, media_type, category, sort_order) VALUES (?, ?, ?, ?, ?, ?)',
+        [title, caption, url, type, cat, sort]);
+    }
+
     setSetting('seeded', true);
   });
 

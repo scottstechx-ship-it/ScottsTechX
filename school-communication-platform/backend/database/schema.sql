@@ -470,6 +470,7 @@ CREATE TABLE IF NOT EXISTS site_gallery (
   caption     TEXT,
   filename    TEXT,                             -- stored upload (preferred)
   url         TEXT,                             -- or an external image URL
+  media_type  TEXT DEFAULT 'image',             -- image | video
   category    TEXT DEFAULT 'general',
   sort_order  INTEGER NOT NULL DEFAULT 0,
   created_by  INTEGER REFERENCES users(id) ON DELETE SET NULL,

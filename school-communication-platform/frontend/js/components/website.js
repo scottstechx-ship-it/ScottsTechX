@@ -115,9 +115,12 @@
           <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
             <div>
               <h3 style="margin:0">🖼️ Website Gallery</h3>
-              <div class="doc-meta">These images appear on the public home page and gallery page.</div>
+              <div class="doc-meta">Everything shown on the public home page and gallery page — images AND videos. Delete anything here and it disappears from the website.</div>
             </div>
-            <button class="btn" id="g-add">+ Add image</button>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn" id="g-add">+ Add image</button>
+              <button class="btn secondary" id="g-add-video">+ Add video</button>
+            </div>
           </div>
         </div>
         <div id="g-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px"></div>`;
@@ -126,19 +129,27 @@
 
       async function load() {
         grid.innerHTML = '<div class="card"><div class="skeleton" style="height:120px"></div></div>';
-        let imgs = [];
-        try { imgs = (await API.get('/api/website/gallery')).images || []; }
+        let items = [];
+        try {
+          const data = await API.get('/api/website/gallery');
+          items = data.items || data.images || [];
+        }
         catch (e) { grid.innerHTML = `<div class="card"><div class="doc-meta">${esc(e.message)}</div></div>`; return; }
-        if (!imgs.length) {
-          grid.innerHTML = '<div class="card" style="grid-column:1/-1;text-align:center;padding:36px"><h3>🖼️ No managed images yet</h3><div class="doc-meta">The website is showing its built-in defaults. Add images here to take control of the public gallery.</div></div>';
+        if (!items.length) {
+          grid.innerHTML = '<div class="card" style="grid-column:1/-1;text-align:center;padding:36px"><h3>🖼️ Gallery is empty</h3><div class="doc-meta">Add images or videos — they appear on the public website instantly.</div></div>';
           return;
         }
         grid.innerHTML = '';
-        for (const im of imgs) {
+        for (const im of items) {
+          const isVideo = im.media_type === 'video';
+          const preview = isVideo
+            ? `<div style="position:relative"><video src="${esc(im.src)}" preload="metadata" muted style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#0f172a"></video>
+                 <div style="position:absolute;inset:0;display:grid;place-items:center;font-size:34px;pointer-events:none">▶️</div></div>`
+            : `<img src="${esc(im.src)}" alt="" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block" onerror="this.style.opacity=.25">`;
           const card = UI.el(`<div class="card" style="padding:0;overflow:hidden">
-            <img src="${esc(im.src)}" alt="" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block" onerror="this.style.opacity=.25">
+            ${preview}
             <div style="padding:12px">
-              <div class="doc-name" style="font-size:14px">${esc(im.title)}</div>
+              <div class="doc-name" style="font-size:14px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">${esc(im.title)} <span class="badge ${isVideo ? 'amber' : 'blue'}">${isVideo ? '🎬 video' : '🖼 image'}</span></div>
               <div class="doc-meta">${esc(im.category || '')}${im.caption ? ' · ' + esc(im.caption) : ''}</div>
               <div style="display:flex;gap:6px;margin-top:10px">
                 <button class="btn secondary sm" data-edit>✏️ Edit</button>
@@ -148,19 +159,22 @@
           </div>`);
           card.querySelector('[data-edit]').onclick = () => openForm(im);
           card.querySelector('[data-del]').onclick = async () => {
-            const ok = await UI.confirmDialog(`Remove "${im.title}" from the website gallery?`, { title: 'Delete image', confirmText: 'Delete' });
+            const ok = await UI.confirmDialog(`Remove "${im.title}" from the website? It disappears from the home page and gallery page immediately.`, { title: `Delete ${isVideo ? 'video' : 'image'}`, confirmText: 'Delete' });
             if (!ok) return;
-            try { await API.del(`/api/website/gallery/${im.id}`); UI.toast('Image removed from the website.', 'success'); load(); }
+            try { await API.del(`/api/website/gallery/${im.id}`); UI.toast(`${isVideo ? 'Video' : 'Image'} removed from the website.`, 'success'); load(); }
             catch (e) { UI.toast(e.message, 'error'); }
           };
           grid.appendChild(card);
         }
       }
 
-      function openForm(im) {
+      function openForm(im, videoMode = false) {
         const isEdit = !!im;
-        const modal = UI.modal({
-          title: isEdit ? 'Edit gallery image' : 'Add gallery image',
+        const isVideo = isEdit ? im.media_type === 'video' : videoMode;
+        const accept = isVideo ? 'video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov,.mkv' : 'image/*';
+        const kind = isVideo ? 'video' : 'image';
+        const modal = UI.openModal({
+          title: isEdit ? `Edit gallery ${kind}` : `Add gallery ${kind}`,
           body: `
             <label class="field">Title <span class="req">*</span><input id="gi-title" value="${isEdit ? esc(im.title) : ''}" maxlength="150"></label>
             <label class="field">Caption<input id="gi-caption" value="${isEdit ? esc(im.caption || '') : ''}" maxlength="300"></label>
@@ -168,9 +182,10 @@
               <label class="field">Category<input id="gi-cat" value="${isEdit ? esc(im.category || 'general') : 'general'}" maxlength="40"></label>
               <label class="field">Sort order<input id="gi-sort" type="number" value="${isEdit ? im.sort_order || 0 : 0}"></label>
             </div>
-            <label class="field">Upload image ${isEdit ? '(leave empty to keep the current one)' : '<span class="req">*</span>'}<input id="gi-file" type="file" accept="image/*"></label>
-            <div class="doc-meta" style="margin:4px 0 8px">…or use an image URL instead:</div>
-            <label class="field">Image URL<input id="gi-url" placeholder="https://…" value="${isEdit && im.url ? esc(im.url) : ''}"></label>`,
+            <label class="field">Upload ${kind} ${isEdit ? '(leave empty to keep the current one)' : ''}<input id="gi-file" type="file" accept="${accept}"></label>
+            ${isVideo ? '<div class="doc-meta" style="margin:2px 0 8px">MP4 recommended · maximum 15 MB</div>' : ''}
+            <div class="doc-meta" style="margin:4px 0 8px">…or use a ${kind} URL instead:</div>
+            <label class="field">${kind.charAt(0).toUpperCase() + kind.slice(1)} URL<input id="gi-url" placeholder="https://…" value="${isEdit && im.url ? esc(im.url) : ''}"></label>`,
           foot: `<button class="btn secondary" data-cancel>Cancel</button><button class="btn" data-save>${isEdit ? 'Save changes' : 'Add to gallery'}</button>`,
         });
         modal.backdrop.querySelector('[data-cancel]').onclick = () => modal.close();
@@ -194,7 +209,8 @@
         };
       }
 
-      box.querySelector('#g-add').onclick = () => openForm(null);
+      box.querySelector('#g-add').onclick = () => openForm(null, false);
+      box.querySelector('#g-add-video').onclick = () => openForm(null, true);
       load();
     },
   };
@@ -265,7 +281,7 @@
       function openForm(n) {
         const isEdit = !!n;
         const expVal = isEdit && n.expires_at ? String(n.expires_at).slice(0, 10) : '';
-        const modal = UI.modal({
+        const modal = UI.openModal({
           title: isEdit ? 'Edit news post' : 'New news post',
           body: `
             <label class="field">Title <span class="req">*</span><input id="np-title" value="${isEdit ? esc(n.title) : ''}" maxlength="200"></label>

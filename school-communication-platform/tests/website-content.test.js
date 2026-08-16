@@ -18,9 +18,9 @@ async function api(tok, path, opts = {}) {
   return { status: r.status, data };
 }
 function tinyPng() {
-  // written by the harness beforehand, or build inline
   if (fs.existsSync('/tmp/test.png')) return fs.readFileSync('/tmp/test.png');
-  throw new Error('no test png');
+  // self-contained 1x1 transparent PNG
+  return Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
 }
 let fails = 0;
 const ok = (label, cond, extra = '') => { if (!cond) fails++; console.log(`${cond ? '✔' : '✘'} ${label}${cond ? '' : ' — ' + extra}`); };

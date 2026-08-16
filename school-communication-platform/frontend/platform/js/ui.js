@@ -632,7 +632,7 @@
     esc, el, initials, avatar, avatarUrl, logoUrl, applySchoolLogo,
     timeAgo, fmtTime, fmtDate, fmtSize,
     debounce, money, barChart,
-    toast, openModal, confirmDialog,
+    toast, openModal, modal: openModal, confirmDialog,
     initLayout, refreshUnreadCounts, loadNotifications,
     onUnreadChange, openChangePassword, openAvatarUpload, profileSettingsPanel,
   };

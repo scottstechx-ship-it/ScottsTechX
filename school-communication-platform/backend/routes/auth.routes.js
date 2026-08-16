@@ -97,7 +97,7 @@ router.post('/login', (req, res) => {
   const pw = cleanString(password, 200);
 
   if (!ident || !pw) {
-    return res.status(400).json({ error: 'Enter your username or email and password.' });
+    return res.status(400).json({ error: 'Enter your username, email or code and your password.' });
   }
 
   // Identifier can be a username, an email, OR a unique code
@@ -115,7 +115,7 @@ router.post('/login', (req, res) => {
   }
   if (!u || !bcrypt.compareSync(pw, u.password_hash)) {
     log(null, 'LOGIN_FAILED', `Failed login attempt for "${ident}"`, req.ip);
-    return res.status(401).json({ error: 'Incorrect username/email or password.' });
+    return res.status(401).json({ error: 'Incorrect username, email, code or password.' });
   }
   if (u.status !== 'active') {
     if (u.role === 'parent' && u.registration_status === 'pending') {
