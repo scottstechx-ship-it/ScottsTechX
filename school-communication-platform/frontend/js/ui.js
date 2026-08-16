@@ -349,12 +349,27 @@
     // mobile sidebar: hamburger + backdrop scrim + Escape all close it
     const scrim = el('<div class="sidebar-scrim" id="sidebar-scrim"></div>');
     document.body.appendChild(scrim);
-    function openSidebar() { sidebar.classList.add('open'); scrim.classList.add('open'); }
-    function closeSidebar() { sidebar.classList.remove('open'); scrim.classList.remove('open'); }
-    topbar.querySelector('#hamburger').onclick = () => {
+    const anyOverlay = () => document.querySelectorAll('.sidebar-scrim, .mobile-overlay');
+    function openSidebar() {
+      sidebar.classList.add('open');
+      anyOverlay().forEach((o) => o.classList.add('open'));
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      anyOverlay().forEach((o) => o.classList.remove('open'));
+      document.body.style.overflow = '';
+    }
+    const burgerBtn = topbar.querySelector('#hamburger');
+    // mark as bound so ux.js's fallback binder never double-binds this button
+    burgerBtn.dataset.uxBound = '1';
+    burgerBtn.onclick = () => {
       sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
     };
     scrim.onclick = closeSidebar;
+    document.addEventListener('click', (e) => {
+      if (e.target.classList && e.target.classList.contains('mobile-overlay')) closeSidebar();
+    });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSidebar(); });
 
     // render avatar image if the user has a photo

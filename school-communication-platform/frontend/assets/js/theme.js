@@ -99,7 +99,14 @@
     //      (We don't want to surprise pages that intentionally
     //      have no top nav.)
     var navPlaceholder = document.querySelector('[data-theme-nav]');
-    if (navPlaceholder) {
+    // The unified site navbar (site-nav.js) owns navigation now. If it is
+    // present (or will be — its script tag is on the page), do NOT build or
+    // replace any nav here.
+    var hasUnifiedNav = document.querySelector('.kn-nav') ||
+      document.querySelector('script[src*="site-nav.js"]');
+    if (hasUnifiedNav) {
+      // no-op: navigation handled by site-nav.js
+    } else if (navPlaceholder) {
       var nav = document.createElement('nav');
       nav.className = 'theme-navbar';
       nav.innerHTML = navHTML();
@@ -113,6 +120,7 @@
         document.querySelectorAll('nav')
       ).filter(function (n) {
         if (n.closest('main, aside, article, .sidebar')) return false;
+        if (n.classList.contains('kn-nav') || n.closest('.kn-nav')) return false;
         return true;
       });
       // Prefer the first <nav> that looks like a top nav — has a
