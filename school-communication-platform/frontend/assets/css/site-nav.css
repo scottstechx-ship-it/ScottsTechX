@@ -28,20 +28,31 @@
 .kn-nav a, .kn-drawer a, .kn-nav button { text-decoration: none !important; border-bottom: none !important; }
 .kn-drawer a:hover, .kn-drawer a:focus, .kn-drawer a:active { text-decoration: none !important; }
 
-.kn-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.kn-brand {
+  display: flex; align-items: center; gap: 10px;
+  min-width: 0; flex: 0 1 auto; overflow: hidden;   /* brand may shrink, but its text is CLIPPED — never spills onto the links */
+}
 .kn-brand img {
   width: 42px; height: 42px; border-radius: 11px; object-fit: cover;
   border: 2px solid rgba(56,189,248,.45); box-shadow: 0 4px 14px rgba(14,165,233,.35);
   flex: none;
 }
-.kn-brand .kn-brand-txt { line-height: 1.15; min-width: 0; }
+.kn-brand .kn-brand-txt {
+  display: flex; flex-direction: column; justify-content: center;
+  line-height: 1.15; min-width: 0; overflow: hidden;
+}
 .kn-brand .kn-brand-name {
+  display: block;
   font-weight: 800; font-size: 1.02rem; color: #fff; letter-spacing: .2px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.kn-brand .kn-brand-sub { font-size: .72rem; color: var(--kn-accent-2); font-weight: 600; }
+.kn-brand .kn-brand-sub {
+  display: block;
+  font-size: .72rem; color: var(--kn-accent-2); font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
 
-.kn-links { display: flex; align-items: center; gap: 2px; list-style: none; margin: 0; padding: 0; }
+.kn-links { display: flex; align-items: center; gap: 2px; list-style: none; margin: 0; padding: 0; flex: none; }
 .kn-links a {
   display: flex; align-items: center; gap: 7px;
   color: var(--kn-muted); font-weight: 600; font-size: .92rem;
@@ -52,7 +63,7 @@
 .kn-links a:hover { color: #fff; background: rgba(14,165,233,.13); transform: translateY(-1px); }
 .kn-links a.active { color: #fff; background: rgba(14,165,233,.2); box-shadow: inset 0 -2px 0 var(--kn-accent); }
 
-.kn-actions { display: flex; align-items: center; gap: 10px; }
+.kn-actions { display: flex; align-items: center; gap: 10px; flex: none; }
 .kn-cta {
   display: inline-flex; align-items: center; gap: 8px;
   background: linear-gradient(135deg, var(--kn-gold), #fbbf24);
@@ -124,9 +135,24 @@
 body.kn-has-nav { padding-top: var(--kn-nav-h); }
 
 /* ---------- responsive breakpoints ---------- */
-@media (max-width: 1080px) {
+/* Tighten everything progressively so the brand, links and buttons
+   NEVER collide — the brand keeps priority on its own space. */
+@media (max-width: 1280px) {
   .kn-links a { padding: 9px 10px; font-size: .88rem; }
   .kn-links a i { display: none; }
+}
+@media (max-width: 1150px) {
+  .kn-nav { padding: 0 clamp(10px, 2vw, 24px); }
+  .kn-links a { padding: 8px 7px; font-size: .84rem; }
+  .kn-cta { padding: 9px 13px; font-size: .84rem; }
+  .kn-portal { padding: 9px 10px; font-size: .84rem; }
+  .kn-brand .kn-brand-name { font-size: .95rem; }
+}
+@media (max-width: 1010px) {
+  .kn-brand .kn-brand-sub { display: none; }   /* keep the school NAME whole; drop the tagline first */
+  .kn-links a { padding: 8px 6px; font-size: .8rem; }
+  .kn-cta { padding: 8px 11px; font-size: .8rem; }
+  .kn-portal { padding: 8px 9px; font-size: .8rem; }
 }
 @media (max-width: 920px) {
   .kn-links { display: none; }
