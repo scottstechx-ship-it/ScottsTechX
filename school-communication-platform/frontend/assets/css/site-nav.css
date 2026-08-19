@@ -18,7 +18,7 @@
   position: fixed; top: 0; left: 0; right: 0; z-index: 2000;
   height: var(--kn-nav-h);
   display: flex; align-items: center; justify-content: space-between;
-  gap: 12px;
+  gap: clamp(16px, 2.5vw, 40px);   /* guaranteed clear distance between logo/name, links and buttons */
   padding: 0 clamp(12px, 4vw, 48px);
   background: linear-gradient(135deg, rgba(12,24,41,.92), rgba(16,35,60,.88));
   -webkit-backdrop-filter: blur(18px) saturate(160%);
@@ -31,6 +31,7 @@
 .kn-brand {
   display: flex; align-items: center; gap: 10px;
   min-width: 0; flex: 0 1 auto; overflow: hidden;   /* brand may shrink, but its text is CLIPPED — never spills onto the links */
+  margin-right: 8px;                                /* extra breathing room before the Home link */
 }
 .kn-brand img {
   width: 42px; height: 42px; border-radius: 11px; object-fit: cover;
