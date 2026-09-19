@@ -317,13 +317,14 @@ function runSeed() {
     // The super admin can edit or remove any of them from the dashboard.
     const media = [
       ['Kalinabiri Secondary School Campus', 'Our school in Ntinda, Kampala', 'https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss.jpeg', 'image', 'Campus', 1],
-      ['Locally Made Thermometer Practical', 'S.1 physics: heat and measurement', 'https://i.ytimg.com/vi/mYhX2lFCMtE/hq720.jpg', 'image', 'Academics', 2],
-      ['Magnetism Demonstration', 'Students demonstrating magnetic fields', 'https://i.ytimg.com/vi/YsB_nSzRTbI/hq720.jpg', 'image', 'Academics', 3],
-      ['Electricity Practical', 'S.1 students building simple circuits', 'https://i.ytimg.com/vi/UoC0lHpgYCA/hq720.jpg', 'image', 'Academics', 4],
-      ['Heat and Energy Practical', 'Conduction and radiation with local materials', 'https://i.ytimg.com/vi/Ab96mYU4UcY/hq720.jpg', 'image', 'Academics', 5],
-      ['Light Demonstration', 'S.1 students demonstrating reflection', 'https://i.ytimg.com/vi/CBs7v5OIjpw/hq720.jpg', 'image', 'Academics', 6],
-      ['Community Health Outreach', 'Reusable sanitary towel campaign at the school', 'https://i.ytimg.com/vi/O1A6aQcmlmg/hq720.jpg', 'image', 'Community', 7],
-      ['Talent and Mentorship Day', 'SMASHED youth mentoring live at Kalinabiri SS', 'https://i.ytimg.com/vi/pMDWl5NuGWw/hq720.jpg', 'image', 'Events', 8],
+      ['School Grounds and Buildings', 'Our campus in Ntinda, Kampala', 'https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss-1.jpeg', 'image', 'Campus', 2],
+      ['Locally Made Thermometer Practical', 'S.1 physics: heat and measurement', 'https://i.ytimg.com/vi/mYhX2lFCMtE/hq720.jpg', 'image', 'Academics', 3],
+      ['Magnetism Demonstration', 'Students demonstrating magnetic fields', 'https://i.ytimg.com/vi/YsB_nSzRTbI/hq720.jpg', 'image', 'Academics', 4],
+      ['Electricity Practical', 'S.1 students building simple circuits', 'https://i.ytimg.com/vi/UoC0lHpgYCA/hq720.jpg', 'image', 'Academics', 5],
+      ['Heat and Energy Practical', 'Conduction and radiation with local materials', 'https://i.ytimg.com/vi/Ab96mYU4UcY/hq720.jpg', 'image', 'Academics', 6],
+      ['Light Demonstration', 'S.1 students demonstrating reflection', 'https://i.ytimg.com/vi/CBs7v5OIjpw/hq720.jpg', 'image', 'Academics', 7],
+      ['Community Health Outreach', 'Reusable sanitary towel campaign at the school', 'https://i.ytimg.com/vi/O1A6aQcmlmg/hq720.jpg', 'image', 'Community', 8],
+      ['Talent and Mentorship Day', 'SMASHED youth mentoring live at Kalinabiri SS', 'https://i.ytimg.com/vi/pMDWl5NuGWw/hq720.jpg', 'image', 'Events', 9],
     ];
     for (const [title, caption, url, type, cat, sort] of media) {
       run('INSERT OR IGNORE INTO site_gallery (title, caption, url, media_type, category, sort_order) VALUES (?, ?, ?, ?, ?, ?)',
