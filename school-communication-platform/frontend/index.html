@@ -53,7 +53,7 @@
         /* Video Background */
         .video-bg {
             position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%; z-index: -2; overflow: hidden;
+            width: 100%; height: 100%; z-index: -3; overflow: hidden;
         }
         .video-bg video { width: 100%; height: 100%; object-fit: cover; }
         /* ---- The film wall ---------------------------------------------------
@@ -825,8 +825,9 @@
         }
     </style>
 <link rel="stylesheet" href="assets/css/site-ux.css">
-<link rel="stylesheet" href="/assets/css/site-nav.css?v=4">
-<script src="/assets/js/site-nav.js?v=4" defer></script>
+<link rel="stylesheet" href="/assets/css/site-nav.css?v=5">
+<script src="/assets/js/site-nav.js?v=5" defer></script>
+<script src="/assets/js/site-film.js?v=5" defer></script>
 <script src="/assets/js/site-animate.js" defer></script>
 <script src="/assets/js/site-perf.js" defer></script>
 </head>
@@ -1530,7 +1531,9 @@
   var soundBtn = document.getElementById('filmSound');
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var conn = navigator.connection || {};
-  var frugal = reduced || conn.saveData || /(^|-)(2g|slow-2g)$/.test(conn.effectiveType || '');
+  // phones: the ambient background film is already playing, so the panel
+  // waits for a tap instead of decoding the same clip a second time
+  var frugal = reduced || window.innerWidth < 700 || conn.saveData || /(^|-)(2g|slow-2g)$/.test(conn.effectiveType || '');
   var autoOwned = false;   // true while we are the ones keeping it playing
 
   // Explicit, because a muted attribute is not always reflected as a property,
