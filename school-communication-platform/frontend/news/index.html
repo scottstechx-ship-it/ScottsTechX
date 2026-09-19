@@ -108,7 +108,7 @@
         .then(function (data) {
           var list = (data && data.news) || [];
           if (!list.length) {
-            grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="big">📰</div><h3>No news yet</h3><p>Check back soon for updates from the school.</p></div>';
+            grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M4 4h11a1 1 0 0 1 1 1v15H5a1 1 0 0 1-1-1V4z"/><path d="M16 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-3"/><path d="M7 8h5"/><path d="M7 12h5"/><path d="M7 16h3"/></svg></div><h3>No news yet</h3><p>Check back soon for updates from the school.</p></div>';
             return;
           }
           grid.innerHTML = list.map(function (n) {
@@ -130,7 +130,7 @@
           });
         })
         .catch(function () {
-          grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="big">📡</div><h3>Could not load news</h3><p>Please refresh the page to try again.</p></div>';
+          grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M2 21h20"/></svg></div><h3>Could not load news</h3><p>Please refresh the page to try again.</p></div>';
         });
     })();
   </script>

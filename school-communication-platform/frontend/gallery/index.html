@@ -1101,7 +1101,7 @@ if (!window.THREE || window.innerWidth < 768) return;
     var grid = document.getElementById('managedGallery');
     if (grid) {
       if (!imgs.length) {
-        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#94a3b8">📷 No photos yet — the school will add them soon.</div>';
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:#94a3b8"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> No photos yet — the school will add them soon.</div>';
       } else {
         grid.innerHTML = imgs.map(function (im, i) {
           return '<div class="image-card visible" data-index="' + i + '">' +

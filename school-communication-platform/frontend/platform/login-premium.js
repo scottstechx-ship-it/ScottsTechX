@@ -64,45 +64,30 @@
   });
 
   // --- Login form submit --------------------------------------------------
-  const form = document.getElementById('login-form');
+  const form = document.getElementById('loginForm') || document.getElementById('login-form');
   if (!form) return;
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const errBox = document.getElementById('login-err');
-    errBox.style.display = 'none';
-    const btn = document.getElementById('login-btn');
-    const originalLabel = btn.textContent;
-    btn.disabled = true;
-    btn.textContent = 'Signing in…';
+    const errBox = document.getElementById('login-err') || document.getElementById('formMessage');
+    if (errBox) errBox.style.display = 'none';
+    const btn = document.getElementById('login-btn') || document.getElementById('submitBtn');
+    const labelTarget = btn && btn.querySelector ? (btn.querySelector('.btn-text') || btn) : null;
+    const originalLabel = labelTarget ? labelTarget.textContent : '';
+    if (btn) btn.disabled = true;
+    if (btn) btn.classList && btn.classList.add('loading');
+    if (labelTarget) labelTarget.textContent = 'Signing in…';
 
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
-
-    // Resolve API base. Config.js is loaded as a separate file and exposes
-    // window.APP_CONFIG.API_BASE_URL; the api.js wrapper uses API.base.
-    const apiBase = (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) || (window.location.origin);
+    const remember = document.getElementById('remember') ? document.getElementById('remember').checked : false;
 
     try {
-      const res = await fetch(apiBase.replace(/\/$/, '') + '/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(data.error || 'Incorrect username or password.');
-      }
+      // The server sets an HttpOnly session cookie; nothing is stored in the
+      // browser's localStorage (no token for scripts or extensions to steal).
+      const data = await window.API.post('/api/auth/login', { username, password, remember });
 
-      // Persist token/user for the dashboards to pick up.
-      // The dashboards read scp_token / scp_user; the legacy keys are kept
-      // for older pages (shared/communication-center.js etc.).
-      localStorage.setItem('scp_token', data.token);
-      localStorage.setItem('scp_user', JSON.stringify(data.user));
-      localStorage.setItem('kalinabiri_token', data.token);
-      localStorage.setItem('kalinabiri_user', JSON.stringify(data.user));
-
-      if (data.user.mustChangePassword) {
+      if (data.user && data.user.mustChangePassword) {
         location.href = '/platform/set-password.html';
         return;
       }
@@ -119,12 +104,17 @@
       }
 
       const home = ROLE_HOME[data.user.role] || 'student';
-      location.href = '/' + home + '/';
+      location.href = '/platform/' + home + '/';
     } catch (err) {
-      errBox.textContent = err.message || 'Incorrect username or password.';
-      errBox.style.display = 'block';
-      btn.disabled = false;
-      btn.textContent = originalLabel;
+      const message = err.message || 'Incorrect username or password.';
+      if (errBox) {
+        errBox.textContent = message;
+        errBox.style.display = 'block';
+        errBox.className = errBox.id === 'formMessage' ? 'form-message error' : errBox.className;
+      }
+      if (btn) btn.disabled = false;
+      if (btn) btn.classList && btn.classList.remove('loading');
+      if (labelTarget) labelTarget.textContent = originalLabel || 'Sign In';
     }
   });
 })();

@@ -20,7 +20,7 @@
         <div class="card" style="margin-bottom:16px">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
             <div>
-              <h3 style="margin:0">🎓 Admission Applications</h3>
+              <h3 style="margin:0"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg> Admission Applications</h3>
               <div class="doc-meta">Submitted from the public website — updates arrive live.</div>
             </div>
             <select id="adm-filter" class="input" style="max-width:180px">
@@ -50,7 +50,7 @@
           apps = (await API.get('/api/website/admissions' + q)).applications || [];
         } catch (e) { listBox.innerHTML = `<div class="card"><div class="doc-meta">${esc(e.message)}</div></div>`; return; }
         if (!apps.length) {
-          listBox.innerHTML = '<div class="card" style="text-align:center;padding:36px"><h3>📭 No applications' + (filter.value ? ' with this status' : ' yet') + '</h3><div class="doc-meta">New submissions from the website appear here instantly.</div></div>';
+          listBox.innerHTML = '<div class="card" style="text-align:center;padding:36px"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg> No applications' + (filter.value ? ' with this status' : ' yet') + '</h3><div class="doc-meta">New submissions from the website appear here instantly.</div></div>';
           return;
         }
         listBox.innerHTML = '';
@@ -63,14 +63,14 @@
                 <div class="doc-meta">Parent: ${esc(a.parent_name)} · ${esc(a.parent_phone)}${a.parent_email ? ' · ' + esc(a.parent_email) : ''}</div>
                 <div class="doc-meta">Submitted ${esc(fmtDT(a.created_at))}${a.prev_school ? ' · Previous school: ' + esc(a.prev_school) : ''}</div>
                 ${a.motivation ? `<div class="doc-meta" style="margin-top:6px;white-space:pre-wrap">"${esc(a.motivation)}"</div>` : ''}
-                ${a.note ? `<div class="doc-meta" style="margin-top:6px">📝 Note: ${esc(a.note)}</div>` : ''}
+                ${a.note ? `<div class="doc-meta" style="margin-top:6px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Note: ${esc(a.note)}</div>` : ''}
               </div>
               <div style="display:flex;gap:6px;flex-wrap:wrap">
-                <button class="btn secondary sm" data-status="reviewing">👀 Reviewing</button>
-                <button class="btn sm" data-status="accepted" style="background:#16a34a">✓ Accept</button>
-                <button class="btn secondary sm" data-status="rejected">✗ Reject</button>
-                <button class="btn secondary sm" data-note>📝 Note</button>
-                <button class="btn secondary sm" data-del style="color:#dc2626">🗑</button>
+                <button class="btn secondary sm" data-status="reviewing"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg> Reviewing</button>
+                <button class="btn sm" data-status="accepted" style="background:#16a34a"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Accept</button>
+                <button class="btn secondary sm" data-status="rejected"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg> Reject</button>
+                <button class="btn secondary sm" data-note><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Note</button>
+                <button class="btn secondary sm" data-del style="color:#dc2626"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
               </div>
             </div>
           </div>`);
@@ -114,7 +114,7 @@
         <div class="card" style="margin-bottom:16px">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
             <div>
-              <h3 style="margin:0">🖼️ Website Gallery</h3>
+              <h3 style="margin:0"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>️ Website Gallery</h3>
               <div class="doc-meta">These pictures appear on the public home page and gallery page. Delete anything here and it disappears from the website instantly.</div>
             </div>
             <button class="btn" id="g-add">+ Add image</button>
@@ -133,7 +133,7 @@
         }
         catch (e) { grid.innerHTML = `<div class="card"><div class="doc-meta">${esc(e.message)}</div></div>`; return; }
         if (!items.length) {
-          grid.innerHTML = '<div class="card" style="grid-column:1/-1;text-align:center;padding:36px"><h3>🖼️ Gallery is empty</h3><div class="doc-meta">Add images or videos — they appear on the public website instantly.</div></div>';
+          grid.innerHTML = '<div class="card" style="grid-column:1/-1;text-align:center;padding:36px"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>️ Gallery is empty</h3><div class="doc-meta">Add images or videos — they appear on the public website instantly.</div></div>';
           return;
         }
         grid.innerHTML = '';
@@ -146,11 +146,11 @@
           const card = UI.el(`<div class="card" style="padding:0;overflow:hidden">
             ${preview}
             <div style="padding:12px">
-              <div class="doc-name" style="font-size:14px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">${esc(im.title)} <span class="badge ${isVideo ? 'amber' : 'blue'}">${isVideo ? '🎬 video' : '🖼 image'}</span></div>
+              <div class="doc-name" style="font-size:14px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">${esc(im.title)} <span class="badge ${isVideo ? 'amber' : 'blue'}">${isVideo ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> video' : '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg> image'}</span></div>
               <div class="doc-meta">${esc(im.category || '')}${im.caption ? ' · ' + esc(im.caption) : ''}</div>
               <div style="display:flex;gap:6px;margin-top:10px">
-                <button class="btn secondary sm" data-edit>✏️ Edit</button>
-                <button class="btn secondary sm" data-del style="color:#dc2626">🗑 Delete</button>
+                <button class="btn secondary sm" data-edit><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️ Edit</button>
+                <button class="btn secondary sm" data-del style="color:#dc2626"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Delete</button>
               </div>
             </div>
           </div>`);
@@ -220,7 +220,7 @@
         <div class="card" style="margin-bottom:16px">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
             <div>
-              <h3 style="margin:0">📰 Website News</h3>
+              <h3 style="margin:0"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M4 4h11a1 1 0 0 1 1 1v15H5a1 1 0 0 1-1-1V4z"/><path d="M16 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-3"/><path d="M7 8h5"/><path d="M7 12h5"/><path d="M7 16h3"/></svg> Website News</h3>
               <div class="doc-meta">Posts appear on the public news page. Expired posts hide automatically.</div>
             </div>
             <button class="btn" id="n-add">+ New post</button>
@@ -236,7 +236,7 @@
         try { posts = (await API.get('/api/website/news/manage')).news || []; }
         catch (e) { listBox.innerHTML = `<div class="card"><div class="doc-meta">${esc(e.message)}</div></div>`; return; }
         if (!posts.length) {
-          listBox.innerHTML = '<div class="card" style="text-align:center;padding:36px"><h3>📰 No news posts yet</h3><div class="doc-meta">Write your first post — it goes live on the website instantly.</div></div>';
+          listBox.innerHTML = '<div class="card" style="text-align:center;padding:36px"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M4 4h11a1 1 0 0 1 1 1v15H5a1 1 0 0 1-1-1V4z"/><path d="M16 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-3"/><path d="M7 8h5"/><path d="M7 12h5"/><path d="M7 16h3"/></svg> No news posts yet</h3><div class="doc-meta">Write your first post — it goes live on the website instantly.</div></div>';
           return;
         }
         listBox.innerHTML = '';
@@ -253,9 +253,9 @@
                 <div class="doc-meta" style="margin-top:4px">Posted ${esc(fmtDT(n.created_at))}${n.expires_at ? ' · ⏳ Expires ' + esc(n.expires_at) : ' · Never expires'}</div>
               </div>
               <div style="display:flex;gap:6px;flex-wrap:wrap">
-                <button class="btn secondary sm" data-edit>✏️ Edit</button>
-                <button class="btn secondary sm" data-toggle>${n.published ? '👁 Unpublish' : '🚀 Publish'}</button>
-                <button class="btn secondary sm" data-del style="color:#dc2626">🗑</button>
+                <button class="btn secondary sm" data-edit><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️ Edit</button>
+                <button class="btn secondary sm" data-toggle>${n.published ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg> Unpublish' : '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Publish'}</button>
+                <button class="btn secondary sm" data-del style="color:#dc2626"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
               </div>
             </div>
           </div>`);
@@ -327,7 +327,7 @@
     async render(box) {
       box.innerHTML = `
         <div class="card" style="margin-bottom:16px">
-          <h3 style="margin:0">✉️ Website Messages</h3>
+          <h3 style="margin:0"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>️ Website Messages</h3>
           <div class="doc-meta">Messages sent from the public contact form.</div>
         </div>
         <div id="cm-list"></div>`;
@@ -338,7 +338,7 @@
         let msgs = [];
         try { msgs = (await API.get('/api/website/contact')).messages || []; }
         catch (e) { listBox.innerHTML = `<div class="card"><div class="doc-meta">${esc(e.message)}</div></div>`; return; }
-        if (!msgs.length) { listBox.innerHTML = '<div class="card" style="text-align:center;padding:36px"><h3>📭 No messages yet</h3><div class="doc-meta">Messages from the website contact form appear here.</div></div>'; return; }
+        if (!msgs.length) { listBox.innerHTML = '<div class="card" style="text-align:center;padding:36px"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg> No messages yet</h3><div class="doc-meta">Messages from the website contact form appear here.</div></div>'; return; }
         listBox.innerHTML = '';
         for (const m of msgs) {
           const card = UI.el(`<div class="card" style="margin-bottom:12px">
@@ -350,8 +350,8 @@
               </div>
               <div style="display:flex;gap:6px;flex-wrap:wrap">
                 ${m.email ? `<a class="btn secondary sm" href="mailto:${esc(m.email)}?subject=Re: ${esc(m.subject || 'Your message to the school')}">↩ Reply</a>` : ''}
-                <button class="btn secondary sm" data-read>${m.status === 'new' ? '✓ Mark read' : '✓ Mark replied'}</button>
-                <button class="btn secondary sm" data-del style="color:#dc2626">🗑</button>
+                <button class="btn secondary sm" data-read>${m.status === 'new' ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Mark read' : '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Mark replied'}</button>
+                <button class="btn secondary sm" data-del style="color:#dc2626"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
               </div>
             </div>
           </div>`);

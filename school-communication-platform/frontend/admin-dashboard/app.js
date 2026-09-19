@@ -3,12 +3,13 @@
  * User management, school configuration, permissions, security, backups,
  * activity logs plus the full communication suite.
  */
-(function () {
+(async function () {
   const API = window.API;
   const UI = window.UI;
 
-  const user = API.getUser();
-  if (!API.getToken() || !user || user.role !== 'super_admin') { location.href = '/platform/login-super-admin.html'; return; }
+  // Session lives in an HttpOnly cookie: ask the server who we are.
+  const user = await API.requireUser('super_admin');
+  if (!user) return;
 
   let layout;
   let messaging = null;
@@ -17,32 +18,32 @@
   let ref = { classes: [], teachers: [], students: [], parents: [] };
 
   const nav = [
-    { key: 'home', label: 'Overview', icon: '🏠', section: 'Main' },
-    { key: 'messages', label: 'Messages', icon: '💬', section: 'Main' },
-    { key: 'documents', label: 'Documents', icon: '📄', section: 'Main' },
-    { key: 'announcements', label: 'Announcements', icon: '📢', section: 'Main' },
-    { key: 'users', label: 'Users', icon: '👥', section: 'Management' },
-    { key: 'students', label: 'Students', icon: '🧑‍🎓', section: 'Management' },
-    { key: 'teachers', label: 'Teachers', icon: '👩‍🏫', section: 'Management' },
-    { key: 'parents', label: 'Parents', icon: '👨‍👧‍👦', section: 'Management' },
-    { key: 'classes', label: 'Classes', icon: '🏫', section: 'Management' },
-    { key: 'admissions', label: 'Admissions', icon: '🎓', section: 'Website' },
-    { key: 'website-gallery', label: 'Website Gallery', icon: '🖼️', section: 'Website' },
-    { key: 'website-news', label: 'Website News', icon: '📰', section: 'Website' },
-    { key: 'website-contact', label: 'Website Messages', icon: '✉️', section: 'Website' },
-    { key: 'settings', label: 'School Settings', icon: '⚙️', section: 'System' },
-    { key: 'permissions', label: 'Permissions', icon: '🔐', section: 'System' },
-    { key: 'security', label: 'Security & API', icon: '🛡️', section: 'System' },
-    { key: 'backup', label: 'Backup', icon: '💾', section: 'System' },
-    { key: 'logs', label: 'Activity Logs', icon: '🕒', section: 'System' },
-    { key: 'notifications', label: 'Notifications', icon: '🔔', section: 'Account' },
-    { key: 'profile', label: 'Profile', icon: '👤', section: 'Account' },
+    { key: 'home', label: 'Overview', icon: 'home', section: 'Main' },
+    { key: 'messages', label: 'Messages', icon: 'messages', section: 'Main' },
+    { key: 'documents', label: 'Documents', icon: 'document', section: 'Main' },
+    { key: 'announcements', label: 'Announcements', icon: 'announcements', section: 'Main' },
+    { key: 'users', label: 'Users', icon: 'users', section: 'Management' },
+    { key: 'students', label: 'Students', icon: 'students', section: 'Management' },
+    { key: 'teachers', label: 'Teachers', icon: 'teachers', section: 'Management' },
+    { key: 'parents', label: 'Parents', icon: 'parents', section: 'Management' },
+    { key: 'classes', label: 'Classes', icon: 'classes', section: 'Management' },
+    { key: 'admissions', label: 'Admissions', icon: 'admissions', section: 'Website' },
+    { key: 'website-gallery', label: 'Website Gallery', icon: 'image', section: 'Website' },
+    { key: 'website-news', label: 'Website News', icon: 'news', section: 'Website' },
+    { key: 'website-contact', label: 'Website Messages', icon: 'mail', section: 'Website' },
+    { key: 'settings', label: 'School Settings', icon: 'settings', section: 'System' },
+    { key: 'permissions', label: 'Permissions', icon: 'lock', section: 'System' },
+    { key: 'security', label: 'Security & API', icon: 'document', section: 'System' },
+    { key: 'backup', label: 'Backup', icon: 'save', section: 'System' },
+    { key: 'logs', label: 'Activity Logs', icon: 'timetable', section: 'System' },
+    { key: 'notifications', label: 'Notifications', icon: 'notifications', section: 'Account' },
+    { key: 'profile', label: 'Profile', icon: 'profile', section: 'Account' },
   ];
   const bottomNav = [
-    { key: 'home', label: 'Home', icon: '🏠' },
-    { key: 'messages', label: 'Messages', icon: '💬' },
-    { key: 'users', label: 'Users', icon: '👥' },
-    { key: 'settings', label: 'Settings', icon: '⚙️' },
+    { key: 'home', label: 'Home', icon: 'home' },
+    { key: 'messages', label: 'Messages', icon: 'messages' },
+    { key: 'users', label: 'Users', icon: 'users' },
+    { key: 'settings', label: 'Settings', icon: 'settings' },
   ];
 
   UI.initLayout({ nav, bottomNav, title: 'Super Admin', onNav: (k) => show(k) }).then(async (l) => {
@@ -91,30 +92,30 @@
     const c = stats.counts || {};
     box.innerHTML = `
       <div class="card" style="background:linear-gradient(135deg,#1e1b4b,#4f46e5);color:#fff;border:none">
-        <h2 style="color:#fff;margin-bottom:2px">Platform overview, ${UI.esc(user.fullName.split(' ')[0])} 🛡️</h2>
+        <h2 style="color:#fff;margin-bottom:2px">Platform overview, ${UI.esc(user.fullName.split(' ')[0])} <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>️</h2>
         <div style="opacity:.9">Super admin control centre.</div>
       </div>
       <div class="grid grid-4" style="margin-top:16px">
-        ${stat('🧑‍🎓', c.students || 0, 'Students', 'ic-blue')}
-        ${stat('👩‍🏫', c.teachers || 0, 'Teachers', 'ic-purple')}
-        ${stat('👨‍💼', c.admins || 0, 'Admins', 'ic-amber')}
-        ${stat('👨‍👧‍👦', c.parents || 0, 'Parents', 'ic-green')}
-        ${stat('👥', c.activeUsers || 0, 'Active users', 'ic-red')}
-        ${stat('🏫', c.classes || 0, 'Classes', 'ic-blue')}
-        ${stat('📝', c.assignments || 0, 'Assignments', 'ic-green')}
-        ${stat('📋', c.exams || 0, 'Exams', 'ic-purple')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>', c.students || 0, 'Students', 'ic-blue')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>', c.teachers || 0, 'Teachers', 'ic-purple')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>', c.admins || 0, 'Admins', 'ic-amber')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>', c.parents || 0, 'Parents', 'ic-green')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>', c.activeUsers || 0, 'Active users', 'ic-red')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>', c.classes || 0, 'Classes', 'ic-blue')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>', c.assignments || 0, 'Assignments', 'ic-green')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>', c.exams || 0, 'Exams', 'ic-purple')}
       </div>
       <div class="grid grid-2" style="margin-top:16px">
-        <div class="card"><h3>🧑‍🎓 Students per class</h3><div id="home-chart"></div></div>
-        <div class="card"><h3>💰 Fees overview</h3><div id="home-fees"></div></div>
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg> Students per class</h3><div id="home-chart"></div></div>
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg> Fees overview</h3><div id="home-fees"></div></div>
       </div>
       <div class="grid grid-2" style="margin-top:16px">
-        <div class="card"><h3>👥 Users by role</h3><div id="home-roles"></div></div>
-        <div class="card"><h3>🕒 Recent activity</h3><div id="home-act"></div></div>
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Users by role</h3><div id="home-roles"></div></div>
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg> Recent activity</h3><div id="home-act"></div></div>
       </div>
       <div class="grid grid-2">
-        <div class="card"><h3>📄 Recent documents</h3><div id="home-docs"></div></div>
-        <div class="card"><h3>📢 Recent announcements</h3><div id="home-ann"></div></div>
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg> Recent documents</h3><div id="home-docs"></div></div>
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg> Recent announcements</h3><div id="home-ann"></div></div>
       </div>`;
 
     UI.barChart(box.querySelector('#home-chart'), (stats.studentsPerClass || []).map((r) => ({ label: r.label, value: r.value })));
@@ -138,7 +139,7 @@
 
     const docBox = box.querySelector('#home-docs');
     for (const d of (stats.recentDocuments || []).slice(0, 4)) {
-      docBox.appendChild(UI.el(`<div class="doc-item" style="margin-bottom:8px"><div class="file-ic file-pdf">📄</div><div style="min-width:0"><div class="doc-name">${UI.esc(d.name)}</div><div class="doc-meta">${UI.timeAgo(d.created_at)}</div></div></div>`));
+      docBox.appendChild(UI.el(`<div class="doc-item" style="margin-bottom:8px"><div class="file-ic file-pdf"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg></div><div style="min-width:0"><div class="doc-name">${UI.esc(d.name)}</div><div class="doc-meta">${UI.timeAgo(d.created_at)}</div></div></div>`));
     }
     if (!(stats.recentDocuments || []).length) docBox.innerHTML = '<div class="doc-meta">Nothing yet.</div>';
 
@@ -201,7 +202,7 @@
         const data = await API.get('/api/users?' + params.toString());
         const list = box.querySelector('#u-list');
         const users = data.users || [];
-        if (!users.length) { list.innerHTML = '<div class="empty-state" style="padding:30px"><div class="big">👥</div>No users found.</div>'; return; }
+        if (!users.length) { list.innerHTML = '<div class="empty-state" style="padding:30px"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>No users found.</div>'; return; }
         list.innerHTML = `<table class="table"><thead><tr>
           <th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Last login</th><th style="text-align:right">Actions</th>
         </tr></thead><tbody></tbody></table>`;
@@ -215,9 +216,9 @@
             <td data-label="Status">${statusBadge(u.status)}</td>
             <td data-label="Last login">${UI.timeAgo(u.last_login) || 'Never'}</td>
             <td data-label="" class="actions-cell"><div class="actions">
-              <button class="btn secondary sm" data-edit>✏️</button>
-              <button class="btn secondary sm" data-pass>🔑</button>
-              <button class="btn danger sm" data-del>🗑</button>
+              <button class="btn secondary sm" data-edit><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️</button>
+              <button class="btn secondary sm" data-pass><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 8.3-8.3"/><path d="m16 6 3 3"/><path d="m19 3 3 3"/></svg></button>
+              <button class="btn danger sm" data-del><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
             </div></td>`;
           tbody.appendChild(tr);
           tr.querySelector('[data-edit]').onclick = () => userModal(u, () => loadUsers());
@@ -316,7 +317,7 @@
         const data = await API.get('/api/students?' + params.toString());
         const list = box.querySelector('#s-list');
         const students = data.students || [];
-        if (!students.length) { list.innerHTML = '<div class="empty-state" style="padding:30px"><div class="big">🧑‍🎓</div>No students found.</div>'; return; }
+        if (!students.length) { list.innerHTML = '<div class="empty-state" style="padding:30px"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg></div>No students found.</div>'; return; }
         list.innerHTML = `<table class="table"><thead><tr><th>Student</th><th>Number</th><th>Class</th><th>Status</th><th style="text-align:right">Actions</th></tr></thead><tbody></tbody></table>`;
         const tbody = list.querySelector('tbody');
         students.forEach((s) => {
@@ -326,8 +327,8 @@
             <td data-label="Class">${UI.esc(s.class_name || '—')} ${UI.esc(s.class_stream || '')}</td>
             <td data-label="Status">${statusBadge(s.status)}</td>
             <td data-label="" class="actions-cell"><div class="actions">
-              <button class="btn secondary sm" data-edit>✏️</button>
-              <button class="btn danger sm" data-del>🗑</button>
+              <button class="btn secondary sm" data-edit><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️</button>
+              <button class="btn danger sm" data-del><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
             </div></td>`;
           tbody.appendChild(tr);
           tr.querySelector('[data-edit]').onclick = () => studentModal(s, () => loadStudents());
@@ -408,7 +409,7 @@
         const data = await API.get('/api/teachers?' + params.toString());
         const list = box.querySelector('#t-list');
         const teachers = data.teachers || [];
-        if (!teachers.length) { list.innerHTML = '<div class="empty-state" style="padding:30px"><div class="big">👩‍🏫</div>No teachers found.</div>'; return; }
+        if (!teachers.length) { list.innerHTML = '<div class="empty-state" style="padding:30px"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>No teachers found.</div>'; return; }
         list.innerHTML = `<table class="table"><thead><tr><th>Teacher</th><th>Staff No.</th><th>Subjects</th><th>Status</th><th style="text-align:right">Actions</th></tr></thead><tbody></tbody></table>`;
         const tbody = list.querySelector('tbody');
         teachers.forEach((t) => {
@@ -418,8 +419,8 @@
             <td data-label="Subjects">${(t.subjects || []).map(UI.esc).join(', ') || '—'}</td>
             <td data-label="Status">${statusBadge(t.status)}</td>
             <td data-label="" class="actions-cell"><div class="actions">
-              <button class="btn secondary sm" data-edit>✏️</button>
-              <button class="btn danger sm" data-del>🗑</button>
+              <button class="btn secondary sm" data-edit><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️</button>
+              <button class="btn danger sm" data-del><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
             </div></td>`;
           tbody.appendChild(tr);
           tr.querySelector('[data-edit]').onclick = () => teacherModal(t, () => loadTeachers());
@@ -502,7 +503,7 @@
         const data = await API.get('/api/parents?' + params.toString());
         const list = box.querySelector('#p-list');
         const parents = data.parents || [];
-        if (!parents.length) { list.innerHTML = '<div class="empty-state" style="padding:30px"><div class="big">👨‍👧‍👦</div>No parents found.</div>'; return; }
+        if (!parents.length) { list.innerHTML = '<div class="empty-state" style="padding:30px"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg></div>No parents found.</div>'; return; }
         list.innerHTML = `<table class="table"><thead><tr><th>Parent</th><th>Phone</th><th>Children</th><th style="text-align:right">Actions</th></tr></thead><tbody></tbody></table>`;
         const tbody = list.querySelector('tbody');
         parents.forEach((p) => {
@@ -511,8 +512,8 @@
             <td data-label="Phone">${UI.esc(p.phone || '—')}</td>
             <td data-label="Children">${(p.children || []).map((c) => UI.esc(c.full_name)).join(', ') || '—'}</td>
             <td data-label="" class="actions-cell"><div class="actions">
-              <button class="btn secondary sm" data-edit>✏️</button>
-              <button class="btn danger sm" data-del>🗑</button>
+              <button class="btn secondary sm" data-edit><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️</button>
+              <button class="btn danger sm" data-del><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
             </div></td>`;
           tbody.appendChild(tr);
           tr.querySelector('[data-edit]').onclick = () => parentModal(p, () => loadParents());
@@ -584,15 +585,15 @@
       const data = await API.get('/api/classes');
       const grid = box.querySelector('#c-grid');
       const classes = data.classes || [];
-      if (!classes.length) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="big">🏫</div>No classes yet.</div>'; return; }
+      if (!classes.length) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>No classes yet.</div>'; return; }
       grid.innerHTML = '';
       for (const cl of classes) {
         grid.appendChild(UI.el(`<div class="card">
           <h3>${UI.esc(cl.name)} ${UI.esc(cl.stream || '')}</h3>
           <div class="doc-meta">${cl.student_count || 0} students · ${UI.esc(cl.academic_year)}</div>
           <div style="margin-top:10px;display:flex;gap:6px">
-            <button class="btn secondary sm" data-edit>✏️</button>
-            <button class="btn danger sm" data-del>🗑</button>
+            <button class="btn secondary sm" data-edit><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️</button>
+            <button class="btn danger sm" data-del><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
           </div></div>`));
       }
       grid.querySelectorAll('.card').forEach((card, i) => {
@@ -646,7 +647,7 @@
     try { s = await API.get('/api/settings/all'); } catch (e) { UI.toast(e.message, 'error'); return; }
     const school = s.school || {};
     box.innerHTML = `<div class="card">
-      <h3>🏫 School information</h3>
+      <h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> School information</h3>
       <div class="form-row">
         <label class="field">School name<input id="st-name" value="${UI.esc(school.name || '')}"></label>
         <label class="field">Motto<input id="st-motto" value="${UI.esc(school.motto || '')}"></label>
@@ -667,30 +668,30 @@
         <label class="field">Streams (comma separated)<input id="st-streams" value="${UI.esc((school.streams || []).join(', '))}"></label>
         <label class="field">Departments (comma separated)<input id="st-depts" value="${UI.esc((school.departments || []).join(', '))}"></label>
       </div>
-      <button class="btn" id="st-save">💾 Save school settings</button>
+      <button class="btn" id="st-save"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg> Save school settings</button>
     </div>
     <div class="card">
-      <h3>🖼 School logo</h3>
+      <h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg> School logo</h3>
       <p class="doc-meta">This logo appears on the login page and in the sidebar of every dashboard. PNG, JPG, WEBP or GIF, up to 2 MB.</p>
       <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
-        <div id="logo-preview" style="width:120px;height:120px;border:1px solid var(--border);border-radius:12px;display:grid;place-items:center;background:var(--bg);overflow:hidden;font-size:34px">🎓</div>
+        <div id="logo-preview" style="width:120px;height:120px;border:1px solid var(--border);border-radius:12px;display:grid;place-items:center;background:var(--bg);overflow:hidden;font-size:34px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg></div>
         <div style="display:flex;flex-direction:column;gap:8px">
           <input type="file" id="logo-file" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
-          <button class="btn" id="logo-choose">📁 Choose logo image</button>
-          <button class="btn success" id="logo-save" disabled>💾 Save logo</button>
-          <button class="btn danger" id="logo-remove">🗑 Remove logo</button>
+          <button class="btn" id="logo-choose"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Choose logo image</button>
+          <button class="btn success" id="logo-save" disabled><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg> Save logo</button>
+          <button class="btn danger" id="logo-remove"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Remove logo</button>
         </div>
       </div>
       <div class="doc-meta" id="logo-status" style="margin-top:10px"></div>
     </div>
     <div class="card">
-      <h3>🔔 Notification preferences</h3>
+      <h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg> Notification preferences</h3>
       <p class="doc-meta">School-wide defaults for in-app notifications. These are enforced by the backend when events are created.</p>
       <div id="nt-prefs"></div>
-      <button class="btn" id="nt-prefs-save" style="margin-top:12px">💾 Save notification settings</button>
+      <button class="btn" id="nt-prefs-save" style="margin-top:12px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg> Save notification settings</button>
     </div>
     <div class="card">
-      <h3>🔗 API & integration</h3>
+      <h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3A5 5 0 0 0 13.5 3.4l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7.1 7.1l1.7-1.7"/></svg> API & integration</h3>
       <div class="list-row"><span class="k">API base URL</span><span class="v"><code>${UI.esc(API.base)}</code></span></div>
       <div class="list-row"><span class="k">Max file size</span><span class="v">${s.api && s.api.maxFileSizeMB || 15} MB</span></div>
       <div class="list-row"><span class="k">API documentation</span><span class="v"><a href="/docs/api.html" target="_blank">Open API docs ↗</a></span></div>
@@ -729,7 +730,7 @@
     (function loadCurrentLogo() {
       const img = new Image();
       img.onload = () => { logoBox.innerHTML = ''; logoBox.appendChild(img); logoStatus.textContent = 'Logo is set. You can replace or remove it below.'; };
-      img.onerror = () => { logoBox.textContent = '🎓'; logoStatus.textContent = 'No logo uploaded yet — choose an image to get started.'; };
+      img.onerror = () => { logoBox.textContent = '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>'; logoStatus.textContent = 'No logo uploaded yet — choose an image to get started.'; };
       img.src = UI.logoUrl() + '?t=' + Date.now();
       img.alt = 'School logo';
       img.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block';
@@ -772,12 +773,12 @@
       } catch (e) { UI.toast(e.message, 'error'); }
     };
     logoRemove.onclick = async () => {
-      const ok = await UI.confirmDialog('Remove the school logo? The 🎓 mark will be used instead.', { title: 'Remove logo', confirmText: 'Remove', danger: true });
+      const ok = await UI.confirmDialog('Remove the school logo? The <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg> mark will be used instead.', { title: 'Remove logo', confirmText: 'Remove', danger: true });
       if (!ok) return;
       try {
         await API.del('/api/settings/logo');
         UI.toast('School logo removed.', 'success');
-        logoBox.textContent = '🎓';
+        logoBox.textContent = '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>';
         logoStatus.textContent = 'No logo uploaded yet.';
       } catch (e) { UI.toast(e.message, 'error'); }
     };
@@ -812,7 +813,7 @@
       <input type="checkbox" data-pkey="${key}" ${checked ? 'checked' : ''} style="width:auto;margin:0"></div>`;
 
     box.innerHTML = `<div class="card">
-      <h3>🔐 Messaging permissions</h3>
+      <h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Messaging permissions</h3>
       <p class="doc-meta">These rules are enforced by the API. Changing them here updates the whole platform.</p>
       <h4 style="margin-top:12px">Students</h4>
       ${toggle('student.messageTeacher', !!(p.student && p.student.messageTeacher), 'Students can message their teachers')}
@@ -831,7 +832,7 @@
       <h4 style="margin-top:12px">General</h4>
       ${toggle('studentMessagingEnabled', !!p.studentMessagingEnabled, 'Enable student messaging overall')}
       ${toggle('parentMessagingEnabled', !!p.parentMessagingEnabled, 'Enable parent messaging overall')}
-      <button class="btn" id="perm-save" style="margin-top:12px">💾 Save permissions</button>
+      <button class="btn" id="perm-save" style="margin-top:12px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg> Save permissions</button>
     </div>`;
 
     box.querySelector('#perm-save').onclick = async () => {
@@ -860,15 +861,15 @@
     try { s = await API.get('/api/settings/all'); } catch (e) { UI.toast(e.message, 'error'); return; }
     const sec = s.security || {};
     box.innerHTML = `<div class="card">
-      <h3>🛡️ Security settings</h3>
+      <h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>️ Security settings</h3>
       <div class="list-row"><span class="k">Password hashing</span><span class="v"><span class="badge green">bcrypt (10 rounds)</span></span></div>
       <div class="list-row"><span class="k">Authentication</span><span class="v">JWT · expires ${UI.esc(sec.sessionExpiryDays || 1) === '1' ? '12h' : ''} (configurable)</span></div>
       <div class="list-row"><span class="k">Strong passwords (letter + number)</span><span><input type="checkbox" id="sec-strong" ${sec.strongPasswords ? 'checked' : ''} style="width:auto;margin:0"></span></div>
       <div class="list-row"><span class="k">Login attempts limit (per 15 min)</span><span class="v">${sec.loginRateLimit || 20}</span></div>
-      <button class="btn" id="sec-save">💾 Save security settings</button>
+      <button class="btn" id="sec-save"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg> Save security settings</button>
     </div>
     <div class="card">
-      <h3>🌐 CORS (approved origins)</h3>
+      <h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 4 9 15 15 0 0 1-4 9 15 15 0 0 1-4-9 15 15 0 0 1 4-9z"/></svg> CORS (approved origins)</h3>
       <p class="doc-meta">Configured on the server in your <code>.env</code> file via <code>ALLOWED_ORIGINS</code>. Never use a wildcard in production.</p>
       <div class="list-row"><span class="k">Environment</span><span class="v"><code>${UI.esc(location.origin)}</code></span></div>
     </div>`;
@@ -885,13 +886,13 @@
     content.innerHTML = `<div class="view active"></div>`;
     const box = content.firstElementChild;
     box.innerHTML = `<div class="card">
-      <h3>💾 Backup</h3>
+      <h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg> Backup</h3>
       <p>Download a full JSON snapshot of the database (users, students, teachers, parents, classes, messages, documents, announcements, notifications and settings).</p>
-      <button class="btn" id="bk-run">⬇ Download backup (JSON)</button>
+      <button class="btn" id="bk-run"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Download backup (JSON)</button>
       <div class="doc-meta" id="bk-info" style="margin-top:10px"></div>
     </div>
     <div class="card">
-      <h3>📦 Database</h3>
+      <h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m12 2 9 5v10l-9 5-9-5V7z"/><path d="m3 7 9 5 9-5"/><path d="M12 12v10"/></svg> Database</h3>
       <p class="doc-meta">The platform uses SQLite by default for zero-configuration deployment. For high traffic you can swap the database layer for PostgreSQL/MySQL — the schema is documented in <code>backend/database/schema.sql</code> and all queries use prepared statements.</p>
     </div>`;
     box.querySelector('#bk-run').onclick = async () => {
@@ -914,8 +915,8 @@
     box.innerHTML = `
       <div class="card" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
         <div class="search-input" style="flex:1;min-width:180px"><input id="log-search" placeholder="Search activity…"></div>
-        <button class="btn secondary" id="log-refresh">🔄 Refresh</button>
-        <a class="btn secondary" href="${API.base}/api/logs/export" download="audit-log.csv">⬇ Export CSV</a>
+        <button class="btn secondary" id="log-refresh"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.5 9a9 9 0 0 1 14.9-3.4L23 10"/><path d="M1 14l4.6 4.4A9 9 0 0 0 20.5 15"/></svg> Refresh</button>
+        <a class="btn secondary" href="${API.base}/api/logs/export" download="audit-log.csv"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Export CSV</a>
       </div>
       <div class="card table-responsive"><div id="log-list"></div></div>`;
 
@@ -928,7 +929,7 @@
         const data = await API.get('/api/logs?' + params.toString());
         const list = box.querySelector('#log-list');
         const logs = data.logs || [];
-        if (!logs.length) { list.innerHTML = '<div class="empty-state" style="padding:30px"><div class="big">🕒</div>No activity recorded yet.</div>'; return; }
+        if (!logs.length) { list.innerHTML = '<div class="empty-state" style="padding:30px"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>No activity recorded yet.</div>'; return; }
         list.innerHTML = `<table class="table"><thead><tr><th>When</th><th>User</th><th>Action</th><th>Details</th></tr></thead><tbody></tbody></table>`;
         const tbody = list.querySelector('tbody');
         logs.forEach((l) => {
@@ -952,13 +953,13 @@
     const box = content.firstElementChild;
     let items = [];
     try { items = (await API.get('/api/notifications?limit=100')).notifications; } catch (e) { UI.toast(e.message, 'error'); }
-    const icons = { message: '💬', document: '📄', announcement: '📢', system: '🔔', account: '🔐' };
+    const icons = { message: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg>', document: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>', announcement: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg>', system: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>', account: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' };
     box.innerHTML = `<div class="card"><h3>Notifications</h3><div id="nt-list" style="margin-top:8px"></div></div>`;
     const list = box.querySelector('#nt-list');
     if (!items.length) list.innerHTML = '<div class="doc-meta">No notifications yet.</div>';
     for (const n of items) {
       list.appendChild(UI.el(`<div class="notif-item ${n.read ? '' : 'unread'}" data-id="${n.id}" style="border-radius:10px;margin-bottom:6px">
-        <span class="n-ic">${icons[n.type] || '🔔'}</span>
+        <span class="n-ic">${icons[n.type] || '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>'}</span>
         <div><div class="n-title">${UI.esc(n.title)}</div>${n.body ? `<div class="n-body">${UI.esc(n.body)}</div>` : ''}<div class="n-time">${UI.timeAgo(n.created_at)}</div></div></div>`));
     }
     list.querySelectorAll('.notif-item').forEach((el) => el.addEventListener('click', async () => {
@@ -978,8 +979,8 @@
     box.innerHTML = `<div class="card" style="display:flex;gap:16px;align-items:center">
         <div class="avatar-lg">${UI.initials(u.fullName)}</div>
         <div><h2>${UI.esc(u.fullName)}</h2><div class="doc-meta">${UI.esc(u.email || '')} · Super Admin</div>
-        <button class="btn secondary sm" id="prof-pass" style="margin-top:8px">🔑 Change password</button>
-        <button class="btn secondary sm" id="prof-photo" style="margin-top:8px">📷 Change photo</button></div>
+        <button class="btn secondary sm" id="prof-pass" style="margin-top:8px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 8.3-8.3"/><path d="m16 6 3 3"/><path d="m19 3 3 3"/></svg> Change password</button>
+        <button class="btn secondary sm" id="prof-photo" style="margin-top:8px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Change photo</button></div>
       </div>
       <div class="card" style="margin-top:16px"><h3>Account</h3>
         ${row('Username', u.username)} ${row('Phone', u.phone || '—')} ${row('Email', u.email || '—')}

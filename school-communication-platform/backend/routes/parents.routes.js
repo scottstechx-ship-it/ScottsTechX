@@ -238,8 +238,8 @@ router.post('/', authenticate, requireStaffAdmin, (req, res) => {
       const pwErr = passwordError(password, { strong: require('../config/env').STRONG_PASSWORDS });
       if (pwErr) { const e = new Error(pwErr); e.status = 400; throw e; }
       const info = run(
-        `INSERT INTO users (full_name, email, phone, username, password_hash, role, status)
-         VALUES (?, ?, ?, ?, ?, 'parent', 'active')`,
+        `INSERT INTO users (full_name, email, phone, username, password_hash, role, status, registration_status, email_verified)
+         VALUES (?, ?, ?, ?, ?, 'parent', 'active', 'approved', 1)`,
         [fullName, email || null, phone || null, username, bcrypt.hashSync(password, 10)]
       );
       userId = info.lastInsertRowid;
@@ -376,7 +376,7 @@ router.post('/:id/approve', authenticate, requireStaffAdmin, (req, res) => {
   const words = ['Lion', 'Eagle', 'Cedar', 'River', 'Acacia', 'Sunrise', 'Kites', 'Baobab'];
   const password = words[crypto.randomInt(words.length)] + '@' + crypto.randomInt(1000, 9999);
   run(
-    `UPDATE users SET registration_status = 'approved', status = 'active',
+    `UPDATE users SET registration_status = 'approved', status = 'active', email_verified = 1,
       password_hash = ?, must_change_password = 1 WHERE id = ?`,
     [bcrypt.hashSync(password, 10), u.id]
   );

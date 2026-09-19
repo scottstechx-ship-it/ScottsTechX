@@ -311,17 +311,16 @@ function runSeed() {
     // The school's existing photos/videos become manageable records so the
     // super admin can edit or remove every one of them from the dashboard.
     const REMOTE = 'https://kalibz-international.netlify.app/assets';
+    // Sample gallery is objects and places (buildings, equipment, projects) —
+    // not portraits of individuals. The super admin can add any other managed
+    // media from the dashboard when needed.
     const media = [
       ['School Buildings', 'Our modern campus facilities', `${REMOTE}/images/kalibz/school%20buildings.jpg`, 'image', 'Campus', 1],
       ['National Robotics Champions', 'June 2025 winners', `${REMOTE}/images/kalibz/award%20winning.jpg`, 'image', 'Achievements', 2],
-      ['Classroom Activities', 'Engaged learning in action', `${REMOTE}/images/kalibz/class%20rooms.jpg`, 'image', 'Academics', 3],
-      ['Students Learning', 'Hands-on science education', `${REMOTE}/images/kalibz/class%20rooms%20%282%29.jpg`, 'image', 'Academics', 4],
-      ['Modern Classrooms', 'Learning spaces', `${REMOTE}/images/kalibz/class%20rooms%20%283%29.jpg`, 'image', 'Academics', 5],
-      ['Our Students', 'Proud Kalinabiri learners', `${REMOTE}/images/kalibz/kalinabiri%20students.jpg`, 'image', 'Students', 6],
-      ['Student Projects', 'Innovation and creativity', `${REMOTE}/images/kalibz/projects.jpg`, 'image', 'Innovation', 7],
-      ['MRS. ASIIMWE SHAROM', 'Staff', `${REMOTE}/images/kalibz/MRS.%20ASIIMWE%20SHAROM.jpg`, 'image', 'Staff', 8],
-      ['School Bus', 'Transport', `${REMOTE}/images/kalibz/school%20bus.jpg`, 'image', 'Transport', 9],
-      ['School Environment', 'Campus', `${REMOTE}/images/kalibz/school%20enviroment.jpg`, 'image', 'Campus', 10],
+      ['Modern Classrooms', 'Learning spaces and furniture', `${REMOTE}/images/kalibz/class%20rooms%20%283%29.jpg`, 'image', 'Academics', 3],
+      ['Student Projects', 'Innovation and creativity on display', `${REMOTE}/images/kalibz/projects.jpg`, 'image', 'Innovation', 4],
+      ['School Bus', 'Transport', `${REMOTE}/images/kalibz/school%20bus.jpg`, 'image', 'Transport', 5],
+      ['School Environment', 'Campus and grounds', `${REMOTE}/images/kalibz/school%20enviroment.jpg`, 'image', 'Campus', 6],
     ];
     for (const [title, caption, url, type, cat, sort] of media) {
       run('INSERT OR IGNORE INTO site_gallery (title, caption, url, media_type, category, sort_order) VALUES (?, ?, ?, ?, ?, ?)',

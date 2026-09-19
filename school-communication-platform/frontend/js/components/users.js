@@ -32,7 +32,7 @@
           const data = await API.get('/api/users?' + params.toString());
           const list = box.querySelector('#uv-list');
           const users = data.users || [];
-          if (!users.length) { list.innerHTML = '<div class="empty-state" style="padding:30px"><div class="big">👥</div>No users found.</div>'; return; }
+          if (!users.length) { list.innerHTML = '<div class="empty-state" style="padding:30px"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>No users found.</div>'; return; }
           list.innerHTML = `<table class="table"><thead><tr>
             <th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Last login</th><th style="text-align:right">Actions</th>
           </tr></thead><tbody></tbody></table>`;
@@ -46,9 +46,9 @@
               <td data-label="Status">${statusBadge(u.status)}</td>
               <td data-label="Last login">${UI.timeAgo(u.last_login) || 'Never'}</td>
               <td data-label="" class="actions-cell"><div class="actions">
-                <button class="btn secondary sm" data-edit="${u.id}">✏️</button>
-                <button class="btn secondary sm" data-pass="${u.id}">🔑</button>
-                <button class="btn danger sm" data-del="${u.id}">🗑</button>
+                <button class="btn secondary sm" data-edit="${u.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️</button>
+                <button class="btn secondary sm" data-pass="${u.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 8.3-8.3"/><path d="m16 6 3 3"/><path d="m19 3 3 3"/></svg></button>
+                <button class="btn danger sm" data-del="${u.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
               </div></td>`;
             tbody.appendChild(tr);
             tr.querySelector('[data-edit]').onclick = () => userModal(u, () => load());

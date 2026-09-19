@@ -24,9 +24,13 @@ app.disable('x-powered-by');
 app.set('trust proxy', true);
 
 const { securityHeaders, corsHandler, rateLimit } = require('./middleware/security');
+const { csrfProtection } = require('./middleware/auth');
 
 app.use(securityHeaders);
 app.use(corsHandler);
+// Cookie-authenticated writes must carry the CSRF token that was issued with
+// the session (double-submit). Bearer-token clients are unaffected.
+app.use('/api/', csrfProtection);
 // gzip/brotli-style compression: HTML/CSS/JS/JSON shrink 60-80% -> much
 // faster loads, especially on mobile data.
 app.use(require('compression')());
@@ -155,6 +159,11 @@ setInterval(deadlineReminders, 12 * 60 * 60 * 1000);
 // Auto-cleanup expired documents & announcements (hourly)
 const { startCleanupInterval } = require('./services/cleanup');
 startCleanupInterval(60 * 60 * 1000);
+
+// Expired/revoked sessions and stale login counters (hourly)
+const { purgeExpired: purgeSessions } = require('./services/sessions');
+purgeSessions();
+setInterval(purgeSessions, 60 * 60 * 1000).unref();
 
 server.listen(env.PORT, '0.0.0.0', () => {
   console.log(`==============================================`);

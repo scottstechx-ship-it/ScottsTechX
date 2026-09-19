@@ -42,7 +42,7 @@
       this.container.innerHTML = `
         <div class="card" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
           <div class="search-input" style="flex:1;min-width:200px"><input id="doc-search" placeholder="Search documents…"></div>
-          ${this.canUpload ? '<button class="btn" id="doc-upload">⬆️ Upload</button>' : ''}
+          ${this.canUpload ? '<button class="btn" id="doc-upload"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M17 8l-5-5-5 5"/><path d="M12 3v12"/></svg>️ Upload</button>' : ''}
         </div>
         <div class="card" id="doc-folders" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"></div>
         <div id="doc-list"></div>`;
@@ -79,7 +79,7 @@
       if (!box) return;
       box.innerHTML = '';
       const all = UI.el('<button class="chip">All documents</button>');
-      const root = UI.el('<button class="chip">📁 No folder</button>');
+      const root = UI.el('<button class="chip"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> No folder</button>');
       all.classList.toggle('active', this.activeFolder === null);
       root.classList.toggle('active', this.activeFolder === 0);
       all.onclick = () => { this.activeFolder = null; this.load(); this.loadFolders(); };
@@ -87,12 +87,12 @@
       box.appendChild(all);
       box.appendChild(root);
       for (const f of this.folders) {
-        const chip = UI.el(`<button class="chip">📁 ${UI.esc(f.name)}</button>`);
+        const chip = UI.el(`<button class="chip"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> ${UI.esc(f.name)}</button>`);
         chip.classList.toggle('active', this.activeFolder === f.id);
         chip.onclick = () => { this.activeFolder = f.id; this.load(); this.loadFolders(); };
         box.appendChild(chip);
         if (this.canManage) {
-          const rm = UI.el(`<span style="cursor:pointer;color:var(--danger)" title="Delete folder">✕</span>`);
+          const rm = UI.el(`<span style="cursor:pointer;color:var(--danger)" title="Delete folder"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>`);
           rm.onclick = async (e) => { e.stopPropagation(); await this.deleteFolder(f.id); };
           chip.appendChild(rm);
         }
@@ -108,7 +108,7 @@
       const list = this.container.querySelector('#doc-list');
       if (!list) return;
       if (!this.documents.length) {
-        list.innerHTML = `<div class="empty-state"><div class="big">📄</div>No documents here yet.</div>`;
+        list.innerHTML = `<div class="empty-state"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg></div>No documents here yet.</div>`;
         return;
       }
       list.innerHTML = '';
@@ -122,11 +122,11 @@
             <div class="doc-meta">${UI.esc(d.mime_type || '')} · ${UI.fmtSize(d.size)} · ${UI.timeAgo(d.created_at)} · by ${UI.esc(d.uploader_name || 'Unknown')}</div>
           </div>
           <div class="doc-actions">
-            <button class="btn secondary sm" data-preview>👁 Preview</button>
-            <button class="btn secondary sm" data-download>⬇ Download</button>
-            ${this.canManage ? `<button class="btn secondary sm" data-share>🔗 Share</button>` : ''}
-            ${this.canManage ? `<button class="btn secondary sm" data-rename>✏️</button>` : ''}
-            ${canDelete ? `<button class="btn danger sm" data-delete>🗑</button>` : ''}
+            <button class="btn secondary sm" data-preview><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg> Preview</button>
+            <button class="btn secondary sm" data-download><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Download</button>
+            ${this.canManage ? `<button class="btn secondary sm" data-share><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3A5 5 0 0 0 13.5 3.4l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7.1 7.1l1.7-1.7"/></svg> Share</button>` : ''}
+            ${this.canManage ? `<button class="btn secondary sm" data-rename><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️</button>` : ''}
+            ${canDelete ? `<button class="btn danger sm" data-delete><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : ''}
           </div>
         </div>`);
         item.querySelector('[data-download]').onclick = () => DocumentsView.downloadDoc(d.id, d.name);
@@ -180,7 +180,7 @@
         const modal = UI.openModal({
           title: UI.esc(doc.name),
           wide: true,
-          body: inner + `<p style="margin:10px 0 0"><button class="btn" id="dl-in-modal">⬇ Download</button></p>`,
+          body: inner + `<p style="margin:10px 0 0"><button class="btn" id="dl-in-modal"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Download</button></p>`,
         });
         modal.backdrop.querySelector('#dl-in-modal').onclick = () => DocumentsView.downloadDoc(doc.id, doc.name);
       } catch (e) { UI.toast(e.message, 'error'); }

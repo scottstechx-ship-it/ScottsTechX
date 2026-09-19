@@ -1,17 +1,20 @@
 /**
- * Database singleton (better-sqlite3).
+ * Database singleton.
  * Opens the SQLite file, applies the schema, and exposes small helpers.
  * All queries in the app use prepared statements -> SQL injection safe.
+ *
+ * The driver is resolved by ./driver.js: better-sqlite3 when available,
+ * Node's built-in node:sqlite otherwise (see driver.js for why).
  */
 const fs = require('fs');
 const path = require('path');
-const Database = require('better-sqlite3');
+const { openDatabase } = require('./driver');
 const env = require('../config/env');
 
 fs.mkdirSync(path.dirname(env.DATABASE_PATH), { recursive: true });
 fs.mkdirSync(env.UPLOAD_DIR, { recursive: true });
 
-const db = new Database(env.DATABASE_PATH);
+const db = openDatabase(env.DATABASE_PATH);
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
 
@@ -31,6 +34,35 @@ function ensureColumn(table, column, ddl) {
 ensureColumn('documents', 'expire_date', 'TEXT');
 ensureColumn('site_gallery', 'media_type', "TEXT DEFAULT 'image'");
 ensureColumn('announcements', 'expire_date', 'TEXT');
+
+// Tables added after the first release are created here too, so existing
+// databases pick them up without a manual migration step.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS sessions (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    token_hash   TEXT NOT NULL UNIQUE,
+    csrf_token   TEXT NOT NULL,
+    ip           TEXT,
+    user_agent   TEXT,
+    created_at   TEXT NOT NULL DEFAULT (datetime('now')),
+    last_seen_at TEXT NOT NULL DEFAULT (datetime('now')),
+    expires_at   TEXT NOT NULL,
+    revoked      INTEGER NOT NULL DEFAULT 0
+  );
+  CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
+  CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at);
+  CREATE TABLE IF NOT EXISTS login_attempts (
+    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+    ident        TEXT NOT NULL,
+    ip           TEXT,
+    attempts     INTEGER NOT NULL DEFAULT 1,
+    first_at     TEXT NOT NULL DEFAULT (datetime('now')),
+    last_at      TEXT NOT NULL DEFAULT (datetime('now')),
+    locked_until TEXT
+  );
+  CREATE UNIQUE INDEX IF NOT EXISTS idx_login_attempts_key ON login_attempts(ident, ip);
+`);
 
 /** conversations.type gained 'broadcast' and 'channel' — rebuild if old CHECK. */
 function migrateConversationsType() {
@@ -73,7 +105,10 @@ ensureColumn('users', 'must_change_password', 'INTEGER NOT NULL DEFAULT 0');
 ensureColumn('imports', 'credentials', 'TEXT');
 
 // Existing approved parents (created by admins / seed) count as email-verified.
-db.prepare("UPDATE users SET email_verified = 1 WHERE role = 'parent' AND registration_status = 'approved'").run();
+// Accounts created by the school (seed, admins, imports) are trusted: they
+// never went through self-registration, so they must not be asked to verify
+// an email address they never submitted themselves.
+db.prepare("UPDATE users SET email_verified = 1 WHERE registration_status = 'approved' AND email_verified = 0").run();
 
 // ---- backfill: chat attachments must be downloadable by conversation
 // participants (files attached to messages were previously owner-only).

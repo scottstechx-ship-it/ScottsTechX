@@ -94,33 +94,10 @@
     <p class="footer-note">Kalinabiri Secondary School • Ntinda, Kampala</p>
   </div>
 </main>
+<script src="/js/config.js"></script>
+<script src="/js/api.js"></script>
 <script src="login-premium.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('loginForm');
-  const msg = document.getElementById('formMessage');
-  const btn = document.getElementById('submitBtn');
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const fd = new FormData(form);
-    const body = Object.fromEntries(fd);
-    btn.disabled = true; btn.querySelector('.btn-text').textContent = 'Signing in…'; btn.classList.add('loading');
-    msg.textContent = ''; msg.className = 'form-message';
-    try {
-      const res = await fetch('/api/auth/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Login failed');
-      localStorage.setItem('scp_token', data.token);
-      localStorage.setItem('scp_user', JSON.stringify(data.user));
-      msg.textContent = 'Redirecting…'; msg.className = 'form-message success';
-      setTimeout(() => window.location.href = '/student/', 600);
-    } catch (err) {
-      msg.textContent = err.message; msg.className = 'form-message error';
-      btn.disabled = false; btn.querySelector('.btn-text').textContent = 'Sign In'; btn.classList.remove('loading');
-    }
-  });
-});
-</script>
+
 <script>
 (function () {
   var pw = document.getElementById('password');
@@ -130,13 +107,13 @@ document.addEventListener('DOMContentLoaded', () => {
   wrap.style.position = 'relative';
   var btn = document.createElement('button');
   btn.type = 'button';
-  btn.className = 'pw-toggle-btn';
+  btn.className = 'pw-toggle-btn'; btn.style.minWidth = '52px';
   btn.setAttribute('aria-label', 'Show password');
-  btn.textContent = '👁';
+  btn.textContent = 'Show';
   btn.addEventListener('click', function () {
     var show = pw.type === 'password';
     pw.type = show ? 'text' : 'password';
-    btn.textContent = show ? '🙈' : '👁';
+    btn.textContent = show ? 'Hide' : 'Show';
     btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
   });
   wrap.appendChild(btn);

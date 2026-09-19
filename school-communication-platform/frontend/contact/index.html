@@ -831,7 +831,7 @@
   <div class="contact-grid">
     <div class="contact-card-wrapper reveal">
       <div class="contact-card" data-tilt>
-        <div class="contact-icon">📍</div>
+        <div class="contact-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
         <h3>Visit Us</h3>
         <p>Kalinabiri Secondary School<br>Ntinda, Kampala, Uganda</p>
         <a href="https://www.google.com/maps/search/?api=1&query=Kalinabiri+Secondary+School+Ntinda+Kampala" target="_blank" rel="noopener" class="link">View on Map →</a>
@@ -839,7 +839,7 @@
     </div>
     <div class="contact-card-wrapper reveal" style="transition-delay:0.1s">
       <div class="contact-card" data-tilt>
-        <div class="contact-icon">📞</div>
+        <div class="contact-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></div>
         <h3>Call Us</h3>
         <p>0792 861 645 (Head Teacher)<br>0701 120 729 (Director of Studies)</p>
         <a href="tel:0792861645" class="link">Call Now →</a>
@@ -847,7 +847,7 @@
     </div>
     <div class="contact-card-wrapper reveal" style="transition-delay:0.2s">
       <div class="contact-card" data-tilt>
-        <div class="contact-icon">✉️</div>
+        <div class="contact-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>️</div>
         <h3>Email Us</h3>
         <p>Kalinabiri.ntinda@yahoo.com<br>Kalinabiri@yahoo.com</p>
         <a href="mailto:Kalinabiri.ntinda@yahoo.com" class="link">Send Email →</a>
@@ -907,13 +907,13 @@
           });
           var data = await res.json().catch(function(){ return {}; });
           if (!res.ok) throw new Error(data.error || 'Could not send your message.');
-          status.textContent = '✅ ' + (data.message || 'Message sent! We will respond soon.');
+          status.textContent = '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> ' + (data.message || 'Message sent! We will respond soon.');
           status.style.color = '#16a34a'; status.style.display = 'block';
           this.reset();
           btn.querySelector('span').textContent = 'Send Message';
           btn.disabled = false;
         } catch (err) {
-          status.textContent = '⚠️ ' + err.message;
+          status.textContent = '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>️ ' + err.message;
           status.style.color = '#dc2626'; status.style.display = 'block';
           btn.querySelector('span').textContent = 'Send Message';
           btn.disabled = false;
@@ -932,7 +932,7 @@
           allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         <a class="map-directions" target="_blank" rel="noopener"
            href="https://www.google.com/maps/dir/?api=1&destination=Kalinabiri%20Secondary%20School%2C%20Ntinda%2C%20Kampala">
-          🧭 Get directions
+          <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Get directions
         </a>
       </div>
     </div>
@@ -945,38 +945,38 @@
   <div class="department-grid">
     <div class="department-card-wrapper reveal" style="transition-delay:0s">
       <div class="department-card" data-tilt>
-        <div class="department-icon">🎓</div>
+        <div class="department-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg></div>
         <h3>Admissions</h3>
         <p class="department-desc">S.1 - S.4 Admissions & Enquiries</p>
-        <p class="department-contact">📧 Kalinabiri@yahoo.com</p>
-        <p class="department-contact">📞 0792 861 645 (Head Teacher)</p>
+        <p class="department-contact"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg> Kalinabiri@yahoo.com</p>
+        <p class="department-contact"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> 0792 861 645 (Head Teacher)</p>
       </div>
     </div>
     <div class="department-card-wrapper reveal" style="transition-delay:0.1s">
       <div class="department-card" data-tilt>
-        <div class="department-icon">📖</div>
+        <div class="department-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
         <h3>Academics</h3>
         <p class="department-desc">S.5 - S.6 Academic Affairs</p>
-        <p class="department-contact">📞 0701 120 729 — Mrs. Lukwago Rose (DOS)</p>
-        <p class="department-contact">📞 0757 805 368 — Mr. Ashaba Fredrick (Ass. DOS)</p>
+        <p class="department-contact"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> 0701 120 729 — Mrs. Lukwago Rose (DOS)</p>
+        <p class="department-contact"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> 0757 805 368 — Mr. Ashaba Fredrick (Ass. DOS)</p>
       </div>
     </div>
     <div class="department-card-wrapper reveal" style="transition-delay:0.2s">
       <div class="department-card" data-tilt>
-        <div class="department-icon">💰</div>
+        <div class="department-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg></div>
         <h3>Finance & Fees</h3>
         <p class="department-desc">Fee Inquiries & Payment Plans</p>
-        <p class="department-contact">📧 Kalinabiri.ntinda@yahoo.com</p>
-        <p class="department-contact">📞 0792 861 645 (School Office)</p>
+        <p class="department-contact"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg> Kalinabiri.ntinda@yahoo.com</p>
+        <p class="department-contact"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> 0792 861 645 (School Office)</p>
       </div>
     </div>
     <div class="department-card-wrapper reveal" style="transition-delay:0.3s">
       <div class="department-card" data-tilt>
-        <div class="department-icon">🎓</div>
+        <div class="department-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg></div>
         <h3>Student Welfare</h3>
         <p class="department-desc">Guidance, Counselling & Student Affairs</p>
-        <p class="department-contact">📧 Kalinabiri.ntinda@yahoo.com</p>
-        <p class="department-contact">📞 0792 861 645 (School Office)</p>
+        <p class="department-contact"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg> Kalinabiri.ntinda@yahoo.com</p>
+        <p class="department-contact"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> 0792 861 645 (School Office)</p>
       </div>
     </div>
   </div>
@@ -1008,8 +1008,8 @@
     </div>
     <div>
       <h3>Contact</h3>
-      <a href="tel:0792861645">📞 0792 861 645</a>
-      <a href="mailto:Kalinabiri.ntinda@yahoo.com">✉️ Kalinabiri.ntinda@yahoo.com</a>
+      <a href="tel:0792861645"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> 0792 861 645</a>
+      <a href="mailto:Kalinabiri.ntinda@yahoo.com"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>️ Kalinabiri.ntinda@yahoo.com</a>
     </div>
   </div>
   <div class="footer-bottom"><p>© 2026 Kalinabiri Secondary School. All Rights Reserved. | Developed by <strong>ScottsTechX</strong></p></div>

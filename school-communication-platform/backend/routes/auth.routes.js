@@ -13,6 +13,8 @@ const { authenticate, signToken } = require('../middleware/auth');
 const { passwordError, cleanString, isEmail, isPhone } = require('../middleware/validate');
 const { upload, handleUploadErrors } = require('../middleware/upload');
 const { log } = require('../services/audit');
+const { rateLimit } = require('../middleware/security');
+const sessions = require('../services/sessions');
 const { sendEmail } = require('../services/mailer');
 
 /** Public user shape (never exposes password hash). */
@@ -90,14 +92,34 @@ router.get('/me', authenticate, (req, res) => {
   res.json({ user: publicUser(u), profile, preferences });
 });
 
+/**
+ * A hash of a password that can never match, compared against when the
+ * account does not exist so that response time does not reveal whether the
+ * identifier is real (timing-based user enumeration).
+ */
+const DUMMY_HASH = bcrypt.hashSync('no-such-password-' + crypto.randomBytes(8).toString('hex'), 10);
+
 /** POST /api/auth/login */
-router.post('/login', (req, res) => {
-  const { username, password } = req.body || {};
+router.post('/login', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: env.LOGIN_RATE_LIMIT_PER_15MIN * 3, // IP-level ceiling; per-account lockout is stricter
+  label: 'sign-in attempts',
+  message: 'Too many sign-in attempts from this network. Please wait a few minutes and try again.',
+}), (req, res) => {
+  const { username, password, remember } = req.body || {};
   const ident = cleanString(username, 100);
   const pw = cleanString(password, 200);
 
   if (!ident || !pw) {
     return res.status(400).json({ error: 'Enter your username, email or code and your password.' });
+  }
+
+  // Brute-force guard: too many wrong passwords locks this account+IP pair.
+  const lockedFor = sessions.lockoutRemaining(ident, req.ip);
+  if (lockedFor > 0) {
+    return res.status(429).json({
+      error: `Too many failed sign-in attempts. Try again in ${lockedFor} minute${lockedFor === 1 ? '' : 's'}.`,
+    });
   }
 
   // Identifier can be a username, an email, OR a unique code
@@ -113,41 +135,92 @@ router.post('/login', (req, res) => {
       get('SELECT user_id FROM parents  WHERE upper(parent_code) = upper(?) AND user_id IS NOT NULL', [ident]);
     if (viaCode) u = get('SELECT * FROM users WHERE id = ?', [viaCode.user_id]);
   }
-  if (!u || !bcrypt.compareSync(pw, u.password_hash)) {
-    log(null, 'LOGIN_FAILED', `Failed login attempt for "${ident}"`, req.ip);
-    return res.status(401).json({ error: 'Incorrect username, email, code or password.' });
+
+  // Always run a bcrypt comparison, even for unknown accounts, so the time
+  // taken does not leak whether the identifier exists.
+  const passwordOk = bcrypt.compareSync(pw, u && u.password_hash ? u.password_hash : DUMMY_HASH);
+  if (!u || !passwordOk) {
+    const { attempts, locked, minutes } = sessions.recordFailedLogin(ident, req.ip);
+    log(null, 'LOGIN_FAILED', `Failed login attempt for "${ident}" (attempt ${attempts})`, req.ip);
+    if (locked) {
+      return res.status(429).json({
+        error: `Too many failed sign-in attempts. Your account is locked for ${minutes} minutes.`,
+      });
+    }
+    const left = Math.max(0, sessions.MAX_ATTEMPTS - attempts);
+    return res.status(401).json({
+      error: left <= 3
+        ? `Incorrect username, email, code or password. ${left} attempt${left === 1 ? '' : 's'} left before a temporary lock.`
+        : 'Incorrect username, email, code or password.',
+    });
   }
+  sessions.clearFailedLogins(ident, req.ip);
   if (u.status !== 'active') {
-    if (u.role === 'parent' && u.registration_status === 'pending') {
-      return res.status(403).json({ error: 'Your registration is awaiting admin approval. You will be able to log in once it is approved.' });
-    }
-    if (u.role === 'parent' && u.registration_status === 'rejected') {
-      return res.status(403).json({ error: 'Your registration was not approved. Please contact the school administration.' });
-    }
     return res.status(403).json({ error: 'Your account is not active. Contact the school administrator.' });
   }
-  if (u.role === 'parent' && u.registration_status === 'pending') {
+  // Self-registered accounts (parent, student, teacher applications) must be
+  // approved by the school and the email address must be confirmed.
+  if (u.registration_status === 'pending') {
     return res.status(403).json({ error: 'Your registration is awaiting admin approval. You will be able to log in once it is approved.' });
   }
-  if (u.role === 'parent' && u.registration_status === 'rejected') {
+  if (u.registration_status === 'rejected') {
     return res.status(403).json({ error: 'Your registration was not approved. Please contact the school administration.' });
   }
-  if (u.role === 'parent' && !u.email_verified) {
-    return res.status(403).json({ error: 'Please verify your email address first. Check your inbox for the verification link (or request a new one).' });
+  if (!u.email_verified) {
+    return res.status(403).json({
+      error: 'Please verify your email address first. Check your inbox for the verification link (or request a new one).',
+      needsVerification: true,
+    });
   }
 
   const now = new Date().toISOString();
   run('UPDATE users SET last_login = ? WHERE id = ?', [now, u.id]);
+
+  // A real, revocable session: the browser keeps only an HttpOnly cookie.
+  const session = sessions.issueSession(u.id, req, { remember: remember === true || remember === 'true' });
+  sessions.setSessionCookies(res, session, req);
   log(u, 'LOGIN', `${u.role} ${u.full_name} logged in`, req.ip);
 
-  const token = signToken(u);
-  res.json({ token, user: publicUser(u) });
+  // `token` is still returned for non-browser clients; dashboards use the cookie.
+  res.json({
+    token: signToken(u),
+    csrfToken: session.csrfToken,
+    user: publicUser(u),
+    expiresAt: session.expiresAt,
+  });
 });
 
-/** POST /api/auth/logout — stateless JWT; record the logout in the audit log. */
+/** POST /api/auth/logout — revoke the session server-side (not just client-side). */
 router.post('/logout', authenticate, (req, res) => {
+  if (req.authMethod === 'cookie') {
+    sessions.revokeSession(sessions.cookieValue(req, sessions.COOKIE_NAME));
+    sessions.clearSessionCookies(res);
+  }
   log(req.user, 'LOGOUT', `${req.user.full_name} logged out`, req.ip);
   res.json({ message: 'Logged out successfully.' });
+});
+
+/** GET /api/auth/sessions — devices signed in to this account. */
+router.get('/sessions', authenticate, (req, res) => {
+  const currentId = req.session ? req.session.id : null;
+  res.json({
+    sessions: sessions.listSessions(req.user.id).map((s) => ({
+      id: s.id,
+      ip: s.ip,
+      userAgent: s.user_agent,
+      createdAt: s.created_at,
+      lastSeenAt: s.last_seen_at,
+      expiresAt: s.expires_at,
+      current: s.id === currentId,
+    })),
+  });
+});
+
+/** POST /api/auth/logout-all — sign out every other device. */
+router.post('/logout-all', authenticate, (req, res) => {
+  sessions.revokeAllForUser(req.user.id, sessions.cookieValue(req, sessions.COOKIE_NAME));
+  log(req.user, 'LOGOUT_ALL', `${req.user.full_name} signed out of all other devices`, req.ip);
+  res.json({ message: 'All other sessions have been signed out.' });
 });
 
 /** PUT /api/auth/change-password */
@@ -172,6 +245,9 @@ router.put('/change-password', authenticate, (req, res) => {
     new Date().toISOString(),
     u.id,
   ]);
+  // Everywhere else this account is signed in stops working immediately —
+  // a changed password must invalidate sessions that may have been stolen.
+  sessions.revokeAllForUser(u.id, sessions.cookieValue(req, sessions.COOKIE_NAME));
   log(req.user, 'PASSWORD_CHANGE', `${u.full_name} changed their password`, req.ip);
   res.json({ message: 'Password updated successfully.' });
 });
@@ -211,7 +287,12 @@ module.exports = router;
 // ---------------------------------------------------------------------------
 
 /** POST /api/auth/forgot-password — request a reset link for an email address. */
-router.post('/forgot-password', (req, res) => {
+router.post('/forgot-password', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 8,
+  label: 'password reset requests',
+  message: 'Too many attempts from this network. Please wait a few minutes and try again.',
+}), (req, res) => {
   const email = cleanString((req.body || {}).email, 160).toLowerCase();
   if (!isEmail(email)) {
     return res.status(400).json({ error: 'Enter a valid email address.' });
@@ -251,7 +332,12 @@ router.post('/forgot-password', (req, res) => {
 });
 
 /** POST /api/auth/reset-password — set a new password using a reset token. */
-router.post('/reset-password', (req, res) => {
+router.post('/reset-password', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  label: 'password resets',
+  message: 'Too many attempts from this network. Please wait a few minutes and try again.',
+}), (req, res) => {
   const token = cleanString((req.body || {}).token, 300);
   const newPassword = cleanString((req.body || {}).newPassword, 200);
   if (!token) return res.status(400).json({ error: 'Reset token is required.' });
@@ -272,6 +358,8 @@ router.post('/reset-password', (req, res) => {
     run('UPDATE password_resets SET used = 1 WHERE id = ?', [row.id]);
     run('DELETE FROM password_resets WHERE user_id = ? AND id != ?', [u.id, row.id]);
   });
+  // Kick every existing session: the old password may be in someone else's hands.
+  sessions.revokeAllForUser(u.id);
   log(u, 'PASSWORD_RESET', `${u.full_name} reset their password via email link`, req.ip);
   sendEmail({ to: u.email, subject: 'Your password was reset', html: `<p>Hi ${u.full_name}, your password was successfully reset.</p>` }).catch(() => {});
   res.json({ message: 'Your password has been reset. You can now log in.' });
@@ -369,7 +457,12 @@ function createVerificationToken(userId) {
  * verification link. The parent can only log in after email verification AND
  * admin approval.
  */
-router.post('/register', (req, res) => {
+router.post('/register', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 6,
+  label: 'registrations',
+  message: 'Too many attempts from this network. Please wait a few minutes and try again.',
+}), (req, res) => {
   const fullName = cleanString((req.body || {}).fullName, 120);
   const email = cleanString((req.body || {}).email, 160).toLowerCase();
   const phone = cleanString((req.body || {}).phone, 30);
@@ -411,7 +504,7 @@ router.post('/register', (req, res) => {
   tx(() => {
     const info = run(
       `INSERT INTO users (full_name, email, phone, username, password_hash, role, status, registration_status, email_verified, must_change_password)
-       VALUES (?, ?, ?, ?, ?, 'parent', 'active', 'pending', 1, 0)`,
+       VALUES (?, ?, ?, ?, ?, 'parent', 'active', 'pending', 0, 0)`,
       [fullName, email, phone || null, username, bcrypt.hashSync(placeholder, 10)]
     );
     const userId = info.lastInsertRowid;
@@ -433,6 +526,19 @@ router.post('/register', (req, res) => {
     `${fullName} (${email}) claims guardianship of: ${childList}. Approve or reject in Parents.`, '/parents');
   log(null, 'PARENT_REGISTERED', `Parent registration: ${fullName} <${email}> for ${childList}`, req.ip);
 
+  // Verification link: proves the address belongs to the applicant before an
+  // admin spends time reviewing the claim.
+  try {
+    const verifyToken = createVerificationToken(get('SELECT id FROM users WHERE username = ?', [username]).id);
+    const verifyLink = `${env.FRONTEND_URL}/verify-email.html?token=${verifyToken}`;
+    sendEmail({
+      to: email,
+      subject: 'Confirm your email address',
+      html: `<p>Hello ${fullName},</p><p>Confirm your address to continue your application:
+        <a href="${verifyLink}">confirm my email</a> (valid for 24 hours).</p>`,
+    }).catch(() => {});
+  } catch { /* never block registration on email delivery */ }
+
   // Acknowledgement email (no credentials yet — those come after approval).
   sendEmail({
     to: email,
@@ -449,7 +555,12 @@ router.post('/register', (req, res) => {
 });
 
 /** POST /api/auth/verify-email — verify with the emailed token. */
-router.post('/verify-email', (req, res) => {
+router.post('/verify-email', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 12,
+  label: 'email verifications',
+  message: 'Too many attempts from this network. Please wait a few minutes and try again.',
+}), (req, res) => {
   const token = cleanString((req.body || {}).token, 300);
   if (!token) return res.status(400).json({ error: 'Verification token is required.' });
   const hash = crypto2.createHash('sha256').update(token).digest('hex');
@@ -472,7 +583,12 @@ router.post('/verify-email', (req, res) => {
 });
 
 /** POST /api/auth/resend-verification — resend the verification link. */
-router.post('/resend-verification', (req, res) => {
+router.post('/resend-verification', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 6,
+  label: 'verification emails',
+  message: 'Too many attempts from this network. Please wait a few minutes and try again.',
+}), (req, res) => {
   const email = cleanString((req.body || {}).email, 160).toLowerCase();
   if (!isEmail(email)) return res.status(400).json({ error: 'Enter a valid email address.' });
   const u = get('SELECT * FROM users WHERE lower(email) = ? AND role = \'parent\'', [email]);
@@ -496,6 +612,185 @@ router.post('/set-password', authenticate, (req, res) => {
   if (!u) return res.status(404).json({ error: 'Account not found.' });
   run('UPDATE users SET password_hash = ?, must_change_password = 0, updated_at = ? WHERE id = ?',
     [bcrypt.hashSync(newPassword, 10), new Date().toISOString(), u.id]);
+  sessions.revokeAllForUser(u.id, sessions.cookieValue(req, sessions.COOKIE_NAME));
   log(u, 'PASSWORD_SET', `${u.full_name} set their first password`, req.ip);
   res.json({ message: 'Password set. You can now use the platform.' });
+});
+
+// ---------------------------------------------------------------------------
+// Student & teacher self-registration (applications, not instant accounts)
+// ---------------------------------------------------------------------------
+/**
+ * Both flows create a *pending* account:
+ *   - the applicant must confirm their email address, and
+ *   - an administrator must approve the application.
+ *
+ * Nothing is stored in the browser: the application lives in the database
+ * where the school can actually review it. (The old pages wrote "accounts"
+ * into localStorage — invisible to the school and lost on the next device.)
+ */
+
+function applicationEmail(fullName, role, extra) {
+  return `<p>Hello ${fullName},</p>
+    <p>We received your ${role} account application${extra ? ` (${extra})` : ''}.</p>
+    <p>Please confirm your email address using the link we sent separately, then wait for the
+    school administration to approve your application. You will be able to sign in once approved.</p>`;
+}
+
+/** POST /api/auth/register/student — apply using the code on the admission letter. */
+router.post('/register/student', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 6,
+  label: 'student applications',
+  message: 'Too many applications from this network. Please wait a few minutes and try again.',
+}), (req, res) => {
+  const body = req.body || {};
+  const fullName = cleanString(body.fullName, 120);
+  const email = cleanString(body.email, 160).toLowerCase();
+  const phone = cleanString(body.phone, 30);
+  const password = cleanString(body.password, 200);
+  const studentCode = cleanString(body.studentCode || body.studentNumber || body.admissionNo, 40).toUpperCase();
+
+  if (!fullName || !email || !password || !studentCode) {
+    return res.status(400).json({ error: 'Full name, email, password and student number are required.' });
+  }
+  if (!isEmail(email)) return res.status(400).json({ error: 'Enter a valid email address.' });
+  if (phone && !isPhone(phone)) return res.status(400).json({ error: 'Enter a valid phone number.' });
+  const pwErr = passwordError(password, { strong: env.STRONG_PASSWORDS });
+  if (pwErr) return res.status(400).json({ error: pwErr });
+
+  const student = get('SELECT * FROM students WHERE upper(student_code) = ?', [studentCode]);
+  if (!student) {
+    return res.status(400).json({
+      error: `Student number "${studentCode}" was not found. Use the number on your admission letter or report card, or ask the school office.`,
+    });
+  }
+  if (student.user_id) {
+    return res.status(400).json({
+      error: 'This student number already has an account. Sign in instead, or ask the school office to reset it.',
+    });
+  }
+  if (get('SELECT id FROM users WHERE lower(email) = lower(?)', [email])) {
+    return res.status(200).json({ message: 'Application received. The school administration will review it and email you once approved.' });
+  }
+
+  const username = 'student_' + Date.now().toString(36) + '_' + crypto2.randomBytes(3).toString('hex');
+  let userId;
+  try {
+    tx(() => {
+      const info = run(
+        `INSERT INTO users (full_name, email, phone, username, password_hash, role, status, registration_status, email_verified, must_change_password)
+         VALUES (?, ?, ?, ?, ?, 'student', 'active', 'pending', 0, 0)`,
+        [fullName, email, phone || null, username, bcrypt.hashSync(password, 10)]
+      );
+      userId = info.lastInsertRowid;
+      run('UPDATE students SET user_id = ?, status = ? WHERE id = ?', [userId, 'pending', student.id]);
+    });
+  } catch (e) {
+    return res.status(400).json({ error: 'That email address is already registered. Try signing in instead.' });
+  }
+
+  try {
+    const token = createVerificationToken(userId);
+    sendEmail({
+      to: email,
+      subject: 'Confirm your email address',
+      html: `<p>Hello ${fullName},</p><p>Confirm your address to continue your student account application:
+        <a href="${env.FRONTEND_URL}/verify-email.html?token=${token}">confirm my email</a> (valid 24 hours).</p>`,
+    }).catch(() => {});
+  } catch { /* email delivery must never block the application */ }
+
+  const admins = all("SELECT id FROM users WHERE role IN ('admin','super_admin') AND status = 'active'").map((r) => r.id);
+  notifyMany(admins, 'account', 'New student account application',
+    `${fullName} (${email}) applied using student number ${studentCode}. Approve or reject in Users.`, '/users');
+  log(null, 'STUDENT_REGISTERED', `Student application: ${fullName} <${email}> (${studentCode})`, req.ip);
+  sendEmail({ to: email, subject: 'Application received', html: applicationEmail(fullName, 'student', studentCode) }).catch(() => {});
+
+  res.json({
+    message: 'Application received. Confirm your email address, then wait for the school administration to approve your account.',
+  });
+});
+
+/** POST /api/auth/register/teacher — apply for a staff account. */
+router.post('/register/teacher', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 6,
+  label: 'teacher applications',
+  message: 'Too many applications from this network. Please wait a few minutes and try again.',
+}), (req, res) => {
+  const body = req.body || {};
+  const fullName = cleanString(body.fullName, 120);
+  const email = cleanString(body.email, 160).toLowerCase();
+  const phone = cleanString(body.phone, 30);
+  const password = cleanString(body.password, 200);
+  const subjects = cleanString(body.subjects, 300);
+  const qualification = cleanString(body.qualification, 200);
+  const staffCode = cleanString(body.staffCode, 40).toUpperCase();
+
+  if (!fullName || !email || !password) {
+    return res.status(400).json({ error: 'Full name, email and password are required.' });
+  }
+  if (!isEmail(email)) return res.status(400).json({ error: 'Enter a valid email address.' });
+  if (phone && !isPhone(phone)) return res.status(400).json({ error: 'Enter a valid phone number.' });
+  const pwErr = passwordError(password, { strong: env.STRONG_PASSWORDS });
+  if (pwErr) return res.status(400).json({ error: pwErr });
+
+  // A school-issued staff code fast-tracks the application; without one the
+  // school verifies identity manually before approving.
+  let teacherRow = null;
+  if (staffCode) {
+    teacherRow = get('SELECT * FROM teachers WHERE upper(staff_code) = ?', [staffCode]);
+    if (!teacherRow) return res.status(400).json({ error: `Staff code "${staffCode}" was not recognised.` });
+    if (teacherRow.user_id) return res.status(400).json({ error: 'That staff code already has an account. Sign in instead.' });
+  }
+  if (get('SELECT id FROM users WHERE lower(email) = lower(?)', [email])) {
+    return res.status(200).json({ message: 'Application received. The school administration will review it and email you once approved.' });
+  }
+
+  const username = 'teacher_' + Date.now().toString(36) + '_' + crypto2.randomBytes(3).toString('hex');
+  const generatedCode = 'TCH-APP-' + crypto2.randomBytes(3).toString('hex').toUpperCase();
+  let userId;
+  try {
+    tx(() => {
+      const info = run(
+        `INSERT INTO users (full_name, email, phone, username, password_hash, role, status, registration_status, email_verified, must_change_password)
+         VALUES (?, ?, ?, ?, ?, 'teacher', 'active', 'pending', 0, 0)`,
+        [fullName, email, phone || null, username, bcrypt.hashSync(password, 10)]
+      );
+      userId = info.lastInsertRowid;
+      if (teacherRow) {
+        run('UPDATE teachers SET user_id = ?, full_name = ?, phone = ?, email = ?, status = ? WHERE id = ?',
+          [userId, fullName, phone || null, email, 'pending', teacherRow.id]);
+      } else {
+        run(
+          `INSERT INTO teachers (user_id, staff_code, full_name, subjects, phone, email, qualification, status)
+           VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')`,
+          [userId, generatedCode, fullName, JSON.stringify(subjects ? subjects.split(/[,\s*]+/).filter(Boolean) : []),
+            phone || null, email, qualification || null]
+        );
+      }
+    });
+  } catch (e) {
+    return res.status(400).json({ error: 'That email address is already registered. Try signing in instead.' });
+  }
+
+  try {
+    const token = createVerificationToken(userId);
+    sendEmail({
+      to: email,
+      subject: 'Confirm your email address',
+      html: `<p>Hello ${fullName},</p><p>Confirm your address to continue your staff account application:
+        <a href="${env.FRONTEND_URL}/verify-email.html?token=${token}">confirm my email</a> (valid 24 hours).</p>`,
+    }).catch(() => {});
+  } catch { /* ignore */ }
+
+  const admins = all("SELECT id FROM users WHERE role IN ('admin','super_admin') AND status = 'active'").map((r) => r.id);
+  notifyMany(admins, 'account', 'New teacher account application',
+    `${fullName} (${email}) applied for a staff account${staffCode ? ` with code ${staffCode}` : ''}. Approve or reject in Users.`, '/users');
+  log(null, 'TEACHER_REGISTERED', `Teacher application: ${fullName} <${email}>`, req.ip);
+  sendEmail({ to: email, subject: 'Application received', html: applicationEmail(fullName, 'teacher') }).catch(() => {});
+
+  res.json({
+    message: 'Application received. Confirm your email address, then wait for the school administration to approve your account.',
+  });
 });

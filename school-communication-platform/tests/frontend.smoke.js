@@ -19,7 +19,10 @@ async function login(username, password) {
   });
   const data = await res.json();
   if (!res.ok) throw new Error(`login ${username}: ${JSON.stringify(data)}`);
-  return { token: data.token, user: data.user };
+  // cookie sessions: keep the session cookie the server just issued
+  const cookies = (res.headers.getSetCookie ? res.headers.getSetCookie() : [])
+    .map((c) => c.split(';')[0]);
+  return { token: data.token, user: data.user, cookies };
 }
 
 function readScript(rel) {
@@ -36,7 +39,6 @@ async function bootDashboard({ username, password, htmlRel, appRel }) {
   });
   const { window } = dom;
   // polyfills jsdom lacks
-  window.fetch = globalThis.fetch;
   window.FormData = globalThis.FormData;
   window.Blob = globalThis.Blob;
   window.Headers = globalThis.Headers;
@@ -45,16 +47,30 @@ async function bootDashboard({ username, password, htmlRel, appRel }) {
   window.HTMLElement.prototype.scrollIntoView = () => {};
   Object.defineProperty(window, 'innerWidth', { value: 1280, configurable: true });
 
+  // Cookie-session plumbing: the real browser sends the HttpOnly session
+  // cookie automatically; jsdom does not, so we attach it to every request.
+  const cookieHeader = creds.cookies.join('; ');
+  if (creds.cookies.length) {
+    for (const c of creds.cookies) {
+      try { window.document.cookie = c; } catch { /* httpOnly bits ignored */ }
+    }
+  }
+  const rawFetch = globalThis.fetch;
+  window.fetch = (input, init = {}) => {
+    const headers = new Headers(init.headers || {});
+    if (cookieHeader && !headers.has('cookie')) headers.set('cookie', cookieHeader);
+    return rawFetch(input, { ...init, headers });
+  };
+
   const errors = [];
   window.addEventListener('error', (e) => errors.push(e.message || String(e.error)));
   const origError = console.error;
   console.error = (...a) => { errors.push(a.join(' ')); };
 
-  window.localStorage.setItem('scp_token', creds.token);
-  window.localStorage.setItem('scp_user', JSON.stringify(creds.user));
+  // (sessions live in cookies now — nothing sensitive in localStorage)
 
-  // execute scripts in the same order as the HTML
-  const scripts = ['js/config.js', 'js/api.js', 'js/theme.js', 'js/ui.js', 'js/socket-client.js',
+  // execute scripts in the same order as the HTML (icons.js before ui.js)
+  const scripts = ['js/config.js', 'js/icons.js', 'js/api.js', 'js/theme.js', 'js/ui.js', 'js/socket-client.js',
     'js/components/messaging.js', 'js/components/documents.js', 'js/components/announcements.js', 'js/components/academics.js', appRel];
   for (const rel of scripts) {
     try {
@@ -83,8 +99,8 @@ async function switchView(w, key) {
 (async () => {
   let failures = 0;
   function check(name, cond, detail = '') {
-    if (cond) console.log(`  ✔ ${name}`);
-    else { failures++; console.log(`  ✘ ${name} ${detail}`); }
+    if (cond) console.log(`  ok ${name}`);
+    else { failures++; console.log(`  x ${name} ${detail}`); }
   }
 
   console.log('\n== STUDENT dashboard ==');
@@ -171,6 +187,6 @@ async function switchView(w, key) {
     window.Theme.set(before === 'dark' ? 'light' : before, { sync: false });
   }
 
-  console.log(failures === 0 ? '\n✅ ALL FRONTEND SMOKE TESTS PASSED' : `\n❌ ${failures} frontend checks failed`);
+  console.log(failures === 0 ? '\nOK ALL FRONTEND SMOKE TESTS PASSED' : `\nFAIL ${failures} frontend checks failed`);
   process.exit(failures === 0 ? 0 : 1);
 })().catch((e) => { console.error('Harness error:', e); process.exit(1); });

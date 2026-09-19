@@ -14,7 +14,9 @@ const ROOT = path.join(__dirname, '..');
 
 async function login(u, p) {
   const r = await fetch(`${BASE}/api/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: u, password: p }) });
-  return r.json();
+  const data = await r.json();
+  data.cookies = (r.headers.getSetCookie ? r.headers.getSetCookie() : []).map((c) => c.split(';')[0]);
+  return data;
 }
 async function api(tok, p, opts = {}) {
   const headers = { Authorization: 'Bearer ' + tok };
@@ -24,21 +26,29 @@ async function api(tok, p, opts = {}) {
 }
 
 let fails = 0;
-const ok = (l, c, e = '') => { if (!c) fails++; console.log(`${c ? '✔' : '✘'} ${l}${c ? '' : ' — ' + e}`); };
+const ok = (l, c, e = '') => { if (!c) fails++; console.log(`${c ? 'ok' : 'x'} ${l}${c ? '' : ' — ' + e}`); };
 
 function makeWindow(creds, pagePath) {
   const html = fs.readFileSync(path.join(ROOT, 'frontend', pagePath), 'utf8');
   const dom = new JSDOM(html, { url: `${BASE}/${pagePath.replace('/index.html', '')}/`, runScripts: 'outside-only', pretendToBeVisual: true });
   const { window } = dom;
-  window.fetch = globalThis.fetch;
+  // cookie sessions: attach the server-issued session cookie to every request
+  const cookieHeader = (creds.cookies || []).join('; ');
+  if (creds.cookies && creds.cookies.length) {
+    for (const c of creds.cookies) { try { window.document.cookie = c; } catch { /* httpOnly ignored */ } }
+  }
+  const rawFetch = globalThis.fetch;
+  window.fetch = (input, init = {}) => {
+    const headers = new Headers(init.headers || {});
+    if (cookieHeader && !headers.has('cookie')) headers.set('cookie', cookieHeader);
+    return rawFetch(input, { ...init, headers });
+  };
   window.FormData = globalThis.FormData;
   window.Blob = globalThis.Blob;
   window.scrollTo = () => {};
   window.HTMLElement.prototype.scrollIntoView = () => {};
   Object.defineProperty(window, 'innerWidth', { value: 390, configurable: true }); // PHONE width
-  window.localStorage.setItem('scp_token', creds.token);
-  window.localStorage.setItem('scp_user', JSON.stringify(creds.user));
-  const scripts = ['js/config.js', 'js/api.js', 'js/theme.js', 'js/ui.js', 'js/socket-client.js',
+  const scripts = ['js/config.js', 'js/icons.js', 'js/api.js', 'js/theme.js', 'js/ui.js', 'js/socket-client.js',
     'js/components/messaging.js', 'js/components/documents.js', 'js/components/announcements.js',
     'js/components/academics.js', 'js/components/users.js', 'js/components/website.js'];
   for (const rel of scripts) window.eval(fs.readFileSync(path.join(ROOT, 'frontend', rel), 'utf8'));
@@ -144,6 +154,6 @@ function makeWindow(creds, pagePath) {
     w.close();
   }
 
-  console.log(fails === 0 ? '\n✅ UI DELETE FLOW WORKS (confirm dialog fixed)' : `\n❌ ${fails} failures`);
+  console.log(fails === 0 ? '\nOK UI DELETE FLOW WORKS (confirm dialog fixed)' : `\nFAIL ${fails} failures`);
   process.exit(fails ? 1 : 0);
 })().catch((e) => { console.error('Harness error:', e); process.exit(1); });

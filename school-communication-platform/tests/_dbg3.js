@@ -23,5 +23,5 @@ const rd = (r) => fs.readFileSync(path.join(ROOT, 'frontend', r), 'utf8');
   const text = (w.document.body.textContent || '').replace(/\s+/g, ' ').trim();
   console.log('boot errors:', errors.slice(0, 2));
   console.log('Users view renders:', text.includes('Create user') && text.includes('Users & Staff'));
-  console.log('Has delete buttons (no placeholders):', w.document.body.textContent.includes('🗑'));
+  console.log('Has delete buttons (no placeholders):', w.document.body.querySelector('[data-del], .btn.danger.sm svg, button[title*=Delete]') !== null || w.document.body.innerHTML.includes('data-del'));
 })().catch(e => { console.error(e); process.exit(1); });

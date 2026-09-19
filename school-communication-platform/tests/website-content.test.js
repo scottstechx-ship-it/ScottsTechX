@@ -23,7 +23,7 @@ function tinyPng() {
   return Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==', 'base64');
 }
 let fails = 0;
-const ok = (label, cond, extra = '') => { if (!cond) fails++; console.log(`${cond ? '✔' : '✘'} ${label}${cond ? '' : ' — ' + extra}`); };
+const ok = (label, cond, extra = '') => { if (!cond) fails++; console.log(`${cond ? 'ok' : 'x'} ${label}${cond ? '' : ' — ' + extra}`); };
 
 (async () => {
   const sa = await login('superadmin', 'SuperAdmin@123');
@@ -135,6 +135,6 @@ const ok = (label, cond, extra = '') => { if (!cond) fails++; console.log(`${con
   ok('admin deletes news post', delNews.status === 200);
 
   sock.close();
-  console.log(fails === 0 ? '\n✅ ALL WEBSITE-CONTENT FLOWS WORK' : `\n❌ ${fails} failures`);
+  console.log(fails === 0 ? '\nOK ALL WEBSITE-CONTENT FLOWS WORK' : `\nFAIL ${fails} failures`);
   process.exit(fails === 0 ? 0 : 1);
 })().catch((e) => { console.error('HARNESS FAIL:', e); process.exit(1); });

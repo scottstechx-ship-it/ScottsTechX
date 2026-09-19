@@ -17,7 +17,7 @@
       this.container.innerHTML = `
         <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">
           <h2 style="margin:0;flex:1">Announcements</h2>
-          ${this.canPost ? '<button class="btn" id="ann-new">📢 New announcement</button>' : ''}
+          ${this.canPost ? '<button class="btn" id="ann-new"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg> New announcement</button>' : ''}
         </div>
         <div id="ann-list"></div>`;
 
@@ -32,7 +32,7 @@
         if (!list) return;
         const items = data.announcements || [];
         if (!items.length) {
-          list.innerHTML = `<div class="empty-state"><div class="big">📢</div>No announcements yet.</div>`;
+          list.innerHTML = `<div class="empty-state"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg></div>No announcements yet.</div>`;
         } else {
           list.innerHTML = '';
           for (const a of items) list.appendChild(this.item(a));
@@ -48,8 +48,8 @@
           ${important ? '<span class="badge red">IMPORTANT</span>' : ''}
           <span>${UI.esc(a.title)}</span>
         </div>
-        <div class="ann-meta">${important ? '🏷 ' : ''}${UI.esc(a.sender_name || 'School')} · ${UI.fmtDate(a.created_at)} · ${UI.timeAgo(a.created_at)}
-          ${this.canPost ? `<button class="btn ghost sm" data-edit style="margin-left:8px">✏️ Edit</button><button class="btn ghost sm" data-del>Delete</button>` : ''}
+        <div class="ann-meta">${important ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg> ' : ''}${UI.esc(a.sender_name || 'School')} · ${UI.fmtDate(a.created_at)} · ${UI.timeAgo(a.created_at)}
+          ${this.canPost ? `<button class="btn ghost sm" data-edit style="margin-left:8px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️ Edit</button><button class="btn ghost sm" data-del>Delete</button>` : ''}
         </div>
         <div class="ann-body">${UI.esc(a.content)}</div>
       </div>`);

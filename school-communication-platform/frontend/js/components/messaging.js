@@ -36,7 +36,7 @@
           <div class="msg-list">
             <div class="msg-list-head">
               <h3 style="margin:0;flex:1">Messages</h3>
-              ${this.canCompose ? '<button class="btn secondary sm" id="channels-btn" title="Announcement channels">📢</button>' : ''}
+              ${this.canCompose ? '<button class="btn secondary sm" id="channels-btn" title="Announcement channels"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg></button>' : ''}
               ${this.canCompose ? '<button class="btn sm" id="new-msg">＋ New</button>' : ''}
             </div>
             <div class="search-input" style="padding:8px 12px 2px"><input id="msg-search" placeholder="Search messages…"></div>
@@ -44,7 +44,7 @@
           </div>
           <div class="msg-thread" id="msg-thread">
             <div class="empty-state" style="margin:auto">
-              <div class="big">💬</div>
+              <div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg></div>
               <p>Select a conversation to read and reply.<br>New messages appear here in real time.</p>
             </div>
           </div>
@@ -95,7 +95,7 @@
       const list = this.container.querySelector('#conv-list');
       if (!list) return;
       if (!this.conversations.length) {
-        list.innerHTML = `<div class="empty-state"><div class="big">💬</div>No conversations yet.<br>${this.canCompose ? 'Start one with the ＋ button.' : ''}</div>`;
+        list.innerHTML = `<div class="empty-state"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg></div>No conversations yet.<br>${this.canCompose ? 'Start one with the ＋ button.' : ''}</div>`;
       } else {
         list.innerHTML = '';
         for (const c of this.conversations) {
@@ -110,7 +110,7 @@
       const name = UI.esc(c.title || 'Conversation');
       const preview = c.last_message ? (c.last_sender_name ? c.last_sender_name + ': ' : '') + c.last_message : 'No messages yet';
       const time = UI.timeAgo(c.last_message_at || c.created_at);
-      const icon = c.type === 'class' ? '🏫' : c.type === 'group' ? '👥' : null;
+      const icon = c.type === 'class' ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>' : c.type === 'group' ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' : null;
       const item = UI.el(`<div class="conv-item ${this.activeConvId === c.id ? 'active' : ''}" data-cid="${c.id}">
         <div class="avatar">${icon ? UI.esc(icon) : UI.esc(UI.initials(name))}</div>
         <div class="body">
@@ -181,14 +181,14 @@
         ${conv.type === 'broadcast' ? '<span class="badge amber">Broadcast</span>' : ''}
         ${conv.type === 'channel' && conv.created_by === API.getUser().id ? '<span class="badge green">Owner</span>' : ''}
         ${conv.type !== 'channel' ? `
-          <button class="btn secondary sm" id="mute-btn" title="Mute / unmute notifications">${conv.muted ? '🔕' : '🔔'}</button>
-          <button class="btn secondary sm" id="archive-btn" title="Archive / restore">📦</button>` : ''}
+          <button class="btn secondary sm" id="mute-btn" title="Mute / unmute notifications">${conv.muted ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M13.7 21a2 2 0 0 1-3.4 0"/><path d="M18.6 13A17.9 17.9 0 0 0 18 8"/><path d="M6.3 6.3A5.9 5.9 0 0 0 6 8c0 7-3 9-3 9h14"/><path d="M18 8a6 6 0 0 0-9.3-5"/><path d="m1 1 22 22"/></svg>' : '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>'}</button>
+          <button class="btn secondary sm" id="archive-btn" title="Archive / restore"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m12 2 9 5v10l-9 5-9-5V7z"/><path d="m3 7 9 5 9-5"/><path d="M12 12v10"/></svg></button>` : ''}
       </div>`);
       const body = UI.el('<div class="thread-messages" id="thread-msgs"></div>');
       const composer = UI.el(`<div class="composer">
-        ${this.allowAttachments ? '<button class="btn secondary" id="attach-btn" title="Attach a file">📎</button>' : ''}
+        ${this.allowAttachments ? '<button class="btn secondary" id="attach-btn" title="Attach a file"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3A5 5 0 0 0 13.5 3.4l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7.1 7.1l1.7-1.7"/></svg></button>' : ''}
         <textarea id="msg-input" placeholder="Type a message…" rows="1" enterkeyhint="send" autocomplete="off" autocorrect="on"></textarea>
-        <button class="btn send-btn" id="send-btn" title="Send">➤</button>
+        <button class="btn send-btn" id="send-btn" title="Send"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
       </div>`);
       thread.innerHTML = '';
       thread.appendChild(head);
@@ -202,7 +202,7 @@
       if (conv.type !== 'channel') {
         head.querySelector('#mute-btn').onclick = async () => {
           const muted = !conv.muted;
-          try { await API.put(`/api/messages/conversations/${convId}/mute`, { muted }); UI.toast(muted ? 'Conversation muted.' : 'Conversation unmuted.', 'success'); conv.muted = muted; head.querySelector('#mute-btn').textContent = muted ? '🔕' : '🔔'; }
+          try { await API.put(`/api/messages/conversations/${convId}/mute`, { muted }); UI.toast(muted ? 'Conversation muted.' : 'Conversation unmuted.', 'success'); conv.muted = muted; head.querySelector('#mute-btn').textContent = muted ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M13.7 21a2 2 0 0 1-3.4 0"/><path d="M18.6 13A17.9 17.9 0 0 0 18 8"/><path d="M6.3 6.3A5.9 5.9 0 0 0 6 8c0 7-3 9-3 9h14"/><path d="M18 8a6 6 0 0 0-9.3-5"/><path d="m1 1 22 22"/></svg>' : '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>'; }
           catch (e) { UI.toast(e.message, 'error'); }
         };
         head.querySelector('#archive-btn').onclick = async () => {
@@ -296,14 +296,14 @@
       const canDelete = mine || ['super_admin', 'admin'].includes(me.role);
       const attach = m.attachment_id ? `
         <div class="attach" data-doc="${m.attachment_id}" title="Download ${UI.esc(m.attachment_name || '')}">
-          <span>📄</span><span><strong>${UI.esc(m.attachment_name || 'Attachment')}</strong><br><small>${UI.esc(m.attachment_mime || '')} · ${UI.fmtSize(m.attachment_size)} · ⬇ click to download</small></span>
+          <span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg></span><span><strong>${UI.esc(m.attachment_name || 'Attachment')}</strong><br><small>${UI.esc(m.attachment_mime || '')} · ${UI.fmtSize(m.attachment_size)} · <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> click to download</small></span>
         </div>` : '';
       const bubble = UI.el(`<div class="msg-bubble ${mine ? 'mine' : 'theirs'}">
         ${attach}
         <div class="msg-content">${UI.esc(m.content || '')}${m.edited ? ' <small class="meta" style="opacity:.6">(edited)</small>' : ''}</div>
-        <div class="meta"><span>${mine ? 'You' : UI.esc(m.sender_name)}</span><span>${UI.fmtTime(m.created_at)}</span>${mine ? '<span>✓✓</span>' : ''}
-          ${mine && !m.attachment_id ? `<button class="msg-del" title="Edit message" data-edit="${m.id}">✏️</button>` : ''}
-          ${canDelete ? `<button class="msg-del" title="Delete message" data-del="${m.id}">🗑</button>` : ''}</div>
+        <div class="meta"><span>${mine ? 'You' : UI.esc(m.sender_name)}</span><span>${UI.fmtTime(m.created_at)}</span>${mine ? '<span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>' : ''}
+          ${mine && !m.attachment_id ? `<button class="msg-del" title="Edit message" data-edit="${m.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️</button>` : ''}
+          ${canDelete ? `<button class="msg-del" title="Delete message" data-del="${m.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : ''}</div>
       </div>`);
       const at = bubble.querySelector('.attach');
       if (at) at.onclick = () => window.DocumentsView && window.DocumentsView.downloadDoc(Number(at.dataset.doc));
@@ -344,7 +344,7 @@
       const thread = this.container.querySelector('#msg-thread');
       if (!thread) return;
       thread.innerHTML = `<div class="empty-state" style="margin:auto">
-        <div class="big">💬</div><p>Select a conversation to read and reply.</p></div>`;
+        <div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg></div><p>Select a conversation to read and reply.</p></div>`;
       this.activeConvId = null;
     }
 
@@ -355,7 +355,7 @@
       const me = API.getUser();
       let modal;
       modal = UI.openModal({
-        title: '📢 Announcement channels',
+        title: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg> Announcement channels',
         wide: true,
         body: `<p class="doc-meta">Channels broadcast school announcements. Subscribe to receive them in your messages.</p>
                <div id="channels-list"></div>
@@ -371,7 +371,7 @@
         for (const c of channels) {
           const row = UI.el(`<div class="doc-item">
             <div style="flex:1;min-width:0">
-              <div class="doc-name">📢 ${UI.esc(c.title)}</div>
+              <div class="doc-name"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg> ${UI.esc(c.title)}</div>
               <div class="doc-meta">${c.subscriber_count} subscriber${c.subscriber_count === 1 ? '' : 's'} · ${c.post_count} post${c.post_count === 1 ? '' : 's'} · by ${UI.esc(c.creator_name || 'Admin')}</div>
             </div>
             ${c.subscribed
@@ -423,13 +423,13 @@
       const list = this.container.querySelector('#conv-list');
       if (!list) return;
       if (!results.length) {
-        list.innerHTML = `<div class="empty-state" style="padding:26px"><div class="big">🔍</div>No messages match "${UI.esc(q)}"</div>`;
+        list.innerHTML = `<div class="empty-state" style="padding:26px"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>No messages match "${UI.esc(q)}"</div>`;
         return;
       }
       list.innerHTML = `<div style="padding:8px 14px;font-size:12px;color:var(--muted);font-weight:700">${results.length} result${results.length === 1 ? '' : 's'} for "${UI.esc(q)}"</div>`;
       for (const r of results) {
         const item = UI.el(`<div class="conv-item" data-cid="${r.conversation_id}">
-          <div class="avatar">💬</div>
+          <div class="avatar"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg></div>
           <div class="body">
             <div class="name"><span>${UI.esc(r.conversation_title || 'Conversation')}</span><span class="time">${UI.fmtTime(r.created_at)}</span></div>
             <div class="preview"><span>${UI.esc(r.sender_name)}: ${UI.esc(r.content)}</span></div>
@@ -474,7 +474,7 @@
       } catch (e) {
         if (pending) {
           pending.classList.add('failed');
-          pending.querySelector('.meta').innerHTML = '<span style="color:#f87171">⚠ failed — tap to retry</span>';
+          pending.querySelector('.meta').innerHTML = '<span style="color:#f87171"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> failed — tap to retry</span>';
           pending.style.cursor = 'pointer';
           pending.onclick = () => { pending.remove(); this.sendMessage(content); };
         }

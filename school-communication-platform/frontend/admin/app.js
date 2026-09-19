@@ -3,12 +3,13 @@
  * Students (incl. bulk import), staff, classes, academics (attendance,
  * assignments, exams, timetable, fees), communication & documents.
  */
-(function () {
+(async function () {
   const API = window.API;
   const UI = window.UI;
 
-  const user = API.getUser();
-  if (!API.getToken() || !user || user.role !== 'admin') { location.href = '/platform/login-admin.html'; return; }
+  // Session lives in an HttpOnly cookie: ask the server who we are.
+  const user = await API.requireUser('admin');
+  if (!user) return;
 
   let layout;
   let messaging = null;
@@ -17,33 +18,33 @@
   let ref = { classes: [], teachers: [], students: [], parents: [] };
 
   const nav = [
-    { key: 'home', label: 'Home', icon: '🏠', section: 'Main' },
-    { key: 'messages', label: 'Messages', icon: '💬', section: 'Main' },
-    { key: 'documents', label: 'Documents', icon: '📄', section: 'Main' },
-    { key: 'announcements', label: 'Announcements', icon: '📢', section: 'Main' },
-    { key: 'students', label: 'Students', icon: '🧑‍🎓', section: 'Management' },
-    { key: 'import', label: 'Import Center', icon: '📥', section: 'Management' },
-    { key: 'users', label: 'Users & Staff', icon: '👥', section: 'Management' },
-    { key: 'teachers', label: 'Teachers', icon: '👩‍🏫', section: 'Management' },
-    { key: 'parents', label: 'Parents', icon: '👨‍👧‍👦', section: 'Management' },
-    { key: 'classes', label: 'Classes', icon: '🏫', section: 'Management' },
-    { key: 'subjects', label: 'Subjects', icon: '📚', section: 'Management' },
-    { key: 'attendance', label: 'Attendance', icon: '✅', section: 'Academic' },
-    { key: 'assignments', label: 'Assignments', icon: '📝', section: 'Academic' },
-    { key: 'exams', label: 'Exams & Results', icon: '📋', section: 'Academic' },
-    { key: 'timetable', label: 'Timetable', icon: '🕒', section: 'Academic' },
-    { key: 'fees', label: 'Fees & Payments', icon: '💰', section: 'Academic' },
-    { key: 'admissions', label: 'Admissions', icon: '🎓', section: 'Website' },
-    { key: 'website-news', label: 'Website News', icon: '📰', section: 'Website' },
-    { key: 'website-contact', label: 'Website Messages', icon: '✉️', section: 'Website' },
-    { key: 'notifications', label: 'Notifications', icon: '🔔', section: 'Account' },
-    { key: 'profile', label: 'Profile', icon: '👤', section: 'Account' },
+    { key: 'home', label: 'Home', icon: 'home', section: 'Main' },
+    { key: 'messages', label: 'Messages', icon: 'messages', section: 'Main' },
+    { key: 'documents', label: 'Documents', icon: 'document', section: 'Main' },
+    { key: 'announcements', label: 'Announcements', icon: 'announcements', section: 'Main' },
+    { key: 'students', label: 'Students', icon: 'students', section: 'Management' },
+    { key: 'import', label: 'Import Center', icon: 'import', section: 'Management' },
+    { key: 'users', label: 'Users & Staff', icon: 'users', section: 'Management' },
+    { key: 'teachers', label: 'Teachers', icon: 'teachers', section: 'Management' },
+    { key: 'parents', label: 'Parents', icon: 'parents', section: 'Management' },
+    { key: 'classes', label: 'Classes', icon: 'classes', section: 'Management' },
+    { key: 'subjects', label: 'Subjects', icon: 'subjects', section: 'Management' },
+    { key: 'attendance', label: 'Attendance', icon: 'check', section: 'Academic' },
+    { key: 'assignments', label: 'Assignments', icon: 'assignments', section: 'Academic' },
+    { key: 'exams', label: 'Exams & Results', icon: 'exams', section: 'Academic' },
+    { key: 'timetable', label: 'Timetable', icon: 'timetable', section: 'Academic' },
+    { key: 'fees', label: 'Fees & Payments', icon: 'fees', section: 'Academic' },
+    { key: 'admissions', label: 'Admissions', icon: 'admissions', section: 'Website' },
+    { key: 'website-news', label: 'Website News', icon: 'news', section: 'Website' },
+    { key: 'website-contact', label: 'Website Messages', icon: 'mail', section: 'Website' },
+    { key: 'notifications', label: 'Notifications', icon: 'notifications', section: 'Account' },
+    { key: 'profile', label: 'Profile', icon: 'profile', section: 'Account' },
   ];
   const bottomNav = [
-    { key: 'home', label: 'Home', icon: '🏠' },
-    { key: 'messages', label: 'Messages', icon: '💬' },
-    { key: 'students', label: 'Students', icon: '🧑‍🎓' },
-    { key: 'documents', label: 'Documents', icon: '📄' },
+    { key: 'home', label: 'Home', icon: 'home' },
+    { key: 'messages', label: 'Messages', icon: 'messages' },
+    { key: 'students', label: 'Students', icon: 'students' },
+    { key: 'documents', label: 'Documents', icon: 'document' },
   ];
 
   UI.initLayout({ nav, bottomNav, title: 'Admin Dashboard', onNav: (k) => show(k) }).then(async (l) => {
@@ -93,27 +94,27 @@
     const c = stats.counts || {};
     box.innerHTML = `
       <div class="card" style="background:linear-gradient(135deg,#0f172a,#334155);color:#fff;border:none">
-        <h2 style="color:#fff;margin-bottom:2px">Good day, ${UI.esc(user.fullName.split(' ')[0])}! 🏫</h2>
+        <h2 style="color:#fff;margin-bottom:2px">Good day, ${UI.esc(user.fullName.split(' ')[0])}! <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></h2>
         <div style="opacity:.9">School operations overview.</div>
       </div>
       <div class="grid grid-4" style="margin-top:16px">
-        ${stat('🧑‍🎓', c.students || 0, 'Students', 'ic-blue')}
-        ${stat('👩‍🏫', c.teachers || 0, 'Teachers', 'ic-purple')}
-        ${stat('👨‍👧‍👦', c.parents || 0, 'Parents', 'ic-green')}
-        ${stat('🏫', c.classes || 0, 'Classes', 'ic-amber')}
-        ${stat('✅', c.attendanceToday || 0, 'Attendance today', 'ic-green')}
-        ${stat('📝', c.assignments || 0, 'Assignments', 'ic-blue')}
-        ${stat('📋', c.exams || 0, 'Exams', 'ic-purple')}
-        ${stat('🔔', c.unreadNotifications || 0, 'Notifications', 'ic-red')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>', c.students || 0, 'Students', 'ic-blue')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>', c.teachers || 0, 'Teachers', 'ic-purple')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>', c.parents || 0, 'Parents', 'ic-green')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>', c.classes || 0, 'Classes', 'ic-amber')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>', c.attendanceToday || 0, 'Attendance today', 'ic-green')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>', c.assignments || 0, 'Assignments', 'ic-blue')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>', c.exams || 0, 'Exams', 'ic-purple')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>', c.unreadNotifications || 0, 'Notifications', 'ic-red')}
       </div>
       <div class="grid grid-2" style="margin-top:16px">
-        <div class="card"><h3>🧑‍🎓 Students per class</h3><div id="home-chart"></div></div>
-        <div class="card"><h3>💰 Fee snapshot</h3><div id="home-fees"></div></div>
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg> Students per class</h3><div id="home-chart"></div></div>
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg> Fee snapshot</h3><div id="home-fees"></div></div>
       </div>
       <div class="grid grid-3" style="margin-top:16px">
-        <div class="card"><h3>📋 Upcoming exams</h3><div id="home-exams"></div></div>
-        <div class="card"><h3>📝 Assignments due soon</h3><div id="home-assign"></div></div>
-        <div class="card"><h3>📢 Recent announcements</h3><div id="home-ann"></div></div>
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 13h6"/><path d="M9 17h4"/></svg> Upcoming exams</h3><div id="home-exams"></div></div>
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Assignments due soon</h3><div id="home-assign"></div></div>
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg> Recent announcements</h3><div id="home-ann"></div></div>
       </div>`;
 
     UI.barChart(box.querySelector('#home-chart'), (stats.studentsPerClass || []).map((r) => ({ label: r.label, value: r.value })));
@@ -182,7 +183,7 @@
         <select id="stu-status" style="width:auto"><option value="">All statuses</option><option>active</option><option>inactive</option><option>archived</option></select>
         <select id="stu-sort" style="width:auto"><option value="name">Sort: Name</option><option value="code">Sort: ID</option><option value="class">Sort: Class</option></select>
         <button class="btn" id="stu-add">＋ Add student</button>
-        <button class="btn secondary" id="stu-import">📥 Import</button>
+        <button class="btn secondary" id="stu-import"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Import</button>
       </div>
       <div class="card table-responsive"><div id="stu-list"></div>
         <button class="btn secondary block" id="stu-more" style="margin-top:12px;display:none">Load more</button>
@@ -216,7 +217,7 @@
         const list = box.querySelector('#stu-list');
         const more = box.querySelector('#stu-more');
         if (reset) list.innerHTML = '';
-        if (!students.length && reset) { list.innerHTML = '<div class="empty-state" style="padding:30px"><div class="big">🧑‍🎓</div>No students found.</div>'; more.style.display = 'none'; return; }
+        if (!students.length && reset) { list.innerHTML = '<div class="empty-state" style="padding:30px"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg></div>No students found.</div>'; more.style.display = 'none'; return; }
         more.style.display = students.length >= PAGE ? 'block' : 'none';
         if (reset) {
           list.innerHTML = `<table class="table"><thead><tr>
@@ -235,10 +236,10 @@
             <td data-label="Guardian">${UI.esc(s.parent_name || '—')}${s.parent_phone ? '<br><small>' + UI.esc(s.parent_phone) + '</small>' : ''}</td>
             <td data-label="Status">${statusBadge(s.status)}</td>
             <td data-label="" class="actions-cell"><div class="actions">
-              <button class="btn secondary sm" data-view="${s.id}" title="View profile">👁</button>
-              <button class="btn secondary sm" data-edit="${s.id}">✏️</button>
-              <button class="btn secondary sm" data-archive="${s.id}" title="${s.status === 'archived' ? 'Restore' : 'Archive'}">${s.status === 'archived' ? '♻️' : '📦'}</button>
-              <button class="btn danger sm" data-del="${s.id}">🗑</button>
+              <button class="btn secondary sm" data-view="${s.id}" title="View profile"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button class="btn secondary sm" data-edit="${s.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️</button>
+              <button class="btn secondary sm" data-archive="${s.id}" title="${s.status === 'archived' ? 'Restore' : 'Archive'}">${s.status === 'archived' ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.5 9a9 9 0 0 1 14.9-3.4L23 10"/><path d="M1 14l4.6 4.4A9 9 0 0 0 20.5 15"/></svg>️' : '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m12 2 9 5v10l-9 5-9-5V7z"/><path d="m3 7 9 5 9-5"/><path d="M12 12v10"/></svg>'}</button>
+              <button class="btn danger sm" data-del="${s.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
             </div></td>`;
           tbody.appendChild(tr);
           tr.querySelector('[data-edit]').onclick = () => studentModal(s, () => loadStudents(true));
@@ -281,7 +282,7 @@
         <button class="tab" data-tab="assignments">Assignments</button>
         <button class="tab" data-tab="timetable">Timetable</button>
       </div><div id="prof-body"></div>`,
-      foot: '<button class="btn secondary" data-edit>✏️ Edit</button><button class="btn" data-close>Close</button>',
+      foot: '<button class="btn secondary" data-edit><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️ Edit</button><button class="btn" data-close>Close</button>',
     });
     modal.backdrop.querySelector('[data-close]').onclick = () => modal.close();
     modal.backdrop.querySelector('[data-edit]').onclick = () => { studentModal(student, () => openStudentProfile(id)); modal.close(); };
@@ -411,8 +412,9 @@
   // ---------- IMPORT CENTER: students, teachers, fees + templates ----------
   async function downloadTemplate(type) {
     try {
+      // Session cookie is sent automatically; no token in JS any more.
       const res = await fetch(`${API.base}/api/imports/template.csv?type=${type}`, {
-        headers: { Authorization: 'Bearer ' + API.getToken() },
+        credentials: 'include',
       });
       if (!res.ok) throw new Error('Could not download the template.');
       const blob = await res.blob();
@@ -430,7 +432,7 @@
       wide: true,
       body: `<p>${help}</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">
-          <button class="btn secondary sm" data-tpl>⬇ Download ${kind} template</button>
+          <button class="btn secondary sm" data-tpl><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Download ${kind} template</button>
         </div>
         <input type="file" id="si-file" accept=".csv,.xlsx,.xls">
         <div id="si-result" style="margin-top:14px"></div>`,
@@ -447,7 +449,7 @@
       form.append('file', file);
       try {
         const r = await API.upload(endpoint, form);
-        let html = `<div class="card" style="background:var(--success-light)"><b>✅ ${UI.esc(r.message)}</b></div>`;
+        let html = `<div class="card" style="background:var(--success-light)"><b><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> ${UI.esc(r.message)}</b></div>`;
         if (r.credentials && r.credentials.length) {
           html += `<div class="card" style="margin-top:10px"><b>Login codes created:</b>
             <div class="table-responsive"><table class="table"><thead><tr><th>Name</th><th>Code</th><th>Username</th><th>Password</th></tr></thead>
@@ -455,12 +457,12 @@
             <div class="doc-meta" style="margin-top:6px">Each person must change the password on first login. Save this list — passwords are not shown again.</div></div>`;
         }
         if (r.failures && r.failures.length) {
-          html += `<div class="card" style="margin-top:10px;background:var(--danger-light)"><b>⚠️ ${r.failures.length} row(s) skipped:</b>
+          html += `<div class="card" style="margin-top:10px;background:var(--danger-light)"><b><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>️ ${r.failures.length} row(s) skipped:</b>
             ${r.failures.slice(0, 20).map((f) => `<div class="doc-meta">Row ${f.row}: ${UI.esc(f.name)} — ${UI.esc(f.reason)}</div>`).join('')}</div>`;
         }
         result.innerHTML = html;
       } catch (err) {
-        result.innerHTML = `<div class="card" style="background:var(--danger-light)">⚠️ ${UI.esc(err.message)}</div>`;
+        result.innerHTML = `<div class="card" style="background:var(--danger-light)"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>️ ${UI.esc(err.message)}</div>`;
       }
       e.target.value = '';
     };
@@ -471,41 +473,41 @@
     const box = content.firstElementChild;
     box.innerHTML = `
       <div class="card" style="margin-bottom:14px">
-        <h3 style="margin:0 0 4px">📥 Import Center</h3>
+        <h3 style="margin:0 0 4px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Import Center</h3>
         <div class="doc-meta">Bulk-load school data from Excel/CSV. Download a template first to see exactly how to organise the columns — codes, usernames and passwords are generated automatically, accounts are created, and roles are assigned.</div>
       </div>
       <div class="grid-3" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
         <div class="card">
-          <h3>🧑‍🎓 Students</h3>
+          <h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg> Students</h3>
           <div class="doc-meta" style="margin:6px 0 12px">Guided 6-step wizard: upload → map columns → validate → preview → import. Student codes + logins auto-generated.</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn" id="imp-students">Start student import</button>
-            <button class="btn secondary" data-tpl="students">⬇ Template</button>
+            <button class="btn secondary" data-tpl="students"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Template</button>
           </div>
         </div>
         <div class="card">
-          <h3>👩‍🏫 Teachers</h3>
+          <h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> Teachers</h3>
           <div class="doc-meta" style="margin:6px 0 12px">One-step import: each teacher gets a staff code + login account (username = staff code) with a default password changed on first login.</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn" id="imp-teachers">Import teachers</button>
-            <button class="btn secondary" data-tpl="teachers">⬇ Template</button>
+            <button class="btn secondary" data-tpl="teachers"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Template</button>
           </div>
         </div>
         <div class="card">
-          <h3>💰 Fees</h3>
+          <h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg> Fees</h3>
           <div class="doc-meta" style="margin:6px 0 12px">Each row becomes a fee structure, automatically assigned to that class's students (or all students when class is blank).</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn" id="imp-fees">Import fees</button>
-            <button class="btn secondary" data-tpl="fees">⬇ Template</button>
+            <button class="btn secondary" data-tpl="fees"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Template</button>
           </div>
         </div>
       </div>`;
     box.querySelectorAll('[data-tpl]').forEach((b) => { b.onclick = () => downloadTemplate(b.dataset.tpl); });
     box.querySelector('#imp-students').onclick = () => openImportWizard();
     box.querySelector('#imp-teachers').onclick = () => simpleImport('teachers', '/api/imports/teachers',
-      '👩‍🏫 Import teachers', 'Upload an Excel/CSV of teachers. Staff IDs may be left blank — the system generates them. Every teacher automatically gets a login account and the teacher role.');
+      '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> Import teachers', 'Upload an Excel/CSV of teachers. Staff IDs may be left blank — the system generates them. Every teacher automatically gets a login account and the teacher role.');
     box.querySelector('#imp-fees').onclick = () => simpleImport('fees', '/api/imports/fees',
-      '💰 Import fee structures', 'Upload an Excel/CSV of fees. Each row becomes a fee structure assigned to its class (leave Class blank to apply to all classes).');
+      '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg> Import fee structures', 'Upload an Excel/CSV of fees. Each row becomes a fee structure assigned to its class (leave Class blank to apply to all classes).');
   }
 
   async function openImportWizard() {
@@ -517,7 +519,7 @@
     let importDbId = null;
 
     const wizard = UI.openModal({
-      title: '📥 Import students — Step 1 of 6: Upload',
+      title: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Import students — Step 1 of 6: Upload',
       wide: true,
       body: `<div class="wiz-progress doc-meta" style="margin-bottom:14px"></div>
         <div id="wiz-body"></div>`,
@@ -535,7 +537,7 @@
       body.innerHTML = `<p>Upload an Excel (.xlsx) or CSV file containing student information.</p>
         <input type="file" id="imp-file" accept=".csv,.xlsx,.xls">
         <p class="doc-meta" style="margin-top:10px">Tip: download a starter template below.</p>
-        <button class="btn secondary sm" id="imp-tpl-btn">⬇ Download template</button>`;
+        <button class="btn secondary sm" id="imp-tpl-btn"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Download template</button>`;
       body.querySelector('#imp-tpl-btn').onclick = () => downloadTemplate('students');
       body.querySelector('#imp-file').onchange = async (e) => {
         const file = e.target.files[0];
@@ -624,10 +626,10 @@
         const s = r.summary;
         body.innerHTML = `
           <div class="grid grid-4">
-            ${wizStat('✅', s.valid, 'Valid')}
-            ${wizStat('⚠️', s.warnings, 'Need review')}
-            ${wizStat('❌', s.errors, 'Will be skipped')}
-            ${wizStat('📄', s.total, 'Total rows')}
+            ${wizStat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>', s.valid, 'Valid')}
+            ${wizStat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>️', s.warnings, 'Need review')}
+            ${wizStat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>', s.errors, 'Will be skipped')}
+            ${wizStat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>', s.total, 'Total rows')}
           </div>
           <div id="val-rows" style="max-height:340px;overflow-y:auto;margin-top:12px"></div>
           <div class="modal-foot" style="position:static;padding:12px 0 0;border:none;display:flex;justify-content:flex-end;gap:8px">
@@ -666,7 +668,7 @@
         <div id="prev-rows" style="max-height:340px;overflow-y:auto"></div>
         <div class="modal-foot" style="position:static;padding:12px 0 0;border:none;display:flex;justify-content:flex-end;gap:8px">
           <button class="btn secondary" data-back>← Back</button>
-          <button class="btn success" data-import>🚀 Import valid records</button>
+          <button class="btn success" data-import><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Import valid records</button>
         </div>`;
       const list = body.querySelector('#prev-rows');
       r.rows.forEach((row) => {
@@ -684,23 +686,23 @@
           setProgress();
           const c = result.counts;
           body.innerHTML = `<div class="card" style="text-align:center;border:none">
-            <div style="font-size:40px">✅</div>
+            <div style="font-size:40px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
             <h3>Import complete</h3>
             <div class="grid grid-4">
-              ${wizStat('➕', c.imported, 'Imported')}
-              ${wizStat('⚠️', c.skipped, 'Skipped')}
-              ${wizStat('❌', c.failed, 'Failed')}
-              ${wizStat('📄', c.warnings || 0, 'With warnings')}
+              ${wizStat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>', c.imported, 'Imported')}
+              ${wizStat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>️', c.skipped, 'Skipped')}
+              ${wizStat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>', c.failed, 'Failed')}
+              ${wizStat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>', c.warnings || 0, 'With warnings')}
             </div>
             ${result.failures && result.failures.length ? `<div class="doc-meta" style="margin-top:10px">${result.failures.slice(0, 5).map((f) => UI.esc('Row ' + f.row + ': ' + f.reason)).join('<br>')}</div>` : ''}
             ${result.credentialsCount ? `<div class="card" style="margin-top:12px;text-align:left;background:var(--primary-light)">
-              <strong>🔑 Login codes generated (${result.credentialsCount})</strong>
+              <strong><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 8.3-8.3"/><path d="m16 6 3 3"/><path d="m19 3 3 3"/></svg> Login codes generated (${result.credentialsCount})</strong>
               <p class="doc-meta">Each student was given a login code (username) and a default password. Share these with them — they will be asked to set their own password on first login.</p>
               <div style="max-height:180px;overflow-y:auto;font-size:12.5px">${(result.credentials || []).slice(0, 50).map((c) => `<div class="list-row"><span class="k">${UI.esc(c.name)}</span><span class="v"><code>${UI.esc(c.username)}</code> / <code>${UI.esc(c.password)}</code></span></div>`).join('')}</div>
               ${result.credentialsCount > 50 ? '<div class="doc-meta">… and more. Download the full list below.</div>' : ''}
             </div>` : ''}
-            <button class="btn secondary sm" data-report>⬇ Download error report</button>
-            ${result.credentialsCount ? '<button class="btn" data-creds>🔑 Download login codes (CSV)</button>' : ''}
+            <button class="btn secondary sm" data-report><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Download error report</button>
+            ${result.credentialsCount ? '<button class="btn" data-creds><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 8.3-8.3"/><path d="m16 6 3 3"/><path d="m19 3 3 3"/></svg> Download login codes (CSV)</button>' : ''}
             <button class="btn secondary" data-done style="margin-left:8px">Done</button>
           </div>`;
           body.querySelector('[data-done]').onclick = () => { wizard.close(); if (window.location.hash) {} location.reload(); };
@@ -752,7 +754,7 @@
         const data = await API.get('/api/teachers' + (params.toString() ? '?' + params.toString() : ''));
         const list = box.querySelector('#t-list');
         const teachers = data.teachers || [];
-        if (!teachers.length) { list.innerHTML = '<div class="empty-state" style="padding:30px"><div class="big">👩‍🏫</div>No teachers found.</div>'; return; }
+        if (!teachers.length) { list.innerHTML = '<div class="empty-state" style="padding:30px"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>No teachers found.</div>'; return; }
         list.innerHTML = `<table class="table"><thead><tr>
           <th>Teacher</th><th>Staff No.</th><th>Subjects</th><th>Classes</th><th>Contact</th><th>Status</th><th style="text-align:right">Actions</th>
         </tr></thead><tbody></tbody></table>`;
@@ -766,8 +768,8 @@
             <td data-label="Contact">${UI.esc(t.phone || '—')}</td>
             <td data-label="Status">${statusBadge(t.status)}</td>
             <td data-label="" class="actions-cell"><div class="actions">
-              <button class="btn secondary sm" data-edit>✏️</button>
-              <button class="btn danger sm" data-del>🗑</button>
+              <button class="btn secondary sm" data-edit><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️</button>
+              <button class="btn danger sm" data-del><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
             </div></td>`;
           tbody.appendChild(tr);
           tr.querySelector('[data-edit]').onclick = () => teacherModal(t, () => loadTeachers());
@@ -848,7 +850,7 @@
         <button class="btn" id="p-add">＋ Add parent</button>
       </div>
       <div class="card" id="p-pending-wrap" style="display:none">
-        <h3>🕓 Pending registrations</h3>
+        <h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg> Pending registrations</h3>
         <p class="doc-meta">Parents who registered themselves and are waiting for approval. Approve them after verifying they are valid.</p>
         <div id="p-pending"></div>
       </div>
@@ -871,12 +873,12 @@
             <div style="flex:1;min-width:0">
               <div class="doc-name">${UI.esc(p.full_name)} <span class="badge blue">pending approval</span></div>
               <div class="doc-meta">${UI.esc(p.email || '')} · ${UI.esc(p.phone || '—')} · registered ${UI.timeAgo(p.registered_at)}</div>
-              <div class="doc-meta" style="margin-top:4px">👨‍👧 Claims guardianship of: <b>${UI.esc(kids || 'no children listed')}</b></div>
+              <div class="doc-meta" style="margin-top:4px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg> Claims guardianship of: <b>${UI.esc(kids || 'no children listed')}</b></div>
               <div class="doc-meta" style="color:var(--warning)">Verify with the class teacher / school records before approving. Login details are emailed automatically on approval.</div>
             </div>
             <div class="doc-actions">
-              <button class="btn success sm" data-ap="${p.id}">✓ Approve</button>
-              <button class="btn danger sm" data-rj="${p.id}">✕ Reject</button>
+              <button class="btn success sm" data-ap="${p.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Approve</button>
+              <button class="btn danger sm" data-rj="${p.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg> Reject</button>
             </div>
           </div>`);
           list.appendChild(row);
@@ -902,7 +904,7 @@
         const data = await API.get('/api/parents' + (params.toString() ? '?' + params.toString() : ''));
         const list = box.querySelector('#p-list');
         const parents = data.parents || [];
-        if (!parents.length) { list.innerHTML = '<div class="empty-state" style="padding:30px"><div class="big">👨‍👧‍👦</div>No parents found.</div>'; return; }
+        if (!parents.length) { list.innerHTML = '<div class="empty-state" style="padding:30px"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg></div>No parents found.</div>'; return; }
         list.innerHTML = `<table class="table"><thead><tr>
           <th>Parent</th><th>Phone</th><th>Children</th><th style="text-align:right">Actions</th>
         </tr></thead><tbody></tbody></table>`;
@@ -913,8 +915,8 @@
             <td data-label="Phone">${UI.esc(p.phone || '—')}</td>
             <td data-label="Children">${(p.children || []).map((c) => UI.esc(c.full_name) + ' (' + UI.esc(c.class_name || '') + ' ' + UI.esc(c.stream || '') + ')').join(', ') || '—'}</td>
             <td data-label="" class="actions-cell"><div class="actions">
-              <button class="btn secondary sm" data-edit>✏️</button>
-              <button class="btn danger sm" data-del>🗑</button>
+              <button class="btn secondary sm" data-edit><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️</button>
+              <button class="btn danger sm" data-del><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
             </div></td>`;
           tbody.appendChild(tr);
           tr.querySelector('[data-edit]').onclick = () => parentModal(p, () => loadParents());
@@ -995,7 +997,7 @@
         const data = await API.get('/api/classes');
         const grid = box.querySelector('#c-grid');
         const classes = data.classes || [];
-        if (!classes.length) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="big">🏫</div>No classes yet.</div>'; return; }
+        if (!classes.length) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>No classes yet.</div>'; return; }
         grid.innerHTML = '';
         for (const cl of classes) {
           grid.appendChild(UI.el(`<div class="card">
@@ -1003,8 +1005,8 @@
             <div class="doc-meta">${cl.student_count || 0} students · ${UI.esc(cl.academic_year)} · Teacher: ${UI.esc(cl.class_teacher_name || '—')}</div>
             <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
               <button class="btn secondary sm" data-view>View students</button>
-              <button class="btn secondary sm" data-edit>✏️</button>
-              <button class="btn danger sm" data-del>🗑</button>
+              <button class="btn secondary sm" data-edit><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️</button>
+              <button class="btn danger sm" data-del><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
             </div>
           </div>`));
         }
@@ -1103,13 +1105,13 @@
     const box = content.firstElementChild;
     let items = [];
     try { items = (await API.get('/api/notifications?limit=100')).notifications; } catch (e) { UI.toast(e.message, 'error'); }
-    const icons = { message: '💬', document: '📄', announcement: '📢', assignment: '📝', attendance: '✅', exam: '📋', results: '🎓', fee: '💰', system: '🔔', account: '🔐' };
+    const icons = { message: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg>', document: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>', announcement: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg>', assignment: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>', attendance: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>', exam: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>', results: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>', fee: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg>', system: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>', account: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' };
     box.innerHTML = `<div class="card"><h3>Notifications</h3><div id="nt-list" style="margin-top:8px"></div></div>`;
     const list = box.querySelector('#nt-list');
     if (!items.length) list.innerHTML = '<div class="doc-meta">No notifications yet.</div>';
     for (const n of items) {
       list.appendChild(UI.el(`<div class="notif-item ${n.read ? '' : 'unread'}" data-id="${n.id}" style="border-radius:10px;margin-bottom:6px">
-        <span class="n-ic">${icons[n.type] || '🔔'}</span>
+        <span class="n-ic">${icons[n.type] || '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>'}</span>
         <div><div class="n-title">${UI.esc(n.title)}</div>${n.body ? `<div class="n-body">${UI.esc(n.body)}</div>` : ''}<div class="n-time">${UI.timeAgo(n.created_at)}</div></div></div>`));
     }
     list.querySelectorAll('.notif-item').forEach((el) => el.addEventListener('click', async () => {
@@ -1129,8 +1131,8 @@
     box.innerHTML = `<div class="card" style="display:flex;gap:16px;align-items:center">
         <div class="avatar-lg">${UI.initials(u.fullName)}</div>
         <div><h2>${UI.esc(u.fullName)}</h2><div class="doc-meta">${UI.esc(u.email || '')} · Administrator</div>
-        <button class="btn secondary sm" id="prof-pass" style="margin-top:8px">🔑 Change password</button>
-        <button class="btn secondary sm" id="prof-photo" style="margin-top:8px">📷 Change photo</button></div>
+        <button class="btn secondary sm" id="prof-pass" style="margin-top:8px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 8.3-8.3"/><path d="m16 6 3 3"/><path d="m19 3 3 3"/></svg> Change password</button>
+        <button class="btn secondary sm" id="prof-photo" style="margin-top:8px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Change photo</button></div>
       </div>
       <div id="prof-prefs" style="margin-top:16px"></div>`;
     box.querySelector('#prof-pass').onclick = () => UI.openChangePassword();
