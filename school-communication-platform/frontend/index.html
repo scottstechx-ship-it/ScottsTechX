@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-<link rel="dns-prefetch" href="https://kalibz-international.netlify.app">
+<link rel="preconnect" href="https://i.ytimg.com">
 <meta name="google-site-verification" content="0iFeDjaZvUCjm7CmNRcwsIKmQUKHDLlePEJhRPLuR_M">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalinabiri Secondary School - Ntinda, Kampala</title>
@@ -688,7 +688,13 @@
         <!-- HERO BACKGROUND: paints instantly as a gradient; the background
              video is injected AFTER window.load (see script at end of body),
              so it never delays first paint. Skipped on data-saver/2G. -->
+        <!-- The first layer is the real Kalinabiri SS campus photograph from the
+             school's national directory profile; the dark gradient keeps the
+             headline readable, and the gradient stack stays as a fallback if
+             the photo cannot load. -->
         <div class="video-bg hero-photo" id="heroBg" style="background:
+          linear-gradient(180deg, rgba(6,16,30,.78) 0%, rgba(6,16,30,.58) 45%, rgba(6,16,30,.88) 100%),
+          url('https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss.jpeg') center/cover no-repeat,
           radial-gradient(ellipse at 25% 15%, rgba(14,165,233,.25) 0%, transparent 55%),
           radial-gradient(ellipse at 80% 85%, rgba(245,158,11,.14) 0%, transparent 50%),
           linear-gradient(135deg, #0c1829 0%, #10233c 55%, #0c1829 100%);
@@ -879,7 +885,7 @@
             </div>
         </div>
         <div style="text-align:center;margin-top:36px">
-            <a href="/admissions/" class="btn-primary"><i class="fas fa-pen-to-square"></i> Apply for Admission →</a>
+            <a href="/admissions/" class="btn-primary"><i class="fas fa-pen-to-square"></i> Apply for Admission <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
         </div>
     
         <!-- O-LEVEL SUBJECTS -->
@@ -935,7 +941,7 @@
                     <p style="font-size:.83rem;color:rgba(232,244,248,.6)">Community service and leadership development.</p>
                 </div>
                 <div style="background:rgba(16,35,60,.55);border:1px solid rgba(56,189,248,.18);border-radius:16px;padding:22px;text-align:center">
-                    <div style="font-size:2.2rem;margin-bottom:10px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></svg>️</div><h3 style="font-size:1.02rem;margin-bottom:6px">Peace Club</h3>
+                    <div style="font-size:2.2rem;margin-bottom:10px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></svg></div><h3 style="font-size:1.02rem;margin-bottom:6px">Peace Club</h3>
                     <p style="font-size:.83rem;color:rgba(232,244,248,.6)">Peer mediation and peace-building campaigns.</p>
                 </div>
                 <div style="background:rgba(16,35,60,.55);border:1px solid rgba(56,189,248,.18);border-radius:16px;padding:22px;text-align:center">
@@ -1063,7 +1069,7 @@
                                 <li><a href="#hods-strip">Faculty &amp; HODs</a></li>
                                 <li><a href="#gallery">Gallery</a></li>
                                 <li><a href="#contact">Contact</a></li>
-                                <li><a href="/admissions/" style="color:var(--gold);font-weight:700;">Apply Now →</a></li>
+                                <li><a href="/admissions/" style="color:var(--gold);font-weight:700;">Apply Now <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></li>
                             </ul>
                         </div>
                         <div class="footer-col">
@@ -1087,7 +1093,7 @@
         </div>
         <div class="footer-bottom">
             <p>&copy; 2025 Kalinabiri Secondary School. All rights reserved.</p>
-            <p>Designed with <i class="fas fa-heart" style="color:var(--teal);"></i> in Kampala</p>
+            <p>Proudly designed and hosted in Kampala, Uganda</p>
         </div>
     </footer>
 
@@ -1307,7 +1313,7 @@
     }
     grid.innerHTML = imgs.slice(0, 6).map(function (im) {
       return '<div class="gallery-item reveal is-visible" style="opacity:1;transform:none">' +
-        '<img src="' + esc(im.src) + '" alt="' + esc(im.title) + '" loading="lazy">' +
+        '<img src="' + esc(im.src) + '" alt="' + esc(im.title) + '" loading="lazy" onerror="this.onerror=null;this.src=this.src.replace(\'/hq720.jpg\',\'/hqdefault.jpg\')">' +
         '<div class="gallery-overlay"><h4>' + esc(im.title) + '</h4><p>' + esc(im.caption || '') + '</p></div></div>';
     }).join('');
   }).catch(function () {

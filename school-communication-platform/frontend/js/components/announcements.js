@@ -49,7 +49,7 @@
           <span>${UI.esc(a.title)}</span>
         </div>
         <div class="ann-meta">${important ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg> ' : ''}${UI.esc(a.sender_name || 'School')} · ${UI.fmtDate(a.created_at)} · ${UI.timeAgo(a.created_at)}
-          ${this.canPost ? `<button class="btn ghost sm" data-edit style="margin-left:8px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️ Edit</button><button class="btn ghost sm" data-del>Delete</button>` : ''}
+          ${this.canPost ? `<button class="btn ghost sm" data-edit style="margin-left:8px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Edit</button><button class="btn ghost sm" data-del>Delete</button>` : ''}
         </div>
         <div class="ann-body">${UI.esc(a.content)}</div>
       </div>`);

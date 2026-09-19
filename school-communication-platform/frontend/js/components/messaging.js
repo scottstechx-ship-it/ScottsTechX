@@ -171,7 +171,7 @@
     /** Build header + scroll area + composer exactly once per conversation. */
     buildThreadShell(thread, conv, convId) {
       const head = UI.el(`<div class="thread-head">
-        <button class="back" id="back-btn">←</button>
+        <button class="back" id="back-btn"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></button>
         <div style="min-width:0">
           <strong>${UI.esc(conv.title || 'Conversation')}</strong>
           <div style="font-size:12px;color:var(--muted)" id="thread-count"></div>
@@ -231,7 +231,7 @@
         composer.querySelector('#attach-btn').onclick = () => this.attachFile(convId);
       }
       // new-messages pill: appears when messages arrive while scrolled up
-      const pill = UI.el('<button class="new-msg-pill" id="new-msg-pill" style="display:none">↓ New messages</button>');
+      const pill = UI.el('<button class="new-msg-pill" id="new-msg-pill" style="display:none"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg> New messages</button>');
       thread.appendChild(pill);
       pill.onclick = () => { body.scrollTop = body.scrollHeight; pill.style.display = 'none'; };
       body.addEventListener('scroll', () => {
@@ -302,7 +302,7 @@
         ${attach}
         <div class="msg-content">${UI.esc(m.content || '')}${m.edited ? ' <small class="meta" style="opacity:.6">(edited)</small>' : ''}</div>
         <div class="meta"><span>${mine ? 'You' : UI.esc(m.sender_name)}</span><span>${UI.fmtTime(m.created_at)}</span>${mine ? '<span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>' : ''}
-          ${mine && !m.attachment_id ? `<button class="msg-del" title="Edit message" data-edit="${m.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️</button>` : ''}
+          ${mine && !m.attachment_id ? `<button class="msg-del" title="Edit message" data-edit="${m.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>` : ''}
           ${canDelete ? `<button class="msg-del" title="Delete message" data-del="${m.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : ''}</div>
       </div>`);
       const at = bubble.querySelector('.attach');

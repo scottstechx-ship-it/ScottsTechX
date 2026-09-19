@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-<link rel="dns-prefetch" href="https://kalibz-international.netlify.app">
+<link rel="preconnect" href="https://i.ytimg.com">
 <meta name="google-site-verification" content="0iFeDjaZvUCjm7CmNRcwsIKmQUKHDLlePEJhRPLuR_M">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Media Gallery | Kalinabiri Secondary School</title>
@@ -1105,7 +1105,7 @@ if (!window.THREE || window.innerWidth < 768) return;
       } else {
         grid.innerHTML = imgs.map(function (im, i) {
           return '<div class="image-card visible" data-index="' + i + '">' +
-            '<img src="' + esc(im.src) + '" alt="' + esc(im.title) + '" loading="lazy">' +
+            '<img src="' + esc(im.src) + '" alt="' + esc(im.title) + '" loading="lazy" onerror="this.onerror=null;this.src=this.src.replace(\'/hq720.jpg\',\'/hqdefault.jpg\')">' +
             '<div class="image-overlay"><h3>' + esc(im.title) + '</h3><span>' + esc(im.category || im.caption || '') + '</span></div></div>';
         }).join('');
         grid.querySelectorAll('.image-card').forEach(function (card, i) {

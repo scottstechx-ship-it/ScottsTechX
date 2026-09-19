@@ -462,7 +462,7 @@
 
         <button type="submit" class="btn-auth btn-accent" id="regBtn">
           <span>Create Account</span>
-          <span class="btn-arr">→</span>
+          <span class="btn-arr"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
         </button>
       </form>
 
@@ -513,14 +513,14 @@ document.getElementById('studentRegForm').addEventListener('submit', async funct
   if (!formData.username || !formData.email || !formData.password || !formName || !formData.studentNumber) {
     showBanner('regBanner', '!', 'Please fill in all required fields.', 'err');
     btn.disabled = false;
-    btn.innerHTML = '<span>Create Account</span><span class="btn-arr">→</span>';
+    btn.innerHTML = '<span>Create Account</span><span class="btn-arr"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>';
     return;
   }
 
   if (formData.password.length < 6) {
     showBanner('regBanner', '!', 'Password must be at least 6 characters.', 'err');
     btn.disabled = false;
-    btn.innerHTML = '<span>Create Account</span><span class="btn-arr">→</span>';
+    btn.innerHTML = '<span>Create Account</span><span class="btn-arr"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>';
     return;
   }
 

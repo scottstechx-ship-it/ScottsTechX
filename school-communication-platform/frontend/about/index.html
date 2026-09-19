@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-<link rel="dns-prefetch" href="https://kalibz-international.netlify.app">
+<link rel="preconnect" href="https://i.ytimg.com">
 <meta name="google-site-verification" content="0iFeDjaZvUCjm7CmNRcwsIKmQUKHDLlePEJhRPLuR_M">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About — Kalinabiri Secondary School</title>
@@ -149,7 +149,9 @@
       content: '';
       position: absolute;
       inset: 0;
-      background: url('https://kalibz-international.netlify.app/assets/videos/7480536090764414213.mp4') center/cover no-repeat;
+      /* Real photograph of the Kalinabiri SS campus (national schools
+         directory profile), painted instantly behind the hero. */
+      background: url('https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss.jpeg') center/cover no-repeat;
       filter: blur(2px) brightness(0.4);
       transform: scale(1.1);
       will-change: transform;
@@ -158,6 +160,13 @@
       position: absolute;
       inset: 0;
       overflow: hidden;
+    }
+    .about-hero-bg video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1.2s ease;
     }
     .hero-shape {
       position: absolute;
@@ -847,69 +856,46 @@
 <section class="about-section" id="history">
   <div class="about-container">
     <div class="section-label-tag">OUR STORY</div>
-    <h2>A Legacy Built Since 1965</h2>
+    <h2>A Legacy Built Since 1984</h2>
     <div class="history-grid">
       <div class="history-text">
-        <p class="lead-text">Kalinabiri Secondary School was founded in 1965 on the historic Kalinabiri hill, overlooking the scenic Busoga region near Lake Victoria. What began as a modest community secondary school has grown into one of Uganda's most respected educational institutions.</p>
-        <p>Named after the hill that shelters our campus, Kalinabiri has for 59 years served as a beacon of hope and opportunity for young people across the region. Our school was established with a clear mission: to provide quality education that develops the whole person — academically, morally, and socially.</p>
-        <p>In the early years, the school operated with just three classrooms and a dedicated staff of five teachers. Today, Kalinabiri SS boasts modern infrastructure, over 60 qualified teachers, and more than 1,200 students from diverse backgrounds across Uganda.</p>
-        <p>Throughout our history, we have remained committed to our core values of discipline, excellence, integrity, and community service. These values, instilled in every student who passes through our gates, have produced generations of graduates who contribute meaningfully to Ugandan society and the world at large.</p>
+        <p class="lead-text">Kalinabiri Secondary School is a government-aided, mixed day and boarding secondary school in Ntinda, Nakawa Division, Kampala. It was established by the Government of Uganda in 1984 on the grounds of Kalinabiri Primary School.</p>
+        <p>The school opened with just eleven pioneer students, who were taught under the trees within the primary school compound while the young school waited for a home of its own. In 1985, Mr. Ernest Kayanja donated 3.82 acres of land to the school, and a further 0.59 acres were purchased, giving Kalinabiri SS a permanent campus of its own.</p>
+        <p>From those first eleven learners, the school has grown into a full secondary school offering both O-Level (S.1–S.4) and A-Level (S.5–S.6) education to between 800 and 1,000 students each year, drawn from Ntinda and across Uganda.</p>
+        <p>Our motto, <em>“Determined To Excel With Trust In God,”</em> guides everything we do. The school is supported in its work by development partners including the Center for the Girl Child, Compassion International and Agape, who help us keep vulnerable learners in school and strengthen our guidance and welfare programmes.</p>
+        <p>Science at Kalinabiri is hands-on: our students build and demonstrate their own apparatus with locally available materials — from thermometers and simple circuits to magnetism and heat experiments — because we believe learners understand best what they can touch, make and explain.</p>
+        <figure style="margin:22px 0 0;border-radius:16px;overflow:hidden;border:1px solid rgba(74,222,128,.25);background:rgba(255,255,255,.03);">
+          <img src="https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss.jpeg" alt="Kalinabiri Secondary School campus in Ntinda, Kampala" loading="lazy" style="width:100%;height:auto;display:block;" onerror="this.parentNode.style.display='none'">
+          <figcaption style="padding:10px 14px;color:rgba(255,255,255,.6);font-size:.85rem;">Our campus in Ntinda, Kampala — Kalinabiri Secondary School.</figcaption>
+        </figure>
       </div>
       <div class="history-timeline">
         <div class="timeline-item">
-          <div class="tl-year">1965</div>
+          <div class="tl-year">1984</div>
           <div class="tl-content">
             <h4>School Founded</h4>
-            <p>Established with 3 classrooms, 5 teachers, and 80 students</p>
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="tl-year">1975</div>
-          <div class="tl-content">
-            <h4>First UNEB Examinations</h4>
-            <p>Students sat first UCE examinations with 100% pass rate</p>
+            <p>Government establishes Kalinabiri SS. Eleven pioneer students are taught under the trees at Kalinabiri Primary School</p>
           </div>
         </div>
         <div class="timeline-item">
           <div class="tl-year">1985</div>
           <div class="tl-content">
-            <h4>A-Level Program Launched</h4>
-            <p>Introduced Science, Arts, and Commercial combinations at S.5</p>
+            <h4>A Permanent Campus</h4>
+            <p>Mr. Ernest Kayanja donates 3.82 acres of land; the school purchases a further 0.59 acres for its own grounds</p>
           </div>
         </div>
         <div class="timeline-item">
-          <div class="tl-year">1995</div>
+          <div class="tl-year">TODAY</div>
           <div class="tl-content">
-            <h4>Computer Laboratory Opened</h4>
-            <p>First computer lab in the district with 20 machines</p>
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="tl-year">2008</div>
-          <div class="tl-content">
-            <h4>Campus Expansion</h4>
-            <p>New classroom blocks built to accommodate growing enrolment</p>
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="tl-year">2015</div>
-          <div class="tl-content">
-            <h4>Science Labs Upgraded</h4>
-            <p>Full renovation of Physics, Chemistry, and Biology labs</p>
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="tl-year">2020</div>
-          <div class="tl-content">
-            <h4>Digital Learning Initiative</h4>
-            <p>Tablets and e-learning platforms introduced across all classes</p>
+            <h4>O-Level and A-Level</h4>
+            <p>Between 800 and 1,000 students study S.1 to S.6, with day and boarding sections and hands-on science practicals</p>
           </div>
         </div>
         <div class="timeline-item">
           <div class="tl-year">2026</div>
           <div class="tl-content">
             <h4>Online Portal Launched</h4>
-            <p>Student, teacher, and admin portals go live</p>
+            <p>Student, teacher, parent and administrator portals go live for results, messages, documents and school notices</p>
           </div>
         </div>
       </div>
@@ -925,19 +911,19 @@
     <p class="section-intro">Honoring the memory of those who have passed. Their legacy lives on through the lives they touched at Kalinabiri SS.</p>
     <div class="memorial-wall-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;margin-top:40px;">
       <div class="memorial-card" style="background:linear-gradient(135deg,rgba(13,43,26,.8),rgba(74,222,128,.1));border:1px solid rgba(74,222,128,.3);border-radius:20px;padding:28px;text-align:center;opacity:0;animation:memorialFadeIn 0.8s ease-out 0.1s forwards;">
-        <div style="font-size:4rem;margin-bottom:16px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>️</div>
+        <div style="font-size:4rem;margin-bottom:16px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg></div>
         <h3 style="color:#4ade80;font-size:1.1rem;margin-bottom:8px;">In Loving Memory</h3>
         <p style="color:rgba(255,255,255,.7);font-size:.9rem;line-height:1.6;">To all former students, teachers, and staff who have departed this life. Your contributions to our school community will never be forgotten.</p>
       </div>
       <div class="memorial-card" style="background:linear-gradient(135deg,rgba(13,43,26,.8),rgba(74,222,128,.1));border:1px solid rgba(74,222,128,.3);border-radius:20px;padding:28px;text-align:center;opacity:0;animation:memorialFadeIn 0.8s ease-out 0.3s forwards;">
         <div style="font-size:4rem;margin-bottom:16px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
-        <h3 style="color:#4ade80;font-size:1.1rem;margin-bottom:8px;">The Kalibz Collection</h3>
-        <p style="color:rgba(255,255,255,.7);font-size:.9rem;line-height:1.6;">Historical photographs from our school archives. These images preserve precious moments and memories from generations past.</p>
+        <h3 style="color:#4ade80;font-size:1.1rem;margin-bottom:8px;">From Our School Archives</h3>
+        <p style="color:rgba(255,255,255,.7);font-size:.9rem;line-height:1.6;">Photographs from the life of our school — the campus, our lessons and our community — preserved for the generations that come after us.</p>
         <div style="display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
-          <img src="https://kalibz-international.netlify.app/assets/images/kalibz/kalinabiri_ss_7488023454248209719%20%281%29.webp" alt="Historical" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
-          <img src="https://kalibz-international.netlify.app/assets/images/kalibz/kalinabiri_ss_7488023454248209719%20%282%29.webp" alt="Historical" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
-          <img src="https://kalibz-international.netlify.app/assets/images/kalibz/kalinabiri_ss_7488023454248209719.webp" alt="Historical" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
-          <img src="https://kalibz-international.netlify.app/assets/images/kalibz/kalinabiri_ss_7493423355626867973.webp" alt="Memorial" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
+          <img src="https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss.jpeg" alt="Kalinabiri Secondary School campus" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
+          <img src="https://i.ytimg.com/vi/mYhX2lFCMtE/hq720.jpg" alt="Science practical at Kalinabiri SS" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
+          <img src="https://i.ytimg.com/vi/YsB_nSzRTbI/hq720.jpg" alt="Science demonstration at Kalinabiri SS" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
+          <img src="https://i.ytimg.com/vi/O1A6aQcmlmg/hq720.jpg" alt="Community outreach at Kalinabiri SS" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
         </div>
       </div>
       <div class="memorial-card" style="background:linear-gradient(135deg,rgba(13,43,26,.8),rgba(74,222,128,.1));border:1px solid rgba(74,222,128,.3);border-radius:20px;padding:28px;text-align:center;opacity:0;animation:memorialFadeIn 0.8s ease-out 0.5s forwards;">
@@ -946,7 +932,7 @@
         <p style="color:rgba(255,255,255,.7);font-size:.9rem;line-height:1.6;">Celebrating the achievements of our graduates. May they rest in peace while their legacies endure through their contributions to society.</p>
       </div>
       <div class="memorial-card" style="background:linear-gradient(135deg,rgba(13,43,26,.8),rgba(74,222,128,.1));border:1px solid rgba(74,222,128,.3);border-radius:20px;padding:28px;text-align:center;opacity:0;animation:memorialFadeIn 0.8s ease-out 0.7s forwards;">
-        <div style="font-size:4rem;margin-bottom:16px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></svg>️</div>
+        <div style="font-size:4rem;margin-bottom:16px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></svg></div>
         <h3 style="color:#4ade80;font-size:1.1rem;margin-bottom:8px;">Forever in Our Hearts</h3>
         <p style="color:rgba(255,255,255,.7);font-size:.9rem;line-height:1.6;">"They that wait for the Lord shall renew their strength. They shall mount up with wings as eagles." — Isaiah 40:31</p>
       </div>
@@ -962,7 +948,7 @@
     <p class="section-intro">Meet the dedicated team that drives Kalinabiri SS forward with vision, integrity, and commitment to educational excellence.</p>
     <div class="leadership-grid">
       <div class="leader-card">
-        <div class="leader-avatar"><span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span></div>
+        <div class="leader-avatar"><span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span></div>
         <div class="leader-info">
           <div class="leader-role">Head Teacher</div>
           <h3>Ms. Patricia Mutesi</h3>
@@ -973,7 +959,7 @@
         </div>
       </div>
       <div class="leader-card">
-        <div class="leader-avatar"><span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span></div>
+        <div class="leader-avatar"><span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span></div>
         <div class="leader-info">
           <div class="leader-role">Director of Studies (DOS)</div>
           <h3>Mrs. Lukwago Rose</h3>
@@ -984,7 +970,7 @@
         </div>
       </div>
       <div class="leader-card">
-        <div class="leader-avatar"><span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>‍<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span></div>
+        <div class="leader-avatar"><span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span></div>
         <div class="leader-info">
           <div class="leader-role">Assistant DOS</div>
           <h3>Mr. Ashaba Fredrick</h3>
@@ -995,7 +981,7 @@
         </div>
       </div>
       <div class="leader-card">
-        <div class="leader-avatar"><span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>️</span></div>
+        <div class="leader-avatar"><span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg></span></div>
         <div class="leader-info">
           <div class="leader-role">School Email</div>
           <h3>General Enquiries</h3>
@@ -1028,7 +1014,7 @@
     <p class="section-intro">Our campus provides everything students need for academic success, personal growth, and holistic development.</p>
     <div class="facilities-grid">
       <div class="facility-card" data-tilt>
-        <div class="fac-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M4 3v7a2 2 0 0 0 4 0V3"/><path d="M6 3v18"/><path d="M19 3a3 3 0 0 0-3 3v6h3z"/><path d="M19 3v18"/></svg>️</div>
+        <div class="fac-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M4 3v7a2 2 0 0 0 4 0V3"/><path d="M6 3v18"/><path d="M19 3a3 3 0 0 0-3 3v6h3z"/><path d="M19 3v18"/></svg></div>
         <h4>Dining Hall</h4>
         <p>Serves a balanced midday meal for students and staff, with a menu developed alongside a qualified nutritionist.</p>
       </div>
@@ -1078,7 +1064,7 @@
         <p>Robotics, coding clubs, 3D printing, and digital innovation programs. Students compete in national technology competitions.</p>
       </div>
       <div class="facility-card" data-tilt>
-        <div class="fac-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>️</div>
+        <div class="fac-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
         <h4>Campus Security</h4>
         <p>Perimeter wall, 24/7 security guards, CCTV surveillance, controlled gate access. Safe and secure learning environment guaranteed.</p>
       </div>
@@ -1108,7 +1094,7 @@
         </div>
       </div>
       <div class="leader-card" style="flex-direction:column;text-align:center;align-items:center;">
-        <div class="leader-avatar"><span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></svg>️</span></div>
+        <div class="leader-avatar"><span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></svg></span></div>
         <div class="leader-info" style="text-align:center;">
           <h3>Peace Club</h3>
           <p style="color:rgba(255,255,255,.65);font-size:.88rem;">Conflict resolution, peer mediation, dialogue forums, and peace-building campaigns.</p>
@@ -1165,7 +1151,7 @@
         </div>
       </div>
       <div class="trophy-item">
-        <div class="trophy-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v6a5 5 0 0 1-10 0z"/><path d="M7 6H4a2 2 0 0 0 2 4h1"/><path d="M17 6h3a2 2 0 0 1-2 4h-1"/></svg>️</div>
+        <div class="trophy-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v6a5 5 0 0 1-10 0z"/><path d="M7 6H4a2 2 0 0 0 2 4h1"/><path d="M17 6h3a2 2 0 0 1-2 4h-1"/></svg></div>
         <div class="trophy-info">
           <h4>East African Schools Debate Championship</h4>
           <p>Best Team — 2024 & 2025</p>
@@ -1201,7 +1187,7 @@
         <p>Fully registered and accredited by Uganda National Examinations Board for UCE and UACE examinations.</p>
       </div>
       <div class="accred-card">
-        <div class="accred-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M10 21v-6h4v6"/></svg>️</div>
+        <div class="accred-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M10 21v-6h4v6"/></svg></div>
         <h4>Ministry of Education</h4>
         <p>Operating under the Ministry of Education and Sports, compliant with all national curriculum standards.</p>
       </div>
@@ -1244,7 +1230,7 @@
     </div>
     <div class="footer-col"><h3>Contact</h3>
       <a href="tel:0792861645"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> 0792 861 645</a>
-      <a href="mailto:Kalinabiri.ntinda@yahoo.com"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>️ Kalinabiri.ntinda@yahoo.com</a>
+      <a href="mailto:Kalinabiri.ntinda@yahoo.com"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg> Kalinabiri.ntinda@yahoo.com</a>
     </div>
   </div>
   <div class="footer-bottom"><p>© 2026 Kalinabiri Secondary School. All Rights Reserved. | Developed by <strong>ScottsTechX</strong></p></div>

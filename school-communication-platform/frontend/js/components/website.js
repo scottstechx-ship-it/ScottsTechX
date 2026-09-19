@@ -114,7 +114,7 @@
         <div class="card" style="margin-bottom:16px">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
             <div>
-              <h3 style="margin:0"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>️ Website Gallery</h3>
+              <h3 style="margin:0"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg> Website Gallery</h3>
               <div class="doc-meta">These pictures appear on the public home page and gallery page. Delete anything here and it disappears from the website instantly.</div>
             </div>
             <button class="btn" id="g-add">+ Add image</button>
@@ -133,7 +133,7 @@
         }
         catch (e) { grid.innerHTML = `<div class="card"><div class="doc-meta">${esc(e.message)}</div></div>`; return; }
         if (!items.length) {
-          grid.innerHTML = '<div class="card" style="grid-column:1/-1;text-align:center;padding:36px"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>️ Gallery is empty</h3><div class="doc-meta">Add images or videos — they appear on the public website instantly.</div></div>';
+          grid.innerHTML = '<div class="card" style="grid-column:1/-1;text-align:center;padding:36px"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg> Gallery is empty</h3><div class="doc-meta">Add images or videos — they appear on the public website instantly.</div></div>';
           return;
         }
         grid.innerHTML = '';
@@ -141,7 +141,7 @@
           const isVideo = im.media_type === 'video';
           const preview = isVideo
             ? `<div style="position:relative"><video src="${esc(im.src)}" preload="metadata" muted style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#0f172a"></video>
-                 <div style="position:absolute;inset:0;display:grid;place-items:center;font-size:34px;pointer-events:none">▶️</div></div>`
+                 <div style="position:absolute;inset:0;display:grid;place-items:center;font-size:34px;pointer-events:none">▶</div></div>`
             : `<img src="${esc(im.src)}" alt="" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block" onerror="this.style.opacity=.25">`;
           const card = UI.el(`<div class="card" style="padding:0;overflow:hidden">
             ${preview}
@@ -149,7 +149,7 @@
               <div class="doc-name" style="font-size:14px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">${esc(im.title)} <span class="badge ${isVideo ? 'amber' : 'blue'}">${isVideo ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> video' : '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg> image'}</span></div>
               <div class="doc-meta">${esc(im.category || '')}${im.caption ? ' · ' + esc(im.caption) : ''}</div>
               <div style="display:flex;gap:6px;margin-top:10px">
-                <button class="btn secondary sm" data-edit><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️ Edit</button>
+                <button class="btn secondary sm" data-edit><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Edit</button>
                 <button class="btn secondary sm" data-del style="color:#dc2626"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg> Delete</button>
               </div>
             </div>
@@ -250,10 +250,10 @@
               <div style="flex:1;min-width:220px">
                 <div class="doc-name" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${esc(n.title)} ${state}</div>
                 <div class="doc-meta" style="margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(n.body)}</div>
-                <div class="doc-meta" style="margin-top:4px">Posted ${esc(fmtDT(n.created_at))}${n.expires_at ? ' · ⏳ Expires ' + esc(n.expires_at) : ' · Never expires'}</div>
+                <div class="doc-meta" style="margin-top:4px">Posted ${esc(fmtDT(n.created_at))}${n.expires_at ? ' · Expires ' + esc(n.expires_at) : ' · Never expires'}</div>
               </div>
               <div style="display:flex;gap:6px;flex-wrap:wrap">
-                <button class="btn secondary sm" data-edit><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>️ Edit</button>
+                <button class="btn secondary sm" data-edit><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Edit</button>
                 <button class="btn secondary sm" data-toggle>${n.published ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg> Unpublish' : '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Publish'}</button>
                 <button class="btn secondary sm" data-del style="color:#dc2626"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
               </div>
@@ -327,7 +327,7 @@
     async render(box) {
       box.innerHTML = `
         <div class="card" style="margin-bottom:16px">
-          <h3 style="margin:0"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>️ Website Messages</h3>
+          <h3 style="margin:0"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg> Website Messages</h3>
           <div class="doc-meta">Messages sent from the public contact form.</div>
         </div>
         <div id="cm-list"></div>`;
@@ -349,7 +349,7 @@
                 <div class="doc-meta" style="margin-top:6px;white-space:pre-wrap">${esc(m.message)}</div>
               </div>
               <div style="display:flex;gap:6px;flex-wrap:wrap">
-                ${m.email ? `<a class="btn secondary sm" href="mailto:${esc(m.email)}?subject=Re: ${esc(m.subject || 'Your message to the school')}">↩ Reply</a>` : ''}
+                ${m.email ? `<a class="btn secondary sm" href="mailto:${esc(m.email)}?subject=Re: ${esc(m.subject || 'Your message to the school')}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg> Reply</a>` : ''}
                 <button class="btn secondary sm" data-read>${m.status === 'new' ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Mark read' : '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Mark replied'}</button>
                 <button class="btn secondary sm" data-del style="color:#dc2626"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
               </div>
