@@ -5,7 +5,7 @@
    ============================================================ */
 
 /* ── LOGO PATH ── */
-:root { --logo: url('../images/logo.png'); }
+:root { --logo: url('../images/logo.jpeg'); }
 
 /* ── COLOR VARIABLES ── */
 :root {
@@ -89,7 +89,7 @@ p  { font-size: clamp(0.85rem, 1.5vw, 1rem); line-height: 1.7; color: var(--text
   border-bottom: 1px solid var(--glass-border);
 }
 .mobile-nav .nav-logo { display: flex; align-items: center; gap: 10px; }
-.mobile-nav .nav-logo img { height: 40px; width: auto; object-fit: contain; }
+.mobile-nav .nav-logo img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
 .mobile-nav .nav-brand { color: #fff; font-weight: 700; font-size: 1rem; }
 .mobile-nav .nav-brand span { display: block; font-size: 0.7rem; color: var(--accent-bright); font-weight: 400; }
 
@@ -135,7 +135,7 @@ p  { font-size: clamp(0.85rem, 1.5vw, 1rem); line-height: 1.7; color: var(--text
   border-bottom: 1px solid var(--glass-border);
 }
 .desktop-nav .nav-logo { display: flex; align-items: center; gap: 12px; }
-.desktop-nav .nav-logo img { height: 48px; width: auto; object-fit: contain; }
+.desktop-nav .nav-logo img { width: 48px; height: 48px; border-radius: 10px; object-fit: cover; }
 .desktop-nav .nav-brand { color: #fff; font-weight: 800; font-size: 1.1rem; }
 .desktop-nav .nav-brand span { display: block; font-size: 0.7rem; color: var(--accent-bright); font-weight: 400; }
 .desktop-nav .nav-links { display: flex; align-items: center; gap: 4px; }

@@ -141,7 +141,7 @@ body::before {
   height: 72px;
 }
 .navbar-logo { display: flex; align-items: center; gap: 12px; }
-.navbar-logo img { height: 44px; width: auto; object-fit: contain; }
+.navbar-logo img { height: 44px; width: 44px; border-radius: 10px; object-fit: cover; }
 .navbar-logo-text { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; line-height: 1.2; }
 .navbar-logo-text span { color: var(--accent); }
 .navbar-nav { display: flex; gap: 4px; align-items: center; }
@@ -587,7 +587,7 @@ textarea.form-input { min-height: 120px; resize: vertical; }
   overflow-y: auto; padding: 24px 0; z-index: 100;
 }
 .portal-logo { padding: 0 24px 24px; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 12px; }
-.portal-logo img { height: 40px; width: auto; object-fit: contain; }
+.portal-logo img { width: 40px; height: 40px; border-radius: 10px; }
 .portal-logo-text { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; line-height: 1.2; }
 .portal-logo-text span { color: var(--accent); display: block; font-family: var(--font-body); font-size: 0.7rem; font-weight: 400; color: rgba(255,255,255,0.4); }
 .portal-nav { padding: 16px 12px; }
@@ -646,7 +646,7 @@ textarea.form-input { min-height: 120px; resize: vertical; }
 .footer-grid { max-width: 1400px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; }
 .footer-brand p { color: rgba(255,255,255,0.4); font-size: 0.9rem; margin-top: 16px; line-height: 1.7; }
 .footer-logo { display: flex; align-items: center; gap: 12px; font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; }
-.footer-logo img { height: 46px; width: auto; object-fit: contain; }
+.footer-logo img { width: 44px; height: 44px; border-radius: 10px; }
 .footer h4 { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; color: rgba(255,255,255,0.9); }
 .footer ul { display: flex; flex-direction: column; gap: 10px; }
 .footer a { color: rgba(255,255,255,0.4); font-size: 0.875rem; transition: var(--transition); }
@@ -832,7 +832,7 @@ textarea.form-input { min-height: 120px; resize: vertical; }
   overflow-y: auto; padding: 20px 0; z-index: 100;
 }
 .admin-logo { padding: 16px 20px; border-bottom: 1px solid var(--glass-border); display: flex; align-items: center; gap: 10px; }
-.admin-logo img { height: 38px; width: auto; object-fit: contain; }
+.admin-logo img { width: 36px; height: 36px; border-radius: 8px; }
 .admin-logo-text { font-family: var(--font-display); font-weight: 700; font-size: 0.9rem; line-height: 1.2; }
 .admin-logo-text span { color: var(--accent); display: block; font-family: var(--font-body); font-size: 0.65rem; font-weight: 400; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 1px; }
 .admin-nav { padding: 12px; }

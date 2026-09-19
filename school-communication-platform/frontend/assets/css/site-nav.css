@@ -34,8 +34,9 @@
   margin-right: 8px;                                /* extra breathing room before the Home link */
 }
 .kn-brand img {
-  height: 44px; width: auto; object-fit: contain;   /* crest is portrait: show it whole */
-  flex: none; filter: drop-shadow(0 4px 10px rgba(0,0,0,.45));
+  width: 42px; height: 42px; border-radius: 11px; object-fit: cover;
+  border: 2px solid rgba(56,189,248,.45); box-shadow: 0 4px 14px rgba(14,165,233,.35);
+  flex: none;
 }
 .kn-brand .kn-brand-txt {
   display: flex; flex-direction: column; justify-content: center;
@@ -199,7 +200,7 @@ h1, h2, h3, h4, p, li, a, td, th { overflow-wrap: break-word; }
 }
 @media (max-width: 420px) {
   .kn-nav { padding: 0 10px; gap: 10px; }
-  .kn-brand img { height: 38px; width: auto; }
+  .kn-brand img { width: 36px; height: 36px; border-radius: 9px; }
   .kn-brand .kn-brand-name { font-size: .92rem; }
   .kn-burger { width: 42px; height: 42px; }
 }
