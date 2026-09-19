@@ -717,10 +717,10 @@
             .logo-text-3d { gap: 2px; }
         }
     </style>
-<link rel="stylesheet" href="assets/css/site-ux.css">
-<link rel="stylesheet" href="/assets/css/site-nav.css?v=7">
-<script src="/assets/js/site-nav.js?v=7" defer></script>
-<script src="/assets/js/site-film.js?v=7" defer></script>
+<link rel="stylesheet" href="assets/css/site-ux.css?v=9">
+<link rel="stylesheet" href="/assets/css/site-nav.css?v=9">
+<script src="/assets/js/site-nav.js?v=9" defer></script>
+<script src="/assets/js/site-film.js?v=9" defer></script>
 <script src="/assets/js/site-animate.js" defer></script>
 <script src="/assets/js/site-perf.js" defer></script>
 </head>
@@ -1250,15 +1250,10 @@
 
         document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-        // Navbar scroll effect
-        window.addEventListener('scroll', () => {
-            const navbar = document.getElementById('navbar3d');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
+        // NOTE: the navbar is injected by /assets/js/site-nav.js, which owns its
+        // own scroll state (see .kn-nav.is-scrolled). The handler that used to be
+        // here looked up #navbar3d - an element site-nav.js deletes - so it threw
+        // "Cannot read properties of null" on every single scroll event.
 
         // Active nav link
         function setActive(el) {
@@ -1296,8 +1291,12 @@
     
     // Mobile Menu Toggle
     function toggleMobileMenu() {
-      document.getElementById('navLinks').classList.toggle('mobile-open');
-      document.getElementById('mobileBtn').classList.toggle('active');
+      // legacy hook: the navbar is injected by site-nav.js and has no #navLinks
+      // / #mobileBtn, so guard the lookups instead of throwing.
+      var nl = document.getElementById('navLinks');
+      var mb = document.getElementById('mobileBtn');
+      if (nl) nl.classList.toggle('mobile-open');
+      if (mb) mb.classList.toggle('active');
     }
 
 </script>

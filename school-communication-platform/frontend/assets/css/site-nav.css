@@ -28,6 +28,14 @@
 .kn-nav a, .kn-drawer a, .kn-nav button { text-decoration: none !important; border-bottom: none !important; }
 .kn-drawer a:hover, .kn-drawer a:focus, .kn-drawer a:active { text-decoration: none !important; }
 
+/* once the page moves, the bar solidifies a little (animated, not a jump) */
+.kn-nav { transition: background .35s ease, box-shadow .35s ease, border-color .35s ease; }
+.kn-nav.is-scrolled {
+  background: linear-gradient(135deg, rgba(10,20,36,.97), rgba(14,30,52,.95));
+  border-bottom-color: rgba(14,165,233,.32);
+  box-shadow: 0 10px 30px rgba(2,8,20,.45);
+}
+
 .kn-brand {
   display: flex; align-items: center; gap: 10px;
   min-width: 0; flex: 0 1 auto; overflow: hidden;   /* brand may shrink, but its text is CLIPPED — never spills onto the links */
@@ -208,29 +216,45 @@ h1, h2, h3, h4, p, li, a, td, th { overflow-wrap: break-word; }
 /* ============================================================
  * BACKGROUND FILM + SECTION TREATMENTS (every public page)
  *
- * The footage sits on one fixed layer behind the page. How much of it you see
- * is decided per section, with three treatments pages can apply:
+ * The footage lives INSIDE the sections that show it: site-film.js drops one
+ * .bg-film layer inside each film section, the layer is absolutely positioned
+ * and clipped by its own box, so the video can never spill out of the top of
+ * its container or run down over the content below it.
+ *
+ * Treatments a page can apply per section:
  *      .bg-clear   footage sharp behind the section (text gets a scrim)
- *      .bg-blur    frosted panel: footage shows through, blurred
+ *      .bg-blur    frosted panel: the same footage, blurred, behind it
  *      .bg-solid   footage covered completely
- * The base colour below is painted by the page, not by a gradient, so the film
- * is the only thing that moves.
+ * The base colour is painted by the page, not by a gradient, so the film is
+ * the only thing that moves.
  * ============================================================ */
 html { background: #0b1a2d; }
 body { background: transparent; }   /* sections decide what shows through */
 
+/* the layer: one per section, clipped, behind that section's content */
 .bg-film {
-  position: fixed; inset: 0; z-index: -3;
+  position: absolute; inset: 0; z-index: -1;
   overflow: hidden; pointer-events: none;
   background: #0b1a2d;
 }
 .bg-film video {
   width: 100%; height: 100%;
   object-fit: cover; display: block;
-  opacity: 0; transition: opacity 1.2s ease;
+  opacity: 0; transition: opacity 1s ease;
   filter: brightness(.62) saturate(.95);
+  transform: scale(1.06);
+  will-change: transform;
 }
-.bg-film.is-playing video { opacity: 1; }
+.bg-film.is-ready video { opacity: 1; }
+
+/* a very slow drift, so the footage is not a frozen photograph */
+@media (prefers-reduced-motion: no-preference) {
+  .bg-film.is-ready video { animation: filmDrift 44s ease-in-out infinite alternate; }
+}
+@keyframes filmDrift {
+  from { transform: scale(1.06) translate3d(0, 0, 0); }
+  to   { transform: scale(1.14) translate3d(-1.4%, -2%, 0); }
+}
 
 /* ---- treatments ---------------------------------------------------------- */
 .bg-clear {
@@ -244,29 +268,43 @@ body { background: transparent; }   /* sections decide what shows through */
   -webkit-backdrop-filter: blur(16px) saturate(1.15);
   backdrop-filter: blur(16px) saturate(1.15);
 }
+/* sections that are frosted panels (.bg-blur, and the inner pages' content
+   sections) get the same footage blurred behind them - site-film.js tags the
+   layer .is-soft when its section is one of those */
+.bg-film.is-soft video {
+  -webkit-filter: blur(18px) brightness(.52) saturate(.95);
+  filter: blur(18px) brightness(.52) saturate(.95);
+}
 .bg-solid {
   position: relative;
   background: #0b1a2d;
+}
+/* a wider drift for the blurred layers, so no soft edge is ever visible */
+@media (prefers-reduced-motion: no-preference) {
+  .bg-film.is-soft.is-ready video { animation-name: filmDriftSoft; }
+}
+@keyframes filmDriftSoft {
+  from { transform: scale(1.16) translate3d(0, 0, 0); }
+  to   { transform: scale(1.24) translate3d(-1.2%, -1.8%, 0); }
 }
 /* phones: blur is expensive, so frosted panels become lightly tinted instead */
 @media (max-width: 700px) {
   .bg-blur {
     -webkit-backdrop-filter: none; backdrop-filter: none;
-    background: rgba(9,20,35,.80);
+    background: rgba(9,20,35,.62);
   }
-  .bg-film video { filter: brightness(.5) saturate(.9); }
+  .bg-film video { filter: brightness(.55) saturate(.9); }
 }
 
 /* ============================================================
  * SECTION TREATMENTS ON THE INNER PAGES
  *
- * Same idea as the home page, applied to the classes these pages share:
- * content sections become frosted panels so the film shows through blurred,
- * while page headers stay sharp with a scrim for their text.
- * Sections that already paint their own background (e.g. a light band) keep
- * it, so the film is deliberately covered there - contrast is never at risk.
+ * Same idea, applied to the classes these pages share: page headers carry the
+ * film sharply, the content sections below are frosted panels, and sections
+ * that already paint their own background (e.g. a light band) keep it, so the
+ * film is deliberately covered there - contrast is never at risk.
  * ============================================================ */
-.page-header, .adm-hero, .news-hero, .page-hero {
+.page-header, .adm-hero, .news-hero, .page-hero, .about-hero {
   position: relative;
   background: rgba(8,18,32,.42);
   text-shadow: 0 2px 12px rgba(0,0,0,.55);
@@ -292,6 +330,72 @@ body { background: transparent; }   /* sections decide what shows through */
   .section:not(.section-gray), .about-section:not(.alt-bg), .adm-section,
   .news-wrap, .gallery-section, .news-grid, .site-footer, footer.footer:not(.bg-blur) {
     -webkit-backdrop-filter: none; backdrop-filter: none;
-    background: rgba(9,20,35,.82);
+    background: rgba(9,20,35,.70);
   }
+}
+
+/* ============================================================
+ * MOTION POLISH (all public pages, pure CSS)
+ * ============================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  /* nav links: a light sweeping underline on hover / for the current page */
+  .kn-links a { position: relative; }
+  .kn-links a::after {
+    content: ''; position: absolute; left: 10px; right: 10px; bottom: 5px; height: 2px;
+    border-radius: 2px; background: linear-gradient(90deg, transparent, var(--kn-accent-2), transparent);
+    transform: scaleX(0); transform-origin: center;
+    transition: transform .3s cubic-bezier(.2,.7,.3,1);
+  }
+  .kn-links a:hover::after, .kn-links a.active::after { transform: scaleX(1); }
+
+  /* the header call-to-action breathes very slowly */
+  .kn-cta { animation: ctaGlow 4.5s ease-in-out infinite; }
+  @keyframes ctaGlow {
+    0%, 100% { box-shadow: 0 6px 18px rgba(245,158,11,.28); }
+    50%      { box-shadow: 0 10px 26px rgba(245,158,11,.5); }
+  }
+
+  /* the crest badge gives a gentle nod when you land on the page */
+  .kn-brand img { animation: crestNod 6s ease-in-out infinite; }
+  @keyframes crestNod {
+    0%, 92%, 100% { transform: translateY(0) rotate(0); }
+    95%           { transform: translateY(-3px) rotate(-2deg); }
+  }
+}
+
+/* ---- more motion, all of it optional and switch-off-able --------------- */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }          /* anchor jumps glide instead of snapping */
+
+  /* section headers: a short accent bar draws itself in when the block appears
+     (site-animate.js puts .ka-in on section headers as they scroll into view) */
+  .section-header h2 { position: relative; }
+  .section-header h2::after {
+    content: ''; display: block; width: 54px; height: 3px; border-radius: 3px;
+    margin: 12px auto 0; opacity: .95;
+    background: linear-gradient(90deg, var(--kn-accent), var(--kn-accent-2));
+    transform: scaleX(0); transform-origin: center;
+    transition: transform .6s cubic-bezier(.2,.7,.3,1) .08s;
+  }
+  .section-header.ka-in h2::after,
+  .section-header.visible h2::after { transform: scaleX(1); }
+
+  /* buttons: a light sweeps across on hover */
+  .hero-actions a, .btn-primary, .btn-gold, .btn-apply, .kn-cta { position: relative; overflow: hidden; }
+  .hero-actions a::after, .btn-primary::after, .btn-gold::after, .btn-apply::after, .kn-cta::after {
+    content: ''; position: absolute; top: 0; bottom: 0; left: -46%; width: 38%;
+    pointer-events: none; transform: skewX(-18deg);
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.30), transparent);
+    transition: left .55s ease;
+  }
+  .hero-actions a:hover::after, .btn-primary:hover::after, .btn-gold:hover::after,
+  .btn-apply:hover::after, .kn-cta:hover::after { left: 118%; }
+
+  /* gallery / news images: a slow push-in instead of a hard cut */
+  .gallery-item img, .image-card img { transition: transform .6s cubic-bezier(.2,.7,.3,1); }
+  .gallery-item:hover img, .image-card:hover img { transform: scale(1.06); }
+
+  /* cards rise a little further on hover on the pages that do not animate them */
+  .hod-card:hover, .value-card:hover, .news-card:hover, .info-card:hover { transform: translateY(-4px); }
+  .hod-card, .value-card, .news-card, .info-card { transition: transform .28s ease, box-shadow .28s ease; }
 }
