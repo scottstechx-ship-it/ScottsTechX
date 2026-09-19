@@ -56,18 +56,6 @@
             width: 100%; height: 100%; z-index: -2; overflow: hidden;
         }
         .video-bg video { width: 100%; height: 100%; object-fit: cover; }
-        /* School crest on the hero, in the same white tile as the navbar */
-        .hero-logo {
-            width: 104px; height: 104px;
-            border-radius: 22px;
-            object-fit: cover;
-            border: 3px solid rgba(56,189,248,0.45);
-            box-shadow: 0 14px 38px rgba(0,0,0,0.5);
-            margin-bottom: 20px;
-        }
-        @media (max-width: 768px) {
-            .hero-logo { width: 84px; height: 84px; border-radius: 18px; }
-        }
     /* The school's own intro video, served from this site. It covers the hero
        and fades in once it can actually play, so the gradient is never a black
        gap. TikTok's player stays as the fallback (see the script). */
@@ -656,6 +644,11 @@
         }
         .footer-brand .footer-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
         .footer-logo svg { font-size: 28px; color: var(--teal-bright); }
+        .footer-logo img {
+            width: 46px; height: 46px; border-radius: 11px; object-fit: cover;
+            border: 2px solid rgba(56,189,248,0.45);
+            box-shadow: 0 4px 14px rgba(14,165,233,0.3);
+        }
         .footer-logo span { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--text-light); }
         .footer-brand p { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; }
         .footer-social { display: flex; gap: 12px; }
@@ -1111,7 +1104,7 @@
         <div class="footer-grid">
             <div class="footer-brand">
                 <div class="footer-logo">
-                    <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>
+                    <img src="/assets/images/logo.jpeg" alt="Kalinabiri Secondary School crest">
                     <span>Kalinabiri SS</span>
                 </div>
                 <p>Nurturing minds, building character, and shaping the leaders of tomorrow since 1984. Kalinabiri Secondary School is committed to academic excellence and holistic development.</p>

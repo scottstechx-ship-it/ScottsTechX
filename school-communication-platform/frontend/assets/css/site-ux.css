@@ -14,3 +14,30 @@ button,a{touch-action:manipulation}
 }
 @media(max-width:480px){.stats-grid{grid-template-columns:1fr 1fr}.footer-grid{grid-template-columns:1fr}.portal-card{border-radius:16px}.mobile-nav-menu{padding:12px 14px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.navbar-3d,.portal-card,.hero *{animation:none!important;transition:none!important}.video-bg{display:none}}
+
+/* --- School crest on the home hero ---------------------------------------
+   Sits centred above the "est. 1984" badge, in the same white tile as the
+   navbar mark, with enough clearance under the fixed navbar that it never
+   looks like it has drifted into the header. */
+.hero-logo {
+  display: block;                  /* centre it whatever other rules do to img */
+  width: 92px; height: 92px;
+  margin: 0 auto 18px;
+  object-fit: cover;
+  border-radius: 20px;
+  border: 3px solid rgba(56,189,248,.45);
+  box-shadow: 0 14px 38px rgba(0,0,0,.5);
+}
+@media (max-width: 760px) {
+  .hero { padding-top: 112px; }    /* 68px navbar + a clear gap before the crest */
+  .hero-logo { width: 72px; height: 72px; border-radius: 16px; margin-bottom: 14px; }
+}
+@media (max-height: 760px) {
+  /* short viewports (laptops, landscape phones): keep the whole hero above
+     the fold instead of letting the stack push itself around */
+  .hero-logo { width: 68px; height: 68px; border-radius: 15px; margin-bottom: 12px; }
+  .hero-badge { margin-bottom: 16px; }
+  .hero h1 { margin-bottom: 14px; }
+  .hero p { margin-bottom: 24px; }
+  .scroll-indicator { display: none; }
+}
