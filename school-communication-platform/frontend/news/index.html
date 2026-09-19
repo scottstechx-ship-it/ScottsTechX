@@ -112,7 +112,7 @@
             return;
           }
           grid.innerHTML = list.map(function (n) {
-            var img = n.image ? '<img class="news-img" src="' + esc(n.image) + '" alt="" loading="lazy" onerror="this.remove()">' : '';
+            var img = n.image ? '<img class="news-img" src="' + esc(n.image) + '" alt="" loading="lazy" onerror="window.__mediaFallback(this)">' : '';
             return '<article class="news-card">' + img +
               '<div class="news-body">' +
                 '<div class="news-date"><i class="fas fa-calendar" aria-hidden="true"></i> ' + esc(fmtDate(n.created_at)) + '</div>' +
@@ -195,6 +195,16 @@
     if (taps >= 2) { sig.classList.toggle('stx-open'); taps = 0; }
   });
 })();
+</script>
+<script>
+// Highest-resolution school photo first; step down automatically if that
+// size is missing so no image ever breaks.
+window.__mediaFallback = function (img) {
+  var s = img.src || '';
+  if (s.indexOf('maxresdefault') > -1) { img.src = s.replace('maxresdefault', 'hq720'); return; }
+  if (s.indexOf('hq720') > -1) { img.src = s.replace('hq720', 'hqdefault'); return; }
+  img.onerror = null;
+};
 </script>
 </body>
 </html>

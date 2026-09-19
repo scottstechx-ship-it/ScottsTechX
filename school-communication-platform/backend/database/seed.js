@@ -318,13 +318,13 @@ function runSeed() {
     const media = [
       ['Kalinabiri Secondary School Campus', 'Our school in Ntinda, Kampala', 'https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss.jpeg', 'image', 'Campus', 1],
       ['School Grounds and Buildings', 'Our campus in Ntinda, Kampala', 'https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss-1.jpeg', 'image', 'Campus', 2],
-      ['Locally Made Thermometer Practical', 'S.1 physics: heat and measurement', 'https://i.ytimg.com/vi/mYhX2lFCMtE/hq720.jpg', 'image', 'Academics', 3],
-      ['Magnetism Demonstration', 'Students demonstrating magnetic fields', 'https://i.ytimg.com/vi/YsB_nSzRTbI/hq720.jpg', 'image', 'Academics', 4],
-      ['Electricity Practical', 'S.1 students building simple circuits', 'https://i.ytimg.com/vi/UoC0lHpgYCA/hq720.jpg', 'image', 'Academics', 5],
-      ['Heat and Energy Practical', 'Conduction and radiation with local materials', 'https://i.ytimg.com/vi/Ab96mYU4UcY/hq720.jpg', 'image', 'Academics', 6],
-      ['Light Demonstration', 'S.1 students demonstrating reflection', 'https://i.ytimg.com/vi/CBs7v5OIjpw/hq720.jpg', 'image', 'Academics', 7],
-      ['Community Health Outreach', 'Reusable sanitary towel campaign at the school', 'https://i.ytimg.com/vi/O1A6aQcmlmg/hq720.jpg', 'image', 'Community', 8],
-      ['Talent and Mentorship Day', 'SMASHED youth mentoring live at Kalinabiri SS', 'https://i.ytimg.com/vi/pMDWl5NuGWw/hq720.jpg', 'image', 'Events', 9],
+      ['Locally Made Thermometer Practical', 'S.1 physics: heat and measurement', 'https://i.ytimg.com/vi/mYhX2lFCMtE/maxresdefault.jpg', 'image', 'Academics', 3],
+      ['Magnetism Demonstration', 'Students demonstrating magnetic fields', 'https://i.ytimg.com/vi/YsB_nSzRTbI/maxresdefault.jpg', 'image', 'Academics', 4],
+      ['Electricity Practical', 'S.1 students building simple circuits', 'https://i.ytimg.com/vi/UoC0lHpgYCA/maxresdefault.jpg', 'image', 'Academics', 5],
+      ['Heat and Energy Practical', 'Conduction and radiation with local materials', 'https://i.ytimg.com/vi/Ab96mYU4UcY/maxresdefault.jpg', 'image', 'Academics', 6],
+      ['Light Demonstration', 'S.1 students demonstrating reflection', 'https://i.ytimg.com/vi/CBs7v5OIjpw/maxresdefault.jpg', 'image', 'Academics', 7],
+      ['Community Health Outreach', 'Reusable sanitary towel campaign at the school', 'https://i.ytimg.com/vi/O1A6aQcmlmg/maxresdefault.jpg', 'image', 'Community', 8],
+      ['Talent and Mentorship Day', 'SMASHED youth mentoring live at Kalinabiri SS', 'https://i.ytimg.com/vi/pMDWl5NuGWw/maxresdefault.jpg', 'image', 'Events', 9],
     ];
     for (const [title, caption, url, type, cat, sort] of media) {
       run('INSERT OR IGNORE INTO site_gallery (title, caption, url, media_type, category, sort_order) VALUES (?, ?, ?, ?, ?, ?)',
@@ -337,16 +337,16 @@ function runSeed() {
     const news = [
       ['Reusable Sanitary Towel Campaign at Kalinabiri SS',
         'Kalinabiri Secondary School hosted a reusable sanitary towel campaign run in partnership with the Joel Ssenyonyi Foundation and She for She. The campaign equips girls with washable, long-lasting sanitary towels so that no learner has to miss lessons every month, and it includes practical hygiene education for the whole school.',
-        'https://i.ytimg.com/vi/O1A6aQcmlmg/hq720.jpg'],
+        'https://i.ytimg.com/vi/O1A6aQcmlmg/maxresdefault.jpg'],
       ['S.1 Learners Demonstrate Science With Local Materials',
         'Our Senior One learners continue to show that science needs curiosity more than expensive equipment. Working in groups, they built and demonstrated their own thermometer, simple electric circuits, magnetism and heat experiments using materials available around the school. Teaching science through practicals like these is at the heart of learning at Kalinabiri.',
-        'https://i.ytimg.com/vi/mYhX2lFCMtE/hq720.jpg'],
+        'https://i.ytimg.com/vi/mYhX2lFCMtE/maxresdefault.jpg'],
       ['Youth Mentorship Day: SMASHED Live at Kalinabiri SS',
         'Topowa Youth Mentoring Uganda brought the SMASHED youth mentorship experience to our campus. Learners spent the day in sessions on purpose, discipline and making positive life choices, closing with music and testimonies from the mentees themselves.',
-        'https://i.ytimg.com/vi/pMDWl5NuGWw/hq720.jpg'],
+        'https://i.ytimg.com/vi/pMDWl5NuGWw/maxresdefault.jpg'],
       ['Guidance Session for Our Candidate Classes',
         'Our S.4 and S.6 candidates were taken through an inspiring guidance and motivation session ahead of their national examinations. The session covered revision strategy, examination discipline, managing pressure and keeping faith, and the learners gave a vote of thanks on behalf of the whole candidate class.',
-        'https://i.ytimg.com/vi/sblZex31Ufk/hq720.jpg'],
+        'https://i.ytimg.com/vi/sblZex31Ufk/maxresdefault.jpg'],
     ];
     for (const [title, body, img] of news) {
       run('INSERT OR IGNORE INTO site_news (title, body, image_url, published) VALUES (?, ?, ?, 1)', [title, body, img]);

@@ -7,8 +7,10 @@
     "start": "node backend/server.js",
     "dev": "node --watch backend/server.js",
     "seed": "node backend/database/seed.js --reset",
-    "test": "node --test tests/api.test.js && node tests/frontend.smoke.js",
-    "smoke": "node tests/frontend.smoke.js"
+    "test": "node tests/api.test.js && node tests/frontend.smoke.js && node tests/pages.test.js",
+    "smoke": "node tests/frontend.smoke.js",
+    "test:pages": "node tests/pages.test.js",
+    "test:deep": "node tests/deep-dashboard.test.js"
   },
   "keywords": [
     "school",

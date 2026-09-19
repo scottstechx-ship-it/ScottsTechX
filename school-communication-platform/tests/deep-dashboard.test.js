@@ -90,12 +90,18 @@ function navKeys(appRel) {
   return keys;
 }
 
-const ROLES = [
+// Both dashboard trees are tested: the legacy /<role>/ pages AND the
+// /platform/<role>/ pages, which is where every login redirects.
+const ROLE_ACCOUNTS = [
   { name: 'SUPER ADMIN', username: 'superadmin', password: 'SuperAdmin@123', dir: 'super-admin' },
   { name: 'ADMIN', username: 'admin', password: 'Admin@123', dir: 'admin' },
   { name: 'TEACHER', username: 'teacher1', password: 'Teacher@123', dir: 'teacher' },
   { name: 'STUDENT', username: 'student1', password: 'Student@123', dir: 'student' },
   { name: 'PARENT', username: 'parent1', password: 'Parent@123', dir: 'parent' },
+];
+const ROLES = [
+  ...ROLE_ACCOUNTS,
+  ...ROLE_ACCOUNTS.map((r) => ({ ...r, name: `${r.name} (/platform)`, dir: `platform/${r.dir}` })),
 ];
 
 (async () => {

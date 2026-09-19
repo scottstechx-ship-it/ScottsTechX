@@ -74,6 +74,43 @@
       filter: blur(1.5px) brightness(.45) saturate(.9);
     }
 
+
+        .campus-band {
+            padding: 80px 40px;
+            background: linear-gradient(180deg, rgba(12,24,41,0.98) 0%, rgba(12,24,41,0.9) 100%);
+        }
+        .campus-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 22px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .campus-figure {
+            margin: 0;
+            border-radius: 18px;
+            overflow: hidden;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(56,189,248,0.18);
+            box-shadow: 0 18px 44px rgba(0,0,0,0.35);
+        }
+        .campus-figure img {
+            display: block;
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .campus-figure:hover img { transform: scale(1.04); }
+        .campus-figure figcaption {
+            padding: 12px 16px;
+            color: rgba(226,232,240,0.72);
+            font-size: 0.9rem;
+        }
+        @media (max-width: 640px) {
+            .campus-band { padding: 56px 18px; }
+            .campus-figure img { height: 220px; }
+        }
         .video-overlay {
             position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
@@ -749,6 +786,29 @@
         </div>
     </section>
 
+
+    <!-- Campus Photographs — genuine pictures of the school in Ntinda, taken
+         from the school's national schools-directory profile. -->
+    <section class="campus-band" id="campus">
+        <div class="section-header">
+            <div class="section-tag">Our Campus</div>
+            <h2>Kalinabiri Secondary School, Ntinda</h2>
+            <p>Our home since 1984 — a government-aided day and boarding school in Ntinda, Kampala.</p>
+        </div>
+        <div class="campus-grid">
+            <figure class="campus-figure">
+                <img src="https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss.jpeg"
+                     alt="Kalinabiri Secondary School campus" loading="lazy">
+                <figcaption>The school campus in Ntinda, Kampala.</figcaption>
+            </figure>
+            <figure class="campus-figure">
+                <img src="https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss-1.jpeg"
+                     alt="Kalinabiri Secondary School grounds and buildings" loading="lazy">
+                <figcaption>Our grounds and classroom blocks.</figcaption>
+            </figure>
+        </div>
+    </section>
+
     <!-- Stats Strip -->
         <section class="stats-strip">
             <div class="stats-grid">
@@ -1328,7 +1388,7 @@
     }
     grid.innerHTML = imgs.slice(0, 6).map(function (im) {
       return '<div class="gallery-item reveal is-visible" style="opacity:1;transform:none">' +
-        '<img src="' + esc(im.src) + '" alt="' + esc(im.title) + '" loading="lazy" onerror="this.onerror=null;this.src=this.src.replace(\'/hq720.jpg\',\'/hqdefault.jpg\')">' +
+        '<img src="' + esc(im.src) + '" alt="' + esc(im.title) + '" loading="lazy" onerror="window.__mediaFallback(this)">' +
         '<div class="gallery-overlay"><h4>' + esc(im.title) + '</h4><p>' + esc(im.caption || '') + '</p></div></div>';
     }).join('');
   }).catch(function () {
@@ -1363,6 +1423,18 @@
   if (window.requestIdleCallback) window.requestIdleCallback(inject, { timeout: 2500 });
   else window.addEventListener('load', function () { setTimeout(inject, 1200); });
 })();
+</script>
+
+<script>
+// Any school photo served from the video CDN is requested at the highest
+// resolution first and steps down automatically if that size is missing, so
+// visitors never see a broken image.
+window.__mediaFallback = function (img) {
+  var s = img.src || '';
+  if (s.indexOf('maxresdefault') > -1) { img.src = s.replace('maxresdefault', 'hq720'); return; }
+  if (s.indexOf('hq720') > -1) { img.src = s.replace('hq720', 'hqdefault'); return; }
+  img.onerror = null;
+};
 </script>
 </body>
 </html>

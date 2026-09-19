@@ -47,3 +47,7 @@ button:focus-visible,a:focus-visible,.btn:focus-visible,.nav-item:focus-visible{
  .bottom-nav{padding-bottom:max(6px,env(safe-area-inset-bottom))}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}[data-reveal]{opacity:1;transform:none}}
+
+/* --- dark mode: the shimmer placeholder was a bright block on dark cards --- */
+html[data-theme="dark"] .skeleton { background: #1e293b; }
+html[data-theme="dark"] .skeleton::after { background: linear-gradient(90deg, transparent, rgba(148,163,184,.18), transparent); }

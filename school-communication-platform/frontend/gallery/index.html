@@ -1163,7 +1163,7 @@ if (!window.THREE || window.innerWidth < 768) return;
       } else {
         grid.innerHTML = imgs.map(function (im, i) {
           return '<div class="image-card visible" data-index="' + i + '">' +
-            '<img src="' + esc(im.src) + '" alt="' + esc(im.title) + '" loading="lazy" onerror="this.onerror=null;this.src=this.src.replace(\'/hq720.jpg\',\'/hqdefault.jpg\')">' +
+            '<img src="' + esc(im.src) + '" alt="' + esc(im.title) + '" loading="lazy" onerror="window.__mediaFallback(this)">' +
             '<div class="image-overlay"><h3>' + esc(im.title) + '</h3><span>' + esc(im.category || im.caption || '') + '</span></div></div>';
         }).join('');
         grid.querySelectorAll('.image-card').forEach(function (card, i) {
@@ -1171,7 +1171,7 @@ if (!window.THREE || window.innerWidth < 768) return;
           card.addEventListener('click', function () {
             var ov = document.createElement('div');
             ov.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(2,6,23,.94);display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out';
-            ov.innerHTML = '<img src="' + esc(imgs[i].src) + '" alt="" style="max-width:96vw;max-height:88vh;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.6)">';
+            ov.innerHTML = '<img src="' + esc(imgs[i].src) + '" alt="" onerror="window.__mediaFallback(this)" style="max-width:96vw;max-height:88vh;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.6)">';
             ov.addEventListener('click', function () { ov.remove(); document.body.style.overflow = ''; });
             document.body.appendChild(ov);
             document.body.style.overflow = 'hidden';
@@ -1243,6 +1243,16 @@ if (!window.THREE || window.innerWidth < 768) return;
     if (taps >= 2) { sig.classList.toggle('stx-open'); taps = 0; }
   });
 })();
+</script>
+<script>
+// Highest-resolution school photo first; step down automatically if that
+// size is missing so no image ever breaks.
+window.__mediaFallback = function (img) {
+  var s = img.src || '';
+  if (s.indexOf('maxresdefault') > -1) { img.src = s.replace('maxresdefault', 'hq720'); return; }
+  if (s.indexOf('hq720') > -1) { img.src = s.replace('hq720', 'hqdefault'); return; }
+  img.onerror = null;
+};
 </script>
 </body>
 </html>
