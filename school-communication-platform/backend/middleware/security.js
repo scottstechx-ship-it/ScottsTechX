@@ -36,19 +36,35 @@ function securityHeaders(req, res, next) {
   next();
 }
 
+/** Host values that can only mean "the request came through a local proxy". */
+const LOOPBACK_HOST = /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(:\d+)?$/i;
+
+function hostMatches(origin, host) {
+  if (!origin || !host) return false;
+  try { return new URL(origin).host === host; } catch { return false; }
+}
+
 /**
  * A request is same-origin when the Origin header matches the request Host
  * (browsers send Origin even for same-origin POST/PUT/DELETE).
+ *
+ * Behind a reverse proxy that rewrites Host to the loopback address (the
+ * preview/Render deployment does), the browser still sends the public Origin,
+ * so a matching X-Forwarded-Host is accepted as well - but only when the
+ * direct Host is itself a loopback address, i.e. the request demonstrably
+ * arrived through a local proxy. Direct requests keep the strict check.
  */
-function isSameOrigin(origin, host) {
-  if (!origin || !host) return false;
-  try { return new URL(origin).host === host; } catch { return false; }
+function isSameOrigin(origin, host, forwardedHost) {
+  if (hostMatches(origin, host)) return true;
+  if (!LOOPBACK_HOST.test(String(host || ''))) return false;
+  const fwd = String(forwardedHost || '').split(',')[0].trim();
+  return !!fwd && hostMatches(origin, fwd);
 }
 
 function corsHandler(req, res, next) {
   const origin = req.headers.origin;
   const allowed = env.ALLOWED_ORIGINS;
-  const sameOrigin = !origin || isSameOrigin(origin, req.headers.host);
+  const sameOrigin = !origin || isSameOrigin(origin, req.headers.host, req.headers['x-forwarded-host']);
   const isAllowed = allowed.includes(origin) || allowed.includes('*');
 
   if (sameOrigin || isAllowed) {
