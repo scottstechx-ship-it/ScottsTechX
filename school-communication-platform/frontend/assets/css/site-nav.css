@@ -28,14 +28,6 @@
 .kn-nav a, .kn-drawer a, .kn-nav button { text-decoration: none !important; border-bottom: none !important; }
 .kn-drawer a:hover, .kn-drawer a:focus, .kn-drawer a:active { text-decoration: none !important; }
 
-/* once the page moves, the bar solidifies (was a home-page-only effect that
-   pointed at a navbar this script removes — now one behaviour for every page) */
-.kn-nav.is-scrolled {
-  background: linear-gradient(135deg, rgba(10,20,36,.97), rgba(14,30,52,.95));
-  border-bottom-color: rgba(14,165,233,.32);
-  box-shadow: 0 10px 30px rgba(2,8,20,.45);
-}
-
 .kn-brand {
   display: flex; align-items: center; gap: 10px;
   min-width: 0; flex: 0 1 auto; overflow: hidden;   /* brand may shrink, but its text is CLIPPED — never spills onto the links */
@@ -226,12 +218,6 @@ h1, h2, h3, h4, p, li, a, td, th { overflow-wrap: break-word; }
  * ============================================================ */
 html { background: #0b1a2d; }
 body { background: transparent; }   /* sections decide what shows through */
-
-/* The page must stop exactly where its content stops: no rubber-band travel
-   above the first section or past the footer, and no scroll chaining out to
-   the browser. (Safari < 16 ignores this — the hero sizing below is the real
-   fix there.) */
-html, body { overscroll-behavior-y: none; }
 
 .bg-film {
   position: fixed; inset: 0; z-index: -3;
