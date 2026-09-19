@@ -71,11 +71,11 @@
       site.onload = () => {
         container.innerHTML = '';
         container.classList.add('has-logo');
-        site.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;border-radius:9px';
+        site.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block';
         container.appendChild(site);
       };
       site.onerror = () => { container.innerHTML = icon('admissions', { size: 20 }); };
-      site.src = '/assets/images/logo.jpeg';
+      site.src = '/assets/images/logo.png';
       site.alt = 'School logo';
     };
     img.src = logoUrl() + '?t=' + Date.now();

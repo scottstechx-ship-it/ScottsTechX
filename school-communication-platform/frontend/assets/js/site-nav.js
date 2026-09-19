@@ -70,7 +70,7 @@
 
     nav.innerHTML =
       '<a class="kn-brand" href="/" aria-label="Kalinabiri SS home">' +
-        '<img src="/assets/images/logo.jpeg" alt="Kalinabiri SS logo" onerror="this.style.display=\'none\'">' +
+        '<img src="/assets/images/logo.png" alt="Kalinabiri SS logo" onerror="this.style.display=\'none\'">' +
         '<span class="kn-brand-txt"><span class="kn-brand-name">Kalinabiri SS</span><span class="kn-brand-sub">Ntinda, Kampala</span></span>' +
       '</a>' +
       '<ul class="kn-links">' + linksHtml + '</ul>' +

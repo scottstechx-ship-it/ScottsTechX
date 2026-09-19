@@ -62,7 +62,7 @@
       };
       return ''
         + '<a class="nav-logo" href="' + root + '">'
-        +   '<img src="' + root + 'assets/images/logo.jpeg" alt="Kalinabiri SS">'
+        +   '<img src="' + root + 'assets/images/logo.png" alt="Kalinabiri SS">'
         +   '<span>Kalinabiri SS</span>'
         + '</a>'
         + '<ul class="nav-links" id="themeNavLinks">'
