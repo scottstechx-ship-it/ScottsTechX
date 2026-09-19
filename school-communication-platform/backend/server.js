@@ -77,10 +77,12 @@ const frontendDir = path.join(__dirname, '..', 'frontend');
 app.use(express.static(frontendDir, {
   extensions: ['html'],
   index: 'index.html',
-  // cache static assets in the browser: instant repeat visits.
-  // HTML stays revalidated so content updates appear immediately.
+  // Images and fonts are content, so they cache hard for a day.
+  // CSS and JS are behaviour: they revalidate on every use (304 = cheap, no
+  // re-download) so a style or script fix is never hidden behind a stale
+  // copy for up to a day. HTML is revalidated too.
   setHeaders(res, filePath) {
-    if (/\.(css|js|png|jpe?g|webp|gif|ico|svg|woff2?)$/i.test(filePath)) {
+    if (/\.(png|jpe?g|webp|gif|ico|svg|woff2?)$/i.test(filePath)) {
       res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
     } else {
       res.setHeader('Cache-Control', 'no-cache');
