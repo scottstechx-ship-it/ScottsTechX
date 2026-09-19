@@ -50,12 +50,6 @@
         }
         h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
 
-        /* Video Background */
-        .video-bg {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%; z-index: -3; overflow: hidden;
-        }
-        .video-bg video { width: 100%; height: 100%; object-fit: cover; }
         /* ---- The film wall ---------------------------------------------------
            The school's own footage shown in a framed panel inside a ruled grid,
            so it reads like a viewing table rather than wallpaper. The hairline
@@ -183,7 +177,7 @@
         .video-overlay {
             position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
-            background: linear-gradient(135deg, rgba(12,24,41,0.75) 0%, rgba(26,58,92,0.65) 50%, rgba(12,24,41,0.8) 100%);
+            background: linear-gradient(180deg, rgba(8,18,32,0.34) 0%, rgba(10,24,44,0.18) 45%, rgba(8,18,32,0.42) 100%);
             z-index: -1;
         }
         #three-canvas {
@@ -825,24 +819,19 @@
         }
     </style>
 <link rel="stylesheet" href="assets/css/site-ux.css">
-<link rel="stylesheet" href="/assets/css/site-nav.css?v=5">
-<script src="/assets/js/site-nav.js?v=5" defer></script>
-<script src="/assets/js/site-film.js?v=5" defer></script>
+<style>
+  /* This page's tint for the shared layered background. */
+  body { --bg-1:#0b1a2d; --bg-2:#10233c; --bg-3:#0a1830; --bg-glow-a:rgba(14,165,233,.22); --bg-glow-b:rgba(245,158,11,.14); --bg-glow-c:rgba(56,189,248,.10); --bg-glow-d:rgba(45,90,135,.36); --bg-line:rgba(125,195,235,.06); }
+</style>
+<link rel="stylesheet" href="/assets/css/site-nav.css?v=6">
+<script src="/assets/js/site-nav.js?v=6" defer></script>
 <script src="/assets/js/site-animate.js" defer></script>
 <script src="/assets/js/site-perf.js" defer></script>
 </head>
 <body>
-        <!-- HERO BACKGROUND: paints instantly as a gradient; the background
-             video is injected AFTER window.load (see script at end of body),
-             so it never delays first paint. Skipped on data-saver/2G. -->
-        <!-- The hero paints instantly from gradients only (no network
-             request), and the TikTok background video fades in over it. -->
-        <div class="video-bg hero-photo" id="heroBg" style="background:
-          linear-gradient(180deg, rgba(6,16,30,.78) 0%, rgba(6,16,30,.58) 45%, rgba(6,16,30,.88) 100%),
-          radial-gradient(ellipse at 25% 15%, rgba(14,165,233,.25) 0%, transparent 55%),
-          radial-gradient(ellipse at 80% 85%, rgba(245,158,11,.14) 0%, transparent 50%),
-          linear-gradient(135deg, #0c1829 0%, #10233c 55%, #0c1829 100%);
-          background-size: cover; background-position: center;"></div>
+        <!-- The page background is the layered system in site-nav.css
+             (aurora glows + blueprint hairlines + vignette); nothing here
+             loads a picture or a video just to paint the page. -->
         <div class="video-overlay"></div>
     <canvas id="three-canvas"></canvas>
 
