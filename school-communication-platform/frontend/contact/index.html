@@ -784,9 +784,9 @@
     </style>
 <link rel="stylesheet" href="/assets/css/theme.css">
   <script src="/assets/js/theme.js"></script>
-<link rel="stylesheet" href="/assets/css/site-nav.css?v=7">
-<script src="/assets/js/site-nav.js?v=7" defer></script>
-<script src="/assets/js/site-film.js?v=7" defer></script>
+<link rel="stylesheet" href="/assets/css/site-nav.css?v=8">
+<script src="/assets/js/site-nav.js?v=8" defer></script>
+<script src="/assets/js/site-film.js?v=8" defer></script>
 <script src="/assets/js/site-animate.js" defer></script>
 <script src="/assets/js/site-perf.js" defer></script>
 </head>
@@ -1121,8 +1121,10 @@ if (!window.THREE || window.innerWidth < 768) return;
   // Scroll-based camera movement
   var scrollProgress = 0;
   window.addEventListener('scroll', function() {
-    scrollProgress = window.scrollY / (document.body.scrollHeight - innerHeight);
-  });
+    var range = document.body.scrollHeight - innerHeight;
+    // a page shorter than the viewport used to divide by zero here (NaN camera)
+    scrollProgress = range > 0 ? Math.min(1, Math.max(0, window.scrollY / range)) : 0;
+  }, { passive: true });
 
   function animate() {
     requestAnimationFrame(animate);
@@ -1226,8 +1228,12 @@ document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
 <script>
 // Mobile Menu Toggle
     function toggleMobileMenu() {
-      document.getElementById('navLinks').classList.toggle('mobile-open');
-      document.getElementById('mobileBtn').classList.toggle('active');
+      // legacy hook kept for compatibility; the navbar is injected by site-nav.js
+      // and no longer has #navLinks / #mobileBtn, so guard the lookups.
+      var nl = document.getElementById('navLinks');
+      var mb = document.getElementById('mobileBtn');
+      if (nl) nl.classList.toggle('mobile-open');
+      if (mb) mb.classList.toggle('active');
     }
 
 </script>

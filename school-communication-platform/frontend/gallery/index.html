@@ -41,7 +41,9 @@
 
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-dark) 100%);
+            /* no page gradient: an opaque body background would paint over the
+               fixed background film (z-index:-3). Sections carry their own. */
+            background: transparent;
             min-height: 100vh;
             min-height: 100svh;
             color: var(--text);
@@ -849,9 +851,9 @@
     </style>
 <link rel="stylesheet" href="/assets/css/theme.css">
   <script src="/assets/js/theme.js"></script>
-<link rel="stylesheet" href="/assets/css/site-nav.css?v=7">
-<script src="/assets/js/site-nav.js?v=7" defer></script>
-<script src="/assets/js/site-film.js?v=7" defer></script>
+<link rel="stylesheet" href="/assets/css/site-nav.css?v=8">
+<script src="/assets/js/site-nav.js?v=8" defer></script>
+<script src="/assets/js/site-film.js?v=8" defer></script>
 <script src="/assets/js/site-animate.js" defer></script>
 <script src="/assets/js/site-perf.js" defer></script>
 </head>

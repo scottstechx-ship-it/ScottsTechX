@@ -114,6 +114,19 @@
     drawer.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { toggle(false); }); });
     window.addEventListener('resize', function () { if (window.innerWidth > 920) toggle(false); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') toggle(false); });
+
+    // Scrolled state for the bar itself: solidifies once the page moves.
+    var ticking = false;
+    function markScrolled() {
+      ticking = false;
+      nav.classList.toggle('is-scrolled', window.scrollY > 50);
+    }
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(markScrolled);
+    }, { passive: true });
+    markScrolled();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);

@@ -354,11 +354,14 @@
         /* Hero Section */
         .hero {
             position: relative;
+            /* The body already reserves the fixed navbar's height (--kn-nav-h),
+               so the hero fills the viewport MINUS that strip: the first screen
+               ends exactly where the screen ends and scrolling stops there. */
             min-height: 100vh;
-            min-height: 100svh;   /* phones: the URL bar must not push content off screen */
+            min-height: calc(100svh - var(--kn-nav-h, 68px));
             display: flex; align-items: center; justify-content: center;
             text-align: center;
-            padding: 120px 24px 80px;
+            padding: 84px 24px 56px;
             z-index: 1;
         }
         .hero-content { max-width: 800px; }
@@ -717,10 +720,10 @@
             .logo-text-3d { gap: 2px; }
         }
     </style>
-<link rel="stylesheet" href="assets/css/site-ux.css">
-<link rel="stylesheet" href="/assets/css/site-nav.css?v=7">
-<script src="/assets/js/site-nav.js?v=7" defer></script>
-<script src="/assets/js/site-film.js?v=7" defer></script>
+<link rel="stylesheet" href="assets/css/site-ux.css?v=8">
+<link rel="stylesheet" href="/assets/css/site-nav.css?v=8">
+<script src="/assets/js/site-nav.js?v=8" defer></script>
+<script src="/assets/js/site-film.js?v=8" defer></script>
 <script src="/assets/js/site-animate.js" defer></script>
 <script src="/assets/js/site-perf.js" defer></script>
 </head>
@@ -1250,15 +1253,9 @@
 
         document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-        // Navbar scroll effect
-        window.addEventListener('scroll', () => {
-            const navbar = document.getElementById('navbar3d');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
+        // NOTE: the navbar is injected by /assets/js/site-nav.js, which owns its
+        // own scroll state. The old handler here looked up #navbar3d (an element
+        // site-nav.js removes) and threw on every scroll event.
 
         // Active nav link
         function setActive(el) {
@@ -1296,8 +1293,12 @@
     
     // Mobile Menu Toggle
     function toggleMobileMenu() {
-      document.getElementById('navLinks').classList.toggle('mobile-open');
-      document.getElementById('mobileBtn').classList.toggle('active');
+      // legacy hook kept for compatibility; the navbar is injected by site-nav.js
+      // and no longer has #navLinks / #mobileBtn, so guard the lookups.
+      var nl = document.getElementById('navLinks');
+      var mb = document.getElementById('mobileBtn');
+      if (nl) nl.classList.toggle('mobile-open');
+      if (mb) mb.classList.toggle('active');
     }
 
 </script>

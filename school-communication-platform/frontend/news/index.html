@@ -20,14 +20,16 @@
   <link rel="icon" type="image/x-icon" href="/assets/images/logo.ico">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
-  <link rel="stylesheet" href="/assets/css/site-nav.css?v=7">
-  <script src="/assets/js/site-nav.js?v=7" defer></script>
-<script src="/assets/js/site-film.js?v=7" defer></script>
+  <link rel="stylesheet" href="/assets/css/site-nav.css?v=8">
+  <script src="/assets/js/site-nav.js?v=8" defer></script>
+<script src="/assets/js/site-film.js?v=8" defer></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', system-ui, sans-serif;
-      background: linear-gradient(180deg, #0c1829 0%, #0f1f35 100%);
+      /* no page gradient: an opaque body background would paint over the fixed
+         background film (z-index:-3). Sections carry their own. */
+      background: transparent;
       color: #e2e8f0; min-height: 100vh; min-height: 100svh;
     }
     .page-hero {

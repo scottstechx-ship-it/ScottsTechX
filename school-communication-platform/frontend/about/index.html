@@ -815,9 +815,9 @@
   </style>
 <link rel="stylesheet" href="/assets/css/theme.css">
   <script src="/assets/js/theme.js"></script>
-<link rel="stylesheet" href="/assets/css/site-nav.css?v=7">
-<script src="/assets/js/site-nav.js?v=7" defer></script>
-<script src="/assets/js/site-film.js?v=7" defer></script>
+<link rel="stylesheet" href="/assets/css/site-nav.css?v=8">
+<script src="/assets/js/site-nav.js?v=8" defer></script>
+<script src="/assets/js/site-film.js?v=8" defer></script>
 <script src="/assets/js/site-animate.js" defer></script>
 <script src="/assets/js/site-perf.js" defer></script>
 </head>
@@ -1255,22 +1255,38 @@
   // Particles disabled — page uses the video background instead.
 })();
 
-// Parallax effect for hero section
+// Parallax effect for hero section.
+// IMPORTANT: only the hero's inner content moves, and it stays clipped inside
+// the hero (which has overflow:hidden). The old version translated the whole
+// 100vh hero section down on every scroll, so the first screen kept sliding
+// away instead of stopping where it should - and the offset stuck at half the
+// hero's height once you had scrolled past it.
 (function() {
   var hero = document.getElementById('aboutHero');
+  if (!hero) return;
   var heroContent = hero.querySelector('.about-hero-content');
-  
+  if (!heroContent) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var ticking = false;
+
+  function apply() {
+    ticking = false;
+    var scrolled = window.pageYOffset || document.documentElement.scrollTop || 0;
+    var heroHeight = hero.offsetHeight || 1;
+    if (scrolled >= heroHeight) return;          // hero is behind us: leave it at rest
+    var progress = scrolled / heroHeight;        // 0 at the top, 1 at the hero's end
+    heroContent.style.transform = 'translateY(' + (progress * 60).toFixed(2) + 'px)';
+    heroContent.style.opacity = (1 - progress * 0.5).toFixed(3);
+  }
+
   window.addEventListener('scroll', function() {
-    var scrolled = window.pageYOffset;
-    var heroHeight = hero.offsetHeight;
-    
-    if (scrolled < heroHeight) {
-      var parallaxValue = scrolled * 0.5;
-      hero.style.transform = 'translateY(' + parallaxValue + 'px)';
-      heroContent.style.transform = 'translateY(' + (parallaxValue * 0.3) + 'px)';
-      heroContent.style.opacity = 1 - (scrolled / heroHeight) * 0.5;
-    }
-  });
+    if (ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(apply);
+  }, { passive: true });
+
+  apply();
 })();
 
 // Scroll-triggered animations for sections
@@ -1416,8 +1432,12 @@ document.querySelector('.page-body').style.overflow = 'visible';
 <script>
 // Mobile Menu Toggle
     function toggleMobileMenu() {
-      document.getElementById('navLinks').classList.toggle('mobile-open');
-      document.getElementById('mobileBtn').classList.toggle('active');
+      // legacy hook kept for compatibility; the navbar is injected by site-nav.js
+      // and no longer has #navLinks / #mobileBtn, so guard the lookups.
+      var nl = document.getElementById('navLinks');
+      var mb = document.getElementById('mobileBtn');
+      if (nl) nl.classList.toggle('mobile-open');
+      if (mb) mb.classList.toggle('active');
     }
 
 </script>
