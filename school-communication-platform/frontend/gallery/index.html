@@ -802,11 +802,43 @@
         }
 
         /* Video tab styling */
-        .tab-videos .video-card.kalibz-video {
+        .tab-videos .video-card.school-video {
             border: 2px solid rgba(245, 158, 11, 0.4);
         }
 
-        .tab-videos .video-card.kalibz-video .video-badge {
+        .tt-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        @media (max-width: 860px) { .tt-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        @media (max-width: 560px) { .tt-grid { grid-template-columns: 1fr; } }
+        .tt-card {
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,.08);
+            box-shadow: 0 18px 40px rgba(0,0,0,.35);
+        }
+        .tt-card iframe {
+            display: block;
+            width: 100%;
+            aspect-ratio: 9 / 16;
+            border: 0;
+        }
+        .tt-link {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 999px;
+            background: #0d6b35;
+            color: #fff;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .tt-link:hover { background: #0a5a2c; }
+        .tab-videos .video-card.school-video .video-badge {
             background: linear-gradient(135deg, #f59e0b, #d97706);
             color: #fff;
         }
@@ -858,6 +890,32 @@
                 <div class="section-line"></div>
             </div>
 <div class="image-gallery" id="managedGallery"></div>
+        </section>
+        <!-- REAL SCHOOL VIDEOS FROM TIKTOK — the school's own posts on its
+             @kalinabiri_ss account. Loaded lazily: nothing is fetched until
+             the visitor scrolls this far. -->
+        <section id="tiktok" style="margin-top:56px;">
+            <h2 style="text-align:center;">From Our TikTok</h2>
+            <p style="text-align:center;max-width:640px;margin:10px auto 26px;color:rgba(255,255,255,.65);">
+                Recent videos published by the school on TikTok. Follow <strong>@kalinabiri_ss</strong> to see more of school life at Kalinabiri.
+            </p>
+            <div class="tt-grid">
+                <div class="tt-card">
+                    <iframe loading="lazy" title="What do you remember about Kalinabiri SS?" allow="encrypted-media; picture-in-picture" scrolling="no"
+                        src="https://www.tiktok.com/player/v1/7480536090764414213?controls=1&progress_bar=1&play_button=1&volume_control=1&fullscreen_button=1&music_info=1&description=1&rel=0"></iframe>
+                </div>
+                <div class="tt-card">
+                    <iframe loading="lazy" title="DTB Bank inaugurating the green club at Kalinabiri SS" allow="encrypted-media; picture-in-picture" scrolling="no"
+                        src="https://www.tiktok.com/player/v1/7519519225753423110?controls=1&progress_bar=1&play_button=1&volume_control=1&fullscreen_button=1&music_info=1&description=1&rel=0"></iframe>
+                </div>
+                <div class="tt-card">
+                    <iframe loading="lazy" title="Interact Club charity visit, Jjaja Flora Children's Home" allow="encrypted-media; picture-in-picture" scrolling="no"
+                        src="https://www.tiktok.com/player/v1/7495100438790884614?controls=1&progress_bar=1&play_button=1&volume_control=1&fullscreen_button=1&music_info=1&description=1&rel=0"></iframe>
+                </div>
+            </div>
+            <p style="text-align:center;margin-top:24px;">
+                <a href="https://www.tiktok.com/@kalinabiri_ss" target="_blank" rel="noopener" class="tt-link">See all our videos on TikTok</a>
+            </p>
         </section>
     </main>
 

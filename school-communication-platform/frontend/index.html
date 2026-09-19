@@ -58,6 +58,22 @@
             width: 100%; height: 100%; z-index: -2; overflow: hidden;
         }
         .video-bg video { width: 100%; height: 100%; object-fit: cover; }
+    /* The school's own TikTok video, played by TikTok's official player and
+       stretched to cover the hero. It fades in only after the photograph has
+       painted, so first paint is never blocked. */
+    .tt-bg {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      height: max(100vh, 177.78vw);
+      width: calc(max(100vh, 177.78vw) * 9 / 16);
+      border: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1.4s ease;
+      filter: blur(1.5px) brightness(.45) saturate(.9);
+    }
+
         .video-overlay {
             position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
@@ -711,7 +727,7 @@
         <div class="hero-content">
             <div class="hero-badge">
                 <i class="fas fa-star"></i>
-                Excellence in Education Since 1995
+                Excellence in Education Since 1984
             </div>
                         <h1>Kalinabiri <span>Secondary School</span></h1>
                         <p>Nurturing minds, building character, and shaping leaders in the heart of Ntinda, Kampala, Uganda.</p>
@@ -738,23 +754,23 @@
             <div class="stats-grid">
                 <div class="stat-card reveal">
                     <i class="fas fa-users stat-icon"></i>
-                    <div class="stat-number" data-count="850">0</div>
-                    <div class="stat-label">Students</div>
+                    <div class="stat-number" data-count="800">0</div>
+                    <div class="stat-label">Learners, S.1 to S.6</div>
                 </div>
                 <div class="stat-card reveal">
                     <i class="fas fa-chalkboard-teacher stat-icon"></i>
-                    <div class="stat-number" data-count="45">0</div>
-                    <div class="stat-label">Qualified Teachers</div>
+                    <div class="stat-number" data-count="1984">0</div>
+                    <div class="stat-label">Founded in Ntinda</div>
                 </div>
                 <div class="stat-card reveal">
                     <i class="fas fa-book-open stat-icon"></i>
-                    <div class="stat-number" data-count="18">0</div>
-                    <div class="stat-label">O &amp; A-Level Subjects</div>
+                    <div class="stat-number" data-count="6">0</div>
+                    <div class="stat-label">Classes, S.1 to S.6</div>
                 </div>
                 <div class="stat-card reveal">
                     <i class="fas fa-award stat-icon"></i>
-                    <div class="stat-number" data-count="30">0</div>
-                    <div class="stat-label">Years of Excellence</div>
+                    <div class="stat-number" data-count="4">0</div>
+                    <div class="stat-label">Acre Campus</div>
                 </div>
             </div>
         </section>
@@ -1052,11 +1068,10 @@
                     <i class="fas fa-graduation-cap"></i>
                     <span>Kalinabiri SS</span>
                 </div>
-                <p>Nurturing minds, building character, and shaping the leaders of tomorrow since 1995. Kalinabiri Secondary School is committed to academic excellence and holistic development.</p>
+                <p>Nurturing minds, building character, and shaping the leaders of tomorrow since 1984. Kalinabiri Secondary School is committed to academic excellence and holistic development.</p>
                 <div class="footer-social">
-                    <a href="https://www.facebook.com/search/top?q=Kalinabiri%20Secondary%20School" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://x.com/search?q=Kalinabiri%20Secondary%20School" target="_blank" rel="noopener" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="https://www.instagram.com/explore/search/keyword/?q=kalinabiri" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.facebook.com/Kalinabiri-secondary-school-230901343588597" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.tiktok.com/@kalinabiri_ss" target="_blank" rel="noopener" aria-label="TikTok" title="Kalinabiri SS on TikTok"><i class="fab fa-tiktok"></i></a>
                     <a href="https://www.youtube.com/results?search_query=Kalinabiri+Secondary+School" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
@@ -1323,39 +1338,30 @@
 })();
 </script>
 <script>
-// DEFERRED HERO VIDEO — the page paints instantly with the gradient, then the
-// background video fades in only after the page has fully loaded. This keeps
-// first paint fast while restoring the cinematic hero.
+// HERO BACKGROUND FROM TIKTOK — the school's own TikTok video
+// (@kalinabiri_ss, "Hi Skool Kiromo"), served by TikTok's official player.
+// The campus photograph below it paints instantly; the video fades in after,
+// and only for visitors on a fast connection who allow motion.
 (function () {
   var conn = navigator.connection || {};
   if (conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '')) return; // respect data saver
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (window.innerWidth < 900) return; // phones keep the photograph
   function inject() {
     var host = document.getElementById('heroBg');
-    if (!host || host.querySelector('video')) return;
-    var v = document.createElement('video');
-    v.setAttribute('data-keep', '1');
-    v.autoplay = true; v.muted = true; v.loop = true;
-    v.playsInline = true; v.setAttribute('playsinline', '');
-    v.preload = 'auto';
-    v.style.cssText = 'width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease';
-    v.src = 'https://kalibz-international.netlify.app/assets/videos/kalinabiri-kalibz-intro.mp4';
-    v.addEventListener('canplay', function () {
-      v.play().catch(function () {});
-      v.style.opacity = '1';
-    });
-    v.addEventListener('error', function () { v.remove(); }); // gradient stays as fallback
-    host.appendChild(v);
+    if (!host || host.querySelector('iframe.tt-bg')) return;
+    var f = document.createElement('iframe');
+    f.className = 'tt-bg';
+    f.src = 'https://www.tiktok.com/player/v1/7569660983132687627?autoplay=1&muted=1&loop=1&controls=0&progress_bar=0&play_button=0&volume_control=0&fullscreen_button=0&timestamp=0&music_info=0&description=0&rel=0&native_context_menu=0&closed_caption=0';
+    f.title = 'Kalinabiri Secondary School on TikTok';
+    f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+    f.setAttribute('scrolling', 'no');
+    f.setAttribute('aria-hidden', 'true');
+    f.addEventListener('load', function () { f.style.opacity = '1'; });
+    host.appendChild(f);
   }
-  // Run when the DOM is ready + a beat (not window.load — a single slow
-  // third-party asset would delay the video forever). requestIdleCallback
-  // lets the browser paint first, so first paint stays instant.
-  function schedule() {
-    if ('requestIdleCallback' in window) requestIdleCallback(inject, { timeout: 1500 });
-    else setTimeout(inject, 600);
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', schedule);
-  else schedule();
+  if (window.requestIdleCallback) window.requestIdleCallback(inject, { timeout: 2500 });
+  else window.addEventListener('load', function () { setTimeout(inject, 1200); });
 })();
 </script>
 </body>
