@@ -141,8 +141,26 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 56px 24px;
       overflow: hidden;
       background: linear-gradient(135deg, #0a1f0a 0%, #0d2b14 50%, #0a1f0a 100%);
+    }
+    /* Two columns: the words on the left, the school film on the right. */
+    .about-hero-inner {
+      position: relative; z-index: 3;
+      width: 100%; max-width: 1160px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 44px;
+      align-items: center;
+    }
+    .about-hero-inner .about-hero-content { text-align: left; padding: 0; }
+    .about-hero-inner .about-hero-content p { margin-left: 0; }
+    .about-hero-inner .about-hero-logo { width: 96px; height: 96px; margin-bottom: 22px; }
+    @media (max-width: 900px) {
+      .about-hero { padding: 40px 18px; }
+      .about-hero-inner { grid-template-columns: 1fr; gap: 28px; }
+      .about-hero-inner .about-hero-content { text-align: center; }
+      .about-hero-inner .about-hero-content p { margin-left: auto; }
+      .about-hero-inner .about-hero-logo { margin-left: auto; margin-right: auto; }
     }
     .about-hero::before {
       content: '';
@@ -151,7 +169,7 @@
       /* Real photograph of the Kalinabiri SS campus (national schools
          directory profile), painted instantly behind the hero. */
       background: url('https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss.jpeg') center/cover no-repeat;
-      filter: blur(2px) brightness(0.4);
+      filter: blur(3px) brightness(0.32);   /* the copy sits directly on it now */
       transform: scale(1.1);
       will-change: transform;
     }
@@ -163,17 +181,14 @@
     /* The school's own TikTok video, played by TikTok's official player and
        stretched to cover the hero. It fades in only after the photograph has
        painted, so first paint is never blocked. */
-    .tt-bg {
+    /* Fallback player: if the local film cannot be played, the school's TikTok
+       clip is embedded in the same panel. */
+    iframe.tt-bg {
       position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      height: max(100vh, 177.78vw);
-      width: calc(max(100vh, 177.78vw) * 9 / 16);
+      inset: 0;
+      width: 100%; height: 100%;
       border: 0;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 1.4s ease;
-      filter: blur(1.5px) brightness(.45) saturate(.9);
+      opacity: 1;
     }
     /* The school's own intro video, served from this site; the hero copy sits
        on top, so it is dimmed the same way the TikTok fallback is. */
@@ -190,6 +205,69 @@
       filter: blur(1.5px) brightness(.45) saturate(.9);
     }
     .hero-video.is-playing { opacity: 1; }
+
+    /* ---- The film panel -----------------------------------------------
+       Same ruled, camera-style panel as the home page, tinted to this page's
+       green accent. Hairlines come from the 1px grid gap. */
+    .wall-cell {
+      background: linear-gradient(160deg, rgba(9,26,15,0.96), rgba(7,20,12,0.96));
+      border: 1px solid rgba(74,222,128,0.22);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 24px 50px rgba(0,0,0,0.4);
+      display: flex; flex-direction: column;
+    }
+    .wall-screen { padding: 0; margin: 0; }
+    .wall-bar {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 15px;
+      border-bottom: 1px solid rgba(74,222,128,0.22);
+      font-size: 11px; letter-spacing: 1.6px; text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+    }
+    .wall-rec {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #ef4444; box-shadow: 0 0 0 4px rgba(239,68,68,0.18);
+      animation: wallPulse 2.4s ease-in-out infinite;
+    }
+    @keyframes wallPulse { 0%,100% { opacity: 1; } 50% { opacity: .25; } }
+    .wall-bar .wall-bar-right { margin-left: auto; color: #4ade80; }
+    .wall-view { position: relative; aspect-ratio: 16 / 9; background: #061009; }
+    .wall-video { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .wall-view::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: repeating-linear-gradient(180deg, rgba(255,255,255,0.035) 0 1px, transparent 1px 4px);
+      mix-blend-mode: screen;
+    }
+    .wall-view::before {
+      content: ''; position: absolute; inset: 12px; pointer-events: none; z-index: 2;
+      background:
+        linear-gradient(#4ade80, #4ade80) left top / 18px 2px no-repeat,
+        linear-gradient(#4ade80, #4ade80) left top / 2px 18px no-repeat,
+        linear-gradient(#4ade80, #4ade80) right bottom / 18px 2px no-repeat,
+        linear-gradient(#4ade80, #4ade80) right bottom / 2px 18px no-repeat;
+      opacity: .7;
+    }
+    .wall-controls { position: absolute; left: 12px; bottom: 12px; z-index: 3; display: flex; gap: 8px; }
+    .wall-btn {
+      width: 40px; height: 40px; border-radius: 11px; cursor: pointer;
+      display: grid; place-items: center;
+      background: rgba(4,12,7,0.78); color: #eafff1;
+      border: 1px solid rgba(74,222,128,0.35);
+      backdrop-filter: blur(8px);
+      transition: transform .2s, background .2s, border-color .2s;
+    }
+    .wall-btn:hover { transform: translateY(-2px); background: rgba(74,222,128,0.25); border-color: rgba(74,222,128,0.6); }
+    .wall-btn svg { width: 18px; height: 18px; }
+    .wall-btn .i-pause, .wall-btn .i-sound { display: none; }
+    .wall-screen.is-playing .wall-btn .i-play { display: none; }
+    .wall-screen.is-playing .wall-btn .i-pause { display: block; }
+    .wall-btn.is-on .i-mute { display: none; }
+    .wall-btn.is-on .i-sound { display: block; }
+    @media (prefers-reduced-motion: reduce) {
+      .wall-rec { animation: none; }
+      .wall-btn { transition: none; }
+    }
     .hero-shape {
       position: absolute;
       border-radius: 50%;
@@ -854,11 +932,32 @@
     <div class="hero-shape hs1" style="display:none"></div>
     <div class="hero-shape hs2" style="display:none"></div>
   </div>
+  <div class="about-hero-inner">
   <div class="about-hero-content">
     <img src="../assets/images/logo.jpeg" alt="Kalinabiri SS" class="about-hero-logo">
     <h1>About <span class="text-green">Kalinabiri</span> Secondary School</h1>
     <p>Government-aided secondary education in Ntinda, Kampala — teaching O-Level and A-Level learners since 1984.</p>
     <p style="margin-top:16px;"><a href="https://www.tiktok.com/@kalinabiri_ss" target="_blank" rel="noopener" style="color:#4ade80;font-weight:600;text-decoration:none;border-bottom:1px solid rgba(74,222,128,.4);">Follow the school on TikTok</a></p>
+  </div>
+
+  <!-- The school's own film, in the framed panel used on the home page. It sits
+       beside the copy rather than behind it, so nothing is washed out. -->
+  <figure class="wall-cell wall-screen" id="filmScreen">
+    <figcaption class="wall-bar">
+      <span class="wall-rec" aria-hidden="true"></span>
+      <span>Kalinabiri SS &middot; Ntinda, Kampala</span>
+      <span class="wall-bar-right">School film</span>
+    </figcaption>
+    <div class="wall-view">
+      <video class="wall-video" id="schoolFilm" src="/assets/video/kalinabiri-kalibz-intro.mp4"
+             playsinline muted loop preload="metadata"
+             aria-label="A short film recorded at Kalinabiri Secondary School"></video>
+      <div class="wall-controls">
+        <button type="button" class="wall-btn" id="filmPlay" aria-label="Play the school film"><svg class="i-play" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg><svg class="i-pause" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5v14"/><path d="M15 5v14"/></svg></button>
+        <button type="button" class="wall-btn" id="filmSound" aria-label="Turn the sound on"><svg class="i-mute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m17 9 4 6"/><path d="m21 9-4 6"/></svg><svg class="i-sound" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M16 9a4 4 0 0 1 0 6"/><path d="M19 6a8 8 0 0 1 0 12"/></svg></button>
+      </div>
+    </div>
+  </figure>
   </div>
   <div class="scroll-indicator"><span></span></div>
 </div>
@@ -1505,47 +1604,81 @@ document.querySelector('.page-body').style.overflow = 'visible';
 </script>
 
 <script>
-// HERO BACKGROUND FROM TIKTOK — the school's own TikTok video (@kalinabiri_ss),
-// played through TikTok's official player. Loaded only when the visitor can
-// afford it (no data-saver/2G, motion allowed, wide screen); otherwise the
-// campus photograph stays as the hero background.
+// THE SCHOOL FILM — plays in the framed panel beside this hero's copy instead
+// of behind it. It starts when the panel scrolls into view and pauses when it
+// leaves; the buttons give the visitor play/pause and sound. If the file cannot
+// be played, the school's TikTok clip loads in the same panel. Data-saver and
+// reduced-motion visitors get the still first frame and full manual control.
 (function () {
+  var screen = document.getElementById('filmScreen');
+  var v = document.getElementById('schoolFilm');
+  if (!screen || !v) return;
+  var playBtn = document.getElementById('filmPlay');
+  var soundBtn = document.getElementById('filmSound');
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var conn = navigator.connection || {};
-  if (conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '')) return;
-  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if (window.innerWidth < 900) return;
-  function inject() {
-    var host = document.getElementById('aboutHeroBg');
-    if (!host || host.querySelector('.hero-video, iframe.tt-bg')) return;
-    var v = document.createElement('video');
-    v.className = 'hero-video';
-    v.src = '/assets/video/kalinabiri-kalibz-intro.mp4';
-    v.muted = true; v.defaultMuted = true; v.loop = true; v.autoplay = true;
-    v.setAttribute('muted', '');
-    v.setAttribute('playsinline', '');
-    v.setAttribute('preload', 'auto');
-    v.setAttribute('aria-hidden', 'true');
-    v.setAttribute('disablepictureinpicture', '');
-    v.addEventListener('playing', function () { v.classList.add('is-playing'); });
-    v.addEventListener('error', function () {
-      v.remove();
-      if (host.querySelector('iframe.tt-bg')) return;
-      var f = document.createElement('iframe');
-      f.className = 'tt-bg';
-      f.src = 'https://www.tiktok.com/player/v1/7480536090764414213?autoplay=1&muted=1&loop=1&controls=0&progress_bar=0&play_button=0&volume_control=0&fullscreen_button=0&timestamp=0&music_info=0&description=0&rel=0&native_context_menu=0&closed_caption=0';
-      f.title = 'Kalinabiri Secondary School on TikTok';
-      f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
-      f.setAttribute('scrolling', 'no');
-      f.setAttribute('aria-hidden', 'true');
-      f.addEventListener('load', function () { f.style.opacity = '1'; });
-      host.appendChild(f);
-    });
-    host.appendChild(v);
-    var started = v.play();
-    if (started && started.catch) started.catch(function () { /* autoplay blocked: gradient stays */ });
+  var frugal = reduced || conn.saveData || /(^|-)(2g|slow-2g)$/.test(conn.effectiveType || '');
+  var autoOwned = false;
+
+  // Explicit, because a muted attribute is not always reflected as a property,
+  // and browsers only allow autoplay for a muted video.
+  v.muted = true;
+  v.defaultMuted = true;
+
+  function tiktokFallback() {
+    var view = screen.querySelector('.wall-view');
+    if (!view || view.querySelector('iframe.tt-bg')) return;
+    var f = document.createElement('iframe');
+    f.className = 'tt-bg';
+    f.src = 'https://www.tiktok.com/player/v1/7480536090764414213?autoplay=1&muted=1&loop=1&controls=0&progress_bar=0&play_button=0&volume_control=0&fullscreen_button=0&timestamp=0&music_info=0&description=0&rel=0&native_context_menu=0&closed_caption=0';
+    f.title = 'Kalinabiri Secondary School on TikTok';
+    f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+    f.setAttribute('scrolling', 'no');
+    v.style.display = 'none';
+    view.appendChild(f);
   }
-  if (window.requestIdleCallback) window.requestIdleCallback(inject, { timeout: 2500 });
-  else window.addEventListener('load', function () { setTimeout(inject, 1200); });
+
+  function sync() {
+    var playing = !v.paused && !v.ended;
+    screen.classList.toggle('is-playing', playing);
+    if (playBtn) playBtn.setAttribute('aria-label', playing ? 'Pause the school film' : 'Play the school film');
+    var muted = v.muted || v.volume === 0;
+    if (soundBtn) {
+      soundBtn.classList.toggle('is-on', !muted);
+      soundBtn.setAttribute('aria-label', muted ? 'Turn the sound on' : 'Mute the film');
+    }
+  }
+
+  v.addEventListener('play', sync);
+  v.addEventListener('pause', sync);
+  v.addEventListener('volumechange', sync);
+  v.addEventListener('error', tiktokFallback);
+  if (playBtn) playBtn.addEventListener('click', function () {
+    if (v.paused) { autoOwned = false; var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+    else v.pause();
+  });
+  if (soundBtn) soundBtn.addEventListener('click', function () {
+    v.muted = !(v.muted || v.volume === 0);
+    if (!v.muted && v.volume === 0) v.volume = 1;
+  });
+
+  if (frugal) { sync(); return; }
+
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          if (v.paused) { autoOwned = true; var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+        } else if (autoOwned) { v.pause(); autoOwned = false; }
+      });
+    }, { threshold: 0.35 });
+    io.observe(screen);
+  } else {
+    autoOwned = true;
+    var started = v.play();
+    if (started && started.catch) started.catch(function () {});
+  }
+  sync();
 })();
 </script>
 </body>
