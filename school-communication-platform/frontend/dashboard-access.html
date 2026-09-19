@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-RTR3K2H8HM"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-RTR3K2H8HM');
+</script>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+<link rel="preconnect" href="https://i.ytimg.com">
+<meta name="google-site-verification" content="0iFeDjaZvUCjm7CmNRcwsIKmQUKHDLlePEJhRPLuR_M">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Portals — Kalinabiri Secondary School</title>
+<meta name="description" content="Sign in to the Kalinabiri SS student, teacher, parent or admin portal.">
+<link rel="icon" type="image/x-icon" href="/assets/images/logo.ico">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"></noscript>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { min-height: 100%; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #060d1f; color: #e2e8f0;
+    min-height: 100vh; min-height: 100dvh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: clamp(16px, 4vw, 40px); position: relative; overflow-x: hidden;
+  }
+  .orb { position: fixed; width: 46vmax; height: 46vmax; border-radius: 50%; filter: blur(80px); opacity: .3; z-index: 0; pointer-events: none; }
+  .orb.a { top: -14%; left: -10%; background: radial-gradient(circle, #2563eb, #1e3a8a 60%, transparent 75%); }
+  .orb.b { bottom: -16%; right: -12%; background: radial-gradient(circle, #0ea5e9, #0c4a6e 60%, transparent 75%); }
+
+  .wrap { position: relative; z-index: 1; width: 100%; max-width: 760px; }
+  .brand { display: flex; align-items: center; gap: 14px; justify-content: center; margin: 10px 0 6px; }
+  .brand img { width: 58px; height: 58px; border-radius: 14px; object-fit: cover; border: 2px solid rgba(56,189,248,.4); }
+  .brand h1 { font-size: clamp(1.25rem, 4.5vw, 1.7rem); font-weight: 800; color: #fff; }
+  .sub { text-align: center; color: #7d8db1; font-size: .92rem; margin-bottom: 26px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 14px; }
+  .card {
+    display: flex; align-items: center; gap: 14px; text-decoration: none;
+    background: linear-gradient(160deg, rgba(15,28,52,.9), rgba(9,17,34,.92));
+    border: 1px solid rgba(56,189,248,.18); border-radius: 18px;
+    padding: 18px; color: #e2e8f0; min-height: 76px;
+    transition: transform .2s, border-color .2s, box-shadow .2s;
+    animation: cardIn .5s cubic-bezier(.2,.9,.3,1.15) both;
+  }
+  .card:nth-child(2) { animation-delay: .06s; } .card:nth-child(3) { animation-delay: .12s; }
+  .card:nth-child(4) { animation-delay: .18s; } .card:nth-child(5) { animation-delay: .24s; }
+  @keyframes cardIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .card:hover { transform: translateY(-3px); border-color: var(--ac, #38bdf8); box-shadow: 0 14px 34px rgba(2,6,23,.5), 0 0 24px var(--glow, rgba(56,189,248,.15)); }
+  .card .ic { width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center; font-size: 24px; flex: none; background: var(--icbg, rgba(56,189,248,.14)); }
+  .card b { font-size: 1.02rem; color: #fff; display: block; }
+  .card small { color: #7d8db1; font-size: .8rem; }
+  .card .go { margin-left: auto; color: var(--ac, #38bdf8); font-weight: 800; font-size: 1.1rem; }
+  .card.student { --ac: #3b82f6; --glow: rgba(59,130,246,.18); --icbg: rgba(59,130,246,.15); }
+  .card.teacher { --ac: #f59e0b; --glow: rgba(245,158,11,.16); --icbg: rgba(245,158,11,.14); }
+  .card.parent  { --ac: #10b981; --glow: rgba(16,185,129,.16); --icbg: rgba(16,185,129,.14); }
+  .card.admin   { --ac: #06b6d4; --glow: rgba(6,182,212,.16); --icbg: rgba(6,182,212,.14); }
+  .card.sadmin  { --ac: #d946ef; --glow: rgba(217,70,239,.16); --icbg: rgba(217,70,239,.14); }
+
+  .foot { margin-top: 26px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+  .foot a { color: #93c5fd; text-decoration: none; font-weight: 700; font-size: .9rem;
+    background: rgba(37,99,235,.12); border: 1px solid rgba(59,130,246,.28);
+    padding: 10px 20px; border-radius: 999px; transition: background .2s; }
+  .foot a:hover { background: rgba(37,99,235,.28); }
+  .note { text-align: center; color: #556488; font-size: .78rem; margin-top: 22px; line-height: 1.6; }
+  @media (prefers-reduced-motion: reduce) { .card { animation: none; } }
+</style>
+</head>
+<body>
+  <div class="orb a"></div><div class="orb b"></div>
+  <div class="wrap">
+    <div class="brand">
+      <img src="/assets/images/logo.jpeg" alt="Kalinabiri SS" onerror="this.style.display='none'">
+      <h1>Kalinabiri SS Portals</h1>
+    </div>
+    <p class="sub">Choose your portal to sign in</p>
+
+    <div class="grid">
+      <a class="card student" href="/platform/login-student.html">
+        <span class="ic"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg></span><span><b>Student Portal</b><small>Assignments, results, timetable</small></span><span class="go"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+      </a>
+      <a class="card teacher" href="/platform/login-teacher.html">
+        <span class="ic"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span><span><b>Teacher Portal</b><small>Classes, attendance, exams</small></span><span class="go"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+      </a>
+      <a class="card parent" href="/platform/login-parent.html">
+        <span class="ic"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg></span><span><b>Parent Portal</b><small>Your children's progress</small></span><span class="go"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+      </a>
+      <a class="card admin" href="/platform/login-admin.html">
+        <span class="ic"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span><span><b>Admin Portal</b><small>School management</small></span><span class="go"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+      </a>
+      <a class="card sadmin" href="/platform/login-super-admin.html">
+        <span class="ic"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span><span><b>Super Admin</b><small>Full platform control</small></span><span class="go"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+      </a>
+    </div>
+
+    <div class="foot">
+      <a href="/"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg> School website</a>
+      <a href="/platform/register.html">Parent? Register here</a>
+    </div>
+    <p class="note">Students &amp; teachers: sign in with your username or code and password.<br>Kalinabiri Secondary School · Ntinda, Kampala</p>
+  </div>
+</body>
+</html>

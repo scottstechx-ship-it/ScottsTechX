@@ -1,0 +1,610 @@
+/**
+ * Messaging component — chat interface shared by all dashboards.
+ * Conversation list on the left, thread on the right. Full-screen on mobile.
+ */
+(function () {
+  const API = window.API;
+  const UI = window.UI;
+
+  class MessagingView {
+    constructor({ container, canCompose = true, allowClassChat = true, allowAttachments = true }) {
+      this.container = container;
+      this.canCompose = canCompose;
+      this.allowClassChat = allowClassChat;
+      this.allowAttachments = allowAttachments;
+      this.conversations = [];
+      this.activeConvId = null;
+      this.pollTimer = null;
+      this.offRealtime = null;
+      this.contacts = null;
+      // incremental-render state: the composer is built ONCE per conversation
+      // and never rebuilt, so typing/keyboard focus is never interrupted.
+      this.renderedConvId = null;
+      this.lastSig = null;
+    }
+
+    destroy() {
+      document.body.classList.remove('chat-open');
+      if (this.pollTimer) clearInterval(this.pollTimer);
+      (this.unsubs || []).forEach((u) => { try { u(); } catch {} });
+      this.unsubs = [];
+    }
+
+    async render() {
+      this.container.innerHTML = `
+        <div class="msg-layout" id="msg-layout">
+          <div class="msg-list">
+            <div class="msg-list-head">
+              <h3 style="margin:0;flex:1">Messages</h3>
+              ${this.canCompose ? '<button class="btn secondary sm" id="channels-btn" title="Announcement channels"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg></button>' : ''}
+              ${this.canCompose ? '<button class="btn sm" id="new-msg">＋ New</button>' : ''}
+            </div>
+            <div class="search-input" style="padding:8px 12px 2px"><input id="msg-search" placeholder="Search messages…"></div>
+            <div id="conv-list"></div>
+          </div>
+          <div class="msg-thread" id="msg-thread">
+            <div class="empty-state" style="margin:auto">
+              <div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg></div>
+              <p>Select a conversation to read and reply.<br>New messages appear here in real time.</p>
+            </div>
+          </div>
+        </div>`;
+
+      if (this.canCompose) {
+        this.container.querySelector('#new-msg').onclick = () => this.openComposer();
+        this.container.querySelector('#channels-btn').onclick = () => this.openChannels();
+      }
+
+      // message search
+      const search = this.container.querySelector('#msg-search');
+      let searchTimer = null;
+      search.oninput = () => {
+        clearTimeout(searchTimer);
+        const q = search.value.trim();
+        searchTimer = setTimeout(() => (q ? this.searchMessages(q) : this.loadConversations({ quiet: true })), 350);
+      };
+
+      this.unsubs = this.unsubs || [];
+      this.unsubs.push(window.Realtime.on('message:new', (data) => {
+        if (data && data.conversationId === this.activeConvId) {
+          this.loadThread(this.activeConvId, { quiet: true });
+        }
+        this.loadConversations({ quiet: true });
+      }));
+      this.unsubs.push(window.Realtime.on('message:deleted', (data) => {
+        if (data && data.conversationId === this.activeConvId) {
+          this.loadThread(this.activeConvId, { quiet: true });
+        }
+      }));
+      this.unsubs.push(window.Realtime.on('poll', () => {
+        this.loadConversations({ quiet: true });
+        if (this.activeConvId) this.loadThread(this.activeConvId, { quiet: true });
+      }));
+
+      await this.loadConversations();
+    }
+
+    async loadConversations({ quiet = false } = {}) {
+      try {
+        const data = await API.get('/api/messages/conversations');
+        this.conversations = data.conversations || [];
+      } catch (e) {
+        if (!quiet) UI.toast(e.message, 'error');
+        return;
+      }
+      const list = this.container.querySelector('#conv-list');
+      if (!list) return;
+      if (!this.conversations.length) {
+        list.innerHTML = `<div class="empty-state"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg></div>No conversations yet.<br>${this.canCompose ? 'Start one with the ＋ button.' : ''}</div>`;
+      } else {
+        list.innerHTML = '';
+        for (const c of this.conversations) {
+          list.appendChild(this.convItem(c));
+        }
+      }
+      this.updateUnreadBadges();
+    }
+
+    convItem(c) {
+      const unread = c.unread_count || 0;
+      const name = UI.esc(c.title || 'Conversation');
+      const preview = c.last_message ? (c.last_sender_name ? c.last_sender_name + ': ' : '') + c.last_message : 'No messages yet';
+      const time = UI.timeAgo(c.last_message_at || c.created_at);
+      const icon = c.type === 'class' ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>' : c.type === 'group' ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' : null;
+      const item = UI.el(`<div class="conv-item ${this.activeConvId === c.id ? 'active' : ''}" data-cid="${c.id}">
+        <div class="avatar">${icon ? UI.esc(icon) : UI.esc(UI.initials(name))}</div>
+        <div class="body">
+          <div class="name"><span>${icon ? icon + ' ' : ''}${name}</span><span class="time">${UI.esc(time)}</span></div>
+          <div class="preview"><span>${UI.esc(preview)}</span><span class="unread ${unread ? '' : 'hidden'}">${unread > 99 ? '99+' : unread}</span></div>
+        </div>
+      </div>`);
+      item.onclick = () => this.select(c.id);
+      return item;
+    }
+
+    async select(convId) {
+      this.activeConvId = convId;
+      window.Realtime.joinConversation(convId);
+      // mobile: switch to thread view
+      const layout = this.container.querySelector('#msg-layout');
+      if (window.innerWidth <= 768) {
+        layout.classList.add('thread-open');
+        document.body.classList.add('chat-open');   // full-screen chat: hide bottom nav
+      }
+      await this.loadThread(convId);
+      this.loadConversations({ quiet: true });
+    }
+
+    async loadThread(convId, { quiet = false } = {}) {
+      let data;
+      try {
+        data = await API.get(`/api/messages/conversations/${convId}`);
+      } catch (e) {
+        if (!quiet) UI.toast(e.message, 'error');
+        return;
+      }
+      if (convId !== this.activeConvId) return; // user switched away meanwhile
+      const thread = this.container.querySelector('#msg-thread');
+      if (!thread) return;
+      const conv = data.conversation;
+      const msgs = data.messages || [];
+
+      // Build the thread shell (header + message area + composer) only when
+      // OPENING a conversation. Refreshes/polls/new messages must NEVER
+      // rebuild the composer — that is what killed typing focus and made
+      // the phone keyboard close mid-sentence.
+      if (this.renderedConvId !== convId || !thread.querySelector('#thread-msgs')) {
+        this.buildThreadShell(thread, conv, convId);
+        this.renderedConvId = convId;
+        this.lastSig = null;
+      }
+      const cnt = thread.querySelector('#thread-count');
+      if (cnt) cnt.textContent = `${msgs.length} message${msgs.length === 1 ? '' : 's'}${conv.type === 'channel' ? ' · announcement channel' : ''}`;
+
+      this.renderMessages(msgs, conv);
+
+      // mark as read
+      try { await API.put(`/api/messages/conversations/${convId}/read`); } catch {}
+      window.UI.refreshUnreadCounts();
+    }
+
+    /** Build header + scroll area + composer exactly once per conversation. */
+    buildThreadShell(thread, conv, convId) {
+      const head = UI.el(`<div class="thread-head">
+        <button class="back" id="back-btn"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></button>
+        <div style="min-width:0">
+          <strong>${UI.esc(conv.title || 'Conversation')}</strong>
+          <div style="font-size:12px;color:var(--muted)" id="thread-count"></div>
+        </div>
+        <div class="spacer"></div>
+        ${conv.type === 'class' ? '<span class="badge blue">Class chat</span>' : ''}
+        ${conv.type === 'broadcast' ? '<span class="badge amber">Broadcast</span>' : ''}
+        ${conv.type === 'channel' && conv.created_by === API.getUser().id ? '<span class="badge green">Owner</span>' : ''}
+        ${conv.type !== 'channel' ? `
+          <button class="btn secondary sm" id="mute-btn" title="Mute / unmute notifications">${conv.muted ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M13.7 21a2 2 0 0 1-3.4 0"/><path d="M18.6 13A17.9 17.9 0 0 0 18 8"/><path d="M6.3 6.3A5.9 5.9 0 0 0 6 8c0 7-3 9-3 9h14"/><path d="M18 8a6 6 0 0 0-9.3-5"/><path d="m1 1 22 22"/></svg>' : '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>'}</button>
+          <button class="btn secondary sm" id="archive-btn" title="Archive / restore"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m12 2 9 5v10l-9 5-9-5V7z"/><path d="m3 7 9 5 9-5"/><path d="M12 12v10"/></svg></button>` : ''}
+      </div>`);
+      const body = UI.el('<div class="thread-messages" id="thread-msgs"></div>');
+      const composer = UI.el(`<div class="composer">
+        ${this.allowAttachments ? '<button class="btn secondary" id="attach-btn" title="Attach a file"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3A5 5 0 0 0 13.5 3.4l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7.1 7.1l1.7-1.7"/></svg></button>' : ''}
+        <textarea id="msg-input" placeholder="Type a message…" rows="1" enterkeyhint="send" autocomplete="off" autocorrect="on"></textarea>
+        <button class="btn send-btn" id="send-btn" title="Send"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+      </div>`);
+      thread.innerHTML = '';
+      thread.appendChild(head);
+      thread.appendChild(body);
+      thread.appendChild(composer);
+
+      head.querySelector('#back-btn').onclick = () => {
+        this.container.querySelector('#msg-layout').classList.remove('thread-open');
+        document.body.classList.remove('chat-open');
+      };
+      if (conv.type !== 'channel') {
+        head.querySelector('#mute-btn').onclick = async () => {
+          const muted = !conv.muted;
+          try { await API.put(`/api/messages/conversations/${convId}/mute`, { muted }); UI.toast(muted ? 'Conversation muted.' : 'Conversation unmuted.', 'success'); conv.muted = muted; head.querySelector('#mute-btn').textContent = muted ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M13.7 21a2 2 0 0 1-3.4 0"/><path d="M18.6 13A17.9 17.9 0 0 0 18 8"/><path d="M6.3 6.3A5.9 5.9 0 0 0 6 8c0 7-3 9-3 9h14"/><path d="M18 8a6 6 0 0 0-9.3-5"/><path d="m1 1 22 22"/></svg>' : '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>'; }
+          catch (e) { UI.toast(e.message, 'error'); }
+        };
+        head.querySelector('#archive-btn').onclick = async () => {
+          const ok = await UI.confirmDialog(conv.archived ? 'Restore this conversation?' : 'Archive this conversation? It will be hidden from your list (recoverable).', { title: 'Archive', confirmText: conv.archived ? 'Restore' : 'Archive', danger: false });
+          if (!ok) return;
+          try { await API.put(`/api/messages/conversations/${convId}/archive`, { archived: !conv.archived }); UI.toast('Done.', 'success'); this.loadConversations({ quiet: true }); this.renderedConvId = null; this.renderEmptyThread(); }
+          catch (e) { UI.toast(e.message, 'error'); }
+        };
+      }
+
+      const input = composer.querySelector('#msg-input');
+      const sendBtn = composer.querySelector('#send-btn');
+      const send = () => this.sendMessage(input.value);
+      sendBtn.onclick = (e) => { e.preventDefault(); send(); };
+      // keep the keyboard OPEN on phones: never let the send button steal focus
+      sendBtn.addEventListener('pointerdown', (e) => e.preventDefault());
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+      });
+      // auto-grow the textarea as you type (up to ~4 lines)
+      input.addEventListener('input', () => {
+        input.style.height = 'auto';
+        input.style.height = Math.min(input.scrollHeight, 116) + 'px';
+      });
+      if (this.allowAttachments) {
+        composer.querySelector('#attach-btn').onclick = () => this.attachFile(convId);
+      }
+      // new-messages pill: appears when messages arrive while scrolled up
+      const pill = UI.el('<button class="new-msg-pill" id="new-msg-pill" style="display:none"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg> New messages</button>');
+      thread.appendChild(pill);
+      pill.onclick = () => { body.scrollTop = body.scrollHeight; pill.style.display = 'none'; };
+      body.addEventListener('scroll', () => {
+        if (body.scrollHeight - body.scrollTop - body.clientHeight < 80) pill.style.display = 'none';
+      });
+    }
+
+    /**
+     * Diff-render the message list. Skips work when nothing changed, preserves
+     * scroll position, autoscrolls only when the reader is near the bottom,
+     * and NEVER touches the composer.
+     */
+    renderMessages(msgs, conv) {
+      const body = this.container.querySelector('#thread-msgs');
+      if (!body) return;
+      const sig = msgs.map((m) => `${m.id}:${m.edited ? 1 : 0}`).join(',');
+      if (sig === this.lastSig) return;              // nothing changed
+      const firstRender = this.lastSig === null;
+      const prevCount = this.lastSig === null ? 0 : this.lastSig.split(',').filter(Boolean).length;
+      this.lastSig = sig;
+
+      const nearBottom = body.scrollHeight - body.scrollTop - body.clientHeight < 140;
+      const prevScroll = body.scrollTop;
+
+      body.innerHTML = '';
+      let lastDay = null;
+      for (const m of msgs) {
+        const day = String(m.created_at || '').slice(0, 10);
+        if (day && day !== lastDay) {
+          lastDay = day;
+          body.appendChild(UI.el(`<div class="day-sep"><span>${UI.esc(this.dayLabel(day))}</span></div>`));
+        }
+        body.appendChild(this.msgBubble(m, conv));
+      }
+
+      if (firstRender || nearBottom) {
+        body.scrollTop = body.scrollHeight;
+      } else {
+        body.scrollTop = prevScroll;                 // reading history: stay put
+        if (msgs.length > prevCount) {
+          const pill = this.container.querySelector('#new-msg-pill');
+          if (pill) pill.style.display = 'block';
+        }
+      }
+    }
+
+    /** Human date label for a YYYY-MM-DD day separator. */
+    dayLabel(day) {
+      const today = new Date();
+      const iso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+      if (day === iso(today)) return 'Today';
+      const y = new Date(today); y.setDate(y.getDate() - 1);
+      if (day === iso(y)) return 'Yesterday';
+      try { return new Date(day + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }); }
+      catch { return day; }
+    }
+
+    msgBubble(m, conv) {
+      const me = API.getUser();
+      const mine = m.sender_id === me.id;
+      // You can delete your own messages; admins & super admins can delete any.
+      const canDelete = mine || ['super_admin', 'admin'].includes(me.role);
+      const attach = m.attachment_id ? `
+        <div class="attach" data-doc="${m.attachment_id}" title="Download ${UI.esc(m.attachment_name || '')}">
+          <span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg></span><span><strong>${UI.esc(m.attachment_name || 'Attachment')}</strong><br><small>${UI.esc(m.attachment_mime || '')} · ${UI.fmtSize(m.attachment_size)} · <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> click to download</small></span>
+        </div>` : '';
+      const bubble = UI.el(`<div class="msg-bubble ${mine ? 'mine' : 'theirs'}">
+        ${attach}
+        <div class="msg-content">${UI.esc(m.content || '')}${m.edited ? ' <small class="meta" style="opacity:.6">(edited)</small>' : ''}</div>
+        <div class="meta"><span>${mine ? 'You' : UI.esc(m.sender_name)}</span><span>${UI.fmtTime(m.created_at)}</span>${mine ? '<span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m1.5 12.5 4.5 4.5L15.5 7.5"/><path d="M9 16.5 10.5 18 21 8"/></svg></span>' : ''}
+          ${mine && !m.attachment_id ? `<button class="msg-del" title="Edit message" data-edit="${m.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>` : ''}
+          ${canDelete ? `<button class="msg-del" title="Delete message" data-del="${m.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : ''}</div>
+      </div>`);
+      const at = bubble.querySelector('.attach');
+      if (at) at.onclick = () => window.DocumentsView && window.DocumentsView.downloadDoc(Number(at.dataset.doc));
+      const del = bubble.querySelector('.msg-del[data-del]');
+      if (del) del.onclick = async (e) => {
+        e.stopPropagation();
+        const ok = await UI.confirmDialog('Delete this message?', { title: 'Delete message', confirmText: 'Delete' });
+        if (!ok) return;
+        try {
+          await API.del(`/api/messages/${m.id}`);
+          UI.toast('Message deleted.', 'success');
+          await this.loadThread(this.activeConvId, { quiet: true });
+          this.loadConversations({ quiet: true });
+        } catch (err) { UI.toast(err.message, 'error'); }
+      };
+      const edit = bubble.querySelector('.msg-del[data-edit]');
+      if (edit) edit.onclick = async (e) => {
+        e.stopPropagation();
+        const current = m.content || '';
+        const modal = UI.openModal({
+          title: 'Edit message',
+          body: '<label class="field">Message<textarea id="edit-msg" rows="3">' + UI.esc(current) + '</textarea></label>',
+          foot: '<button class="btn secondary" data-cancel>Cancel</button><button class="btn" data-save>Save</button>',
+        });
+        modal.backdrop.querySelector('[data-cancel]').onclick = () => modal.close();
+        modal.backdrop.querySelector('[data-save]').onclick = async () => {
+          const content = modal.backdrop.querySelector('#edit-msg').value.trim();
+          if (!content) return UI.toast('Message cannot be empty.', 'error');
+          try { await API.put(`/api/messages/${m.id}`, { content }); UI.toast('Message updated.', 'success'); modal.close(); await this.loadThread(this.activeConvId, { quiet: true }); }
+          catch (err) { UI.toast(err.message, 'error'); }
+        };
+      };
+      return bubble;
+    }
+
+    /** Show an empty thread (used after archiving the open conversation). */
+    renderEmptyThread() {
+      const thread = this.container.querySelector('#msg-thread');
+      if (!thread) return;
+      thread.innerHTML = `<div class="empty-state" style="margin:auto">
+        <div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg></div><p>Select a conversation to read and reply.</p></div>`;
+      this.activeConvId = null;
+    }
+
+    /** Announcement channels browser (subscribe / create). */
+    async openChannels() {
+      let channels = [];
+      try { channels = (await API.get('/api/messages/channels')).channels || []; } catch (e) { return UI.toast(e.message, 'error'); }
+      const me = API.getUser();
+      let modal;
+      modal = UI.openModal({
+        title: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg> Announcement channels',
+        wide: true,
+        body: `<p class="doc-meta">Channels broadcast school announcements. Subscribe to receive them in your messages.</p>
+               <div id="channels-list"></div>
+               ${['admin', 'super_admin'].includes(me.role) ? '<button class="btn" id="channel-create" style="margin-top:10px">＋ Create channel</button>' : ''}`,
+        foot: '<button class="btn" data-close>Close</button>',
+      });
+      modal.backdrop.querySelector('[data-close]').onclick = () => modal.close();
+
+      const list = modal.backdrop.querySelector('#channels-list');
+      const renderChannels = () => {
+        list.innerHTML = '';
+        if (!channels.length) { list.innerHTML = '<div class="doc-meta">No channels yet.</div>'; return; }
+        for (const c of channels) {
+          const row = UI.el(`<div class="doc-item">
+            <div style="flex:1;min-width:0">
+              <div class="doc-name"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg> ${UI.esc(c.title)}</div>
+              <div class="doc-meta">${c.subscriber_count} subscriber${c.subscriber_count === 1 ? '' : 's'} · ${c.post_count} post${c.post_count === 1 ? '' : 's'} · by ${UI.esc(c.creator_name || 'Admin')}</div>
+            </div>
+            ${c.subscribed
+              ? `<button class="btn secondary sm" data-leave="${c.id}">Leave</button>`
+              : `<button class="btn sm" data-join="${c.id}">Subscribe</button>`}
+          </div>`);
+          row.querySelector('[data-join]')?.addEventListener('click', async () => {
+            try { await API.post(`/api/messages/channels/${c.id}/subscribe`); UI.toast('Subscribed.', 'success'); c.subscribed = true; renderChannels(); this.loadConversations({ quiet: true }); }
+            catch (e) { UI.toast(e.message, 'error'); }
+          });
+          row.querySelector('[data-leave]')?.addEventListener('click', async () => {
+            try { await API.post(`/api/messages/channels/${c.id}/unsubscribe`); UI.toast('Left the channel.', 'success'); c.subscribed = false; renderChannels(); this.loadConversations({ quiet: true }); }
+            catch (e) { UI.toast(e.message, 'error'); }
+          });
+          list.appendChild(row);
+        }
+      };
+      renderChannels();
+
+      const create = modal.backdrop.querySelector('#channel-create');
+      if (create) create.onclick = async () => {
+        const inner = UI.openModal({
+          title: 'Create announcement channel',
+          body: '<label class="field">Channel title<input id="ch-title" placeholder="e.g. School News" maxlength="120"></label>',
+          foot: '<button class="btn secondary" data-cancel>Cancel</button><button class="btn" data-save>Create</button>',
+        });
+        inner.backdrop.querySelector('[data-cancel]').onclick = () => inner.close();
+        inner.backdrop.querySelector('[data-save]').onclick = async () => {
+          const title = inner.backdrop.querySelector('#ch-title').value.trim();
+          if (!title) return UI.toast('Enter a channel title.', 'error');
+          try {
+            const r = await API.post('/api/messages/conversations', { type: 'channel', title });
+            UI.toast('Channel created.', 'success');
+            inner.close();
+            await this.loadConversations({ quiet: true });
+            this.select(r.conversation.id);
+            modal.close();
+          } catch (e) { UI.toast(e.message, 'error'); }
+        };
+      };
+    }
+
+    /** Search my messages and show results in the conversation list. */
+    async searchMessages(q) {
+      let results;
+      try {
+        results = (await API.get('/api/messages/search?q=' + encodeURIComponent(q))).messages || [];
+      } catch (e) { UI.toast(e.message, 'error'); return; }
+      const list = this.container.querySelector('#conv-list');
+      if (!list) return;
+      if (!results.length) {
+        list.innerHTML = `<div class="empty-state" style="padding:26px"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>No messages match "${UI.esc(q)}"</div>`;
+        return;
+      }
+      list.innerHTML = `<div style="padding:8px 14px;font-size:12px;color:var(--muted);font-weight:700">${results.length} result${results.length === 1 ? '' : 's'} for "${UI.esc(q)}"</div>`;
+      for (const r of results) {
+        const item = UI.el(`<div class="conv-item" data-cid="${r.conversation_id}">
+          <div class="avatar"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg></div>
+          <div class="body">
+            <div class="name"><span>${UI.esc(r.conversation_title || 'Conversation')}</span><span class="time">${UI.fmtTime(r.created_at)}</span></div>
+            <div class="preview"><span>${UI.esc(r.sender_name)}: ${UI.esc(r.content)}</span></div>
+          </div>
+        </div>`);
+        item.onclick = async () => {
+          this.container.querySelector('#msg-search').value = '';
+          await this.loadConversations({ quiet: true });
+          this.select(r.conversation_id);
+        };
+        list.appendChild(item);
+      }
+    }
+
+    async sendMessage(text) {
+      const input = this.container.querySelector('#msg-input');
+      const content = (text || '').trim();
+      if (!content || !this.activeConvId) return;
+      const convId = this.activeConvId;
+
+      // clear + refocus immediately so the phone keyboard NEVER closes
+      input.value = '';
+      input.style.height = 'auto';
+      input.focus();
+
+      // optimistic bubble: the message appears INSTANTLY
+      const body = this.container.querySelector('#thread-msgs');
+      let pending = null;
+      if (body) {
+        pending = UI.el(`<div class="msg-bubble mine pending">
+          <div class="msg-content">${UI.esc(content)}</div>
+          <div class="meta"><span>You</span><span>sending…</span></div>
+        </div>`);
+        body.appendChild(pending);
+        body.scrollTop = body.scrollHeight;
+      }
+
+      try {
+        await API.post('/api/messages', { conversationId: convId, content });
+        await this.loadThread(convId, { quiet: true });   // replaces the pending bubble with the real one
+        this.loadConversations({ quiet: true });
+      } catch (e) {
+        if (pending) {
+          pending.classList.add('failed');
+          pending.querySelector('.meta').innerHTML = '<span style="color:#f87171"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> failed — tap to retry</span>';
+          pending.style.cursor = 'pointer';
+          pending.onclick = () => { pending.remove(); this.sendMessage(content); };
+        }
+        UI.toast(e.message, 'error');
+      }
+    }
+
+    async attachFile(convId) {
+      const input = UI.el('<input type="file" hidden>');
+      document.body.appendChild(input);
+      input.click();
+      input.onchange = async () => {
+        const file = input.files[0];
+        if (!file) return;
+        const maxMB = 15;
+        if (file.size > maxMB * 1024 * 1024) return UI.toast(`File is too large. Maximum is ${maxMB} MB.`, 'error');
+        const form = new FormData();
+        form.append('file', file);
+        try {
+          const up = await API.upload('/api/documents', form);
+          await API.post('/api/messages', { conversationId: convId, attachmentId: up.document.id });
+          UI.toast('Attachment sent.', 'success');
+          await this.loadThread(convId, { quiet: true });
+        } catch (e) { UI.toast(e.message, 'error'); }
+      };
+    }
+
+    async openComposer() {
+      if (!this.contacts) {
+        try { this.contacts = (await API.get('/api/messages/me/contacts')).contacts; }
+        catch (e) { return UI.toast(e.message, 'error'); }
+      }
+      const contacts = this.contacts;
+
+      let groupsHtml = '';
+      if (contacts.groups && contacts.groups.length) {
+        groupsHtml = `<label class="field">Send to a group
+          <select id="compose-group"><option value="">— Choose a group —</option>
+          ${contacts.groups.map((g) => `<option value="${UI.esc(JSON.stringify(g))}">${UI.esc(g.label)}${g.description ? ' (' + UI.esc(g.description) + ')' : ''}</option>`).join('')}
+          </select></label>`;
+      }
+
+      let individualsHtml = '';
+      if (contacts.individuals && contacts.individuals.length) {
+        individualsHtml = `<label class="field">Search people
+          <input id="compose-search" placeholder="Type a name…"></label>
+          <div id="compose-people" style="max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:9px;margin-bottom:10px"></div>`;
+      }
+
+      const modal = UI.openModal({
+        title: 'New message',
+        wide: true,
+        body: `
+          <p style="margin-top:0">${groupsHtml ? 'You can message a whole group or a single person.' : 'Choose who to message.'}</p>
+          ${groupsHtml}
+          ${individualsHtml}`,
+        foot: `<button class="btn secondary" data-cancel>Cancel</button>`,
+      });
+
+      modal.backdrop.querySelector('[data-cancel]').onclick = () => modal.close();
+      const searchBox = modal.backdrop.querySelector('#compose-search');
+      const peopleBox = modal.backdrop.querySelector('#compose-people');
+
+      const renderPeople = (filter) => {
+        const f = (filter || '').toLowerCase();
+        const list = contacts.individuals.filter((p) => !f || (p.full_name || '').toLowerCase().includes(f) || (p.childLabel || '').toLowerCase().includes(f));
+        if (!list.length) { peopleBox.innerHTML = '<div class="empty-state" style="padding:16px">No matches</div>'; return; }
+        peopleBox.innerHTML = '';
+        for (const p of list.slice(0, 50)) {
+          const row = UI.el(`<div class="conv-item" style="border:none">
+            <div class="avatar">${UI.esc(UI.initials(p.full_name))}</div>
+            <div class="body">
+              <div class="name">${UI.esc(p.full_name)} ${p.role === 'teacher' && p.classLabel ? `<span class="badge blue">${UI.esc(p.classLabel)}</span>` : ''}</div>
+              <div class="preview">${p.role ? UI.esc(p.role.replace('_', ' ')) : ''}${p.childLabel ? ' · Parent of ' + UI.esc(p.childLabel) : ''}</div>
+            </div>
+          </div>`);
+          row.onclick = async () => {
+            modal.close();
+            try {
+              const r = await API.post('/api/messages/conversations', { type: 'direct', participantId: p.id });
+              await this.loadConversations();
+              this.select(r.conversation.id);
+            } catch (e) { UI.toast(e.message, 'error'); }
+          };
+          peopleBox.appendChild(row);
+        }
+      };
+      if (searchBox) {
+        searchBox.oninput = () => renderPeople(searchBox.value);
+        renderPeople('');
+      }
+
+      const groupSel = modal.backdrop.querySelector('#compose-group');
+      if (groupSel) {
+        groupSel.onchange = async () => {
+          if (!groupSel.value) return;
+          let g;
+          try { g = JSON.parse(groupSel.value); } catch { return; }
+          modal.close();
+          try {
+            let r;
+            if (g.type === 'class') {
+              r = await API.post('/api/messages/conversations', { type: 'class', classId: g.key });
+            } else if (g.type === 'role') {
+              // Broadcast to a whole role (admins/super admins only — the API enforces it).
+              r = await API.post('/api/messages/conversations', { type: 'broadcast', role: g.key });
+              UI.toast(`Broadcast conversation "${r.conversation.title}" opened.`, 'success');
+            }
+            await this.loadConversations();
+            this.select(r.conversation.id);
+          } catch (e) { UI.toast(e.message, 'error'); }
+        };
+      }
+    }
+
+    updateUnreadBadges() {
+      const total = this.conversations.reduce((s, c) => s + (c.unread_count || 0), 0);
+      window.__setNavBadge && window.__setNavBadge('messages', total);
+    }
+
+    /** Open (or reuse) a direct conversation with a user and show it. */
+    async openDirect(userId) {
+      if (!userId) return;
+      try {
+        const r = await API.post('/api/messages/conversations', { type: 'direct', participantId: userId });
+        await this.loadConversations({ quiet: true });
+        await this.select(r.conversation.id);
+      } catch (e) { UI.toast(e.message, 'error'); }
+    }
+  }
+
+  window.MessagingView = MessagingView;
+})();

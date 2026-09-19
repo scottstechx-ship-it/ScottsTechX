@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parent registration — School Portal</title>
+<link rel="stylesheet" href="/css/app.css">
+<style>
+  body { display:flex; align-items:center; justify-content:center; min-height:100vh; background:linear-gradient(135deg,#1e3a8a,#2563eb); padding:16px; }
+  .card { background:#fff; border-radius:16px; box-shadow:0 25px 60px rgba(2,6,23,.35); width:100%; max-width:440px; padding:32px; }
+  .card h1 { font-size:20px; margin-bottom:4px; }
+  .sub { color:#64748b; font-size:13.5px; margin-bottom:20px; }
+  .err { background:#fee2e2; color:#b91c1c; border-radius:8px; padding:10px 12px; font-size:13px; margin-bottom:12px; display:none; }
+  .ok { background:#dcfce7; color:#15803d; border-radius:8px; padding:10px 12px; font-size:13px; margin-bottom:12px; display:none; }
+  .devlink { background:#fef3c7; border:1px dashed #f59e0b; border-radius:8px; padding:10px 12px; font-size:12.5px; margin-top:12px; word-break:break-all; display:none; }
+  .back { text-align:center; margin-top:16px; font-size:13px; }
+  .steps { font-size:12px; color:#64748b; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:10px 12px; margin-bottom:18px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg> Parent registration</h1>
+  <div class="sub">Create a parent account to follow your children's school life.</div>
+  <div class="steps">
+    <strong>How it works:</strong><br>
+    1. Enter your details and your child's <b>student code(s)</b> — one per child (from the admission letter, report card, or the school office).<br>
+    2. The school administration verifies you are the guardian.<br>
+    3. Once approved, your login details (username, parent code and password) are <b>emailed to you</b>.
+  </div>
+  <div class="err" id="err"></div>
+  <div class="ok" id="ok"></div>
+  <form id="reg-form">
+    <label class="field">Full name <span class="req">*</span>
+      <input id="fullName" autocomplete="name" placeholder="e.g. Mrs. Jane Namuli" required>
+    </label>
+    <label class="field">Email address <span class="req">*</span>
+      <input type="email" id="email" autocomplete="email" placeholder="you@example.com" required>
+    </label>
+    <label class="field">Phone
+      <input id="phone" autocomplete="tel" placeholder="+2567…">
+    </label>
+    <label class="field">Address
+      <input id="address" placeholder="Home / work address (optional)">
+    </label>
+    <label class="field">Student code(s) <span class="req">*</span>
+      <input id="studentCodes" placeholder="e.g. STU-0001, STU-0002" required autocapitalize="characters">
+    </label>
+    <div style="font-size:12px;color:#64748b;margin:-6px 0 12px">Separate multiple codes with commas — one code per child. No password needed now; it will be emailed to you after approval.</div>
+    <button class="btn block" type="submit" id="reg-btn" style="padding:12px">Register</button>
+  </form>
+  <div class="devlink" id="devlink"><strong>Development mode — no email server.</strong><br>Verify link: <a id="devlink-a" href="#">open here</a></div>
+  <div class="back">Already registered? <a href="login.html">Sign in</a></div>
+</div>
+
+<script src="/js/config.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/theme.js"></script>
+<script>
+  document.getElementById('reg-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const err = document.getElementById('err');
+    const ok = document.getElementById('ok');
+    const dev = document.getElementById('devlink');
+    err.style.display = ok.style.display = dev.style.display = 'none';
+    const codes = document.getElementById('studentCodes').value.trim();
+    if (!codes) {
+      err.textContent = "Enter at least one student code (ask the school office if you don't have it).";
+      err.style.display = 'block';
+      return;
+    }
+    const btn = document.getElementById('reg-btn');
+    btn.disabled = true; btn.textContent = 'Registering…';
+    try {
+      const data = await API.post('/api/auth/register', {
+        fullName: document.getElementById('fullName').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        studentCodes: codes,
+      });
+      ok.textContent = data.message || 'Registration received.';
+      ok.style.display = 'block';
+      document.getElementById('reg-form').style.display = 'none';
+      if (data.devVerifyLink) {
+        document.getElementById('devlink-a').href = data.devVerifyLink;
+        document.getElementById('devlink-a').textContent = data.devVerifyLink;
+        dev.style.display = 'block';
+      }
+    } catch (ex) {
+      err.textContent = ex.message;
+      err.style.display = 'block';
+    }
+    btn.disabled = false; btn.textContent = 'Register';
+  });
+</script>
+</body>
+</html>

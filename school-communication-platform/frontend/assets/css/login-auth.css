@@ -1,0 +1,103 @@
+/* ── AUTH PAGES SHARED STYLES ── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', system-ui, sans-serif; background: #f5f6fa; overflow: hidden; height: 100vh; }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-thumb { background: #0d6b35; border-radius: 4px; }
+
+.auth-split { display: grid; grid-template-columns: 420px 1fr; height: 100vh; }
+
+/* LEFT BRAND PANEL */
+.auth-brand {
+  background: linear-gradient(135deg, #0d2b1a 0%, #0d6b35 50%, #1a8c4a 100%);
+  background-size: 400% 400%; animation: authGrad 12s ease infinite;
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: 48px 40px; color: #fff; position: relative; overflow: hidden;
+}
+@keyframes authGrad {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.auth-brand::before {
+  content: ''; position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M50 50c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10zM10 10c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10S0 25.523 0 20s4.477-10 10-10z'/%3E%3C/g%3E%3C/svg%3E");
+}
+@keyframes authGrad { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+.brand-content { position: relative; z-index: 1; }
+.brand-logo-wrap { margin-bottom: 32px; }
+.brand-logo { width: 90px; height: 90px; border-radius: 20px; border: 3px solid rgba(255,255,255,0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.3); object-fit: cover; }
+.auth-brand h1 { font-family: 'Space Grotesk', sans-serif; font-size: 2.2rem; font-weight: 800; margin-bottom: 4px; }
+.auth-brand p { color: #4ade80; font-weight: 500; font-size: 1rem; }
+.brand-divider { width: 60px; height: 3px; background: linear-gradient(90deg, #4ade80, transparent); border-radius: 2px; margin: 24px 0; }
+.brand-desc { color: rgba(255,255,255,0.75); font-size: 0.9rem; line-height: 1.7; margin-bottom: 28px; }
+.brand-features { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.bf-item { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 10px 14px; font-size: 0.82rem; font-weight: 500; }
+.brand-footer { position: relative; z-index: 1; }
+.brand-footer a { color: rgba(255,255,255,0.6); text-decoration: none; font-size: 0.85rem; transition: 0.2s; }
+.brand-footer a:hover { color: #4ade80; }
+
+/* RIGHT FORM PANEL */
+.auth-form-side {
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px; overflow-y: auto;
+}
+.auth-form-wrap { width: 100%; max-width: 440px; }
+.form-header { text-align: center; margin-bottom: 36px; }
+.form-icon { font-size: 3rem; margin-bottom: 12px; }
+.form-header h2 { font-family: 'Space Grotesk', sans-serif; font-size: 1.8rem; font-weight: 700; color: #0d2b1a; margin-bottom: 8px; }
+.form-header p { color: #64748b; font-size: 0.9rem; }
+
+.input-icon-wrap { position: relative; }
+.input-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 1rem; }
+.input-icon-wrap .form-control { padding-left: 42px; }
+.toggle-pass { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1rem; }
+
+.form-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.checkbox-wrap { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #64748b; cursor: pointer; }
+.checkbox-wrap input { width: 16px; height: 16px; accent-color: #0d6b35; }
+.forgot-link { color: #0d6b35; font-size: 0.85rem; font-weight: 500; text-decoration: none; }
+.forgot-link:hover { text-decoration: underline; }
+
+.btn-auth {
+  width: 100%; padding: 14px; background: linear-gradient(135deg, #0d6b35, #1a8c4a);
+  color: #fff; border: none; border-radius: 14px; font-size: 1rem; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: 0.3s; box-shadow: 0 4px 20px rgba(13,107,53,0.3);
+  font-family: 'Space Grotesk', sans-serif;
+}
+.btn-auth:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(13,107,53,0.4); }
+.btn-auth:disabled { opacity: 0.7; cursor: not-allowed; }
+.btn-arrow { font-size: 1.2rem; }
+.spinner { border: 3px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.auth-error {
+  margin-top: 14px; padding: 12px 16px; border-radius: 12px;
+  background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; font-size: 0.85rem;
+}
+
+.form-footer { margin-top: 32px; text-align: center; }
+.form-footer p { color: #64748b; font-size: 0.85rem; }
+.form-footer a { color: #0d6b35; font-weight: 600; text-decoration: none; }
+.form-footer a:hover { text-decoration: underline; }
+.developer-tag { margin-top: 20px; font-size: 0.75rem; color: #94a3b8; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .auth-split { grid-template-columns: 1fr; }
+  .auth-brand { display: none; }
+  .auth-form-side { padding: 24px 16px; align-items: flex-start; padding-top: 80px; }
+}
+@media (max-width: 480px) {
+  .auth-form-wrap { max-width: 100%; }
+}
+
+/* ── SOCIAL LOGIN ── */
+.social-divider { display: flex; align-items: center; gap: 16px; margin: 20px 0; color: #94a3b8; font-size: 0.8rem; }
+.social-divider::before, .social-divider::after { content: ''; flex: 1; height: 1px; background: #e2e8f0; }
+.social-btns { display: flex; gap: 12px; }
+.social-btn {
+  flex: 1; padding: 10px; border: 2px solid #e2e8f0; border-radius: 12px;
+  background: #fff; cursor: pointer; font-size: 1.2rem; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.social-btn span { font-size: 0.8rem; font-weight: 600; color: #64748b; }
+.social-btn:hover { border-color: #0d6b35; background: #f0fdf4; }

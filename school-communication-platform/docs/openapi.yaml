@@ -1,0 +1,471 @@
+openapi: 3.0.3
+info:
+  title: School Communication Platform API
+  description: >
+    REST API for five connected dashboards (Super Admin, Admin, Teacher,
+    Student, Parent). Messaging, document sharing, announcements and
+    notifications. Full reference: docs/API.md and /docs/api.html.
+  version: 1.0.0
+servers:
+  - url: http://localhost:4000/api
+    description: Local development
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        id: { type: integer }
+        fullName: { type: string }
+        email: { type: string, nullable: true }
+        username: { type: string }
+        role: { type: string, enum: [super_admin, admin, teacher, student, parent] }
+        status: { type: string, enum: [active, inactive, suspended] }
+    Error:
+      type: object
+      properties:
+        error: { type: string }
+
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/login:
+    post:
+      security: []
+      summary: Log in and receive a JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username: { type: string }
+                password: { type: string }
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string }
+                  user: { $ref: '#/components/schemas/User' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+  /auth/me:
+    get:
+      summary: Current user + role profile
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user: { $ref: '#/components/schemas/User' }
+                  profile: { type: object }
+  /auth/forgot-password:
+    post:
+      security: []
+      summary: Request a password reset link
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string }
+      responses:
+        '200':
+          description: Always the same message (avoids account enumeration)
+  /auth/reset-password:
+    post:
+      security: []
+      summary: Set a new password with a reset token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, newPassword]
+              properties:
+                token: { type: string }
+                newPassword: { type: string }
+      responses:
+        '200': { description: Success }
+        '400': { description: Invalid or expired token }
+  /auth/profile-picture:
+    post:
+      summary: Upload a profile picture (multipart image, <=2MB)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: { type: string, format: binary }
+      responses:
+        '200': { description: Updated }
+        '400': { description: Invalid image }
+  /users:
+    get:
+      summary: List users (super admin; admins read-only)
+      parameters:
+        - { name: search, in: query, schema: { type: string } }
+        - { name: role, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string } }
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users: { type: array, items: { $ref: '#/components/schemas/User' } }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      summary: Create a user (super admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [fullName, username, password, role]
+              properties:
+                fullName: { type: string }
+                username: { type: string }
+                password: { type: string }
+                role: { type: string }
+                email: { type: string }
+                phone: { type: string }
+      responses:
+        '201': { description: Created }
+        '409': { description: Conflict }
+  /messages/conversations:
+    get:
+      summary: My conversations with unread counts
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conversations: { type: array }
+    post:
+      summary: Open a direct, class or group conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type]
+              properties:
+                type: { type: string, enum: [direct, class, group] }
+                participantId: { type: integer }
+                participantIds: { type: array, items: { type: integer } }
+                classId: { type: integer }
+                title: { type: string }
+      responses:
+        '200': { description: Existing conversation }
+        '201': { description: Created }
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /messages:
+    post:
+      summary: Send a message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [conversationId]
+              properties:
+                conversationId: { type: integer }
+                content: { type: string }
+                attachmentId: { type: integer }
+      responses:
+        '201': { description: Sent }
+  /documents:
+    get:
+      summary: Documents I can access
+      parameters:
+        - { name: search, in: query, schema: { type: string } }
+        - { name: folderId, in: query, schema: { type: integer } }
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documents: { type: array }
+    post:
+      summary: Upload a document (multipart)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: { type: string, format: binary }
+                description: { type: string }
+                share: { type: string, description: 'JSON array of {targetType, targetId}' }
+      responses:
+        '201': { description: Uploaded }
+        '400': { description: Invalid file }
+        '413': { description: Too large }
+  /documents/{id}/download:
+    get:
+      summary: Authenticated download
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: File stream
+        '403': { $ref: '#/components/responses/Forbidden' }
+  /parents/children:
+    get:
+      summary: Parent's linked children with class + class teacher
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  children: { type: array }
+  /parents/documents:
+    get:
+      summary: Documents shared with the parent or their children
+      parameters:
+        - { name: search, in: query, schema: { type: string } }
+        - { name: classId, in: query, schema: { type: integer } }
+      responses:
+        '200':
+          description: Success
+  /attendance:
+    get:
+      summary: Attendance records (scoped by role)
+      parameters:
+        - { name: classId, in: query, schema: { type: integer } }
+        - { name: date, in: query, schema: { type: string } }
+        - { name: studentId, in: query, schema: { type: integer } }
+      responses:
+        '200': { description: Success }
+    post:
+      summary: Mark a class day (admin/teacher)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [classId, date, records]
+              properties:
+                classId: { type: integer }
+                date: { type: string }
+                records: { type: array }
+      responses:
+        '200': { description: Saved }
+        '403': { description: Not your class }
+  /attendance/summary/student/{studentId}:
+    get:
+      summary: Attendance percentages + recent absences
+      parameters:
+        - { name: studentId, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200': { description: Success }
+        '403': { description: Not authorized }
+  /assignments:
+    get:
+      summary: Assignments (scoped by role)
+      responses:
+        '200': { description: Success }
+    post:
+      summary: Create an assignment (admin/teacher)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, classId]
+              properties:
+                title: { type: string }
+                classId: { type: integer }
+                subject: { type: string }
+                dueDate: { type: string }
+      responses:
+        '201': { description: Created }
+  /assignments/{id}/submit:
+    post:
+      summary: Submit work (student)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content: { type: string }
+                attachmentId: { type: integer }
+      responses:
+        '200': { description: Submitted }
+  /exams:
+    get:
+      summary: Exams (students/parents see published/completed only)
+      responses:
+        '200': { description: Success }
+    post:
+      summary: Create an exam draft (admin/teacher)
+      responses:
+        '201': { description: Created }
+  /exams/{id}/publish:
+    post:
+      summary: Publish results (admin only)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200': { description: Published }
+        '403': { description: Teachers cannot publish }
+  /timetable:
+    get:
+      summary: Timetable entries (scoped)
+      responses:
+        '200': { description: Success }
+    post:
+      summary: Add a timetable entry (admin, conflict-checked)
+      responses:
+        '201': { description: Added }
+        '409': { description: Scheduling conflict }
+  /fees/structures:
+    get:
+      summary: Fee structures (admin)
+      responses:
+        '200': { description: Success }
+    post:
+      summary: Create a fee structure (admin)
+      responses:
+        '201': { description: Created }
+  /fees/student/{studentId}:
+    get:
+      summary: Fees + payments + balance (own/parent/admin)
+      parameters:
+        - { name: studentId, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200': { description: Success }
+        '403': { description: Not authorized }
+  /fees/student/{studentId}/pay:
+    post:
+      summary: Record a payment (admin)
+      responses:
+        '201': { description: Payment recorded }
+  /imports/upload:
+    post:
+      summary: Upload a CSV/XLSX for import (admin)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: { type: string, format: binary }
+      responses:
+        '200': { description: Parsed — headers, sample, importId }
+        '400': { description: Unsupported file }
+  /imports/validate:
+    post:
+      summary: Validate rows with a column mapping (admin)
+      responses:
+        '200': { description: Per-row validation + summary }
+  /imports/import:
+    post:
+      summary: Transactional import after review (admin)
+      responses:
+        '200': { description: Counts + failures }
+  /announcements:
+    get:
+      summary: Announcements visible to me
+      responses:
+        '200':
+          description: Success
+    post:
+      summary: Publish an announcement (admin/super admin/teacher)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, content, targetType]
+              properties:
+                title: { type: string }
+                content: { type: string }
+                targetType: { type: string, enum: [all, role, class, parents_of_class, staff, students, users] }
+                targetValue: { type: string }
+                important: { type: boolean }
+      responses:
+        '201': { description: Published }
+  /notifications:
+    get:
+      summary: My notifications
+      responses:
+        '200':
+          description: Success
+  /stats/overview:
+    get:
+      summary: Role-specific dashboard statistics
+      responses:
+        '200':
+          description: Success
+  /settings/public:
+    get:
+      summary: Public settings subset (school info, no secrets)
+      responses:
+        '200':
+          description: Success
+  /health:
+    get:
+      security: []
+      summary: Health check
+      responses:
+        '200':
+          description: OK
+
+responses:
+  Unauthorized:
+    description: Missing or invalid token
+    content:
+      application/json:
+        schema: { $ref: '#/components/schemas/Error' }
+  Forbidden:
+    description: Role not permitted
+    content:
+      application/json:
+        schema: { $ref: '#/components/schemas/Error' }
