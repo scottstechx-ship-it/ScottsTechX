@@ -849,12 +849,9 @@
     </style>
 <link rel="stylesheet" href="/assets/css/theme.css">
   <script src="/assets/js/theme.js"></script>
-<style>
-  /* This page's tint for the shared layered background. */
-  body { --bg-1:#0b1a2d; --bg-2:#10233c; --bg-3:#0a1830; --bg-glow-a:rgba(14,165,233,.22); --bg-glow-b:rgba(245,158,11,.14); --bg-glow-c:rgba(56,189,248,.10); --bg-glow-d:rgba(45,90,135,.36); --bg-line:rgba(125,195,235,.06); }
-</style>
-<link rel="stylesheet" href="/assets/css/site-nav.css?v=6">
-<script src="/assets/js/site-nav.js?v=6" defer></script>
+<link rel="stylesheet" href="/assets/css/site-nav.css?v=7">
+<script src="/assets/js/site-nav.js?v=7" defer></script>
+<script src="/assets/js/site-film.js?v=7" defer></script>
 <script src="/assets/js/site-animate.js" defer></script>
 <script src="/assets/js/site-perf.js" defer></script>
 </head>
@@ -872,18 +869,7 @@
     z-index: -2;
     pointer-events: none;
 }
-.video-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, rgba(10,31,10,0.78) 0%, rgba(10,31,10,0.55) 100%);
-    z-index: -1;
-    pointer-events: none;
-}
 </style>
-<div class="video-overlay"></div>
     <canvas id="three-canvas"></canvas>
 
     <main>

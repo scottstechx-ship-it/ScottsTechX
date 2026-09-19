@@ -30,11 +30,6 @@
 #video-rotator-bg { position:fixed;inset:0;z-index:-2;width:100%;height:100%; }
 #video-rotator-bg video { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.5s ease; }
 #video-rotator-bg video.active { opacity:1; }
-.video-overlay { position:fixed;inset:0;z-index:-1;
-      background:
-        radial-gradient(ellipse at 20% 10%, rgba(13,107,53,.35) 0%, transparent 55%),
-        radial-gradient(ellipse at 85% 90%, rgba(212,175,55,.12) 0%, transparent 50%),
-        linear-gradient(135deg, #0a1f0a 0%, #0d2b1a 55%, #0a1f0a 100%); }
 
     .mobile-menu-btn.active span:nth-child(1) {
       transform: translateY(7px) rotate(45deg);
@@ -79,17 +74,13 @@
     </style>
 <link rel="stylesheet" href="/assets/css/theme.css">
   <script src="/assets/js/theme.js"></script>
-<style>
-  /* This page's tint for the shared layered background. */
-  body { --bg-1:#0b1a2d; --bg-2:#10233c; --bg-3:#0a1830; --bg-glow-a:rgba(14,165,233,.22); --bg-glow-b:rgba(245,158,11,.14); --bg-glow-c:rgba(56,189,248,.10); --bg-glow-d:rgba(45,90,135,.36); --bg-line:rgba(125,195,235,.06); }
-</style>
-<link rel="stylesheet" href="/assets/css/site-nav.css?v=6">
-<script src="/assets/js/site-nav.js?v=6" defer></script>
+<link rel="stylesheet" href="/assets/css/site-nav.css?v=7">
+<script src="/assets/js/site-nav.js?v=7" defer></script>
+<script src="/assets/js/site-film.js?v=7" defer></script>
 <script src="/assets/js/site-animate.js" defer></script>
 <script src="/assets/js/site-perf.js" defer></script>
 </head>
 <body>
-  <div class="video-overlay"></div>
   <canvas id="webgl-bg" style="position:fixed;inset:0;z-index:-1;pointer-events:none;"></canvas>
 
 

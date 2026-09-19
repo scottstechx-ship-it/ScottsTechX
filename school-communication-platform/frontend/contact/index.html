@@ -777,11 +777,6 @@
 #video-rotator-bg { position:fixed;inset:0;z-index:-2;width:100%;height:100%; }
 #video-rotator-bg video { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.5s ease; }
 #video-rotator-bg video.active { opacity:1; }
-.video-overlay { position:fixed;inset:0;z-index:-1;
-      background:
-        radial-gradient(ellipse at 20% 10%, rgba(13,107,53,.35) 0%, transparent 55%),
-        radial-gradient(ellipse at 85% 90%, rgba(212,175,55,.12) 0%, transparent 50%),
-        linear-gradient(135deg, #0a1f0a 0%, #0d2b1a 55%, #0a1f0a 100%); }
   
     /* prevent reveal animations from widening the page on phones */
     html, body { overflow-x: hidden; }
@@ -789,12 +784,9 @@
     </style>
 <link rel="stylesheet" href="/assets/css/theme.css">
   <script src="/assets/js/theme.js"></script>
-<style>
-  /* This page's tint for the shared layered background. */
-  body { --bg-1:#07160e; --bg-2:#0b2417; --bg-3:#061309; --bg-glow-a:rgba(74,222,128,.16); --bg-glow-b:rgba(212,175,55,.12); --bg-glow-c:rgba(16,185,129,.10); --bg-glow-d:rgba(20,83,45,.5); --bg-line:rgba(140,220,165,.05); }
-</style>
-<link rel="stylesheet" href="/assets/css/site-nav.css?v=6">
-<script src="/assets/js/site-nav.js?v=6" defer></script>
+<link rel="stylesheet" href="/assets/css/site-nav.css?v=7">
+<script src="/assets/js/site-nav.js?v=7" defer></script>
+<script src="/assets/js/site-film.js?v=7" defer></script>
 <script src="/assets/js/site-animate.js" defer></script>
 <script src="/assets/js/site-perf.js" defer></script>
 </head>
@@ -802,7 +794,6 @@
 
 <!-- THREE.JS PARTICLE CANVAS -->
 <canvas id="particle-canvas"></canvas>
-<div class="video-overlay"></div>
 
 <!-- DESKTOP NAV -->
 <div class="page-body">
