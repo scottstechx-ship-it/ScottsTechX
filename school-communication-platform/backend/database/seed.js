@@ -280,10 +280,10 @@ function runSeed() {
     // ---------------- settings ----------------
     setSetting('school', {
       name: 'Kalinabiri Secondary School',
-      motto: 'Excellence in Education Since 1995',
+      motto: 'Determined To Excel With Trust In God',
       logo: null,
       phone: '0792 861 645',
-      email: 'Kalinabiri.ntinda@yahoo.com',
+      email: 'kalinabirisecsch@gmail.com',
       address: 'Kalinabiri Road, Ntinda, Kampala, Uganda',
       website: 'https://www.kalinabiriss.ac.ug',
       academicYears: ['2025', '2026'],

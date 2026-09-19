@@ -12,7 +12,6 @@
   <meta charset="UTF-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://cdnjs.cloudflare.com">
 <link rel="preconnect" href="https://i.ytimg.com">
 <meta name="google-site-verification" content="0iFeDjaZvUCjm7CmNRcwsIKmQUKHDLlePEJhRPLuR_M">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -21,8 +20,6 @@
   <link rel="icon" type="image/x-icon" href="/assets/images/logo.ico">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
   <link rel="stylesheet" href="/assets/css/site-nav.css?v=3">
   <script src="/assets/js/site-nav.js?v=3" defer></script>
   <style>
@@ -115,17 +112,17 @@
             var img = n.image ? '<img class="news-img" src="' + esc(n.image) + '" alt="" loading="lazy" onerror="window.__mediaFallback(this)">' : '';
             return '<article class="news-card">' + img +
               '<div class="news-body">' +
-                '<div class="news-date"><i class="fas fa-calendar" aria-hidden="true"></i> ' + esc(fmtDate(n.created_at)) + '</div>' +
+                '<div class="news-date"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/></svg> ' + esc(fmtDate(n.created_at)) + '</div>' +
                 '<h2 class="news-title">' + esc(n.title) + '</h2>' +
                 '<p class="news-text clamp">' + esc(n.body) + '</p>' +
-                '<button class="news-more" type="button">Read more <i class="fas fa-arrow-right"></i></button>' +
+                '<button class="news-more" type="button">Read more <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>' +
               '</div></article>';
           }).join('');
           grid.querySelectorAll('.news-more').forEach(function (btn) {
             btn.addEventListener('click', function () {
               var text = btn.previousElementSibling;
               var open = text.classList.toggle('clamp') === false;
-              btn.innerHTML = open ? 'Show less <i class="fas fa-arrow-up"></i>' : 'Read more <i class="fas fa-arrow-right"></i>';
+              btn.innerHTML = open ? 'Show less <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>' : 'Read more <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
             });
           });
         })

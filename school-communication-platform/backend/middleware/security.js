@@ -20,8 +20,8 @@ function securityHeaders(req, res, next) {
       "img-src 'self' data: blob: https://i.ytimg.com https://img.youtube.com https://schoolnet.africa https://schoolnetuganda.com https://*.tiktokcdn.com https://*.tiktokcdn-us.com https://p16-sign-va.tiktokcdn.com",
       "media-src 'self' blob: https://*.tiktokcdn.com https://*.tiktokcdn-us.com https://v16-webapp.tiktok.com https://v19-webapp.tiktok.com https://v16m-default.akamaized.net https://v16-webapp-prime.tiktok.com",
       // Google Fonts + Font Awesome (cdnjs)
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
-      "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' data: https://fonts.gstatic.com",
       // three.js (cdnjs), analytics & ads used by the public site
       "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://www.googletagmanager.com https://pagead2.googlesyndication.com",
       "connect-src 'self' ws: wss: https://www.googletagmanager.com https://*.google-analytics.com https://pagead2.googlesyndication.com",
