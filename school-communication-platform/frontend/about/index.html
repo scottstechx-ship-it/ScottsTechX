@@ -190,21 +190,6 @@
       border: 0;
       opacity: 1;
     }
-    /* The school's own intro video, served from this site; the hero copy sits
-       on top, so it is dimmed the same way the TikTok fallback is. */
-    .hero-video {
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 100%; height: 100%;
-      object-fit: cover;
-      border: 0;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 1.4s ease;
-      filter: blur(1.5px) brightness(.45) saturate(.9);
-    }
-    .hero-video.is-playing { opacity: 1; }
 
     /* ---- The film panel -----------------------------------------------
        Same ruled, camera-style panel as the home page, tinted to this page's
