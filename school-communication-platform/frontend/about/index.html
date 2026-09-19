@@ -136,7 +136,8 @@
     /* HERO SECTION WITH PARALLAX */
     .about-hero {
       position: relative;
-      min-height: 100vh;
+      min-height: 100vh;              /* fallback for older browsers */
+      min-height: calc(100svh - 68px); /* phones: leave room for the fixed navbar */
       display: flex;
       align-items: center;
       justify-content: center;
@@ -472,7 +473,7 @@
     /* LEADERSHIP SECTION */
     .leadership-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
       gap: 30px;
     }
     .leader-card {
@@ -565,7 +566,7 @@
     /* FACILITIES SECTION */
     .facilities-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
       gap: 24px;
     }
     .facility-card {
@@ -609,7 +610,7 @@
     /* ACHIEVEMENTS SECTION */
     .achievements-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
       gap: 24px;
       margin-bottom: 60px;
     }
@@ -646,7 +647,7 @@
     /* TROPHY GALLERY */
     .trophy-gallery {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
       gap: 24px;
     }
     .trophy-item {
@@ -684,7 +685,7 @@
     /* ACCREDITATION SECTION */
     .accreditation-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
       gap: 24px;
     }
     .accred-card {
@@ -749,7 +750,7 @@
       max-width: 1200px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
       gap: 40px;
     }
     .footer-logo {
@@ -869,7 +870,7 @@
         <p>Our motto, <em>“Determined To Excel With Trust In God,”</em> guides everything we do. The school is supported in its work by development partners including the Center for the Girl Child, Compassion International and Agape, who help us keep vulnerable learners in school and strengthen our guidance and welfare programmes.</p>
         <p>Science at Kalinabiri is hands-on: our students build and demonstrate their own apparatus with locally available materials — from thermometers and simple circuits to magnetism and heat experiments — because we believe learners understand best what they can touch, make and explain.</p>
         <figure style="margin:22px 0 0;border-radius:16px;overflow:hidden;border:1px solid rgba(74,222,128,.25);background:rgba(255,255,255,.03);">
-          <img src="https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss.jpeg" alt="Kalinabiri Secondary School campus in Ntinda, Kampala" loading="lazy" style="width:100%;height:auto;display:block;" onerror="this.parentNode.style.display='none'">
+          <img referrerpolicy="no-referrer" src="https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss.jpeg" alt="Kalinabiri Secondary School campus in Ntinda, Kampala" loading="lazy" style="width:100%;height:auto;display:block;" onerror="this.parentNode.style.display='none'">
           <figcaption style="padding:10px 14px;color:rgba(255,255,255,.6);font-size:.85rem;">Our campus in Ntinda, Kampala — Kalinabiri Secondary School.</figcaption>
         </figure>
       </div>
@@ -913,7 +914,7 @@
     <div class="section-label-tag">IN MEMORIAM</div>
     <h2>Memorial Wall</h2>
     <p class="section-intro">Honoring the memory of those who have passed. Their legacy lives on through the lives they touched at Kalinabiri SS.</p>
-    <div class="memorial-wall-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;margin-top:40px;">
+    <div class="memorial-wall-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px, 100%),1fr));gap:24px;margin-top:40px;">
       <div class="memorial-card" style="background:linear-gradient(135deg,rgba(13,43,26,.8),rgba(74,222,128,.1));border:1px solid rgba(74,222,128,.3);border-radius:20px;padding:28px;text-align:center;opacity:0;animation:memorialFadeIn 0.8s ease-out 0.1s forwards;">
         <div style="font-size:4rem;margin-bottom:16px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg></div>
         <h3 style="color:#4ade80;font-size:1.1rem;margin-bottom:8px;">In Loving Memory</h3>
@@ -924,10 +925,10 @@
         <h3 style="color:#4ade80;font-size:1.1rem;margin-bottom:8px;">From Our School Archives</h3>
         <p style="color:rgba(255,255,255,.7);font-size:.9rem;line-height:1.6;">Photographs from the life of our school — the campus, our lessons and our community — preserved for the generations that come after us.</p>
         <div style="display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
-          <img src="https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss.jpeg" alt="Kalinabiri Secondary School campus" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
-          <img src="https://i.ytimg.com/vi/mYhX2lFCMtE/hq720.jpg" alt="Science practical at Kalinabiri SS" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
-          <img src="https://i.ytimg.com/vi/YsB_nSzRTbI/hq720.jpg" alt="Science demonstration at Kalinabiri SS" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
-          <img src="https://i.ytimg.com/vi/O1A6aQcmlmg/hq720.jpg" alt="Community outreach at Kalinabiri SS" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
+          <img referrerpolicy="no-referrer" src="https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss.jpeg" alt="Kalinabiri Secondary School campus" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
+          <img referrerpolicy="no-referrer" src="https://i.ytimg.com/vi/mYhX2lFCMtE/hq720.jpg" alt="Science practical at Kalinabiri SS" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
+          <img referrerpolicy="no-referrer" src="https://i.ytimg.com/vi/YsB_nSzRTbI/hq720.jpg" alt="Science demonstration at Kalinabiri SS" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
+          <img referrerpolicy="no-referrer" src="https://i.ytimg.com/vi/O1A6aQcmlmg/hq720.jpg" alt="Community outreach at Kalinabiri SS" loading="lazy" style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:2px solid rgba(74,222,128,.3);" onerror="this.style.display='none'">
         </div>
       </div>
       <div class="memorial-card" style="background:linear-gradient(135deg,rgba(13,43,26,.8),rgba(74,222,128,.1));border:1px solid rgba(74,222,128,.3);border-radius:20px;padding:28px;text-align:center;opacity:0;animation:memorialFadeIn 0.8s ease-out 0.5s forwards;">
@@ -1016,13 +1017,13 @@
     <div class="section-label-tag">OUR CAMPUS</div>
     <h2>Our Campus &amp; Facilities</h2>
     <p class="section-intro">Our campus in Ntinda provides what students need for academic success, personal growth and holistic development.</p>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:28px 0 36px;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px, 100%),1fr));gap:16px;margin:28px 0 36px;">
       <figure style="margin:0;border-radius:16px;overflow:hidden;border:1px solid rgba(74,222,128,.25);background:rgba(255,255,255,.03);">
-        <img src="https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss.jpeg" alt="Kalinabiri Secondary School campus" loading="lazy" style="width:100%;height:230px;object-fit:cover;display:block;" onerror="this.parentNode.style.display='none'">
+        <img referrerpolicy="no-referrer" src="https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss.jpeg" alt="Kalinabiri Secondary School campus" loading="lazy" style="width:100%;height:230px;object-fit:cover;display:block;" onerror="this.parentNode.style.display='none'">
         <figcaption style="padding:10px 14px;color:rgba(255,255,255,.6);font-size:.85rem;">The school campus in Ntinda, Kampala.</figcaption>
       </figure>
       <figure style="margin:0;border-radius:16px;overflow:hidden;border:1px solid rgba(74,222,128,.25);background:rgba(255,255,255,.03);">
-        <img src="https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss-1.jpeg" alt="Kalinabiri Secondary School grounds" loading="lazy" style="width:100%;height:230px;object-fit:cover;display:block;" onerror="this.parentNode.style.display='none'">
+        <img referrerpolicy="no-referrer" src="https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss-1.jpeg" alt="Kalinabiri Secondary School grounds" loading="lazy" style="width:100%;height:230px;object-fit:cover;display:block;" onerror="this.parentNode.style.display='none'">
         <figcaption style="padding:10px 14px;color:rgba(255,255,255,.6);font-size:.85rem;">Our grounds — a permanent home since the 1985 land donation.</figcaption>
       </figure>
     </div>

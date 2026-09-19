@@ -147,7 +147,7 @@
     .adm-section h2 { font-family: 'Playfair Display', serif; font-size: clamp(1.5rem, 4vw, 2.2rem); color: #f1f7f3; margin-bottom: 16px; }
 
     /* REQUIREMENTS */
-    .req-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 32px; }
+    .req-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 20px; margin-top: 32px; }
     .req-card { background: #fff; border-radius: 16px; padding: 28px; border: 2px solid transparent; transition: 0.3s; }
     .req-card:hover { border-color: var(--green); transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
     .req-card .level-badge { display: inline-block; background: var(--green); color: #fff; padding: 4px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 700; margin-bottom: 14px; }
@@ -172,7 +172,7 @@
     .fees-note { margin-top: 16px; padding: 14px 18px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; font-size: 0.85rem; color: #166534; }
 
     /* DOCUMENTS */
-    .docs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 28px; }
+    .docs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 16px; margin-top: 28px; }
     .doc-item { display: flex; align-items: center; gap: 14px; background: #fff; border-radius: 12px; padding: 16px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.2s; }
     .doc-item:hover { transform: translateX(6px); box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
     .doc-icon { font-size: 1.8rem; }
@@ -202,7 +202,7 @@
 
     /* FOOTER */
     .footer { background: var(--dark); color: rgba(255,255,255,0.6); padding: 60px 40px 30px; margin-top: 60px; position: relative; z-index: 2; }
-    .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; }
+    .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 40px; }
     .footer h3 { color: #fff; margin-bottom: 14px; font-size: 1rem; }
     .footer a { color: rgba(255,255,255,0.6); text-decoration: none; display: block; padding: 3px 0; font-size: 0.85rem; }
     .footer a:hover { color: #4ade80; }
@@ -294,7 +294,7 @@
   <h2>What We Offer</h2>
   <p style="color:#aab8c8;margin-bottom:24px;">Kalinabiri SS offers a comprehensive curriculum at both O-Level and A-Level, blending core academics, sciences, and applied subjects to equip every learner.</p>
 
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;margin-top:32px;">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px, 100%),1fr));gap:24px;margin-top:32px;">
 
     <!-- A-LEVEL COMBINATIONS -->
     <div style="background:#fff;border-radius:16px;padding:28px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">

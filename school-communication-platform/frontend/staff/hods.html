@@ -80,7 +80,7 @@
     .dept-pill:hover:not(.active){border-color:var(--teal);color:var(--teal)}
 
     /* Grid */
-    .hod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px}
+    .hod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px, 100%),1fr));gap:24px}
     .hod-card{
       background:linear-gradient(135deg,rgba(26,16,64,.85),rgba(45,27,105,.55));
       border:1px solid var(--glass-edge); border-radius:20px; padding:28px;
@@ -114,7 +114,7 @@
 
     /* Stats strip */
     .faculty-stats{
-      display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px;
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(min(180px, 100%),1fr)); gap:16px;
       margin:60px 0; padding:30px; border-radius:20px;
       background:linear-gradient(135deg,rgba(123,47,247,.12),rgba(0,245,212,.06));
       border:1px solid var(--glass-edge);

@@ -27,7 +27,7 @@
     body {
       font-family: 'Inter', system-ui, sans-serif;
       background: linear-gradient(180deg, #0c1829 0%, #0f1f35 100%);
-      color: #e2e8f0; min-height: 100vh;
+      color: #e2e8f0; min-height: 100vh; min-height: 100svh;
     }
     .page-hero {
       text-align: center; padding: clamp(40px, 8vw, 80px) 20px 30px;
@@ -200,7 +200,12 @@ window.__mediaFallback = function (img) {
   var s = img.src || '';
   if (s.indexOf('maxresdefault') > -1) { img.src = s.replace('maxresdefault', 'hq720'); return; }
   if (s.indexOf('hq720') > -1) { img.src = s.replace('hq720', 'hqdefault'); return; }
+  // Nothing left to try: hide the tile instead of showing a broken-image icon.
   img.onerror = null;
+  img.removeAttribute('src');
+  var box = img.closest('figure, .gallery-item, .news-card, .campus-figure, .media-card');
+  if (box) box.style.display = 'none';
+  else img.style.display = 'none';
 };
 </script>
 </body>

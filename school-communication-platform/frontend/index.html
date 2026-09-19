@@ -73,42 +73,6 @@
     }
 
 
-        .campus-band {
-            padding: 80px 40px;
-            background: linear-gradient(180deg, rgba(12,24,41,0.98) 0%, rgba(12,24,41,0.9) 100%);
-        }
-        .campus-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 22px;
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-        .campus-figure {
-            margin: 0;
-            border-radius: 18px;
-            overflow: hidden;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(56,189,248,0.18);
-            box-shadow: 0 18px 44px rgba(0,0,0,0.35);
-        }
-        .campus-figure img {
-            display: block;
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-        .campus-figure:hover img { transform: scale(1.04); }
-        .campus-figure figcaption {
-            padding: 12px 16px;
-            color: rgba(226,232,240,0.72);
-            font-size: 0.9rem;
-        }
-        @media (max-width: 640px) {
-            .campus-band { padding: 56px 18px; }
-            .campus-figure img { height: 220px; }
-        }
         .video-overlay {
             position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
@@ -425,6 +389,7 @@
         .hero {
             position: relative;
             min-height: 100vh;
+            min-height: 100svh;   /* phones: the URL bar must not push content off screen */
             display: flex; align-items: center; justify-content: center;
             text-align: center;
             padding: 120px 24px 80px;
@@ -538,7 +503,7 @@
         .portals-grid {
             max-width: 1100px; margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
             gap: 24px;
         }
         .portal-card {
@@ -595,7 +560,7 @@
         .gallery-grid {
             max-width: 1100px; margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
             gap: 20px;
         }
         .gallery-item {
@@ -633,7 +598,7 @@
         .contact-grid {
             max-width: 1100px; margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
             gap: 40px;
         }
         .contact-item { display: flex; align-items: flex-start; gap: 16px; }
@@ -717,6 +682,24 @@
             .academics-grid { grid-template-columns: 1fr; max-width: 400px; }
             .contact-grid { grid-template-columns: 1fr; }
         }
+        @media (max-width: 768px) {
+            /* phones: 100vh is taller than the visible area (URL bar), which
+               pushed the hero past the fold — size it to what is left. */
+            .hero { min-height: calc(100svh - 68px); }
+            /* inline section paddings are desktop-sized: give phones their space back */
+            .hods-strip-section { padding: 48px 16px !important; }
+            .academics-section { padding: 56px 16px !important; }
+            .portals-section { padding: 56px 16px !important; }
+            .stats-strip { padding: 40px 16px !important; }
+            .gallery-section { padding: 56px 16px !important; }
+            .contact-strip { padding: 48px 16px !important; }
+            .footer { padding: 48px 16px 24px !important; }
+            .section-header { padding: 0 4px; }          /* headline block breathes with the grid */
+            .section-header p { font-size: 15px; }
+            .gallery-item, .portal-card { width: 100%; }
+            .toast-container { left: 16px; right: 16px; bottom: 16px; }
+            #three-canvas { display: none; }             /* decorative only, and it ate taps */
+        }
         @media (max-width: 480px) {
             .stats-grid { grid-template-columns: 1fr; max-width: 300px; }
             .footer-grid { grid-template-columns: 1fr; max-width: 300px; }
@@ -739,13 +722,10 @@
         <!-- HERO BACKGROUND: paints instantly as a gradient; the background
              video is injected AFTER window.load (see script at end of body),
              so it never delays first paint. Skipped on data-saver/2G. -->
-        <!-- The first layer is the real Kalinabiri SS campus photograph from the
-             school's national directory profile; the dark gradient keeps the
-             headline readable, and the gradient stack stays as a fallback if
-             the photo cannot load. -->
+        <!-- The hero paints instantly from gradients only (no network
+             request), and the TikTok background video fades in over it. -->
         <div class="video-bg hero-photo" id="heroBg" style="background:
           linear-gradient(180deg, rgba(6,16,30,.78) 0%, rgba(6,16,30,.58) 45%, rgba(6,16,30,.88) 100%),
-          url('https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss.jpeg') center/cover no-repeat,
           radial-gradient(ellipse at 25% 15%, rgba(14,165,233,.25) 0%, transparent 55%),
           radial-gradient(ellipse at 80% 85%, rgba(245,158,11,.14) 0%, transparent 50%),
           linear-gradient(135deg, #0c1829 0%, #10233c 55%, #0c1829 100%);
@@ -784,28 +764,6 @@
         </div>
     </section>
 
-
-    <!-- Campus Photographs — genuine pictures of the school in Ntinda, taken
-         from the school's national schools-directory profile. -->
-    <section class="campus-band" id="campus">
-        <div class="section-header">
-            <div class="section-tag">Our Campus</div>
-            <h2>Kalinabiri Secondary School, Ntinda</h2>
-            <p>Our home since 1984 — a government-aided day and boarding school in Ntinda, Kampala.</p>
-        </div>
-        <div class="campus-grid">
-            <figure class="campus-figure">
-                <img src="https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss.jpeg"
-                     alt="Kalinabiri Secondary School campus" loading="lazy">
-                <figcaption>The school campus in Ntinda, Kampala.</figcaption>
-            </figure>
-            <figure class="campus-figure">
-                <img src="https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss-1.jpeg"
-                     alt="Kalinabiri Secondary School grounds and buildings" loading="lazy">
-                <figcaption>Our grounds and classroom blocks.</figcaption>
-            </figure>
-        </div>
-    </section>
 
     <!-- Stats Strip -->
         <section class="stats-strip">
@@ -891,7 +849,7 @@
             <div class="track-tab" data-track="home-arts" style="padding:12px 28px;border-radius:50px;cursor:pointer;font-weight:600;font-size:.9rem;background:rgba(245,158,11,0.10);border:1px solid rgba(245,158,11,0.30);color:rgba(232,244,248,0.75);transition:.3s"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="9.5" r="1"/><circle cx="15" cy="9.5" r="1"/><circle cx="9.5" cy="14.5" r="1"/><path d="M21 12a9 9 0 0 1-9 9"/></svg> Arts &amp; Humanities</div>
         </div>
         <div class="combos-section active" id="home-science">
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;max-width:1200px;margin:0 auto;padding:0 20px">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px, 100%),1fr));gap:18px;max-width:1200px;margin:0 auto;padding:0 20px">
                 <div class="combo-card" style="background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(14,165,233,0.03));border:1px solid rgba(56,189,248,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
                     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0ea5e9,#38bdf8)"></div>
                     <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:var(--teal-bright)">PCM / ICT</h3>
@@ -937,7 +895,7 @@
             </div>
         </div>
         <div class="combos-section" id="home-arts" style="display:none">
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;max-width:1200px;margin:0 auto;padding:0 20px">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px, 100%),1fr));gap:18px;max-width:1200px;margin:0 auto;padding:0 20px">
                 <div class="combo-card" style="background:linear-gradient(135deg,rgba(245,158,11,0.12),rgba(245,158,11,0.03));border:1px solid rgba(245,158,11,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
                     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div>
                     <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:#fbbf24">MEG / ICT</h3>
@@ -969,7 +927,7 @@
                 <h2 style="font-size:1.6rem">O-Level Subjects</h2>
                 <p>Senior 1 – Senior 4 curriculum at Kalinabiri SS.</p>
             </div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px, 100%),1fr));gap:18px">
                 <div style="background:linear-gradient(135deg,rgba(14,165,233,0.10),rgba(14,165,233,0.02));border:1px solid rgba(56,189,248,0.28);border-radius:16px;padding:24px">
                     <h3 style="color:var(--teal-bright);font-size:1.05rem;margin-bottom:14px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m12 3.5 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg> Compulsory Core Subjects</h3>
                     <div style="display:flex;flex-wrap:wrap;gap:8px">
@@ -1005,7 +963,7 @@
                 <h2 style="font-size:1.6rem">School Clubs</h2>
                 <p>Leadership, service and belonging — beyond the classroom.</p>
             </div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px, 100%),1fr));gap:16px">
                 <div style="background:rgba(16,35,60,.55);border:1px solid rgba(56,189,248,.18);border-radius:16px;padding:22px;text-align:center">
                     <div style="font-size:2.2rem;margin-bottom:10px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v6a5 5 0 0 1-10 0z"/><path d="M7 6H4a2 2 0 0 0 2 4h1"/><path d="M17 6h3a2 2 0 0 1-2 4h-1"/></svg></div><h3 style="font-size:1.02rem;margin-bottom:6px">Wildlife Club</h3>
                     <p style="font-size:.83rem;color:rgba(232,244,248,.6)">Conservation, nature walks and field trips.</p>
@@ -1034,7 +992,7 @@
             <h2 style="font-size:2.2rem;margin-bottom:10px;color:#fff">Heads of Departments</h2>
             <p style="color:rgba(232,244,248,0.7);font-size:1.05rem;max-width:720px;margin:0 auto">Six specialist departments led by experienced HODs, supported by a faculty of 45+ qualified teachers.</p>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;max-width:1200px;margin:0 auto">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px, 100%),1fr));gap:18px;max-width:1200px;margin:0 auto">
             <div class="hod-card" style="background:rgba(26,58,92,0.4);border:1px solid rgba(56,189,248,0.25);border-radius:16px;padding:22px;text-align:center;backdrop-filter:blur(8px)">
                 <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#fff"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M9 3h6"/><path d="M10 3v6.5L5.5 19A2 2 0 0 0 7.3 22h9.4a2 2 0 0 0 1.8-3L14 9.5V3"/><path d="M7.5 15h9"/></svg></div>
                 <div style="font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--teal-bright);text-transform:uppercase;margin-bottom:4px">Sciences</div>
@@ -1389,6 +1347,14 @@
       if (sec) sec.style.display = 'none';
       return;
     }
+    // Only images the school owns or that always resolve: the removable
+    // third-party directory hotlinks are skipped here.
+    imgs = imgs.filter(function (im) { return String(im.src || '').indexOf('schoolnet.africa') === -1; });
+    if (!imgs.length) {
+      var sec0 = document.getElementById('gallery');
+      if (sec0) sec0.style.display = 'none';
+      return;
+    }
     grid.innerHTML = imgs.slice(0, 6).map(function (im) {
       return '<div class="gallery-item reveal is-visible" style="opacity:1;transform:none">' +
         '<img src="' + esc(im.src) + '" alt="' + esc(im.title) + '" loading="lazy" onerror="window.__mediaFallback(this)">' +
@@ -1403,13 +1369,13 @@
 <script>
 // HERO BACKGROUND FROM TIKTOK — the school's own TikTok video
 // (@kalinabiri_ss, "Hi Skool Kiromo"), served by TikTok's official player.
-// The campus photograph below it paints instantly; the video fades in after,
-// and only for visitors on a fast connection who allow motion.
+// The gradient hero paints instantly; the video fades in after, and only
+// for visitors on a fast connection who allow motion.
 (function () {
   var conn = navigator.connection || {};
   if (conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '')) return; // respect data saver
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if (window.innerWidth < 900) return; // phones keep the photograph
+  if (window.innerWidth < 900) return; // phones keep the light gradient hero
   function inject() {
     var host = document.getElementById('heroBg');
     if (!host || host.querySelector('iframe.tt-bg')) return;
@@ -1436,7 +1402,12 @@ window.__mediaFallback = function (img) {
   var s = img.src || '';
   if (s.indexOf('maxresdefault') > -1) { img.src = s.replace('maxresdefault', 'hq720'); return; }
   if (s.indexOf('hq720') > -1) { img.src = s.replace('hq720', 'hqdefault'); return; }
+  // Nothing left to try: hide the tile instead of showing a broken-image icon.
   img.onerror = null;
+  img.removeAttribute('src');
+  var box = img.closest('figure, .gallery-item, .news-card, .campus-figure, .media-card');
+  if (box) box.style.display = 'none';
+  else img.style.display = 'none';
 };
 </script>
 </body>

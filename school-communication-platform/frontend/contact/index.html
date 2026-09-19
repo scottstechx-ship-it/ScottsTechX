@@ -369,7 +369,7 @@
     /* ============================================
        CONTACT CARDS - 3D TILT VERSION
        ============================================ */
-    .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-bottom: 40px; }
+    .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 24px; margin-bottom: 40px; }
 
     .contact-card-wrapper {
       perspective: 1000px;
@@ -647,7 +647,7 @@
     /* ============================================
        DEPARTMENT GRID - ENHANCED
        ============================================ */
-    .department-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+    .department-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr)); gap: 20px; }
 
     .department-card-wrapper {
       perspective: 1000px;
@@ -728,7 +728,7 @@
       max-width: 1200px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
       gap: 40px;
     }
 
@@ -768,7 +768,10 @@
     /* ============================================
        RESPONSIVE
        ============================================ */
-    @media (max-width: 768px) { .section { padding: 50px 16px; } }
+    @media (max-width: 768px) {
+      .section { padding: 50px 16px; }
+      .footer { padding: 40px 16px 24px; }
+    }
 
 /* Rotating Video Background */
 #video-rotator-bg { position:fixed;inset:0;z-index:-2;width:100%;height:100%; }
@@ -918,7 +921,7 @@
       </script>
     </div>
     <figure class="campus-photo reveal" style="margin:0 0 28px;border-radius:18px;overflow:hidden;border:1px solid rgba(13,107,53,.15);box-shadow:0 16px 40px rgba(0,0,0,.08);">
-      <img src="https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss-1.jpeg" alt="Kalinabiri Secondary School campus, Ntinda" loading="lazy" style="width:100%;height:280px;object-fit:cover;display:block;" onerror="this.parentNode.style.display='none'">
+      <img referrerpolicy="no-referrer" src="https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss-1.jpeg" alt="Kalinabiri Secondary School campus, Ntinda" loading="lazy" style="width:100%;height:280px;object-fit:cover;display:block;" onerror="this.parentNode.style.display='none'">
       <figcaption style="padding:12px 16px;background:#fff;color:#475569;font-size:.9rem;">Kalinabiri Secondary School, Ntinda — visitors are welcome during school hours.</figcaption>
     </figure>
     <div class="map-section reveal-right">

@@ -141,7 +141,7 @@
           const isVideo = im.media_type === 'video';
           const preview = isVideo
             ? `<div style="position:relative"><video src="${esc(im.src)}" preload="metadata" muted style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#0f172a"></video>
-                 <div style="position:absolute;inset:0;display:grid;place-items:center;font-size:34px;pointer-events:none">▶</div></div>`
+                 <div style="position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;color:#fff"><svg viewBox="0 0 24 24" width="42" height="42" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z"/></svg></div></div>`
             : `<img src="${esc(im.src)}" alt="" style="width:100%;aspect-ratio:4/3;object-fit:cover;display:block" onerror="this.style.opacity=.25">`;
           const card = UI.el(`<div class="card" style="padding:0;overflow:hidden">
             ${preview}

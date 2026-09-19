@@ -187,3 +187,20 @@ input, select, textarea, button { font-size: 16px; }  /* prevents iOS zoom */
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* ============================================================
+ * SMALL-SCREEN HARDENING (shared by every public page)
+ * ============================================================ */
+html, body { max-width: 100%; overflow-x: hidden; }
+h1, h2, h3, h4, p, li, a, td, th { overflow-wrap: break-word; }
+@media (max-width: 768px) {
+  /* keep the drawer clear of home bars / rounded corners */
+  .kn-drawer { padding-bottom: max(18px, env(safe-area-inset-bottom)); }
+  body.kn-has-nav { padding-bottom: env(safe-area-inset-bottom); }
+}
+@media (max-width: 420px) {
+  .kn-nav { padding: 0 10px; gap: 10px; }
+  .kn-brand img { width: 36px; height: 36px; border-radius: 9px; }
+  .kn-brand .kn-brand-name { font-size: .92rem; }
+  .kn-burger { width: 42px; height: 42px; }
+}

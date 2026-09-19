@@ -393,7 +393,7 @@
 
         <div class="form-group">
           <label class="form-label">Email</label>
-          <input type="email" id="regEmail" class="form-input" placeholder="jane@kalinabiriss.ac.ug" required>
+          <input type="email" id="regEmail" class="form-input" placeholder="yourname@gmail.com" required>
         </div>
 
         <div class="form-row-2">
@@ -456,7 +456,7 @@
       <form id="teacherLoginForm">
         <div class="form-group">
           <label class="form-label">Username or Email</label>
-          <input type="text" id="loginUsername" class="form-input" placeholder="teacher@kalinabiriss.ac.ug" required>
+          <input type="text" id="loginUsername" class="form-input" placeholder="e.g. teacher1" required>
         </div>
         <div class="form-group">
           <label class="form-label">Password</label>
@@ -561,11 +561,11 @@ document.getElementById('teacherRegForm').addEventListener('submit', async funct
     }
     showBanner('regBanner', '!', data.error || 'Registration failed.', 'err');
     btn.disabled = false;
-    btn.innerHTML = '<span>Submit Application</span><span class="btn-arr">&rarr;</span>';
+    btn.innerHTML = '<span>Submit Application</span><span class="btn-arr"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>';
   } catch (err) {
     showBanner('regBanner', '!', 'Cannot reach the school server, so nothing was saved. Check your connection and try again.', 'err');
     btn.disabled = false;
-    btn.innerHTML = '<span>Submit Application</span><span class="btn-arr">&rarr;</span>';
+    btn.innerHTML = '<span>Submit Application</span><span class="btn-arr"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>';
   }
 });
 
@@ -593,7 +593,7 @@ document.getElementById('teacherLoginForm').addEventListener('submit', async fun
       if (data.user && data.user.role === 'admin') {
         showBanner('loginBanner', '!', 'Admin accounts use the Admin Portal.', 'err');
         btn.disabled = false;
-        btn.innerHTML = '<span>Sign In to Dashboard</span><span class="btn-arr">&rarr;</span>';
+        btn.innerHTML = '<span>Sign In to Dashboard</span><span class="btn-arr"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>';
         return;
       }
       if (data.user && data.user.mustChangePassword) {
@@ -605,12 +605,12 @@ document.getElementById('teacherLoginForm').addEventListener('submit', async fun
     } else {
       showBanner('loginBanner', '!', data.error || data.message || 'Invalid credentials.', 'err');
       btn.disabled = false;
-      btn.innerHTML = '<span>Sign In to Dashboard</span><span class="btn-arr">&rarr;</span>';
+      btn.innerHTML = '<span>Sign In to Dashboard</span><span class="btn-arr"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>';
     }
   } catch(err) {
     showBanner('loginBanner', '!', 'Cannot connect to server. Please try again.', 'err');
     btn.disabled = false;
-    btn.innerHTML = '<span>Sign In to Dashboard</span><span class="btn-arr">&rarr;</span>';
+    btn.innerHTML = '<span>Sign In to Dashboard</span><span class="btn-arr"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>';
   }
 });
 </script>
