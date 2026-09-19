@@ -56,6 +56,35 @@
             width: 100%; height: 100%; z-index: -2; overflow: hidden;
         }
         .video-bg video { width: 100%; height: 100%; object-fit: cover; }
+        /* School crest on the hero, in the same white tile as the navbar */
+        .hero-logo {
+            width: 104px; height: 104px;
+            border-radius: 22px;
+            object-fit: cover;
+            border: 3px solid rgba(56,189,248,0.45);
+            box-shadow: 0 14px 38px rgba(0,0,0,0.5);
+            margin-bottom: 20px;
+        }
+        @media (max-width: 768px) {
+            .hero-logo { width: 84px; height: 84px; border-radius: 18px; }
+        }
+    /* The school's own intro video, served from this site. It covers the hero
+       and fades in once it can actually play, so the gradient is never a black
+       gap. TikTok's player stays as the fallback (see the script). */
+    .hero-video {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%; height: 100%;
+      min-width: 100%; min-height: 100%;
+      object-fit: cover;
+      border: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+    }
+    .hero-video.is-playing { opacity: 1; }
+
     /* The school's own TikTok video, played by TikTok's official player and
        stretched to cover the hero. It fades in only after the photograph has
        painted, so first paint is never blocked. */
@@ -740,6 +769,7 @@
         <!-- Hero Section -->
     <section class="hero" id="home">
         <div class="hero-content">
+            <img src="/assets/images/logo.jpeg" alt="Kalinabiri Secondary School crest" class="hero-logo">
             <div class="hero-badge">
                 <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m12 3.5 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>
                 Excellence in Education Since 1984
@@ -1367,21 +1397,23 @@
 })();
 </script>
 <script>
-// HERO BACKGROUND FROM TIKTOK — the school's own TikTok video
-// (@kalinabiri_ss, "Hi Skool Kiromo"), served by TikTok's official player.
-// The gradient hero paints instantly; the video fades in after, and only
-// for visitors on a fast connection who allow motion.
+// HERO BACKGROUND — the school's own intro video (assets/video), which is part
+// of this site, so it plays without a third-party embed. If the file cannot be
+// played we fall back to the school's TikTok clip in TikTok's official player.
+// The gradient hero paints instantly; the video fades in only once it is
+// actually playing, and never at all for visitors who save data or who ask for
+// reduced motion.
 (function () {
+  var TIKTOK_ID = '7569660983132687627';
   var conn = navigator.connection || {};
-  if (conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '')) return; // respect data saver
+  if (conn.saveData || /(^|-)(2g|slow-2g)$/.test(conn.effectiveType || '')) return; // respect data saver
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if (window.innerWidth < 900) return; // phones keep the light gradient hero
-  function inject() {
-    var host = document.getElementById('heroBg');
-    if (!host || host.querySelector('iframe.tt-bg')) return;
+
+  function tiktokFallback(host) {
+    if (host.querySelector('iframe.tt-bg')) return;
     var f = document.createElement('iframe');
     f.className = 'tt-bg';
-    f.src = 'https://www.tiktok.com/player/v1/7569660983132687627?autoplay=1&muted=1&loop=1&controls=0&progress_bar=0&play_button=0&volume_control=0&fullscreen_button=0&timestamp=0&music_info=0&description=0&rel=0&native_context_menu=0&closed_caption=0';
+    f.src = 'https://www.tiktok.com/player/v1/' + TIKTOK_ID + '?autoplay=1&muted=1&loop=1&controls=0&progress_bar=0&play_button=0&volume_control=0&fullscreen_button=0&timestamp=0&music_info=0&description=0&rel=0&native_context_menu=0&closed_caption=0';
     f.title = 'Kalinabiri Secondary School on TikTok';
     f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
     f.setAttribute('scrolling', 'no');
@@ -1389,6 +1421,26 @@
     f.addEventListener('load', function () { f.style.opacity = '1'; });
     host.appendChild(f);
   }
+
+  function inject() {
+    var host = document.getElementById('heroBg');
+    if (!host || host.querySelector('.hero-video, iframe.tt-bg')) return;
+    var v = document.createElement('video');
+    v.className = 'hero-video';
+    v.src = '/assets/video/kalinabiri-kalibz-intro.mp4';
+    v.muted = true; v.defaultMuted = true; v.loop = true; v.autoplay = true;
+    v.setAttribute('muted', '');            // iOS refuses to autoplay without it
+    v.setAttribute('playsinline', '');
+    v.setAttribute('preload', 'auto');
+    v.setAttribute('aria-hidden', 'true');
+    v.setAttribute('disablepictureinpicture', '');
+    v.addEventListener('playing', function () { v.classList.add('is-playing'); });
+    v.addEventListener('error', function () { v.remove(); tiktokFallback(host); });
+    host.appendChild(v);
+    var started = v.play();
+    if (started && started.catch) started.catch(function () { /* autoplay blocked: gradient stays */ });
+  }
+
   if (window.requestIdleCallback) window.requestIdleCallback(inject, { timeout: 2500 });
   else window.addEventListener('load', function () { setTimeout(inject, 1200); });
 })();
