@@ -178,7 +178,7 @@
           else inner = `<pre style="white-space:pre-wrap;max-height:70vh;overflow:auto">${UI.esc(await blob.text())}</pre>`;
         }
         const modal = UI.openModal({
-          title: UI.esc(doc.name),
+          title: doc.name,
           wide: true,
           body: inner + `<p style="margin:10px 0 0"><button class="btn" id="dl-in-modal"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Download</button></p>`,
         });
@@ -239,7 +239,7 @@
     async openShare(doc) {
       let modal;
       modal = UI.openModal({
-        title: `Share — ${UI.esc(doc.name)}`,
+        title: `Share — ${doc.name}`,
         body: `
           <label class="field">Share with
             <select id="share-target"></select></label>

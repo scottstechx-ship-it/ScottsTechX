@@ -12,6 +12,21 @@ const path = require('path');
 const REJECTIONS = [];
 const dead = [];
 let clicks = 0;
+
+/**
+ * Markup that reached the screen as text — an <svg>/<div> shown to the user
+ * because it was escaped (esc(icon)) or assigned with textContent. Invisible
+ * to error checks: the page looks fine to the browser, the user sees a wall
+ * of tags.
+ */
+const SHOWN_MARKUP = /<\s*(svg|path|rect|circle|line|polyline|polygon|div|span|button|strong|small|br|p)\b/i;
+function markupAsText(document) {
+  const txt = document.body ? (document.body.textContent || '') : '';
+  const m = txt.match(SHOWN_MARKUP);
+  if (!m) return null;
+  const at = txt.indexOf(m[0]);
+  return `"...${txt.slice(Math.max(0, at - 30), at + 40).replace(/\s+/g, ' ').trim()}"`;
+}
 process.on('unhandledRejection', (e) => {
   REJECTIONS.push((e && e.stack ? e.stack.split('\n').slice(0, 3).join(' <- ') : String(e)));
 });
@@ -111,6 +126,7 @@ const ROLES = [
     process.exit(2);
   }
   let problems = 0;
+  const seenMarkup = new Set();
   for (const role of matched) {
     for (const width of (onlyWidth ? [onlyWidth] : [1280, 390])) {
       console.log(`\n===== ${role.name} @ ${width}px =====`);
@@ -128,6 +144,8 @@ const ROLES = [
         const next = errors.slice(before).filter((e) => !CLEAN.test(e));
         if (next.length) { problems += next.length; console.log(`  x view ${key}: ${next.slice(0, 3).join(' | ')}`); }
         if (text.length < 5) { problems++; console.log(`  x view ${key} EMPTY`); }
+        const shown = markupAsText(window.document);
+        if (shown) { problems++; console.log(`  x view ${key} shows markup as text: ${shown}`); }
 
         // click every button in the rendered view (skip the nav chrome)
         const btns = [...content.querySelectorAll('button:not([disabled]), [role="button"]')];
@@ -148,6 +166,12 @@ const ROLES = [
           await sleep(220);
           window.fetch = of;
           const label = (b.getAttribute('aria-label') || b.textContent || b.dataset.nav || b.id || b.className || '?').trim().slice(0, 30);
+          const shownNow = markupAsText(window.document);
+          if (shownNow && !seenMarkup.has(shownNow)) {
+            seenMarkup.add(shownNow);
+            problems++;
+            console.log(`  x after clicking "${label}" in ${key}: markup is shown as text: ${shownNow}`);
+          }
           if (snapshot() === before && fetches === 0 && !b.dataset.nav) {
             dead.push(`${key}: "${label}" changed nothing (no render, no dialog, no request)`);
           }

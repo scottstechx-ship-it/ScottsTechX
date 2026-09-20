@@ -198,6 +198,26 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
     window.close();
   }
 
+  console.log('\n== dialog text is escaped exactly once ==');
+  {
+    const { window } = await boot({ username: 'teacher1', password: 'Teacher@123', dir: 'platform/teacher' });
+    // openModal escapes the title itself, so call sites must pass raw text.
+    // Passing an already-escaped title showed "S1 &amp; S2" on screen.
+    const modal = window.UI.openModal({ title: 'Class S1 & S2 <form 3>', body: '<p>x</p>' });
+    const head = modal.backdrop.querySelector('.modal-head h3');
+    check('a modal title with & and < reads exactly as written', head.textContent === 'Class S1 & S2 <form 3>', head.textContent);
+    check('the title is not double-escaped', !/&amp;amp;|&amp;lt;/.test(head.innerHTML), head.innerHTML);
+    modal.close();
+
+    const p2 = window.UI.confirmDialog('Delete A & B <x>?', { title: 'Delete' });
+    await wait(150);
+    const msg = [...window.document.querySelectorAll('.modal-backdrop .modal-body p')].pop();
+    check('a confirm message with & and < reads exactly as written', !!msg && msg.textContent === 'Delete A & B <x>?', msg ? msg.textContent : 'no dialog');
+    window.document.querySelectorAll('.modal-backdrop [data-no]').forEach((b) => b.click());
+    await p2;
+    window.close();
+  }
+
   console.log(failures === 0 ? '\nOK DASHBOARD INTERACTIONS BEHAVE (dialogs, editors, validation)' : `\nFAIL ${failures} interaction check(s)`);
   process.exit(failures === 0 ? 0 : 1);
 })().catch((e) => { console.error('harness', e); process.exit(1); });

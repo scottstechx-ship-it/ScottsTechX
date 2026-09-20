@@ -224,7 +224,7 @@
           tr.querySelector('[data-edit]').onclick = () => userModal(u, () => loadUsers());
           tr.querySelector('[data-pass]').onclick = () => resetPasswordModal(u);
           tr.querySelector('[data-del]').onclick = async () => {
-            const ok = await UI.confirmDialog(`Delete user ${UI.esc(u.full_name)} (${UI.esc(u.username)})? This permanently removes their account.`, { title: 'Delete user', confirmText: 'Delete' });
+            const ok = await UI.confirmDialog(`Delete user ${u.full_name} (${u.username})? This permanently removes their account.`, { title: 'Delete user', confirmText: 'Delete' });
             if (!ok) return;
             try { await API.del(`/api/users/${u.id}`); UI.toast('User deleted.', 'success'); loadUsers(); } catch (e) { UI.toast(e.message, 'error'); }
           };
@@ -283,7 +283,7 @@
   function resetPasswordModal(u) {
     let modal;
     modal = UI.openModal({
-      title: `Reset password — ${UI.esc(u.full_name)}`,
+      title: `Reset password — ${u.full_name}`,
       body: '<label class="field">New password <span class="req">*</span><input type="password" id="rp-pass" placeholder="min 8 chars, letter + number"></label>',
       foot: `<button class="btn secondary" data-cancel>Cancel</button><button class="btn" data-save>Reset password</button>`,
     });
@@ -333,7 +333,7 @@
           tbody.appendChild(tr);
           tr.querySelector('[data-edit]').onclick = () => studentModal(s, () => loadStudents());
           tr.querySelector('[data-del]').onclick = async () => {
-            const ok = await UI.confirmDialog(`Delete student ${UI.esc(s.full_name)}?`, { title: 'Delete student', confirmText: 'Delete' });
+            const ok = await UI.confirmDialog(`Delete student ${s.full_name}?`, { title: 'Delete student', confirmText: 'Delete' });
             if (!ok) return;
             try { await API.del(`/api/students/${s.id}`); UI.toast('Deleted.', 'success'); loadStudents(); } catch (e) { UI.toast(e.message, 'error'); }
           };
@@ -425,7 +425,7 @@
           tbody.appendChild(tr);
           tr.querySelector('[data-edit]').onclick = () => teacherModal(t, () => loadTeachers());
           tr.querySelector('[data-del]').onclick = async () => {
-            const ok = await UI.confirmDialog(`Delete teacher ${UI.esc(t.full_name)}?`, { title: 'Delete teacher', confirmText: 'Delete' });
+            const ok = await UI.confirmDialog(`Delete teacher ${t.full_name}?`, { title: 'Delete teacher', confirmText: 'Delete' });
             if (!ok) return;
             try { await API.del(`/api/teachers/${t.id}`); UI.toast('Deleted.', 'success'); loadTeachers(); } catch (e) { UI.toast(e.message, 'error'); }
           };
@@ -518,7 +518,7 @@
           tbody.appendChild(tr);
           tr.querySelector('[data-edit]').onclick = () => parentModal(p, () => loadParents());
           tr.querySelector('[data-del]').onclick = async () => {
-            const ok = await UI.confirmDialog(`Delete parent ${UI.esc(p.full_name)}?`, { title: 'Delete parent', confirmText: 'Delete' });
+            const ok = await UI.confirmDialog(`Delete parent ${p.full_name}?`, { title: 'Delete parent', confirmText: 'Delete' });
             if (!ok) return;
             try { await API.del(`/api/parents/${p.id}`); UI.toast('Deleted.', 'success'); loadParents(); } catch (e) { UI.toast(e.message, 'error'); }
           };
@@ -600,7 +600,7 @@
         const cl = classes[i];
         card.querySelector('[data-edit]').onclick = () => classModal(cl, () => renderClasses(content));
         card.querySelector('[data-del]').onclick = async () => {
-          const ok = await UI.confirmDialog(`Delete class ${UI.esc(cl.name)} ${UI.esc(cl.stream)}?`, { title: 'Delete class', confirmText: 'Delete' });
+          const ok = await UI.confirmDialog(`Delete class ${cl.name} ${cl.stream}?`, { title: 'Delete class', confirmText: 'Delete' });
           if (!ok) return;
           try { await API.del(`/api/classes/${cl.id}`); UI.toast('Deleted.', 'success'); renderClasses(content); } catch (e) { UI.toast(e.message, 'error'); }
         };
@@ -773,7 +773,7 @@
       } catch (e) { UI.toast(e.message, 'error'); }
     };
     logoRemove.onclick = async () => {
-      const ok = await UI.confirmDialog('Remove the school logo? The <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg> mark will be used instead.', { title: 'Remove logo', confirmText: 'Remove', danger: true });
+      const ok = await UI.confirmDialog('Remove the school logo? The school mark will be used instead.', { title: 'Remove logo', confirmText: 'Remove', danger: true });
       if (!ok) return;
       try {
         await API.del('/api/settings/logo');

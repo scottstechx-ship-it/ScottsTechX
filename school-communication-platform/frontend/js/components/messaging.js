@@ -408,7 +408,8 @@
       const me = API.getUser();
       let modal;
       modal = UI.openModal({
-        title: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg> Announcement channels',
+        title: 'Announcement channels',
+        titleIcon: 'announcements',
         wide: true,
         body: `<p class="doc-meta">Channels broadcast school announcements. Subscribe to receive them in your messages.</p>
                <div id="channels-list"></div>

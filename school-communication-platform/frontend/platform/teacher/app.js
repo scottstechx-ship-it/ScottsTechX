@@ -174,7 +174,7 @@
     let detail;
     try { detail = (await API.get(`/api/classes/${cid}`)).class; } catch (e) { return UI.toast(e.message, 'error'); }
     const modal = UI.openModal({
-      title: `${UI.esc(detail.name)} ${UI.esc(detail.stream || '')} — Class details`,
+      title: `${detail.name} ${detail.stream || ''} — Class details`,
       wide: true,
       body: `<h4>Teachers</h4>
         ${detail.teachers && detail.teachers.length ? detail.teachers.map((t) => `<div class="list-row"><span class="k">${UI.esc(t.full_name)}</span><span class="v">${UI.esc(t.subject || '')}</span></div>`).join('') : '<div class="doc-meta">None</div>'}

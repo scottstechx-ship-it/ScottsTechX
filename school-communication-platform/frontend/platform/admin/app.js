@@ -250,7 +250,7 @@
             catch (e) { UI.toast(e.message, 'error'); }
           };
           tr.querySelector('[data-del]').onclick = async () => {
-            const ok = await UI.confirmDialog(`Delete student ${UI.esc(s.full_name)}? This also removes their account.`, { title: 'Delete student', confirmText: 'Delete' });
+            const ok = await UI.confirmDialog(`Delete student ${s.full_name}? This also removes their account.`, { title: 'Delete student', confirmText: 'Delete' });
             if (!ok) return;
             try { await API.del(`/api/students/${s.id}`); UI.toast('Student deleted.', 'success'); loadStudents(true); } catch (e) { UI.toast(e.message, 'error'); }
           };
@@ -272,7 +272,7 @@
     try { student = (await API.get(`/api/students/${id}`)).student; } catch (e) { return UI.toast(e.message, 'error'); }
     let modal;
     modal = UI.openModal({
-      title: `${UI.esc(student.full_name)} — ${UI.esc(student.student_code)}`,
+      title: `${student.full_name} — ${student.student_code}`,
       wide: true,
       body: `<div class="tabs" id="prof-tabs">
         <button class="tab active" data-tab="overview">Overview</button>
@@ -418,7 +418,8 @@
     let importDbId = null;
 
     const wizard = UI.openModal({
-      title: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Import students — Step 1 of 6: Upload',
+      title: 'Import students — Step 1 of 6: Upload',
+      titleIcon: 'upload',
       wide: true,
       body: `<div class="wiz-progress doc-meta" style="margin-bottom:14px"></div>
         <div id="wiz-body"></div>`,
@@ -672,7 +673,7 @@
           tbody.appendChild(tr);
           tr.querySelector('[data-edit]').onclick = () => teacherModal(t, () => loadTeachers());
           tr.querySelector('[data-del]').onclick = async () => {
-            const ok = await UI.confirmDialog(`Delete teacher ${UI.esc(t.full_name)}?`, { title: 'Delete teacher', confirmText: 'Delete' });
+            const ok = await UI.confirmDialog(`Delete teacher ${t.full_name}?`, { title: 'Delete teacher', confirmText: 'Delete' });
             if (!ok) return;
             try { await API.del(`/api/teachers/${t.id}`); UI.toast('Teacher deleted.', 'success'); loadTeachers(); } catch (e) { UI.toast(e.message, 'error'); }
           };
@@ -782,7 +783,7 @@
             catch (e) { UI.toast(e.message, 'error'); }
           };
           row.querySelector('[data-rj]').onclick = async () => {
-            const ok = await UI.confirmDialog(`Reject the registration of ${UI.esc(p.full_name)}? They will not be able to log in.`, { title: 'Reject registration', confirmText: 'Reject', danger: true });
+            const ok = await UI.confirmDialog(`Reject the registration of ${p.full_name}? They will not be able to log in.`, { title: 'Reject registration', confirmText: 'Reject', danger: true });
             if (!ok) return;
             try { await API.post(`/api/parents/${p.id}/reject`); UI.toast('Registration rejected.', 'success'); loadPending(); loadParents(); }
             catch (e) { UI.toast(e.message, 'error'); }
@@ -816,7 +817,7 @@
           tbody.appendChild(tr);
           tr.querySelector('[data-edit]').onclick = () => parentModal(p, () => loadParents());
           tr.querySelector('[data-del]').onclick = async () => {
-            const ok = await UI.confirmDialog(`Delete parent ${UI.esc(p.full_name)}?`, { title: 'Delete parent', confirmText: 'Delete' });
+            const ok = await UI.confirmDialog(`Delete parent ${p.full_name}?`, { title: 'Delete parent', confirmText: 'Delete' });
             if (!ok) return;
             try { await API.del(`/api/parents/${p.id}`); UI.toast('Parent deleted.', 'success'); loadParents(); } catch (e) { UI.toast(e.message, 'error'); }
           };
@@ -910,7 +911,7 @@
           card.querySelector('[data-view]').onclick = () => viewClassStudents(cl);
           card.querySelector('[data-edit]').onclick = () => classModal(cl, () => renderClasses(content));
           card.querySelector('[data-del]').onclick = async () => {
-            const ok = await UI.confirmDialog(`Delete class ${UI.esc(cl.name)} ${UI.esc(cl.stream)}? Students become unassigned.`, { title: 'Delete class', confirmText: 'Delete' });
+            const ok = await UI.confirmDialog(`Delete class ${cl.name} ${cl.stream}? Students become unassigned.`, { title: 'Delete class', confirmText: 'Delete' });
             if (!ok) return;
             try { await API.del(`/api/classes/${cl.id}`); UI.toast('Class deleted.', 'success'); renderClasses(content); } catch (e) { UI.toast(e.message, 'error'); }
           };
@@ -925,7 +926,7 @@
       const data = await API.get(`/api/classes/${cl.id}`);
       const c = data.class;
       const modal = UI.openModal({
-        title: `${UI.esc(c.name)} ${UI.esc(c.stream || '')} — ${(c.students || []).length} students`,
+        title: `${c.name} ${c.stream || ''} — ${(c.students || []).length} students`,
         wide: true,
         body: (c.students || []).map((s) => `<div class="list-row"><span class="k">${UI.esc(s.full_name)}</span><span class="v">${UI.esc(s.student_code)}</span></div>`).join('') || '<div class="doc-meta">No students.</div>',
         foot: `<button class="btn" data-close>Close</button>`,

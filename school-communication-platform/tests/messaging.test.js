@@ -355,6 +355,28 @@ const clean = (s) => String(s || '').replace(/\s+/g, ' ').trim();
     }
   }
 
+  console.log('\n== teacher: new-message dialog ==');
+  {
+    const { window, errors } = await bootMessaging({ username: 'teacher1', password: 'Teacher@123', dir: 'platform/teacher' });
+    const doc = window.document;
+    const btn = doc.querySelector('#new-msg');
+    check('the New button is present', !!btn);
+    if (btn) {
+      const before = errors.length;
+      btn.click();
+      await wait(1600);
+      const modal = [...doc.querySelectorAll('.modal-backdrop')].pop();
+      check('the new-message dialog opens', !!modal);
+      const shown = clean(modal ? modal.textContent : '');
+      check('the new-message dialog shows no markup as text', !/<svg|<path|<rect|<div|<span/i.test(shown), shown.slice(0, 90));
+      check('it offers the contacts', !!modal && modal.querySelectorAll('#compose-people .conv-item').length > 0,
+        modal ? `${modal.querySelectorAll('#compose-people .conv-item').length} people` : 'no modal');
+      check('it raises no error', errors.length === before, errors.slice(before).slice(0, 2).join(' | '));
+      doc.querySelectorAll('.modal-backdrop .close-x').forEach((x) => x.click());
+    }
+    window.close();
+  }
+
   console.log('\n== super admin: channels ==');
   {
     // the owner of this channel is the super admin, so the dialog must NOT
@@ -379,6 +401,13 @@ const clean = (s) => String(s || '').replace(/\s+/g, ' ').trim();
       check('the owner is not offered a Leave button', !!ownRow && !ownRow.querySelector('[data-leave]'),
         ownRow ? clean(ownRow.textContent).slice(0, 90) : 'no owned row');
       check('channels dialog raises no error', errors.length === before, errors.slice(before).slice(0, 2).join(' | '));
+      // the dialog title carried an <svg> through an escaped field once, so the
+      // heading printed the markup
+      const shown = clean(modal ? modal.textContent : '');
+      check('the channels dialog shows no markup as text', !/<svg|<path|<rect|<div|<span/i.test(shown), shown.slice(0, 90));
+      check('the channels dialog still has a heading', !!modal.querySelector('.modal-head h3') &&
+        /Announcement channels/.test(clean(modal.querySelector('.modal-head h3').textContent)),
+        clean(modal.querySelector('.modal-head h3').textContent));
       doc.querySelectorAll('.modal-backdrop .close-x').forEach((x) => x.click());
     }
     window.close();

@@ -54,7 +54,7 @@
             tr.querySelector('[data-edit]').onclick = () => userModal(u, () => load());
             tr.querySelector('[data-pass]').onclick = () => resetPasswordModal(u);
             tr.querySelector('[data-del]').onclick = async () => {
-              const ok = await UI.confirmDialog(`Delete user ${UI.esc(u.full_name)} (${UI.esc(u.username)})? This permanently removes their account.`, { title: 'Delete user', confirmText: 'Delete' });
+              const ok = await UI.confirmDialog(`Delete user ${u.full_name} (${u.username})? This permanently removes their account.`, { title: 'Delete user', confirmText: 'Delete' });
               if (!ok) return;
               try { await API.del(`/api/users/${u.id}`); UI.toast('User deleted.', 'success'); load(); } catch (e) { UI.toast(e.message, 'error'); }
             };
@@ -117,7 +117,7 @@
   function resetPasswordModal(u) {
     let modal;
     modal = UI.openModal({
-      title: `Reset password — ${UI.esc(u.full_name)}`,
+      title: `Reset password — ${u.full_name}`,
       body: '<label class="field">New password <span class="req">*</span><input type="password" id="uv-rp" placeholder="min 8 chars, letter + number"></label>',
       foot: `<button class="btn secondary" data-cancel>Cancel</button><button class="btn" data-save>Reset password</button>`,
     });

@@ -284,7 +284,7 @@
       const subs = a.submissions || [];
       let modal;
       modal = UI.openModal({
-        title: `Grade — ${UI.esc(a.title)}`,
+        title: `Grade — ${a.title}`,
         wide: true,
         body: `<div class="doc-meta">${UI.esc(a.class_name || '')} · Due ${UI.esc(a.due_date || '—')} · ${subs.length} submission${subs.length === 1 ? '' : 's'}</div>
           <div id="subs-list"></div>
@@ -350,7 +350,7 @@
       try { a = (await API.get(`/api/assignments/${id}`)).assignment; } catch (e) { return UI.toast(e.message, 'error'); }
       const my = a.my_submission || {};
       const modal = UI.openModal({
-        title: `Submit — ${UI.esc(a.title)}`,
+        title: `Submit — ${a.title}`,
         wide: true,
         body: `<div class="doc-meta">${UI.esc(a.description || '')} · Due ${UI.esc(a.due_date || '—')}</div>
           <label class="field">Your work<textarea id="sub-content" rows="5" placeholder="Write your answer here…">${UI.esc(my.content || '')}</textarea></label>
@@ -509,7 +509,7 @@
       const isTeacher = me().role === 'teacher';
       let modal;
       modal = UI.openModal({
-        title: `${UI.esc(e.title)} — ${UI.esc(e.subject || '')}`,
+        title: `${e.title} — ${e.subject || ''}`,
         wide: true,
         body: `<div class="doc-meta">${UI.esc(e.class_name || '')} · ${UI.esc(e.date || 'no date')} · Status: ${UI.esc(e.status)}</div>
           ${e.status === 'published' ? `<div id="res-view"></div>` : `
@@ -587,7 +587,7 @@
           const exam = (await API.get(`/api/exams/${b.dataset.view}`)).exam;
           const my = exam.my_result;
           UI.openModal({
-            title: UI.esc(exam.title),
+            title: exam.title,
             body: `<div class="doc-meta">${UI.esc(exam.subject || '')} · ${UI.esc(exam.date || 'no date')} · Status: ${UI.esc(exam.status)}</div>
               ${my ? `<div style="display:flex;gap:20px;margin-top:14px">
                 <div class="card" style="margin:0"><div class="stat-num">${my.marks ?? '—'}</div><div class="stat-label">Marks</div></div>
@@ -867,7 +867,7 @@
       let students = [];
       try { students = (await API.get('/api/students?limit=500')).students || []; } catch {}
       const modal = UI.openModal({
-        title: `Assign "${UI.esc(f.name)}"`,
+        title: `Assign "${f.name}"`,
         wide: true,
         body: `<div class="search-input"><input id="assign-search" placeholder="Search students…"></div>
           <div id="assign-list" style="max-height:320px;overflow-y:auto;margin-top:10px"></div>`,

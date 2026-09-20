@@ -233,7 +233,13 @@
     modalStack[modalStack.length - 1].close();
   });
 
-  function openModal({ title, body, foot, wide = false, onClose }) {
+  /**
+   * @param {string} title     plain text — it is escaped, so never pass markup
+   * @param {string} [titleIcon] optional icon NAME drawn before the title
+   *                           (use this instead of putting an <svg> in title:
+   *                           markup in an escaped field prints as text)
+   */
+  function openModal({ title, titleIcon, body, foot, wide = false, onClose }) {
     // A dialog that is fading out is already gone as far as the user is
     // concerned, but its DOM (and its ids) can still be in the page for another
     // ~180ms. Two modals with the same field ids in the document at once is
@@ -243,7 +249,7 @@
 
     const backdrop = el(`<div class="modal-backdrop" role="dialog" aria-modal="true">
       <div class="modal ${wide ? 'wide' : ''}" tabindex="-1">
-        <div class="modal-head"><h3>${esc(title)}</h3><button class="close-x" data-close aria-label="Close">${icon('close', { size: 16 })}</button></div>
+        <div class="modal-head"><h3>${titleIcon ? icon(titleIcon, { size: 18 }) : ''}${esc(title)}</h3><button class="close-x" data-close aria-label="Close">${icon('close', { size: 16 })}</button></div>
         <div class="modal-body"></div>
         ${foot ? '<div class="modal-foot"></div>' : ''}
       </div></div>`);
