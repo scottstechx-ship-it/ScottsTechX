@@ -9,7 +9,8 @@
 const { JSDOM } = require('jsdom');
 const BASE = 'http://localhost:4000';
 
-const PAGES = ['/', '/about/', '/admissions/', '/contact/', '/gallery/', '/news/', '/staff/',
+const PAGES = ['/', '/about/', '/academics/', '/academics/a-level.html', '/calendar/',
+  '/admissions/', '/contact/', '/gallery/', '/news/', '/staff/',
   '/staff/hods.html', '/dashboard-access.html', '/platform/login.html',
   '/platform/login-admin.html', '/platform/login-teacher.html', '/platform/login-student.html',
   '/platform/login-parent.html', '/platform/login-super-admin.html',

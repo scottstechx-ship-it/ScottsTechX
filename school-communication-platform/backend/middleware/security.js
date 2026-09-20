@@ -32,7 +32,7 @@ function securityHeaders(req, res, next) {
       // allowed to execute code here any more.
       "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com",
       "connect-src 'self' ws: wss: https://www.googletagmanager.com https://*.google-analytics.com https://pagead2.googlesyndication.com",
-      "frame-src https://www.google.com https://maps.google.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.youtube.com https://www.youtube-nocookie.com https://www.tiktok.com https://www.instagram.com",
+      "frame-src 'self' blob: https://www.google.com https://maps.google.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.youtube.com https://www.youtube-nocookie.com https://www.tiktok.com https://www.instagram.com",
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",

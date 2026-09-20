@@ -359,7 +359,14 @@
           ${canDelete ? `<button class="msg-del" title="Delete message" data-del="${m.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : ''}</div>
       </div>`);
       const at = bubble.querySelector('.attach');
-      if (at) at.onclick = () => window.DocumentsView && window.DocumentsView.downloadDoc(Number(at.dataset.doc));
+      if (at) at.onclick = () => {
+        const id = Number(at.dataset.doc);
+        const name = (m.attachment_name || 'Attachment');
+        // open it here: images inline, PDFs in the viewer, office files as text
+        const DV = window.DocumentsView;
+        if (DV && DV.previewDoc) DV.previewDoc({ id, name, mime_type: m.attachment_mime, size: m.attachment_size });
+        else if (DV) DV.downloadDoc(id, name);
+      };
       const del = bubble.querySelector('.msg-del[data-del]');
       if (del) del.onclick = async (e) => {
         e.stopPropagation();

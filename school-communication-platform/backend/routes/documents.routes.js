@@ -29,6 +29,7 @@ const { authenticate } = require('../middleware/auth');
 const { upload, handleUploadErrors } = require('../middleware/upload');
 const { cleanString, asInt } = require('../middleware/validate');
 const { log } = require('../services/audit');
+const { inspectFile, scanForMalware, checkQuota, mb } = require('../services/uploadGuard');
 const { notify, notifyMany } = require('../services/notify');
 const { sendEmail } = require('../services/mailer');
 const {
@@ -120,11 +121,33 @@ router.get('/', authenticate, (req, res) => {
 });
 
 /** POST /api/documents — upload (multipart). Fields: file, description, folderId, share (JSON string), expireDate. */
-router.post('/', authenticate, upload.single('file'), handleUploadErrors, (req, res) => {
+router.post('/', authenticate, upload.single('file'), handleUploadErrors, async (req, res) => {
   if (!canUpload(req.user)) {
     return res.status(403).json({ error: 'Your account is not allowed to upload documents.' });
   }
   if (!req.file) return res.status(400).json({ error: 'Choose a file to upload.' });
+
+  // ---- what IS this file? (extension checks alone are not enough) --------
+  const verdict = inspectFile(req.file.path, req.file.originalname);
+  if (!verdict.ok) {
+    try { fs.unlinkSync(req.file.path); } catch { /* already gone */ }
+    return res.status(400).json({ error: verdict.error, code: verdict.code });
+  }
+  const scan = await scanForMalware(req.file.path);
+  if (scan.infected) {
+    try { fs.unlinkSync(req.file.path); } catch { /* already gone */ }
+    log(req.user, 'UPLOAD_BLOCKED', `Blocked infected upload "${req.file.originalname}"`, req.ip);
+    return res.status(400).json({ error: 'This file failed the virus scan and was rejected.', code: 'VIRUS_FOUND' });
+  }
+
+  const quota = checkQuota(get, req.user.id, req.file.size);
+  if (!quota.ok) {
+    try { fs.unlinkSync(req.file.path); } catch { /* already gone */ }
+    return res.status(413).json({
+      error: `Storage limit reached: you have used ${mb(quota.used)} MB of ${mb(quota.quota)} MB. Delete some documents or ask an administrator to raise the limit.`,
+      code: 'QUOTA_EXCEEDED',
+    });
+  }
 
   const originalName = cleanString(req.file.originalname, 255);
   const description = cleanString(req.body.description, 1000);

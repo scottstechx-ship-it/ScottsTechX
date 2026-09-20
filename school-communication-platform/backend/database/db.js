@@ -90,6 +90,16 @@ function migrateConversationsType() {
 }
 migrateConversationsType();
 
+// ---- announcement scheduling (draft / scheduled / published) --------------
+// Existing rows are already announced, so they default to 'published'.
+ensureColumn('announcements', 'status', "TEXT NOT NULL DEFAULT 'published'");
+ensureColumn('announcements', 'scheduled_at', 'TEXT');
+// ---- attendance reporting period -----------------------------------------
+// Term/year on each attendance row so a term report is a GROUP BY, not a
+// guess from dates. Existing rows keep NULL and are matched by date.
+ensureColumn('attendance', 'term', 'TEXT');
+ensureColumn('attendance', 'academic_year', 'TEXT');
+
 // conversation_participants: archiving + muting
 ensureColumn('conversation_participants', 'archived', 'INTEGER NOT NULL DEFAULT 0');
 ensureColumn('conversation_participants', 'muted', 'INTEGER NOT NULL DEFAULT 0');

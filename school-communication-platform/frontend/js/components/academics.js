@@ -12,24 +12,87 @@
   // ATTENDANCE
   // =========================================================================
   const AttendanceView = {
-    /** Teacher/Admin: mark + history. */
+    /** Teacher/Admin: mark + history + term report. */
     async teacherView(container) {
       container.innerHTML = `
-        <div class="card" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
-          <label class="field" style="margin:0;min-width:160px;flex:1">Class
-            <select id="att-class"></select></label>
-          <label class="field" style="margin:0">Date
-            <input type="date" id="att-date"></label>
-          <button class="btn" id="att-load">Load roster</button>
-          <button class="btn success" id="att-save"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg> Save attendance</button>
+        <div class="tabs att-tabs" role="tablist" style="margin-bottom:12px">
+          <button class="tab active" data-att-tab="register" role="tab" aria-selected="true" aria-controls="att-pane-register">Register</button>
+          <button class="tab" data-att-tab="report" role="tab" aria-selected="false" aria-controls="att-pane-report">Term report</button>
         </div>
-        <div class="card" id="att-roster"><div class="doc-meta">Pick a class and date, then load the roster.</div></div>
-        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg> History</h3><div id="att-history"></div></div>`;
+        <div data-att-pane="register" id="att-pane-register" role="tabpanel">
+          <div class="card" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+            <label class="field" style="margin:0;min-width:160px;flex:1">Class
+              <select id="att-class"></select></label>
+            <label class="field" style="margin:0">Date
+              <input type="date" id="att-date"></label>
+            <button class="btn" id="att-load">Load roster</button>
+            <button class="btn secondary" id="att-all-present">Mark all present</button>
+            <button class="btn success" id="att-save"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg> Save attendance</button>
+          </div>
+          <div class="card" id="att-term-note"><div class="doc-meta">Checking the school calendar…</div></div>
+          <div class="card" id="att-roster"><div class="doc-meta">Pick a class and date, then load the roster.</div></div>
+          <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg> History</h3><div id="att-history"></div></div>
+        </div>
+        <div data-att-pane="report" id="att-pane-report" role="tabpanel" hidden>
+          <div class="card" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+            <label class="field" style="margin:0;min-width:160px;flex:1">Class
+              <select id="rep-class"></select></label>
+            <label class="field" style="margin:0">Term<select id="rep-term"></select></label>
+            <label class="field" style="margin:0;max-width:120px">At risk below (%)<input type="number" id="rep-threshold" min="1" max="100" value="80"></label>
+            <button class="btn" id="rep-load">Show report</button>
+            <button class="btn secondary" id="rep-print"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Print report</button>
+          </div>
+          <div id="rep-body"></div>
+        </div>`;
 
       const classes = (await API.get('/api/classes')).classes || [];
       const sel = container.querySelector('#att-class');
-      classes.forEach((c) => sel.appendChild(UI.el(`<option value="${c.id}">${UI.esc(c.name)} ${UI.esc(c.stream || '')}</option>`)));
+      const repClass = container.querySelector('#rep-class');
+      classes.forEach((c) => {
+        const label = `${UI.esc(c.name)} ${UI.esc(c.stream || '')}`;
+        sel.appendChild(UI.el(`<option value="${c.id}">${label}</option>`));
+        repClass.appendChild(UI.el(`<option value="${c.id}">${label}</option>`));
+      });
       container.querySelector('#att-date').value = new Date().toISOString().slice(0, 10);
+
+      // tabs
+      container.querySelectorAll('[data-att-tab]').forEach((tab) => tab.addEventListener('click', () => {
+        container.querySelectorAll('[data-att-tab]').forEach((t) => {
+          t.classList.toggle('active', t === tab);
+          t.setAttribute('aria-selected', String(t === tab));
+        });
+        container.querySelectorAll('[data-att-pane]').forEach((p) => { p.hidden = p.dataset.attPane !== tab.dataset.attTab; });
+        if (tab.dataset.attTab === 'report') loadReport();
+      }));
+
+      // which term the marks will be stamped with — shown, never guessed silently
+      let termInfo = null;
+      try { termInfo = await API.get('/api/attendance/terms'); } catch {}
+      const termBox = container.querySelector('#att-term-note');
+      if (termInfo && (termInfo.terms || []).length) {
+        const options = termInfo.terms.map((t) => `<option value="${UI.esc(t.term)}|${UI.esc(t.year)}" ${termInfo.current && t.term === termInfo.current.term && t.year === termInfo.current.year ? 'selected' : ''}>${UI.esc(t.term)} ${UI.esc(t.year)}${t.from ? ` (${UI.esc(t.from)} → ${UI.esc(t.to)})` : ''}</option>`).join('');
+        termBox.innerHTML = `<div class="doc-meta" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:0">
+          <label class="field" style="margin:0;min-width:220px;flex:1">Marks are recorded against
+            <select id="att-term">${options}</select></label>
+          <span class="doc-meta" style="max-width:320px">Today falls in <strong>${UI.esc((termInfo.current && termInfo.current.term) || 'no term')}</strong>${termInfo.current && termInfo.current.year ? ' ' + UI.esc(termInfo.current.year) : ''} according to the school calendar.</span>
+        </div>`;
+      } else {
+        termBox.innerHTML = '<div class="doc-meta">No term calendar is set for this year — marks are still saved against today\'s date.</div>';
+      }
+      // term picker for the report: every term the school has a calendar for
+      const repTermSel = container.querySelector('#rep-term');
+      if (termInfo && (termInfo.terms || []).length) {
+        repTermSel.innerHTML = termInfo.terms.map((t) => `<option value="${UI.esc(t.term)}|${UI.esc(t.year)}" ${termInfo.current && t.term === termInfo.current.term && t.year === termInfo.current.year ? 'selected' : ''}>${UI.esc(t.term)} ${UI.esc(t.year)}</option>`).join('');
+      } else {
+        repTermSel.innerHTML = '<option value="|">All dates on record</option>';
+      }
+
+      const termSel = container.querySelector('#att-term');
+      const chosenTerm = () => {
+        if (!termSel || !termSel.value) return {};
+        const [term, year] = termSel.value.split('|');
+        return { term, year };
+      };
 
       const loadRoster = async () => {
         const classId = sel.value;
@@ -61,6 +124,14 @@
           b.dataset.chosen = '1';
           rows.querySelectorAll(`[data-sid="${sid}"]`).forEach((x) => { if (x !== b) x.dataset.chosen = '0'; });
         }));
+        const saveRecords = async (records) => {
+          try {
+            const r = await API.post('/api/attendance', { classId: Number(classId), date, records, ...chosenTerm() });
+            UI.toast(r.message, 'success');
+            await loadHistory();
+            return true;
+          } catch (e) { UI.toast(e.message, 'error'); return false; }
+        };
         container.querySelector('#att-save').onclick = async () => {
           const records = [];
           rows.querySelectorAll('.doc-item').forEach((item) => {
@@ -69,11 +140,18 @@
             const status = chosen ? chosen.dataset.status : 'present';
             records.push({ studentId: sid, status });
           });
-          try {
-            const r = await API.post('/api/attendance', { classId: Number(classId), date, records });
-            UI.toast(r.message, 'success');
-            await loadHistory();
-          } catch (e) { UI.toast(e.message, 'error'); }
+          await saveRecords(records);
+        };
+        // one tap for the normal case: everyone is here
+        const allBtn = container.querySelector('#att-all-present');
+        allBtn.onclick = async () => {
+          const ok = await UI.confirmDialog(
+            `Mark all ${students.length} students in this class present for ${date}?`,
+            { title: 'Mark everyone present', danger: false, confirmText: 'Mark all present' }
+          );
+          if (!ok) return;
+          const saved = await saveRecords(students.map((s) => ({ studentId: s.id, status: 'present' })));
+          if (saved) await loadRoster();
         };
       };
 
@@ -122,26 +200,129 @@
         });
       };
 
+      // ---------------- term report + absence trend ----------------
+      const loadReport = async () => {
+        const classId = repClass.value;
+        if (!classId) return;
+        const threshold = Math.min(Math.max(Number(container.querySelector('#rep-threshold').value) || 80, 1), 100);
+        const [term, year] = (container.querySelector('#rep-term').value || '|').split('|');
+        const body = container.querySelector('#rep-body');
+        body.innerHTML = '<div class="card"><div class="doc-meta">Building the report…</div></div>';
+        let rep; let trend;
+        try {
+          const qs = `classId=${classId}${term ? `&term=${encodeURIComponent(term)}&year=${encodeURIComponent(year)}` : ''}&threshold=${threshold}`;
+          [rep, trend] = await Promise.all([
+            API.get('/api/attendance/term-report?' + qs),
+            API.get(`/api/attendance/trend?${qs}&weeks=10`),
+          ]);
+        } catch (e) {
+          body.innerHTML = `<div class="card"><div class="doc-meta">${UI.esc(e.message)}</div></div>`;
+          return;
+        }
+        const pct = (v) => (v === null || v === undefined ? '—' : v + '%');
+        const period = rep.from && rep.to ? `${UI.esc(rep.from)} → ${UI.esc(rep.to)}` : 'all dates on record';
+        body.innerHTML = `
+          <div class="grid grid-4">
+            ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>', pct(rep.summary.percentage), 'Class attendance')}
+            ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>', rep.days, 'Days recorded')}
+            ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>', rep.summary.absent, 'Absences')}
+            ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>', rep.summary.chronicCount, 'Below ' + rep.threshold + '%')}
+          </div>
+          <div class="card"><h3>${UI.esc((rep.term || 'Current term') + ' ' + (rep.year || ''))} attendance — week by week</h3>
+            <div class="doc-meta" style="margin-bottom:8px">${period}${rep.calendarConfigured ? '' : ' · no calendar set for this year, showing recorded dates'}</div>
+            <div id="rep-chart"></div>
+            <div class="table-responsive" style="margin-top:10px"><table class="table"><thead><tr><th>Week of</th><th>Days marked</th><th>Attendance</th></tr></thead>
+              <tbody>${(trend.series || []).map((w) => `<tr><td data-label="Week of">${UI.esc(w.weekStart)}</td><td data-label="Marked">${w.marked}</td><td data-label="Attendance">${pct(w.percentage)}</td></tr>`).join('') || '<tr><td colspan="3" class="doc-meta">Nothing recorded in this period.</td></tr>'}</tbody></table></div>
+          </div>
+          ${(trend.chronic || []).length ? `<div class="card"><h3>Needs follow-up (below ${rep.threshold}%)</h3>
+            ${trend.chronic.map((c) => `<div class="list-row"><span class="k">${UI.esc(c.name)} <span class="doc-meta">${UI.esc(c.code || '')}</span></span>
+              <span class="v">${pct(c.percentage)} · absent ${c.absent} of ${c.marked}${c.missedRun > 1 ? ` · ${c.missedRun} school days in a row` : ''}</span></div>`).join('')}
+          </div>` : ''}
+          <div class="card"><h3>Per student — ${UI.esc((rep.term || 'current term'))}</h3>
+            <div class="table-responsive"><table class="table"><thead><tr>
+              <th>Student</th><th>Admission no</th><th class="num">Present</th><th class="num">Late</th><th class="num">Permission</th><th class="num">Absent</th><th class="num">Rate</th><th>Flag</th>
+            </tr></thead><tbody>
+              ${(rep.students || []).map((r) => `<tr>
+                <td data-label="Student">${UI.esc(r.name)}</td>
+                <td data-label="Admission no">${UI.esc(r.code || '—')}</td>
+                <td data-label="Present" class="num">${r.present}</td>
+                <td data-label="Late" class="num">${r.late}</td>
+                <td data-label="Permission" class="num">${r.permission}</td>
+                <td data-label="Absent" class="num">${r.absent}</td>
+                <td data-label="Rate" class="num">${pct(r.percentage)}</td>
+                <td data-label="Flag">${r.chronic ? '<span class="badge red">at risk</span>' : (r.marked ? '<span class="badge green">ok</span>' : '<span class="badge gray">no marks</span>')}</td>
+              </tr>`).join('') || '<tr><td colspan="8" class="doc-meta">No active students in this class.</td></tr>'}
+            </tbody></table></div>
+          </div>`;
+        const chart = body.querySelector('#rep-chart');
+        if (chart) UI.barChart(chart, (trend.series || []).map((w) => ({ label: w.weekStart, value: w.percentage === null ? 0 : w.percentage })));
+      };
+
+      container.querySelector('#rep-load').onclick = () => loadReport();
+      repClass.addEventListener('change', () => { if (!container.querySelector('[data-att-pane="report"]').hidden) loadReport(); });
+      container.querySelector('#rep-print').onclick = () => {
+        const [term, year] = (container.querySelector('#rep-term').value || '|').split('|');
+        const qs = new URLSearchParams({ classId: repClass.value });
+        if (term) { qs.set('term', term); qs.set('year', year); }
+        UI.openPrintable('/api/print/attendance/' + repClass.value + '?' + qs.toString());
+      };
+
       container.querySelector('#att-load').onclick = () => loadRoster();
       sel.addEventListener('change', loadHistory);
       await loadHistory();
+      await loadReport();
     },
 
-    /** Student / Parent: view own / children's attendance. */
+    /** Student / Parent: view own / children's attendance, by term. */
     async viewer(container, { studentId, studentName } = {}) {
-      container.innerHTML = `<div id="att-summary"></div><div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg> Attendance history — ${UI.esc(studentName || '')}</h3><div id="att-list"></div></div>`;
+      let termInfo = null;
+      try { termInfo = await API.get('/api/attendance/terms'); } catch {}
+      const termOptions = (termInfo && (termInfo.terms || []).length)
+        ? termInfo.terms.map((t) => `<option value="${UI.esc(t.term)}|${UI.esc(t.year)}" ${termInfo.current && t.term === termInfo.current.term && t.year === termInfo.current.year ? 'selected' : ''}>${UI.esc(t.term)} ${UI.esc(t.year)}</option>`).join('')
+        : '<option value="|">All dates on record</option>';
+
+      container.innerHTML = `
+        <div class="card" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+          <label class="field" style="margin:0;min-width:200px;flex:1">Period
+            <select id="att-period">${termOptions}<option value="|all">Everything on record</option></select></label>
+          <span class="doc-meta" id="att-period-note"></span>
+        </div>
+        <div id="att-summary"></div>
+        <div class="card" id="att-trend-card" hidden><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg> Week by week</h3><div id="att-trend"></div></div>
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg> Attendance history — ${UI.esc(studentName || '')}</h3><div id="att-list"></div></div>`;
+
+      const loadViewer = async () => {
+      const raw = container.querySelector('#att-period').value;
+      const [term, year] = raw.split('|');
+      const scoped = term && year ? `?term=${encodeURIComponent(term)}&year=${encodeURIComponent(year)}` : '';
       try {
-        const summary = await API.get(`/api/attendance/summary/student/${studentId}`);
+        const summary = await API.get(`/api/attendance/summary/student/${studentId}${scoped}`);
         const box = container.querySelector('#att-summary');
         const pct = summary.percentage === null ? '—' : summary.percentage + '%';
+        container.querySelector('#att-period-note').innerHTML = summary.from && summary.to
+          ? `${UI.esc(summary.term || 'Period')}: ${UI.esc(summary.from)} → ${UI.esc(summary.to)}`
+          : 'No term calendar set — showing every recorded date.';
         box.innerHTML = `<div class="grid grid-4">
           ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>', pct, 'Attendance rate')}
           ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>', summary.present || 0, 'Present')}
           ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>', summary.absent || 0, 'Absent')}
           ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>', summary.late || 0, 'Late')}
         </div>
-        ${summary.recentAbsences && summary.recentAbsences.length ? `<div class="card"><h3>Recent absences/lates</h3>${summary.recentAbsences.map((a) => `<div class="list-row"><span class="k">${UI.esc(a.date)}</span><span class="v">${attBadge(a.status)}</span></div>`).join('')}</div>` : ''}`;
-        const data = (await API.get(`/api/attendance?studentId=${studentId}&limit=200`)).attendance || [];
+        ${summary.recentAbsences && summary.recentAbsences.length ? `<div class="card"><h3>Recent absences/lates</h3>${summary.recentAbsences.map((a) => `<div class="list-row"><span class="k">${UI.esc(a.date)}</span><span class="v">${attBadge(a.status)}</span></div>`).join('')}</div>` : ''}
+        ${summary.chronic ? `<div class="card" style="border-left:4px solid var(--danger)"><h3>Attendance needs attention</h3>
+          <div class="doc-meta">Attendance is ${pct} for this period, below the ${summary.threshold}% the school expects${summary.missedRun > 1 ? `, including ${summary.missedRun} school days missed in a row` : ''}. Please speak to the class teacher.</div></div>` : ''}`;
+
+        // week-by-week trend so a slow slide is visible, not just one number
+        const trendCard = container.querySelector('#att-trend-card');
+        const series = summary.series || [];
+        if (series.length > 1) {
+          trendCard.hidden = false;
+          UI.barChart(container.querySelector('#att-trend'), series.map((w) => ({ label: w.weekStart, value: w.percentage === null ? 0 : w.percentage })));
+        } else {
+          trendCard.hidden = true;
+        }
+
+        const data = (await API.get(`/api/attendance?studentId=${studentId}&limit=200${scoped ? '&' + scoped.slice(1) : ''}`)).attendance || [];
         const list = container.querySelector('#att-list');
         if (!data.length) { list.innerHTML = '<div class="doc-meta">No attendance recorded yet.</div>'; return; }
         list.innerHTML = `<div class="table-responsive"><table class="table"><thead><tr><th>Date</th><th>Status</th><th>Note</th></tr></thead><tbody></tbody></table></div>`;
@@ -152,6 +333,9 @@
           tbody.appendChild(tr);
         });
       } catch (e) { UI.toast(e.message, 'error'); }
+      };
+      container.querySelector('#att-period').addEventListener('change', loadViewer);
+      await loadViewer();
     },
   };
 
@@ -524,8 +708,26 @@
         const view = modal.backdrop.querySelector('#res-view');
         const results = (await API.get(`/api/exams/${id}`)).exam.results || [];
         view.innerHTML = results.length
-          ? `<div class="table-responsive"><table class="table"><thead><tr><th>Student</th><th>Marks</th><th>Grade</th></tr></thead><tbody>${results.map((r) => `<tr><td data-label="Student">${UI.esc(r.student_name)}</td><td data-label="Marks">${r.marks}</td><td data-label="Grade">${UI.esc(r.grade || '—')}</td></tr>`).join('')}</tbody></table></div>`
+          ? `<div class="table-responsive"><table class="table"><thead><tr><th>Student</th><th>Marks</th><th>Grade</th><th style="text-align:right">Report card</th></tr></thead><tbody>${results.map((r) => `<tr><td data-label="Student">${UI.esc(r.student_name)}</td><td data-label="Marks">${r.marks}</td><td data-label="Grade">${UI.esc(r.grade || '—')}</td><td data-label="" class="actions-cell"><button class="btn secondary sm" data-rc="${r.student_id}">Print</button></td></tr>`).join('')}</tbody></table></div>`
+              + `<button class="btn secondary sm" id="rc-all" style="margin-top:10px">Print every report card in this class</button>`
+              + `<div id="rc-progress" class="doc-meta" style="margin-top:6px"></div>`
           : '<div class="doc-meta">No results.</div>';
+        // Report cards print from the server so the school letterhead, term
+        // average, position and attendance are all on one page.
+        view.querySelectorAll('[data-rc]').forEach((b) => {
+          b.onclick = () => UI.openPrintable(`/api/print/report-card/${b.dataset.rc}?term=${encodeURIComponent(e.term || '')}`);
+        });
+        const all = view.querySelector('#rc-all');
+        if (all) all.onclick = async () => {
+          const kids = [...view.querySelectorAll('[data-rc]')];
+          const prog = view.querySelector('#rc-progress');
+          prog.textContent = 'Opening ' + kids.length + ' report cards…';
+          for (const b of kids) {
+            UI.openPrintable(`/api/print/report-card/${b.dataset.rc}?term=${encodeURIComponent(e.term || '')}`);
+            await new Promise((r) => setTimeout(r, 350));   // browsers block a burst of tabs
+          }
+          prog.textContent = 'If some tabs did not open, allow pop-ups for this site.';
+        };
         return;
       }
 
@@ -569,7 +771,27 @@
 
     /** Student / Parent view of exams + published results. */
     async studentView(container, { studentId } = {}) {
-      container.innerHTML = `<div id="ex-list"></div>`;
+      const me = (API.getUser() || {});
+      // who is this report card for? a student sees their own; a parent picks a child
+      let myStudentId = studentId || null;
+      if (!myStudentId && me.role === 'parent') {
+        try {
+          const kids = (await API.get('/api/parents/children')).children || [];
+          myStudentId = kids[0] ? kids[0].id : null;
+        } catch { /* no children linked */ }
+      }
+      container.innerHTML = `${myStudentId ? `<div class="card" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <div style="flex:1;min-width:180px"><strong>Report card</strong>
+            <div class="doc-meta">Every published result, your average, class position and attendance — ready to print or save as a PDF.</div></div>
+          <input id="rc-term" placeholder="Term (optional)" style="width:150px">
+          <button class="btn" id="rc-print">Print report card</button>
+        </div>` : ''}<div id="ex-list"></div>`;
+      if (myStudentId) {
+        container.querySelector('#rc-print').onclick = () => {
+          const term = container.querySelector('#rc-term').value.trim();
+          UI.openPrintable(`/api/print/report-card/${myStudentId}${term ? '?term=' + encodeURIComponent(term) : ''}`);
+        };
+      }
       const data = (await API.get('/api/exams')).exams || [];
       const list = container.querySelector('#ex-list');
       if (!data.length) { list.innerHTML = '<div class="empty-state"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></div>No exams scheduled.</div>'; return; }
@@ -761,7 +983,11 @@
         const rep = await API.get('/api/fees/report');
         const box = container.querySelector('#fee-report');
         if (!rep.rows.length) { box.innerHTML = '<div class="doc-meta">No fee data yet.</div>'; return; }
-        box.innerHTML = `<div class="table-responsive"><table class="table"><thead><tr><th>Student</th><th>Class</th><th>Due</th><th>Paid</th><th>Balance</th></tr></thead><tbody></tbody></table></div>`;
+        box.innerHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+            <button class="btn secondary sm" id="fee-collection-report">Print collection report (all students)</button>
+          </div>
+          <div class="table-responsive"><table class="table"><thead><tr><th>Student</th><th>Class</th><th>Due</th><th>Paid</th><th>Balance</th><th style="text-align:right">Statement</th></tr></thead><tbody></tbody></table></div>`;
+        box.querySelector('#fee-collection-report').onclick = () => UI.openPrintable('/api/print/fee-statements');
         const tbody = box.querySelector('tbody');
         rep.rows.slice(0, 100).forEach((r) => {
           const tr = document.createElement('tr');
@@ -769,8 +995,10 @@
             <td data-label="Class">${UI.esc(r.class_name || '')} ${UI.esc(r.class_stream || '')}</td>
             <td data-label="Due">${UI.money(r.due)}</td>
             <td data-label="Paid">${UI.money(r.paid)}</td>
-            <td data-label="Balance"><span class="badge ${r.balance > 0 ? 'red' : 'green'}">${UI.money(r.balance)}</span></td>`;
+            <td data-label="Balance"><span class="badge ${r.balance > 0 ? 'red' : 'green'}">${UI.money(r.balance)}</span></td>
+            <td data-label="" class="actions-cell"><button class="btn secondary sm" data-st="${r.student_id}">Print</button></td>`;
           tbody.appendChild(tr);
+          tr.querySelector('[data-st]').onclick = () => UI.openPrintable(`/api/print/fee-statement/${r.student_id}`);
         });
       };
       const loadPayments = async () => {
@@ -902,15 +1130,23 @@
             ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg>', UI.money(data.totalDue), 'Total due')}
             ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>', UI.money(data.totalPaid), 'Paid')}
             ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>', UI.money(data.balance), 'Balance')}
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+              <button class="btn secondary sm" id="fee-statement"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg> Print fee statement</button>
+            </div>
           </div>
           ${data.balance > 0 ? '<div class="card" style="background:var(--warning-light)"><strong>Outstanding balance of ' + UI.money(data.balance) + ' — please settle before the deadline.</strong></div>' : ''}
           <div class="card"><h4>Fee items</h4>
             ${data.fees.length ? data.fees.map((f) => `<div class="list-row"><span class="k">${UI.esc(f.name)}${f.term ? ' (' + UI.esc(f.term) + ')' : ''}</span><span class="v">${UI.money(f.due_amount)}</span></div>`).join('') : '<div class="doc-meta">No fees assigned.</div>'}
           </div>
           <div class="card"><h4>Payment history</h4>
-            ${data.payments.length ? `<div class="table-responsive"><table class="table"><thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Receipt</th></tr></thead><tbody>${data.payments.map((p) => `<tr><td data-label="Date">${UI.esc(p.paid_at)}</td><td data-label="Amount">${UI.money(p.amount)}</td><td data-label="Method">${UI.esc(p.method)}</td><td data-label="Receipt">${UI.esc(p.receipt_no || '—')}</td></tr>`).join('')}</tbody></table></div>`
+            ${data.payments.length ? `<div class="table-responsive"><table class="table"><thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Receipt</th><th style="text-align:right">Print</th></tr></thead><tbody>${data.payments.map((p) => `<tr><td data-label="Date">${UI.esc(p.paid_at)}</td><td data-label="Amount">${UI.money(p.amount)}</td><td data-label="Method">${UI.esc(p.method)}</td><td data-label="Receipt">${UI.esc(p.receipt_no || '—')}</td><td data-label="" class="actions-cell"><button class="btn secondary sm" data-receipt="${p.id}">Receipt</button></td></tr>`).join('')}</tbody></table></div>`
               : '<div class="doc-meta">No payments recorded yet.</div>'}
           </div>`;
+        // print actions: the statement covers everything, a receipt covers one payment
+        box.querySelector('#fee-statement').onclick = () => UI.openPrintable(`/api/print/fee-statement/${studentId}`);
+        box.querySelectorAll('[data-receipt]').forEach((b) => {
+          b.onclick = () => UI.openPrintable(`/api/print/receipt/${studentId}/${b.dataset.receipt}`);
+        });
       } catch (e) { UI.toast(e.message, 'error'); }
     },
   };

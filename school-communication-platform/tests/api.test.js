@@ -450,15 +450,46 @@ test('users can upload a profile picture and it is served authenticated', async 
   assert.strictEqual(bad.status, 400);
 });
 
+/** Build a minimal but genuine .docx (an OOXML zip with real content). */
+function minimalDocx(text = 'Hello from a real Word document.') {
+  const { zipSync, strToU8 } = require('fflate');
+  return Buffer.from(zipSync({
+    '[Content_Types].xml': strToU8(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+<Default Extension="xml" ContentType="application/xml"/>
+<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+</Types>`),
+    '_rels/.rels': strToU8(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`),
+    'word/document.xml': strToU8(`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:t>${text}</w:t></w:r></w:p></w:body></w:document>`),
+  }));
+}
+
 // ---------------------------------------------------------------- office previews
 test('office files get a graceful preview response', async () => {
-  // a fake .docx upload (not a real zip) must fail extraction gracefully -> 415
-  const form = new FormData();
-  form.append('file', new Blob(['not a real docx'], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }), 'notes.docx');
-  const up = await api('/api/documents', { method: 'POST', token: tokens.teacher1, form });
+  // A text file renamed ".docx" is no longer accepted at all: uploads are
+  // validated by content, not by extension.
+  const fake = new FormData();
+  fake.append('file', new Blob(['not a real docx'], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }), 'notes.docx');
+  const rejected = await api('/api/documents', { method: 'POST', token: tokens.teacher1, form: fake });
+  assert.strictEqual(rejected.status, 400, JSON.stringify(rejected.data));
+  assert.strictEqual(rejected.data.code, 'CONTENT_MISMATCH');
+
+  // A real (minimal) .docx uploads, and if its contents cannot be extracted
+  // the preview says so gracefully instead of crashing.
+  const real = new FormData();
+  real.append('file', new Blob([minimalDocx()], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }), 'real-notes.docx');
+  const up = await api('/api/documents', { method: 'POST', token: tokens.teacher1, form: real });
   assert.strictEqual(up.status, 201, JSON.stringify(up.data));
   const preview = await api(`/api/documents/${up.data.document.id}/preview`, { token: tokens.teacher1 });
-  assert.strictEqual(preview.status, 415, 'garbage docx should return 415, not crash');
+  assert.ok([200, 415].includes(preview.status), `preview status ${preview.status}`);
+  if (preview.status === 200) {
+    assert.ok(String(preview.data.text || '').length > 0, 'extracted text is present');
+  }
 });
 
 // ---------------------------------------------------------------- notification preferences

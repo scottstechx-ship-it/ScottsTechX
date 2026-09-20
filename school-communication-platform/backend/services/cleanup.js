@@ -56,8 +56,11 @@ function deleteExpiredAnnouncements() {
 function runCleanup() {
   const docs = deleteExpiredDocuments();
   const anns = deleteExpiredAnnouncements();
-  const summary = { ...docs, ...anns, timestamp: new Date().toISOString() };
-  if (summary.documents || summary.announcements) {
+  // scheduled announcements go out on time even when nobody has the app open
+  let published = 0;
+  try { published = require('../routes/announcements.routes').publishDue(); } catch { /* route not loaded yet */ }
+  const summary = { ...docs, ...anns, published, timestamp: new Date().toISOString() };
+  if (summary.documents || summary.announcements || summary.published) {
     console.log('[Cleanup]', JSON.stringify(summary));
   }
   return summary;

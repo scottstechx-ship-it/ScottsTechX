@@ -46,9 +46,11 @@
       const item = UI.el(`<div class="ann-item ${a.is_read ? '' : 'unread'} ${important ? 'important' : ''}">
         <div class="ann-title">
           ${important ? '<span class="badge red">IMPORTANT</span>' : ''}
+          ${a.status === 'scheduled' ? '<span class="badge amber">SCHEDULED</span>' : ''}
           <span>${UI.esc(a.title)}</span>
         </div>
         <div class="ann-meta">${important ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg> ' : ''}${UI.esc(a.sender_name || 'School')} · ${UI.fmtDate(a.created_at)} · ${UI.timeAgo(a.created_at)}
+          ${a.status === 'scheduled' ? `· goes out ${UI.esc(String(a.scheduled_at || '').replace('T', ' '))}` : ''}
           ${this.canPost ? `<button class="btn ghost sm" data-edit style="margin-left:8px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Edit</button><button class="btn ghost sm" data-del>Delete</button>` : ''}
         </div>
         <div class="ann-body">${UI.esc(a.content)}</div>
@@ -104,11 +106,14 @@
           <label class="field">Message <span class="req">*</span><textarea id="ann-content" rows="5"></textarea></label>
           <label class="field">Target audience
             <select id="ann-target">${options}</select></label>
-          <label class="field" style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="ann-important" style="width:auto;margin:0"> Mark as important</label>`,
-        foot: `<button class="btn secondary" data-cancel>Cancel</button><button class="btn" data-send>Publish</button>`,
+          <label class="field" style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="ann-important" style="width:auto;margin:0"> Mark as important</label>
+          <label class="field">Schedule for later <span class="doc-meta">(leave empty to publish now)</span>
+            <input type="datetime-local" id="ann-when"></label>
+          <div class="doc-meta">A scheduled notice is hidden from everyone until that time, then it publishes and notifies by itself.</div>`,
+        foot: `<button class="btn secondary" data-cancel>Cancel</button><button class="btn secondary" data-schedule>Schedule</button><button class="btn" data-send>Publish</button>`,
       });
       modal.backdrop.querySelector('[data-cancel]').onclick = () => modal.close();
-      modal.backdrop.querySelector('[data-send]').onclick = async () => {
+      const submit = async ({ schedule }) => {
         const title = modal.backdrop.querySelector('#ann-title').value.trim();
         const content = modal.backdrop.querySelector('#ann-content').value.trim();
         if (!title || !content) return UI.toast('Title and message are required.', 'error');
@@ -116,18 +121,26 @@
         const target = this.parseTarget(sel);
         if (target.error) return UI.toast(target.error, 'error');
         const important = modal.backdrop.querySelector('#ann-important').checked;
+        const when = modal.backdrop.querySelector('#ann-when').value;
+        if (schedule && !when) return UI.toast('Choose the date and time to publish.', 'error');
+        if (when && new Date(when).getTime() <= Date.now() && schedule) {
+          return UI.toast('That time has already passed — pick a future time or press Publish.', 'error');
+        }
         try {
-          await API.post('/api/announcements', {
+          const r = await API.post('/api/announcements', {
             title, content,
             targetType: target.targetType,
             targetValue: target.targetValue,
             important,
+            scheduledAt: when || undefined,
           });
-          UI.toast('Announcement published.', 'success');
+          UI.toast(r.message || 'Announcement published.', 'success');
           modal.close();
           await this.load();
         } catch (e) { UI.toast(e.message, 'error'); }
       };
+      modal.backdrop.querySelector('[data-send]').onclick = () => submit({ schedule: false });
+      modal.backdrop.querySelector('[data-schedule]').onclick = () => submit({ schedule: true });
     }
 
     /** Edit an existing announcement (sender or admin — the API enforces it). */
@@ -143,7 +156,9 @@
           <label class="field">Title <span class="req">*</span><input id="ann-title" maxlength="200" value="${UI.esc(a.title)}"></label>
           <label class="field">Message <span class="req">*</span><textarea id="ann-content" rows="5">${UI.esc(a.content)}</textarea></label>
           <label class="field">Target audience <select id="ann-target">${options}</select></label>
-          <label class="field" style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="ann-important" style="width:auto;margin:0" ${a.important ? 'checked' : ''}> Mark as important</label>`,
+          <label class="field" style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="ann-important" style="width:auto;margin:0" ${a.important ? 'checked' : ''}> Mark as important</label>
+          <label class="field">Schedule for <span class="doc-meta">${a.status === 'scheduled' ? '(not published yet)' : '(leave empty if already published)'}</span>
+            <input type="datetime-local" id="ann-when" value="${UI.esc(String(a.scheduled_at || '').replace(' ', 'T').slice(0, 16))}"></label>`,
         foot: `<button class="btn secondary" data-cancel>Cancel</button><button class="btn" data-save>Save changes</button>`,
       });
       const sel = modal.backdrop.querySelector('#ann-target');
@@ -169,6 +184,7 @@
             important: modal.backdrop.querySelector('#ann-important').checked,
             targetType: target.targetType,
             targetValue: target.targetValue,
+            scheduledAt: modal.backdrop.querySelector('#ann-when').value || '',
           });
           UI.toast('Announcement updated.', 'success');
           modal.close();

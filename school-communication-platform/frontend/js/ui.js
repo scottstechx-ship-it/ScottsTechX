@@ -126,6 +126,21 @@
     return (bytes / 1048576).toFixed(1) + ' MB';
   }
 
+  /**
+   * Open a server-rendered printable document (report card, statement,
+   * receipt) in a new tab. Uses a real link click so popup blockers leave it
+   * alone, and the session cookie travels with the request.
+   */
+  function openPrintable(path) {
+    const a = document.createElement('a');
+    a.href = path;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
   /** Debounce a function (used for search inputs). */
   function debounce(fn, ms = 300) {
     let t;
@@ -330,6 +345,210 @@
     } catch { return []; }
   }
 
+  // ---------------- global search ----------------
+  /**
+   * One search box for the whole platform, added to the topbar of every
+   * dashboard by initLayout. Results come from /api/search, which already
+   * applies each role's access rules, so the box can never reveal a record the
+   * user is not allowed to open.
+   */
+  function initGlobalSearch({ topbar, onNav }) {
+    const box = topbar.querySelector('#global-search');
+    const input = topbar.querySelector('#gs-input');
+    const drop = topbar.querySelector('#gs-drop');
+    const clearBtn = topbar.querySelector('#gs-clear');
+    const mobileBtn = topbar.querySelector('#gs-mobile-btn');
+    if (!box || !input || !drop) return;
+
+    let reqId = 0;
+    let items = [];      // flattened, in display order
+    let active = -1;
+
+    const closeDrop = () => {
+      drop.hidden = true;
+      drop.innerHTML = '';
+      active = -1;
+      box.classList.remove('open');
+    };
+
+    /** Flatten the grouped payload so keyboard navigation is a single list. */
+    function render(payload) {
+      const q = payload.query || '';
+      if (!payload.groups || !payload.groups.length) {
+        drop.innerHTML = `<div class="gs-empty">${
+          payload.hint ? esc(payload.hint) : `No matches for “${esc(q)}”.`
+        }</div>`;
+        drop.hidden = false;
+        box.classList.add('open');
+        items = [];
+        active = -1;
+        return;
+      }
+      items = [];
+      const parts = payload.groups.map((g) => {
+        const rows = g.items.map((it) => {
+          const idx = items.push(it) - 1;
+          const badge = it.badge ? `<span class="badge ${badgeClass(it.badge)}">${esc(it.badge)}</span>` : '';
+          return `<button class="gs-item" type="button" role="option" data-i="${idx}">
+            <span class="gs-item-ic">${icon(navIcon(it), { size: 15 })}</span>
+            <span class="gs-item-main"><span class="gs-item-title">${esc(it.title)}</span>
+              <span class="gs-item-sub">${esc(it.subtitle || '')}</span></span>
+            ${badge}<span class="gs-item-go" aria-hidden="true">${icon('arrowRight', { size: 14 })}</span>
+          </button>`;
+        }).join('');
+        return `<div class="gs-group"><div class="gs-group-h">${esc(g.label)} <span class="gs-count">${g.count}</span></div>${rows}</div>`;
+      }).join('');
+      drop.innerHTML = parts + `<div class="gs-foot">${payload.total} result${payload.total === 1 ? '' : 's'} — Enter opens the first match, Esc closes</div>`;
+      drop.hidden = false;
+      box.classList.add('open');
+      // if the input was cleared while the request was in flight, stay shut
+      if (!input.value.trim()) closeDrop();
+    }
+
+    function badgeClass(b) {
+      const v = String(b).toLowerCase();
+      if (['active', 'published', 'paid'].includes(v)) return 'green';
+      if (['important', 'suspended', 'overdue'].includes(v)) return 'red';
+      if (['scheduled', 'pending', 'draft'].includes(v)) return 'amber';
+      return 'gray';
+    }
+
+    /** Icon name used as the result-type avatar. */
+    function navIcon(it) {
+      const map = {
+        student: 'students', user: 'users', class: 'classes', subject: 'subjects',
+        document: 'document', announcement: 'announcements', message: 'messages',
+        assignment: 'assignments', exam: 'exams', payment: 'fees',
+      };
+      return map[it.type] || 'search';
+    }
+
+    function search() {
+      const q = input.value.trim();
+      clearBtn.hidden = !q;
+      if (q.length < 2) {
+        closeDrop();
+        return;
+      }
+      const mine = ++reqId;
+      drop.innerHTML = `<div class="gs-loading"><span class="gs-spin" aria-hidden="true"></span> Searching…</div>`;
+      drop.hidden = false;
+      box.classList.add('open');
+      API.get(`/api/search?q=${encodeURIComponent(q)}`)
+        .then((data) => { if (mine === reqId) render(data); })
+        .catch((e) => {
+          if (mine !== reqId) return;
+          drop.innerHTML = `<div class="gs-empty">${esc(e.message || 'Search failed.')}</div>`;
+          drop.hidden = false;
+        });
+    }
+
+    function setActive(i) {
+      const all = [...drop.querySelectorAll('.gs-item')];
+      if (!all.length) return;
+      active = (i + all.length) % all.length;
+      all.forEach((b, n) => b.classList.toggle('active', n === active));
+      const cur = all[active];
+      if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: 'nearest' });
+    }
+
+    const doSearch = debounce(search, 250);
+
+    input.addEventListener('input', () => doSearch());
+    input.addEventListener('focus', () => { if (input.value.trim().length >= 2 && drop.innerHTML) drop.hidden = false; });
+    clearBtn.addEventListener('click', () => { input.value = ''; clearBtn.hidden = true; closeDrop(); input.focus(); });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') { e.preventDefault(); setActive(active + 1); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); setActive(active - 1); }
+      else if (e.key === 'Enter') {
+        e.preventDefault();
+        const target = items[active] || items[0];
+        if (target) openResult(target);
+      } else if (e.key === 'Escape') {
+        if (drop.hidden) input.value = '';
+        closeDrop();
+      }
+    });
+
+    drop.addEventListener('click', (e) => {
+      const btn = e.target.closest('.gs-item');
+      if (!btn) return;
+      const it = items[Number(btn.dataset.i)];
+      if (it) openResult(it);
+    });
+
+    // click anywhere else closes the panel
+    document.addEventListener('click', (e) => { if (!box.contains(e.target) && e.target !== mobileBtn) closeDrop(); });
+
+    // a small phone hides the input behind a magnifier button
+    if (mobileBtn) {
+      mobileBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        box.classList.toggle('mobile-open');
+        if (box.classList.contains('mobile-open')) input.focus();
+        else closeDrop();
+      });
+    }
+
+    // Ctrl/⌘+K or "/" jumps into search from anywhere
+    document.addEventListener('keydown', (e) => {
+      const typing = /^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName || '');
+      if ((e.key === 'k' && (e.ctrlKey || e.metaKey)) || (e.key === '/' && !typing)) {
+        e.preventDefault();
+        box.classList.add('mobile-open');
+        input.focus();
+        input.select();
+      }
+    });
+
+    /**
+     * Show the record. Every result carries the fields the API already
+     * returned, so the detail card opens instantly; "Go to section" then hands
+     * control back to the dashboard.
+     */
+    function openResult(it) {
+      closeDrop();
+      const rows = (it.meta || []).map(([label, value]) => `
+        <div class="gs-meta-row"><span>${esc(label)}</span><strong>${esc(String(value == null || value === '' ? '—' : value))}</strong></div>`).join('');
+      const canOpenFile = !!it.href;
+      const m = openModal({
+        title: it.title,
+        titleIcon: navIcon(it),
+        wide: true,
+        body: `<div class="gs-detail">
+            <div class="gs-detail-sub">${esc(it.subtitle || '')}</div>
+            <div class="gs-meta">${rows}</div>
+          </div>`,
+        foot: `<button class="btn secondary" data-cancel>Close</button>
+               ${canOpenFile ? `<button class="btn secondary" data-file>${it.type === 'payment' ? 'Print receipt' : 'Open file'}</button>` : ''}
+               <button class="btn" data-go>Go to ${esc(sectionLabel(it.nav))}</button>`,
+      });
+      m.backdrop.querySelector('[data-cancel]').onclick = () => m.close();
+      m.backdrop.querySelector('[data-go]').onclick = () => {
+        m.close();
+        if (typeof onNav === 'function') onNav(it.nav);
+      };
+      const fileBtn = m.backdrop.querySelector('[data-file]');
+      if (fileBtn) fileBtn.onclick = () => {
+        // opens in a new tab with the session cookie attached
+        openPrintable(it.href);
+        m.close();
+      };
+    }
+
+    function sectionLabel(key) {
+      const b = sidebarNavLabel(key);
+      return b || 'section';
+    }
+    function sidebarNavLabel(key) {
+      const btn = document.querySelector(`.nav-item[data-nav="${key}"]`);
+      if (!btn) return '';
+      const clone = btn.cloneNode(true);
+      clone.querySelectorAll('.badge').forEach((x) => x.remove());
+      return clone.textContent.trim();
+    }
+  }
+
   // ---------------- layout ----------------
   const ROLE_PATHS = { super_admin: 'super-admin', admin: 'admin', teacher: 'teacher', student: 'student', parent: 'parent' };
 
@@ -371,6 +590,13 @@
     const topbar = el(`<div class="topbar">
       <button class="hamburger" id="hamburger" aria-label="Open menu">${icon('filter', { size: 18 })}</button>
       <div class="page-title" id="page-title">${esc(title || 'Dashboard')}</div>
+      <div class="global-search" id="global-search">
+        <span class="gs-ic" aria-hidden="true">${icon('search', { size: 16 })}</span>
+        <input type="search" id="gs-input" placeholder="Search students, staff, documents…" aria-label="Search the whole platform" autocomplete="off" enterkeyhint="search">
+        <button class="gs-clear" id="gs-clear" type="button" aria-label="Clear search" title="Clear search" hidden>${icon('close', { size: 14 })}</button>
+        <div class="gs-drop" id="gs-drop" role="listbox" aria-label="Search results" hidden></div>
+      </div>
+      <button class="icon-btn gs-mobile-btn" id="gs-mobile-btn" title="Search" aria-label="Search">${icon('search', { size: 18 })}</button>
       <div class="spacer"></div>
       <button class="icon-btn" id="theme-btn" title="Switch theme (light / dark / system)" aria-label="Switch theme">${icon('theme', { size: 18 })}</button>
       <button class="icon-btn topbar-logout" id="logout-btn" title="Log out" aria-label="Log out">${icon('logout', { size: 18 })}</button>
@@ -433,6 +659,9 @@
       if (narrow) buildBottomNav();
       else { closeSidebar(); }
     }, { passive: true });
+
+    // global search — lives in the topbar of every dashboard
+    initGlobalSearch({ topbar, onNav });
 
     // events
     sidebar.querySelectorAll('.nav-item[data-nav]').forEach((b) => b.addEventListener('click', () => {
@@ -754,7 +983,7 @@
     debounce, money, barChart,
     toast, openModal, modal: openModal, confirmDialog,
     initLayout, refreshUnreadCounts, loadNotifications,
-    onUnreadChange, openChangePassword, openAvatarUpload, profileSettingsPanel,
+    onUnreadChange, openChangePassword, openAvatarUpload, profileSettingsPanel, openPrintable,
     lockScroll, unlockScroll,
   };
 })();

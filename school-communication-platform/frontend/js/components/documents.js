@@ -122,13 +122,16 @@
             <div class="doc-meta">${UI.esc(d.mime_type || '')} · ${UI.fmtSize(d.size)} · ${UI.timeAgo(d.created_at)} · by ${UI.esc(d.uploader_name || 'Unknown')}</div>
           </div>
           <div class="doc-actions">
-            <button class="btn secondary sm" data-preview><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg> Preview</button>
+            <button class="btn sm" data-preview><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg> Open</button>
             <button class="btn secondary sm" data-download><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Download</button>
             ${this.canManage ? `<button class="btn secondary sm" data-share><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3A5 5 0 0 0 13.5 3.4l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7.1 7.1l1.7-1.7"/></svg> Share</button>` : ''}
             ${this.canManage ? `<button aria-label="Rename" title="Rename" class="btn secondary sm" data-rename><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>` : ''}
             ${canDelete ? `<button aria-label="Delete" title="Delete" class="btn danger sm" data-delete><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : ''}
           </div>
         </div>`);
+        item.querySelector('.doc-name').style.cursor = 'pointer';
+        item.querySelector('.doc-name').title = 'Open ' + d.name;
+        item.querySelector('.doc-name').onclick = () => DocumentsView.previewDoc(d);
         item.querySelector('[data-download]').onclick = () => DocumentsView.downloadDoc(d.id, d.name);
         item.querySelector('[data-preview]').onclick = () => DocumentsView.previewDoc(d);
         if (item.querySelector('[data-share]')) item.querySelector('[data-share]').onclick = () => this.openShare(d);
@@ -177,12 +180,16 @@
           else if (isImage) inner = `<img src="${url}" style="max-width:100%;border-radius:8px">`;
           else inner = `<pre style="white-space:pre-wrap;max-height:70vh;overflow:auto">${UI.esc(await blob.text())}</pre>`;
         }
+        const canFrame = /pdf|image|text\//.test(doc.mime_type || '');
         const modal = UI.openModal({
           title: doc.name,
           wide: true,
-          body: inner + `<p style="margin:10px 0 0"><button class="btn" id="dl-in-modal"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Download</button></p>`,
+          body: `<div class="doc-open">${inner}</div>` + `<p style="margin:10px 0 0;display:flex;gap:8px;flex-wrap:wrap">
+            ${canFrame ? '<button class="btn secondary" id="open-in-tab">Open in a new tab</button>' : ''}<button class="btn" id="dl-in-modal"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Download</button></p>`,
         });
         modal.backdrop.querySelector('#dl-in-modal').onclick = () => DocumentsView.downloadDoc(doc.id, doc.name);
+        const inTab = modal.backdrop.querySelector('#open-in-tab');
+        if (inTab) inTab.onclick = () => UI.openPrintable(`/api/documents/${doc.id}/preview`);
       } catch (e) { UI.toast(e.message, 'error'); }
     }
 

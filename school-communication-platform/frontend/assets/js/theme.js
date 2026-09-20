@@ -8,9 +8,8 @@
  *        b. Otherwise, if the page has <nav class="navbar">, replace
  *           its inner contents with the canonical chrome.
  *   3. Injects the canonical footer the same way.
- *   4. Patches internal links that point at /academics/, /news/, or
- *      /downloads/ (those routes were removed) — they now jump to
- *      the in-page anchors (#combinations, #contact, etc.).
+ *   4. Patches internal links that point at /downloads/ (a route that no
+ *      longer exists) — they jump to the in-page #contact anchor.
  *   5. Marks body.theme-loaded so theme.css's body-level rules win
  *      against any page-specific body styles.
  *
@@ -154,11 +153,10 @@
     }
 
     // ── 6. Patch dead-route links ───────────────────────────────────
+    // /academics/, /academics/a-level.html and /news/ are real pages again,
+    // so they are no longer rewritten — only genuinely removed routes are.
     var patches = {
-      '/academics/':             '#combinations',
-      '/academics/a-level.html': 'staff/hods.html',
-      '/news/':                  '#contact',
-      '/downloads/':             '#contact'
+      '/downloads/': '#contact'
     };
     document.querySelectorAll('a[href]').forEach(function (a) {
       var href = a.getAttribute('href');
