@@ -24,9 +24,13 @@ app.disable('x-powered-by');
 app.set('trust proxy', true);
 
 const { securityHeaders, corsHandler, rateLimit } = require('./middleware/security');
+const { csrfProtection } = require('./middleware/auth');
 
 app.use(securityHeaders);
 app.use(corsHandler);
+// Cookie-authenticated writes must carry the CSRF token that was issued with
+// the session (double-submit). Bearer-token clients are unaffected.
+app.use('/api/', csrfProtection);
 // gzip/brotli-style compression: HTML/CSS/JS/JSON shrink 60-80% -> much
 // faster loads, especially on mobile data.
 app.use(require('compression')());
@@ -73,10 +77,12 @@ const frontendDir = path.join(__dirname, '..', 'frontend');
 app.use(express.static(frontendDir, {
   extensions: ['html'],
   index: 'index.html',
-  // cache static assets in the browser: instant repeat visits.
-  // HTML stays revalidated so content updates appear immediately.
+  // Images and fonts are content, so they cache hard for a day.
+  // CSS and JS are behaviour: they revalidate on every use (304 = cheap, no
+  // re-download) so a style or script fix is never hidden behind a stale
+  // copy for up to a day. HTML is revalidated too.
   setHeaders(res, filePath) {
-    if (/\.(css|js|png|jpe?g|webp|gif|ico|svg|woff2?)$/i.test(filePath)) {
+    if (/\.(png|jpe?g|webp|gif|ico|svg|woff2?)$/i.test(filePath)) {
       res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
     } else {
       res.setHeader('Cache-Control', 'no-cache');
@@ -105,7 +111,7 @@ app.use((req, res) => {
 <style>body{font-family:Inter,system-ui,sans-serif;background:#060d1f;color:#e2e8f0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
 a{color:#38bdf8;font-weight:700;text-decoration:none;border:1px solid rgba(56,189,248,.4);padding:10px 22px;border-radius:999px;display:inline-block;margin-top:18px}
 h1{font-size:3.4rem;margin-bottom:4px}p{color:#94a3b8}</style></head>
-<body><div><h1>404</h1><p>That page doesn't exist or has moved.</p><a href="/">← Back to the school website</a></div></body></html>`);
+<body><div><h1>404</h1><p>That page doesn't exist or has moved.</p><a href="/"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg> Back to the school website</a></div></body></html>`);
 });
 
 app.use((err, req, res, next) => {
@@ -155,6 +161,11 @@ setInterval(deadlineReminders, 12 * 60 * 60 * 1000);
 // Auto-cleanup expired documents & announcements (hourly)
 const { startCleanupInterval } = require('./services/cleanup');
 startCleanupInterval(60 * 60 * 1000);
+
+// Expired/revoked sessions and stale login counters (hourly)
+const { purgeExpired: purgeSessions } = require('./services/sessions');
+purgeSessions();
+setInterval(purgeSessions, 60 * 60 * 1000).unref();
 
 server.listen(env.PORT, '0.0.0.0', () => {
   console.log(`==============================================`);

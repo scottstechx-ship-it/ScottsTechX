@@ -109,12 +109,14 @@ p { margin: 0 0 .75rem; }
 .stat-card .stat-ic { width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; font-size: 22px; flex-shrink: 0; }
 .stat-card .stat-num { font-size: 24px; font-weight: 800; color: var(--ink); line-height: 1.1; }
 .stat-card .stat-label { font-size: 12.5px; color: var(--muted); }
-.ic-blue { background: var(--primary-light); }
-.ic-teal { background: var(--primary-light); }
-.ic-green { background: var(--success-light); }
-.ic-amber { background: var(--warning-light); }
-.ic-red { background: var(--danger-light); }
-.ic-purple { background: #ede9fe; }
+.ic-blue { background: var(--primary-light); color: var(--primary); }
+.ic-teal { background: var(--primary-light); color: var(--primary); }
+.ic-green { background: var(--success-light); color: var(--success); }
+.ic-amber { background: var(--warning-light); color: var(--warning); }
+.ic-red { background: var(--danger-light); color: var(--danger); }
+.ic-purple { background: #ede9fe; color: #6d28d9; }
+/* inline icons never shrink and always sit on the text baseline */
+svg.ie { flex: none; }
 
 /* ---------- buttons ---------- */
 .btn {
@@ -147,7 +149,7 @@ textarea { resize: vertical; min-height: 80px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .search-input { position: relative; }
 .search-input input { padding-left: 34px; }
-.search-input::before { content: "🔍"; position: absolute; left: 11px; top: 50%; transform: translateY(-50%); font-size: 13px; opacity: .7; }
+.search-input::before { content: ""; position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; opacity: .7; background: currentColor; -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%2211%22%20r%3D%227%22%2F%3E%3Cpath%20d%3D%22M21%2021l-4.3-4.3%22%2F%3E%3C%2Fsvg%3E") no-repeat center / contain; mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22black%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Ccircle%20cx%3D%2211%22%20cy%3D%2211%22%20r%3D%227%22%2F%3E%3Cpath%20d%3D%22M21%2021l-4.3-4.3%22%2F%3E%3C%2Fsvg%3E") no-repeat center / contain; }
 
 /* ---------- tables ---------- */
 .table-wrap { overflow-x: auto; }
@@ -391,6 +393,34 @@ html[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #334155; }
 html[data-theme="dark"] .toast { background: #1e293b; }
 html[data-theme="dark"] .toast.success { background: #15803d; }
 html[data-theme="dark"] .toast.error { background: #b91c1c; }
+
+/* --- status badges: their text was hard-coded for light chips, so on the
+       dark chip colours it became dark-on-dark. Give each badge a light,
+       readable foreground in dark mode. --- */
+html[data-theme="dark"] .badge.green { background: #14351f; color: #86efac; }
+html[data-theme="dark"] .badge.red { background: #3d1616; color: #fca5a5; }
+html[data-theme="dark"] .badge.amber { background: #3a2c10; color: #fcd34d; }
+html[data-theme="dark"] .badge.blue { background: #1e3a5f; color: #93c5fd; }
+html[data-theme="dark"] .badge.purple { background: #2b2350; color: #c4b5fd; }
+html[data-theme="dark"] .badge.gray { background: #1a2537; color: #cbd5e1; }
+
+/* --- lists that kept a hard-coded light surface in dark mode --- */
+html[data-theme="dark"] .conv-item,
+html[data-theme="dark"] .notif-item { background: #131c2b; }
+html[data-theme="dark"] .list-row { border-bottom-color: var(--border); }
+html[data-theme="dark"] .table tr:hover td { background: #16202f; }
+
+/* --- tinted icon chips: lighter icon tints for contrast on dark chips --- */
+html[data-theme="dark"] .ic-blue,
+html[data-theme="dark"] .ic-teal { color: #93c5fd; }
+html[data-theme="dark"] .ic-green { color: #86efac; }
+html[data-theme="dark"] .ic-amber { color: #fcd34d; }
+html[data-theme="dark"] .ic-red { color: #fca5a5; }
+html[data-theme="dark"] .ic-purple { background: #2b2350; color: #c4b5fd; }
+
+/* --- hover-only fix that left the resting state light --- */
+html[data-theme="dark"] .conv-item:hover,
+html[data-theme="dark"] .notif-item:hover { background: #1a2537; }
 
 /* ============================================================
    ACCESSIBILITY — visible focus for keyboard users

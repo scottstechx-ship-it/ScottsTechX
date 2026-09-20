@@ -21,7 +21,10 @@ async function login(username, password) {
   });
   const data = await res.json();
   if (!res.ok) throw new Error(`login ${username}: ${JSON.stringify(data)}`);
-  return { token: data.token, user: data.user };
+  // cookie sessions: keep the session cookie the server just issued
+  const cookies = (res.headers.getSetCookie ? res.headers.getSetCookie() : [])
+    .map((c) => c.split(';')[0]);
+  return { token: data.token, user: data.user, cookies };
 }
 
 function readScript(rel) {
@@ -37,7 +40,18 @@ async function bootDashboard({ username, password, htmlRel, appRel }) {
     pretendToBeVisual: true,
   });
   const { window } = dom;
-  window.fetch = globalThis.fetch;
+  const cookieHeader = (creds.cookies || []).join('; ');
+  if (creds.cookies && creds.cookies.length) {
+    for (const c of creds.cookies) {
+      try { window.document.cookie = c; } catch { /* httpOnly bits ignored */ }
+    }
+  }
+  const rawFetch = globalThis.fetch;
+  window.fetch = (input, init = {}) => {
+    const headers = new Headers(init.headers || {});
+    if (cookieHeader && !headers.has('cookie')) headers.set('cookie', cookieHeader);
+    return rawFetch(input, { ...init, headers });
+  };
   window.FormData = globalThis.FormData;
   window.Blob = globalThis.Blob;
   window.Headers = globalThis.Headers;
@@ -51,10 +65,8 @@ async function bootDashboard({ username, password, htmlRel, appRel }) {
   const origError = console.error;
   console.error = (...a) => { errors.push(a.join(' ')); };
 
-  window.localStorage.setItem('scp_token', creds.token);
-  window.localStorage.setItem('scp_user', JSON.stringify(creds.user));
 
-  const scripts = ['js/config.js', 'js/api.js', 'js/theme.js', 'js/ui.js', 'js/socket-client.js',
+  const scripts = ['js/config.js', 'js/icons.js', 'js/api.js', 'js/theme.js', 'js/ui.js', 'js/socket-client.js',
     'js/components/messaging.js', 'js/components/documents.js', 'js/components/announcements.js',
     'js/components/academics.js', 'js/components/users.js', 'js/components/website.js', appRel];
   for (const rel of scripts) {
@@ -78,12 +90,18 @@ function navKeys(appRel) {
   return keys;
 }
 
-const ROLES = [
+// Both dashboard trees are tested: the legacy /<role>/ pages AND the
+// /platform/<role>/ pages, which is where every login redirects.
+const ROLE_ACCOUNTS = [
   { name: 'SUPER ADMIN', username: 'superadmin', password: 'SuperAdmin@123', dir: 'super-admin' },
   { name: 'ADMIN', username: 'admin', password: 'Admin@123', dir: 'admin' },
   { name: 'TEACHER', username: 'teacher1', password: 'Teacher@123', dir: 'teacher' },
   { name: 'STUDENT', username: 'student1', password: 'Student@123', dir: 'student' },
   { name: 'PARENT', username: 'parent1', password: 'Parent@123', dir: 'parent' },
+];
+const ROLES = [
+  ...ROLE_ACCOUNTS,
+  ...ROLE_ACCOUNTS.map((r) => ({ ...r, name: `${r.name} (/platform)`, dir: `platform/${r.dir}` })),
 ];
 
 (async () => {
@@ -100,9 +118,9 @@ const ROLES = [
 
     if (errors.length) {
       failures++;
-      console.log(`  ✘ boot errors: ${errors.slice(0, 3).join(' | ')}`);
+      console.log(`  x boot errors: ${errors.slice(0, 3).join(' | ')}`);
     } else {
-      console.log('  ✔ boots cleanly');
+      console.log('  ok boots cleanly');
     }
 
     const keys = navKeys(appRel);
@@ -123,16 +141,16 @@ const ROLES = [
         const realErrors = newErrors.filter((e) => !/socket\.io|WebSocket|xhr poll/i.test(e));
         if (realErrors.length) {
           failures++;
-          console.log(`  ✘ view '${key}' errored: ${realErrors.slice(0, 2).join(' | ')}`);
+          console.log(`  x view '${key}' errored: ${realErrors.slice(0, 2).join(' | ')}`);
         } else if (text.length < 3) {
           failures++;
-          console.log(`  ✘ view '${key}' rendered EMPTY`);
+          console.log(`  x view '${key}' rendered EMPTY`);
         } else {
-          console.log(`  ✔ view '${key}' renders (${text.length} chars)`);
+          console.log(`  ok view '${key}' renders (${text.length} chars)`);
         }
       } catch (e) {
         failures++;
-        console.log(`  ✘ view '${key}' threw: ${e.message}`);
+        console.log(`  x view '${key}' threw: ${e.message}`);
       }
     }
     restoreConsole();
@@ -140,6 +158,6 @@ const ROLES = [
   }
 
   console.log(`\n${views} views tested across ${ROLES.length} dashboards.`);
-  console.log(failures === 0 ? '✅ EVERY VIEW IN EVERY DASHBOARD WORKS' : `❌ ${failures} failures`);
+  console.log(failures === 0 ? 'OK EVERY VIEW IN EVERY DASHBOARD WORKS' : `FAIL ${failures} failures`);
   process.exit(failures === 0 ? 0 : 1);
 })().catch((e) => { console.error('Harness error:', e); process.exit(1); });

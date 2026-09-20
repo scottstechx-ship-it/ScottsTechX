@@ -1,7 +1,8 @@
 /* Connected dashboard UX layer: responsive, tactile, accessible. */
 :root{--ux-ring:rgba(37,99,235,.28);--ux-surface:#fff}
 html{scroll-behavior:smooth}
-body{overscroll-behavior-y:none}
+/* NOTE: no "overscroll-behavior: none" on body - several mobile browsers
+   treat it as a scroll lock and the page stops scrolling entirely. */
 button,.btn,a,.nav-item,.icon-btn,.user-chip,.portal-card,.card{transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s ease,background-color .2s ease,border-color .2s ease,opacity .2s ease}
 button:focus-visible,a:focus-visible,.btn:focus-visible,.nav-item:focus-visible{outline:3px solid var(--ux-ring);outline-offset:2px}
 .card:hover{box-shadow:0 12px 30px rgba(15,23,42,.08)}

@@ -504,3 +504,36 @@ CREATE TABLE IF NOT EXISTS contact_messages (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_contact_status ON contact_messages(status);
+
+-- ---------------------------------------------------------------------------
+-- Server-side sessions (replaces JWT-in-localStorage) and login throttling
+-- ---------------------------------------------------------------------------
+
+-- One row per logged-in device. The browser only keeps an opaque cookie;
+-- the token itself is never stored in the clear.
+CREATE TABLE IF NOT EXISTS sessions (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  token_hash   TEXT NOT NULL UNIQUE,
+  csrf_token   TEXT NOT NULL,
+  ip           TEXT,
+  user_agent   TEXT,
+  created_at   TEXT NOT NULL DEFAULT (datetime('now')),
+  last_seen_at TEXT NOT NULL DEFAULT (datetime('now')),
+  expires_at   TEXT NOT NULL,
+  revoked      INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at);
+
+-- Failed-login counter used for lockout (no stateless brute-force window).
+CREATE TABLE IF NOT EXISTS login_attempts (
+  id           INTEGER PRIMARY KEY AUTOINCREMENT,
+  ident        TEXT NOT NULL,
+  ip           TEXT,
+  attempts     INTEGER NOT NULL DEFAULT 1,
+  first_at     TEXT NOT NULL DEFAULT (datetime('now')),
+  last_at      TEXT NOT NULL DEFAULT (datetime('now')),
+  locked_until TEXT
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_login_attempts_key ON login_attempts(ident, ip);

@@ -2,12 +2,13 @@
  * TEACHER DASHBOARD
  * Simple and focused: my classes & students, messages, documents, announcements.
  */
-(function () {
+(async function () {
   const API = window.API;
   const UI = window.UI;
 
-  const user = API.getUser();
-  if (!API.getToken() || !user || user.role !== 'teacher') { location.href = '../login.html'; return; }
+  // Session lives in an HttpOnly cookie: ask the server who we are.
+  const user = await API.requireUser('teacher');
+  if (!user) return;
 
   let layout;
   let messaging = null;
@@ -15,24 +16,24 @@
   let announcements = null;
 
   const nav = [
-    { key: 'home', label: 'Home', icon: '🏠', section: 'Main' },
-    { key: 'messages', label: 'Messages', icon: '💬', section: 'Main' },
-    { key: 'documents', label: 'Documents', icon: '📄', section: 'Main' },
-    { key: 'announcements', label: 'Announcements', icon: '📢', section: 'Main' },
-    { key: 'classes', label: 'My Classes', icon: '🏫', section: 'Teaching' },
-    { key: 'students', label: 'Students', icon: '🧑‍🎓', section: 'Teaching' },
-    { key: 'attendance', label: 'Attendance', icon: '✅', section: 'Teaching' },
-    { key: 'assignments', label: 'Assignments', icon: '📝', section: 'Teaching' },
-    { key: 'exams', label: 'Exams & Results', icon: '📋', section: 'Teaching' },
-    { key: 'timetable', label: 'My Timetable', icon: '🕒', section: 'Teaching' },
-    { key: 'notifications', label: 'Notifications', icon: '🔔', section: 'Account' },
-    { key: 'profile', label: 'Profile', icon: '👤', section: 'Account' },
+    { key: 'home', label: 'Home', icon: 'home', section: 'Main' },
+    { key: 'messages', label: 'Messages', icon: 'messages', section: 'Main' },
+    { key: 'documents', label: 'Documents', icon: 'document', section: 'Main' },
+    { key: 'announcements', label: 'Announcements', icon: 'announcements', section: 'Main' },
+    { key: 'classes', label: 'My Classes', icon: 'classes', section: 'Teaching' },
+    { key: 'students', label: 'Students', icon: 'students', section: 'Teaching' },
+    { key: 'attendance', label: 'Attendance', icon: 'check', section: 'Teaching' },
+    { key: 'assignments', label: 'Assignments', icon: 'assignments', section: 'Teaching' },
+    { key: 'exams', label: 'Exams & Results', icon: 'exams', section: 'Teaching' },
+    { key: 'timetable', label: 'My Timetable', icon: 'timetable', section: 'Teaching' },
+    { key: 'notifications', label: 'Notifications', icon: 'notifications', section: 'Account' },
+    { key: 'profile', label: 'Profile', icon: 'profile', section: 'Account' },
   ];
   const bottomNav = [
-    { key: 'home', label: 'Home', icon: '🏠' },
-    { key: 'messages', label: 'Messages', icon: '💬' },
-    { key: 'documents', label: 'Documents', icon: '📄' },
-    { key: 'classes', label: 'Classes', icon: '🏫' },
+    { key: 'home', label: 'Home', icon: 'home' },
+    { key: 'messages', label: 'Messages', icon: 'messages' },
+    { key: 'documents', label: 'Documents', icon: 'document' },
+    { key: 'classes', label: 'Classes', icon: 'classes' },
   ];
 
   UI.initLayout({ nav, bottomNav, title: 'Teacher Dashboard', onNav: (k) => show(k) }).then((l) => {
@@ -72,27 +73,27 @@
     const c = stats.counts || {};
     box.innerHTML = `
       <div class="card" style="background:linear-gradient(135deg,#6d28d9,#8b5cf6);color:#fff;border:none">
-        <h2 style="color:#fff;margin-bottom:2px">Hello, ${UI.esc(user.fullName.split(' ')[0])}! 👩‍🏫</h2>
+        <h2 style="color:#fff;margin-bottom:2px">Hello, ${UI.esc(user.fullName.split(' ')[0])}! <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M7 11V7a2 2 0 0 1 4 0v4"/><path d="M11 11V5a2 2 0 0 1 4 0v6"/><path d="M15 11V6a2 2 0 0 1 4 0v9a7 7 0 0 1-7 7h-1a7 7 0 0 1-7-7v-4a2 2 0 0 1 4 0"/></svg></h2>
         <div style="opacity:.92">Welcome back to your teaching dashboard.</div>
       </div>
       <div class="grid grid-4" style="margin-top:16px">
-        ${stat('🏫', c.classes || 0, 'My classes', 'ic-purple')}
-        ${stat('🧑‍🎓', c.students || 0, 'Students', 'ic-blue')}
-        ${stat('💬', c.unreadMessages || 0, 'Unread messages', 'ic-green')}
-        ${stat('📄', c.documents || 0, 'My documents', 'ic-amber')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>', c.classes || 0, 'My classes', 'ic-purple')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>', c.students || 0, 'Students', 'ic-blue')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg>', c.unreadMessages || 0, 'Unread messages', 'ic-green')}
+        ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>', c.documents || 0, 'My documents', 'ic-amber')}
       </div>
       <div class="grid grid-2" style="margin-top:16px">
-        <div class="card"><h3>🏫 My classes</h3><div id="home-classes"></div></div>
-        <div class="card"><h3>📢 Latest announcements</h3><div id="home-ann"></div></div>
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> My classes</h3><div id="home-classes"></div></div>
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg> Latest announcements</h3><div id="home-ann"></div></div>
       </div>`;
 
     const clsBox = box.querySelector('#home-classes');
     for (const cl of (stats.classes || [])) {
       clsBox.appendChild(UI.el(`<div class="child-card" data-goto="classes" style="margin-bottom:8px">
         <div style="display:flex;align-items:center;gap:10px">
-          <div class="avatar">🏫</div>
+          <div class="avatar"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
           <div style="flex:1"><div class="doc-name">${UI.esc(cl.name)} ${UI.esc(cl.stream || '')}</div>
-          <div class="doc-meta">${cl.student_count || 0} students${cl.unread ? ' · 💬 ' + cl.unread + ' unread' : ''}</div></div>
+          <div class="doc-meta">${cl.student_count || 0} students${cl.unread ? ' · <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg> ' + cl.unread + ' unread' : ''}</div></div>
         </div></div>`));
     }
     if (!(stats.classes || []).length) clsBox.innerHTML = '<div class="doc-meta">You have no classes assigned yet.</div>';
@@ -143,7 +144,7 @@
     let data;
     try { data = await API.get('/api/classes'); } catch (e) { UI.toast(e.message, 'error'); return; }
     const classes = data.classes || [];
-    if (!classes.length) { box.innerHTML = '<div class="empty-state"><div class="big">🏫</div><p>No classes assigned to you yet.</p></div>'; return; }
+    if (!classes.length) { box.innerHTML = '<div class="empty-state"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><p>No classes assigned to you yet.</p></div>'; return; }
 
     box.innerHTML = `<div class="grid grid-3" id="class-grid"></div>`;
     const grid = box.querySelector('#class-grid');
@@ -153,7 +154,7 @@
         <div class="doc-meta">${cl.student_count || 0} students · ${UI.esc(cl.academic_year)}</div>
         <div style="margin-top:10px;display:flex;gap:6px">
           <button class="btn sm" data-open>View class</button>
-          <button class="btn secondary sm" data-chat>💬 Class chat</button>
+          <button class="btn secondary sm" data-chat><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg> Class chat</button>
         </div>
       </div>`));
     }
@@ -201,16 +202,16 @@
         const data = await API.get('/api/students' + (params.toString() ? '?' + params.toString() : ''));
         const list = box.querySelector('#stu-list');
         const students = data.students || [];
-        if (!students.length) { list.innerHTML = '<div class="empty-state"><div class="big">🧑‍🎓</div>No students found.</div>'; return; }
+        if (!students.length) { list.innerHTML = '<div class="empty-state"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg></div>No students found.</div>'; return; }
         list.innerHTML = '';
         for (const s of students) {
           list.appendChild(UI.el(`<div class="doc-item">
             <div class="avatar">${UI.initials(s.full_name)}</div>
             <div style="flex:1;min-width:0">
               <div class="doc-name">${UI.esc(s.full_name)}</div>
-              <div class="doc-meta">${UI.esc(s.student_code)} · ${UI.esc(s.class_name || '')} ${UI.esc(s.class_stream || '')}${s.parent_phone ? ' · 📞 ' + UI.esc(s.parent_phone) : ''}</div>
+              <div class="doc-meta">${UI.esc(s.student_code)} · ${UI.esc(s.class_name || '')} ${UI.esc(s.class_stream || '')}${s.parent_phone ? ' · <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> ' + UI.esc(s.parent_phone) : ''}</div>
             </div>
-            ${s.user_id ? `<button class="btn secondary sm" data-msg>💬 Message</button>` : ''}
+            ${s.user_id ? `<button class="btn secondary sm" data-msg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg> Message</button>` : ''}
           </div>`));
         }
         list.querySelectorAll('[data-msg]').forEach((b, i) => b.addEventListener('click', async () => {
@@ -249,13 +250,13 @@
     const box = content.firstElementChild;
     let items = [];
     try { items = (await API.get('/api/notifications?limit=100')).notifications; } catch (e) { UI.toast(e.message, 'error'); }
-    const icons = { message: '💬', document: '📄', announcement: '📢', assignment: '📝', attendance: '✅', exam: '📋', results: '🎓', fee: '💰', system: '🔔', account: '🔐' };
+    const icons = { message: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg>', document: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>', announcement: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg>', assignment: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>', attendance: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>', exam: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>', results: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>', fee: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg>', system: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>', account: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' };
     box.innerHTML = `<div class="card"><h3>Notifications</h3><div id="nt-list" style="margin-top:8px"></div></div>`;
     const list = box.querySelector('#nt-list');
     if (!items.length) list.innerHTML = '<div class="doc-meta">No notifications yet.</div>';
     for (const n of items) {
       list.appendChild(UI.el(`<div class="notif-item ${n.read ? '' : 'unread'}" data-id="${n.id}" style="border-radius:10px;margin-bottom:6px">
-        <span class="n-ic">${icons[n.type] || '🔔'}</span>
+        <span class="n-ic">${icons[n.type] || '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>'}</span>
         <div><div class="n-title">${UI.esc(n.title)}</div>${n.body ? `<div class="n-body">${UI.esc(n.body)}</div>` : ''}<div class="n-time">${UI.timeAgo(n.created_at)}</div></div></div>`));
     }
     list.querySelectorAll('.notif-item').forEach((el) => el.addEventListener('click', async () => {
@@ -276,8 +277,8 @@
     box.innerHTML = `<div class="card" style="display:flex;gap:16px;align-items:center">
         <div class="avatar-lg">${UI.initials(u.fullName)}</div>
         <div><h2>${UI.esc(u.fullName)}</h2><div class="doc-meta">${UI.esc(u.email || '')} · Teacher</div>
-        <button class="btn secondary sm" id="prof-pass" style="margin-top:8px">🔑 Change password</button>
-        <button class="btn secondary sm" id="prof-photo" style="margin-top:8px">📷 Change photo</button></div>
+        <button class="btn secondary sm" id="prof-pass" style="margin-top:8px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 8.3-8.3"/><path d="m16 6 3 3"/><path d="m19 3 3 3"/></svg> Change password</button>
+        <button class="btn secondary sm" id="prof-photo" style="margin-top:8px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Change photo</button></div>
       </div>
       <div class="grid grid-2" style="margin-top:16px">
         <div class="card"><h3>Account</h3>

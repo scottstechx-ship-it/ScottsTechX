@@ -9,6 +9,7 @@ const jwt = require('jsonwebtoken');
 const env = require('./config/env');
 const { get, all } = require('./database/db');
 const { isSameOrigin } = require('./middleware/security');
+const sessions = require('./services/sessions');
 
 function attachSocket(server) {
   const { Server } = require('socket.io');
@@ -35,6 +36,17 @@ function attachSocket(server) {
       return next(new Error('Origin not allowed'));
     }
     try {
+      // Browsers authenticate with the session cookie (no token in JS at all).
+      const cookieHeader = socket.handshake.headers && socket.handshake.headers.cookie;
+      const cookieToken = cookieHeader ? sessions.cookieValue({ headers: { cookie: cookieHeader } }, sessions.COOKIE_NAME) : null;
+      if (cookieToken) {
+        const resolved = sessions.resolveSession(cookieToken);
+        if (!resolved) return next(new Error('Session expired'));
+        socket.user = { id: resolved.user.id, full_name: resolved.user.full_name, role: resolved.user.role, status: resolved.user.status };
+        return next();
+      }
+
+      // Scripts / native clients may still pass a JWT.
       const token = socket.handshake.auth && socket.handshake.auth.token;
       if (!token) return next(new Error('Authentication required'));
       const payload = jwt.verify(token, env.JWT_SECRET);

@@ -14,16 +14,18 @@ function securityHeaders(req, res, next) {
     'Content-Security-Policy',
     [
       "default-src 'self'",
-      // remote school media (Netlify archive) + stock fallbacks
-      "img-src 'self' data: blob: https://kalibz-international.netlify.app https://images.unsplash.com https://picsum.photos https://*.picsum.photos",
-      "media-src 'self' blob: https://kalibz-international.netlify.app",
+      // real school media: the school's YouTube stills (i.ytimg.com), the
+      // national schools directory profile photo (schoolnet.africa) and
+      // TikTok's media CDN for the school's own videos.
+      "img-src 'self' data: blob: https://i.ytimg.com https://img.youtube.com https://schoolnet.africa https://schoolnetuganda.com https://*.tiktokcdn.com https://*.tiktokcdn-us.com https://p16-sign-va.tiktokcdn.com",
+      "media-src 'self' blob: https://*.tiktokcdn.com https://*.tiktokcdn-us.com https://v16-webapp.tiktok.com https://v19-webapp.tiktok.com https://v16m-default.akamaized.net https://v16-webapp-prime.tiktok.com",
       // Google Fonts + Font Awesome (cdnjs)
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
-      "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' data: https://fonts.gstatic.com",
       // three.js (cdnjs), analytics & ads used by the public site
       "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://www.googletagmanager.com https://pagead2.googlesyndication.com",
       "connect-src 'self' ws: wss: https://www.googletagmanager.com https://*.google-analytics.com https://pagead2.googlesyndication.com",
-      "frame-src https://www.google.com https://maps.google.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com",
+      "frame-src https://www.google.com https://maps.google.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.youtube.com https://www.youtube-nocookie.com https://www.tiktok.com https://www.instagram.com",
       "object-src 'none'",
       "frame-ancestors 'self'",
     ].join('; ')
@@ -34,19 +36,35 @@ function securityHeaders(req, res, next) {
   next();
 }
 
+/** Host values that can only mean "the request came through a local proxy". */
+const LOOPBACK_HOST = /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(:\d+)?$/i;
+
+function hostMatches(origin, host) {
+  if (!origin || !host) return false;
+  try { return new URL(origin).host === host; } catch { return false; }
+}
+
 /**
  * A request is same-origin when the Origin header matches the request Host
  * (browsers send Origin even for same-origin POST/PUT/DELETE).
+ *
+ * Behind a reverse proxy that rewrites Host to the loopback address (the
+ * preview/Render deployment does), the browser still sends the public Origin,
+ * so a matching X-Forwarded-Host is accepted as well - but only when the
+ * direct Host is itself a loopback address, i.e. the request demonstrably
+ * arrived through a local proxy. Direct requests keep the strict check.
  */
-function isSameOrigin(origin, host) {
-  if (!origin || !host) return false;
-  try { return new URL(origin).host === host; } catch { return false; }
+function isSameOrigin(origin, host, forwardedHost) {
+  if (hostMatches(origin, host)) return true;
+  if (!LOOPBACK_HOST.test(String(host || ''))) return false;
+  const fwd = String(forwardedHost || '').split(',')[0].trim();
+  return !!fwd && hostMatches(origin, fwd);
 }
 
 function corsHandler(req, res, next) {
   const origin = req.headers.origin;
   const allowed = env.ALLOWED_ORIGINS;
-  const sameOrigin = !origin || isSameOrigin(origin, req.headers.host);
+  const sameOrigin = !origin || isSameOrigin(origin, req.headers.host, req.headers['x-forwarded-host']);
   const isAllowed = allowed.includes(origin) || allowed.includes('*');
 
   if (sameOrigin || isAllowed) {

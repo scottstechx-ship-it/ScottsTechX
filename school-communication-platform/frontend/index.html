@@ -14,7 +14,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-<link rel="dns-prefetch" href="https://kalibz-international.netlify.app">
+<link rel="preconnect" href="https://i.ytimg.com">
 <meta name="google-site-verification" content="0iFeDjaZvUCjm7CmNRcwsIKmQUKHDLlePEJhRPLuR_M">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalinabiri Secondary School - Ntinda, Kampala</title>
@@ -22,8 +22,6 @@
   <link rel="apple-touch-icon" href="/assets/images/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
     <style>
         :root {
@@ -51,23 +49,6 @@
             overflow-x: hidden;
         }
         h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
-
-        /* Video Background */
-        .video-bg {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%; z-index: -2; overflow: hidden;
-        }
-        .video-bg video { width: 100%; height: 100%; object-fit: cover; }
-        .video-overlay {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: linear-gradient(135deg, rgba(12,24,41,0.75) 0%, rgba(26,58,92,0.65) 50%, rgba(12,24,41,0.8) 100%);
-            z-index: -1;
-        }
-        #three-canvas {
-            position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%; z-index: 0; pointer-events: auto;
-        }
 
         /* Toast Notifications */
         .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
@@ -359,7 +340,7 @@
         .mobile-nav-menu a:hover, .mobile-nav-menu a.active {
             background: rgba(14,165,233,0.15); color: var(--teal-bright);
         }
-        .mobile-nav-menu a i { font-size: 18px; width: 24px; text-align: center; }
+        .mobile-nav-menu a svg { font-size: 18px; width: 24px; text-align: center; }
         .mobile-nav-menu .mobile-cta {
             margin-top: 16px;
             border-top: 1px solid rgba(14,165,233,0.1);
@@ -374,6 +355,7 @@
         .hero {
             position: relative;
             min-height: 100vh;
+            min-height: 100svh;   /* phones: the URL bar must not push content off screen */
             display: flex; align-items: center; justify-content: center;
             text-align: center;
             padding: 120px 24px 80px;
@@ -447,9 +429,43 @@
             letter-spacing: 2px;
             animation: bounce 2s infinite;
         }
-        .scroll-indicator i { font-size: 20px; color: var(--gold); }
+        .scroll-indicator svg { font-size: 20px; color: var(--gold); }
         @keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); } 40% { transform: translateX(-50%) translateY(-10px); } 60% { transform: translateX(-50%) translateY(-5px); } }
 
+
+        /* ---- How much of the background film each section shows ----------
+           hero       : sharp, with a scrim so the headline stays readable
+           stats      : covered completely
+           portals    : frosted - the film shows through, blurred
+           academics  : frosted
+           gallery    : sharp again, the film is the backdrop there
+           contact    : covered
+           footer     : frosted                                                     */
+        .hero.bg-clear { background: rgba(8,18,32,0.42); text-shadow: 0 2px 12px rgba(0,0,0,.6); }
+        .stats-strip.bg-solid { background: #0b1a2d; }
+        .portals-section.bg-blur {
+            background: rgba(9,20,35,0.44);
+            -webkit-backdrop-filter: blur(18px) saturate(1.15);
+            backdrop-filter: blur(18px) saturate(1.15);
+        }
+        .academics-section.bg-blur {
+            background: rgba(9,20,35,0.48);
+            -webkit-backdrop-filter: blur(14px) saturate(1.1);
+            backdrop-filter: blur(14px) saturate(1.1);
+        }
+        .gallery-section.bg-clear { background: rgba(8,18,32,0.34); text-shadow: 0 2px 12px rgba(0,0,0,.6); }
+        .contact-strip.bg-solid { background: #0b1a2d; }
+        .footer.bg-blur {
+            background: rgba(8,18,32,0.55);
+            -webkit-backdrop-filter: blur(16px) saturate(1.1);
+            backdrop-filter: blur(16px) saturate(1.1);
+        }
+        @media (max-width: 700px) {
+            .portals-section.bg-blur, .academics-section.bg-blur, .footer.bg-blur {
+                -webkit-backdrop-filter: none; backdrop-filter: none;
+                background: rgba(8,18,32,0.82);
+            }
+        }
         /* Stats Strip */
         .stats-strip { padding: 64px 24px; position: relative; z-index: 1; }
         .stats-grid {
@@ -487,7 +503,7 @@
         .portals-grid {
             max-width: 1100px; margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
             gap: 24px;
         }
         .portal-card {
@@ -544,7 +560,7 @@
         .gallery-grid {
             max-width: 1100px; margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
             gap: 20px;
         }
         .gallery-item {
@@ -582,7 +598,7 @@
         .contact-grid {
             max-width: 1100px; margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
             gap: 40px;
         }
         .contact-item { display: flex; align-items: flex-start; gap: 16px; }
@@ -610,7 +626,12 @@
             gap: 48px; margin-bottom: 48px;
         }
         .footer-brand .footer-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
-        .footer-logo i { font-size: 28px; color: var(--teal-bright); }
+        .footer-logo svg { font-size: 28px; color: var(--teal-bright); }
+        .footer-logo img {
+            width: 46px; height: 46px; border-radius: 11px; object-fit: cover;
+            border: 2px solid rgba(56,189,248,0.45);
+            box-shadow: 0 4px 14px rgba(14,165,233,0.3);
+        }
         .footer-logo span { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--text-light); }
         .footer-brand p { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 20px; }
         .footer-social { display: flex; gap: 12px; }
@@ -666,6 +687,24 @@
             .academics-grid { grid-template-columns: 1fr; max-width: 400px; }
             .contact-grid { grid-template-columns: 1fr; }
         }
+        @media (max-width: 768px) {
+            /* phones: 100vh is taller than the visible area (URL bar), which
+               pushed the hero past the fold — size it to what is left. */
+            .hero { min-height: calc(100svh - 68px); }
+            /* inline section paddings are desktop-sized: give phones their space back */
+            .hods-strip-section { padding: 48px 16px !important; }
+            .academics-section { padding: 56px 16px !important; }
+            .portals-section { padding: 56px 16px !important; }
+            .stats-strip { padding: 40px 16px !important; }
+            .gallery-section { padding: 56px 16px !important; }
+            .contact-strip { padding: 48px 16px !important; }
+            .footer { padding: 48px 16px 24px !important; }
+            .section-header { padding: 0 4px; }          /* headline block breathes with the grid */
+            .section-header p { font-size: 15px; }
+            .gallery-item, .portal-card { width: 100%; }
+            .toast-container { left: 16px; right: 16px; bottom: 16px; }
+            #three-canvas { display: none; }             /* decorative only, and it ate taps */
+        }
         @media (max-width: 480px) {
             .stats-grid { grid-template-columns: 1fr; max-width: 300px; }
             .footer-grid { grid-template-columns: 1fr; max-width: 300px; }
@@ -678,22 +717,17 @@
             .logo-text-3d { gap: 2px; }
         }
     </style>
-<link rel="stylesheet" href="assets/css/site-ux.css">
-<link rel="stylesheet" href="/assets/css/site-nav.css?v=3">
-<script src="/assets/js/site-nav.js?v=3" defer></script>
+<link rel="stylesheet" href="assets/css/site-ux.css?v=9">
+<link rel="stylesheet" href="/assets/css/site-nav.css?v=9">
+<script src="/assets/js/site-nav.js?v=9" defer></script>
+<script src="/assets/js/site-film.js?v=9" defer></script>
 <script src="/assets/js/site-animate.js" defer></script>
 <script src="/assets/js/site-perf.js" defer></script>
 </head>
 <body>
-        <!-- HERO BACKGROUND: paints instantly as a gradient; the background
-             video is injected AFTER window.load (see script at end of body),
-             so it never delays first paint. Skipped on data-saver/2G. -->
-        <div class="video-bg hero-photo" id="heroBg" style="background:
-          radial-gradient(ellipse at 25% 15%, rgba(14,165,233,.25) 0%, transparent 55%),
-          radial-gradient(ellipse at 80% 85%, rgba(245,158,11,.14) 0%, transparent 50%),
-          linear-gradient(135deg, #0c1829 0%, #10233c 55%, #0c1829 100%);
-          background-size: cover; background-position: center;"></div>
-        <div class="video-overlay"></div>
+        <!-- The page background is the layered system in site-nav.css
+             (aurora glows + blueprint hairlines + vignette); nothing here
+             loads a picture or a video just to paint the page. -->
     <canvas id="three-canvas"></canvas>
 
     <!-- Toast Container -->
@@ -701,60 +735,61 @@
 
     <!-- 3D Animated Navigation -->
         <!-- Hero Section -->
-    <section class="hero" id="home">
+    <section class="hero bg-clear" id="home">
         <div class="hero-content">
             <div class="hero-badge">
-                <i class="fas fa-star"></i>
-                Excellence in Education Since 1995
+                <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m12 3.5 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>
+                Excellence in Education Since 1984
             </div>
                         <h1>Kalinabiri <span>Secondary School</span></h1>
                         <p>Nurturing minds, building character, and shaping leaders in the heart of Ntinda, Kampala, Uganda.</p>
                         <div class="hero-actions">
                                     <a class='btn-primary' href='platform/login-student.html'>
-                                        <i class="fas fa-user-graduate"></i> Student Portal
+                                        <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg> Student Portal
                                     </a>
                                     <a href="/admissions/" class="btn-gold">
-                                        <i class="fas fa-pen-to-square"></i> Apply Now
+                                        <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Apply Now
                                     </a>
                                     <a href="platform/login-teacher.html" class="btn-outline">
-                                        <i class="fas fa-chalkboard-teacher"></i> Teacher Portal
+                                        <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> Teacher Portal
                                     </a>
                                 </div>
         </div>
         <div class="scroll-indicator">
             <span>Scroll Down</span>
-            <i class="fas fa-chevron-down"></i>
+            <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
         </div>
     </section>
 
+
     <!-- Stats Strip -->
-        <section class="stats-strip">
+        <section class="stats-strip bg-solid">
             <div class="stats-grid">
                 <div class="stat-card reveal">
-                    <i class="fas fa-users stat-icon"></i>
-                    <div class="stat-number" data-count="850">0</div>
-                    <div class="stat-label">Students</div>
+                    <svg class="ie stat-icon" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <div class="stat-number" data-count="800">0</div>
+                    <div class="stat-label">Learners, S.1 to S.6</div>
                 </div>
                 <div class="stat-card reveal">
-                    <i class="fas fa-chalkboard-teacher stat-icon"></i>
-                    <div class="stat-number" data-count="45">0</div>
-                    <div class="stat-label">Qualified Teachers</div>
+                    <svg class="ie stat-icon" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                    <div class="stat-number" data-count="1984">0</div>
+                    <div class="stat-label">Founded in Ntinda</div>
                 </div>
                 <div class="stat-card reveal">
-                    <i class="fas fa-book-open stat-icon"></i>
-                    <div class="stat-number" data-count="18">0</div>
-                    <div class="stat-label">O &amp; A-Level Subjects</div>
+                    <svg class="ie stat-icon" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    <div class="stat-number" data-count="6">0</div>
+                    <div class="stat-label">Classes, S.1 to S.6</div>
                 </div>
                 <div class="stat-card reveal">
-                    <i class="fas fa-award stat-icon"></i>
-                    <div class="stat-number" data-count="30">0</div>
-                    <div class="stat-label">Years of Excellence</div>
+                    <svg class="ie stat-icon" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="9" r="5"/><path d="m8.6 13.2-1.1 7.3 4.5-2.4 4.5 2.4-1.1-7.3"/></svg>
+                    <div class="stat-number" data-count="4">0</div>
+                    <div class="stat-label">Acre Campus</div>
                 </div>
             </div>
         </section>
 
     <!-- Portals Section -->
-    <section class="portals-section" id="portals">
+    <section class="portals-section bg-blur" id="portals">
         <div class="section-header">
             <div class="section-tag">Our Portals</div>
             <h2>Access Your Dashboard</h2>
@@ -762,124 +797,124 @@
         </div>
         <div class="portals-grid">
             <a href="platform/login-student.html" class="portal-card reveal">
-                <div class="card-icon"><i class="fas fa-user-graduate"></i></div>
+                <div class="card-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg></div>
                 <h3>Student Portal</h3>
                 <p>View classes, attendance, announcements, message teachers, and access the Communication Center.</p>
-                <div class="card-link">Enter Portal <i class="fas fa-arrow-right"></i></div>
+                <div class="card-link">Enter Portal <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></div>
             </a>
             <a href="platform/login-teacher.html" class="portal-card reveal">
-                <div class="card-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                <div class="card-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
                 <h3>Teacher Portal</h3>
                 <p>Manage classes, take attendance, post announcements, and message students, parents, and admins.</p>
-                <div class="card-link">Enter Portal <i class="fas fa-arrow-right"></i></div>
+                <div class="card-link">Enter Portal <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></div>
             </a>
             <a href="platform/login-parent.html" class="portal-card reveal">
-                <div class="card-icon"><i class="fas fa-users"></i></div>
+                <div class="card-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
                 <h3>Parent Portal</h3>
                 <p>Track your child's attendance, classes, and teachers. Message them directly via the Communication Center.</p>
-                <div class="card-link">Enter Portal <i class="fas fa-arrow-right"></i></div>
+                <div class="card-link">Enter Portal <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></div>
             </a>
             <a class='portal-card reveal' href='/gallery/'>
-                <div class="card-icon"><i class="fas fa-images"></i></div>
+                <div class="card-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></div>
                 <h3>School Gallery</h3>
                 <p>Explore moments from our school events, sports days, concerts, graduation, and more.</p>
-                <div class="card-link">View Gallery <i class="fas fa-arrow-right"></i></div>
+                <div class="card-link">View Gallery <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></div>
             </a>
         </div>
         <div style="text-align:center; margin-top: 32px;">
-            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;"><i class="fas fa-lock"></i> Administrative Access</p>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 16px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Administrative Access</p>
             <div style="display:inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
                 <a href="platform/login-admin.html" class="btn btn-primary" style="background: var(--accent); color: var(--primary); padding: 12px 24px; border-radius: 8px; font-weight: 600; text-decoration: none;">
-                    <i class="fas fa-school"></i> School Admin Dashboard
+                    <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M10 21v-6h4v6"/></svg> School Admin Dashboard
                 </a>
                 <a href="platform/login-super-admin.html" class="btn btn-secondary" style="background: rgba(255,255,255,0.1); color: var(--text); padding: 12px 24px; border-radius: 8px; font-weight: 600; text-decoration: none; border: 1px solid var(--border);">
-                    <i class="fas fa-shield-halved"></i> Super Admin Dashboard
+                    <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v7"/></svg> Super Admin Dashboard
                 </a>
             </div>
         </div>
     </section>
 
 <!-- A-Level Subject Combinations (inlined) -->
-    <section class="academics-section" id="combinations">
+    <section class="academics-section bg-blur" id="combinations">
         <div class="section-header">
             <div class="section-tag">UACE Curriculum 2026</div>
             <h2>A-Level Subject Combinations</h2>
             <p>Choose your path to academic excellence — Sciences or Arts &amp; Humanities.</p>
         </div>
         <div class="track-tabs" style="display:flex;justify-content:center;gap:12px;margin-bottom:32px;flex-wrap:wrap">
-            <div class="track-tab active" data-track="home-science" style="padding:12px 28px;border-radius:50px;cursor:pointer;font-weight:600;font-size:.9rem;background:rgba(14,165,233,0.22);border:1px solid rgba(56,189,248,0.5);color:var(--teal-bright);transition:.3s"><i class="fas fa-flask"></i> Science Track</div>
-            <div class="track-tab" data-track="home-arts" style="padding:12px 28px;border-radius:50px;cursor:pointer;font-weight:600;font-size:.9rem;background:rgba(245,158,11,0.10);border:1px solid rgba(245,158,11,0.30);color:rgba(232,244,248,0.75);transition:.3s"><i class="fas fa-palette"></i> Arts &amp; Humanities</div>
+            <div class="track-tab active" data-track="home-science" style="padding:12px 28px;border-radius:50px;cursor:pointer;font-weight:600;font-size:.9rem;background:rgba(14,165,233,0.22);border:1px solid rgba(56,189,248,0.5);color:var(--teal-bright);transition:.3s"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M9 3h6"/><path d="M10 3v6.5L5.5 19A2 2 0 0 0 7.3 22h9.4a2 2 0 0 0 1.8-3L14 9.5V3"/><path d="M7.5 15h9"/></svg> Science Track</div>
+            <div class="track-tab" data-track="home-arts" style="padding:12px 28px;border-radius:50px;cursor:pointer;font-weight:600;font-size:.9rem;background:rgba(245,158,11,0.10);border:1px solid rgba(245,158,11,0.30);color:rgba(232,244,248,0.75);transition:.3s"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="9.5" r="1"/><circle cx="15" cy="9.5" r="1"/><circle cx="9.5" cy="14.5" r="1"/><path d="M21 12a9 9 0 0 1-9 9"/></svg> Arts &amp; Humanities</div>
         </div>
         <div class="combos-section active" id="home-science">
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;max-width:1200px;margin:0 auto;padding:0 20px">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px, 100%),1fr));gap:18px;max-width:1200px;margin:0 auto;padding:0 20px">
                 <div class="combo-card" style="background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(14,165,233,0.03));border:1px solid rgba(56,189,248,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
                     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0ea5e9,#38bdf8)"></div>
                     <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:var(--teal-bright)">PCM / ICT</h3>
                     <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">Physics · Chemistry · Mathematics · ICT</div>
-                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:var(--teal-bright)"></i> Engineering · Software · Architecture</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--teal-bright);vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg> Engineering · Software · Architecture</div>
                 </div>
                 <div class="combo-card" style="background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(14,165,233,0.03));border:1px solid rgba(56,189,248,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
                     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0ea5e9,#38bdf8)"></div>
                     <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:var(--teal-bright)">BCM / ICT</h3>
                     <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">Biology · Chemistry · Mathematics · ICT</div>
-                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:var(--teal-bright)"></i> Medicine · Biotechnology · Lab Science</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--teal-bright);vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg> Medicine · Biotechnology · Lab Science</div>
                 </div>
                 <div class="combo-card" style="background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(14,165,233,0.03));border:1px solid rgba(56,189,248,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
                     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0ea5e9,#38bdf8)"></div>
                     <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:var(--teal-bright)">PEM / ICT</h3>
                     <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">Physics · Economics · Mathematics · ICT</div>
-                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:var(--teal-bright)"></i> Quantitative Finance · Statistics</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--teal-bright);vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg> Quantitative Finance · Statistics</div>
                 </div>
                 <div class="combo-card" style="background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(14,165,233,0.03));border:1px solid rgba(56,189,248,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
                     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0ea5e9,#38bdf8)"></div>
                     <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:var(--teal-bright)">PCB / Sub-Math</h3>
                     <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">Physics · Chemistry · Biology · Sub-Math</div>
-                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:var(--teal-bright)"></i> Medicine · Veterinary · Public Health</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--teal-bright);vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg> Medicine · Veterinary · Public Health</div>
                 </div>
                 <div class="combo-card" style="background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(14,165,233,0.03));border:1px solid rgba(56,189,248,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
                     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0ea5e9,#38bdf8)"></div>
                     <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:var(--teal-bright)">BCFN / Sub-Math</h3>
                     <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">Biology · Chemistry · Food & Nutrition · Sub-Math</div>
-                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:var(--teal-bright)"></i> Nutrition · Dietetics · Food Science</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--teal-bright);vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg> Nutrition · Dietetics · Food Science</div>
                 </div>
                 <div class="combo-card" style="background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(14,165,233,0.03));border:1px solid rgba(56,189,248,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
                     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0ea5e9,#38bdf8)"></div>
                     <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:var(--teal-bright)">BCA / Sub-Math</h3>
                     <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">Biology · Chemistry · Agriculture · Sub-Math</div>
-                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:var(--teal-bright)"></i> Agronomy · Vet Science · Agribusiness</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--teal-bright);vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg> Agronomy · Vet Science · Agribusiness</div>
                 </div>
                 <div class="combo-card" style="background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(14,165,233,0.03));border:1px solid rgba(56,189,248,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
                     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0ea5e9,#38bdf8)"></div>
                     <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:var(--teal-bright)">PMTD / ICT</h3>
                     <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">Physics · Mathematics · Technical Drawing · ICT</div>
-                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:var(--teal-bright)"></i> Engineering · Architecture · Design</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--teal-bright);vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg> Engineering · Architecture · Design</div>
                 </div>
             </div>
         </div>
         <div class="combos-section" id="home-arts" style="display:none">
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;max-width:1200px;margin:0 auto;padding:0 20px">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px, 100%),1fr));gap:18px;max-width:1200px;margin:0 auto;padding:0 20px">
                 <div class="combo-card" style="background:linear-gradient(135deg,rgba(245,158,11,0.12),rgba(245,158,11,0.03));border:1px solid rgba(245,158,11,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
                     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div>
                     <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:#fbbf24">MEG / ICT</h3>
                     <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">Mathematics · Economics · Geography · ICT</div>
-                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:#fbbf24"></i> Actuarial · Banking · GIS · Planning</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:#fbbf24;vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg> Actuarial · Banking · GIS · Planning</div>
                 </div>
                 <div class="combo-card" style="background:linear-gradient(135deg,rgba(245,158,11,0.12),rgba(245,158,11,0.03));border:1px solid rgba(245,158,11,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
                     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div>
                     <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:#fbbf24">MEE / ICT</h3>
                     <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">Mathematics · Economics · Entrepreneurship · ICT</div>
-                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:#fbbf24"></i> Business · Finance · Startups</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:#fbbf24;vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg> Business · Finance · Startups</div>
                 </div>
                 <div class="combo-card" style="background:linear-gradient(135deg,rgba(245,158,11,0.12),rgba(245,158,11,0.03));border:1px solid rgba(245,158,11,0.30);border-radius:16px;padding:22px;position:relative;overflow:hidden">
                     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div>
                     <h3 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;color:#fbbf24">BCG</h3>
                     <div style="font-size:.82rem;color:rgba(232,244,248,0.7);margin-bottom:12px">Biology · Chemistry · Geography</div>
-                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><i class="fas fa-arrow-right" style="color:#fbbf24"></i> Environmental Science · Geology · Health</div>
+                    <div style="font-size:.8rem;color:rgba(232,244,248,0.6);border-top:1px solid rgba(255,255,255,0.08);padding-top:10px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:#fbbf24;vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg> Environmental Science · Geology · Health</div>
                 </div>
             </div>
         </div>
         <div style="text-align:center;margin-top:36px">
-            <a href="/admissions/" class="btn-primary"><i class="fas fa-pen-to-square"></i> Apply for Admission →</a>
+            <a href="/admissions/" class="btn-primary"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Apply for Admission <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
         </div>
     
         <!-- O-LEVEL SUBJECTS -->
@@ -889,9 +924,9 @@
                 <h2 style="font-size:1.6rem">O-Level Subjects</h2>
                 <p>Senior 1 – Senior 4 curriculum at Kalinabiri SS.</p>
             </div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px, 100%),1fr));gap:18px">
                 <div style="background:linear-gradient(135deg,rgba(14,165,233,0.10),rgba(14,165,233,0.02));border:1px solid rgba(56,189,248,0.28);border-radius:16px;padding:24px">
-                    <h3 style="color:var(--teal-bright);font-size:1.05rem;margin-bottom:14px"><i class="fas fa-star"></i> Compulsory Core Subjects</h3>
+                    <h3 style="color:var(--teal-bright);font-size:1.05rem;margin-bottom:14px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m12 3.5 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg> Compulsory Core Subjects</h3>
                     <div style="display:flex;flex-wrap:wrap;gap:8px">
                         <span style="background:rgba(14,165,233,0.15);border:1px solid rgba(56,189,248,0.3);padding:7px 14px;border-radius:999px;font-size:.84rem">Physics</span>
                         <span style="background:rgba(14,165,233,0.15);border:1px solid rgba(56,189,248,0.3);padding:7px 14px;border-radius:999px;font-size:.84rem">Chemistry</span>
@@ -903,7 +938,7 @@
                     </div>
                 </div>
                 <div style="background:linear-gradient(135deg,rgba(245,158,11,0.10),rgba(245,158,11,0.02));border:1px solid rgba(245,158,11,0.28);border-radius:16px;padding:24px">
-                    <h3 style="color:#fbbf24;font-size:1.05rem;margin-bottom:14px"><i class="fas fa-plus-circle"></i> Optional Subjects</h3>
+                    <h3 style="color:#fbbf24;font-size:1.05rem;margin-bottom:14px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8"/><path d="M8 12h8"/></svg> Optional Subjects</h3>
                     <div style="display:flex;flex-wrap:wrap;gap:8px">
                         <span style="background:rgba(245,158,11,0.13);border:1px solid rgba(245,158,11,0.3);padding:7px 14px;border-radius:999px;font-size:.84rem">ICT</span>
                         <span style="background:rgba(245,158,11,0.13);border:1px solid rgba(245,158,11,0.3);padding:7px 14px;border-radius:999px;font-size:.84rem">Food &amp; Nutrition</span>
@@ -925,21 +960,21 @@
                 <h2 style="font-size:1.6rem">School Clubs</h2>
                 <p>Leadership, service and belonging — beyond the classroom.</p>
             </div>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px, 100%),1fr));gap:16px">
                 <div style="background:rgba(16,35,60,.55);border:1px solid rgba(56,189,248,.18);border-radius:16px;padding:22px;text-align:center">
-                    <div style="font-size:2.2rem;margin-bottom:10px">🦁</div><h3 style="font-size:1.02rem;margin-bottom:6px">Wildlife Club</h3>
+                    <div style="font-size:2.2rem;margin-bottom:10px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v6a5 5 0 0 1-10 0z"/><path d="M7 6H4a2 2 0 0 0 2 4h1"/><path d="M17 6h3a2 2 0 0 1-2 4h-1"/></svg></div><h3 style="font-size:1.02rem;margin-bottom:6px">Wildlife Club</h3>
                     <p style="font-size:.83rem;color:rgba(232,244,248,.6)">Conservation, nature walks and field trips.</p>
                 </div>
                 <div style="background:rgba(16,35,60,.55);border:1px solid rgba(56,189,248,.18);border-radius:16px;padding:22px;text-align:center">
-                    <div style="font-size:2.2rem;margin-bottom:10px">🤝</div><h3 style="font-size:1.02rem;margin-bottom:6px">Interact Club</h3>
+                    <div style="font-size:2.2rem;margin-bottom:10px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><h3 style="font-size:1.02rem;margin-bottom:6px">Interact Club</h3>
                     <p style="font-size:.83rem;color:rgba(232,244,248,.6)">Community service and leadership development.</p>
                 </div>
                 <div style="background:rgba(16,35,60,.55);border:1px solid rgba(56,189,248,.18);border-radius:16px;padding:22px;text-align:center">
-                    <div style="font-size:2.2rem;margin-bottom:10px">🕊️</div><h3 style="font-size:1.02rem;margin-bottom:6px">Peace Club</h3>
+                    <div style="font-size:2.2rem;margin-bottom:10px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></svg></div><h3 style="font-size:1.02rem;margin-bottom:6px">Peace Club</h3>
                     <p style="font-size:.83rem;color:rgba(232,244,248,.6)">Peer mediation and peace-building campaigns.</p>
                 </div>
                 <div style="background:rgba(16,35,60,.55);border:1px solid rgba(56,189,248,.18);border-radius:16px;padding:22px;text-align:center">
-                    <div style="font-size:2.2rem;margin-bottom:10px">🇺🇬</div><h3 style="font-size:1.02rem;margin-bottom:6px">Patriotism Club</h3>
+                    <div style="font-size:2.2rem;margin-bottom:10px">UG</div><h3 style="font-size:1.02rem;margin-bottom:6px">Patriotism Club</h3>
                     <p style="font-size:.83rem;color:rgba(232,244,248,.6)">Civic education and national values.</p>
                 </div>
             </div>
@@ -948,45 +983,45 @@
     </section>
 
 <!-- Faculty / HODs Strip -->
-    <section class="hods-strip-section" id="hods-strip" style="padding:80px 40px;background:linear-gradient(135deg,rgba(14,165,233,0.08),rgba(56,189,248,0.02))">
+    <section class="hods-strip-section bg-solid" id="hods-strip" style="padding:80px 40px">
         <div class="section-header" style="text-align:center;margin-bottom:40px">
             <div class="section-tag" style="display:inline-block;background:rgba(14,165,233,0.15);border:1px solid rgba(56,189,248,0.4);color:var(--teal-bright);padding:6px 18px;border-radius:50px;font-size:.75rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px">Our Faculty</div>
             <h2 style="font-size:2.2rem;margin-bottom:10px;color:#fff">Heads of Departments</h2>
             <p style="color:rgba(232,244,248,0.7);font-size:1.05rem;max-width:720px;margin:0 auto">Six specialist departments led by experienced HODs, supported by a faculty of 45+ qualified teachers.</p>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;max-width:1200px;margin:0 auto">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px, 100%),1fr));gap:18px;max-width:1200px;margin:0 auto">
             <div class="hod-card" style="background:rgba(26,58,92,0.4);border:1px solid rgba(56,189,248,0.25);border-radius:16px;padding:22px;text-align:center;backdrop-filter:blur(8px)">
-                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#fff"><i class="fas fa-flask"></i></div>
+                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#fff"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M9 3h6"/><path d="M10 3v6.5L5.5 19A2 2 0 0 0 7.3 22h9.4a2 2 0 0 0 1.8-3L14 9.5V3"/><path d="M7.5 15h9"/></svg></div>
                 <div style="font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--teal-bright);text-transform:uppercase;margin-bottom:4px">Sciences</div>
                 <div style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px">HOD — Sciences</div>
                 <div style="font-size:.82rem;color:rgba(232,244,248,0.65)">Physics · Chemistry · Biology</div>
             </div>
             <div class="hod-card" style="background:rgba(26,58,92,0.4);border:1px solid rgba(56,189,248,0.25);border-radius:16px;padding:22px;text-align:center;backdrop-filter:blur(8px)">
-                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#fff"><i class="fas fa-square-root-variable"></i></div>
+                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#fff"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 13h3l3 7 5-16h7"/><path d="m15.5 15 6 6"/><path d="m21.5 15-6 6"/></svg></div>
                 <div style="font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--teal-bright);text-transform:uppercase;margin-bottom:4px">Mathematics</div>
                 <div style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px">HOD — Mathematics</div>
                 <div style="font-size:.82rem;color:rgba(232,244,248,0.65)">Pure &amp; Applied</div>
             </div>
             <div class="hod-card" style="background:rgba(26,58,92,0.4);border:1px solid rgba(56,189,248,0.25);border-radius:16px;padding:22px;text-align:center;backdrop-filter:blur(8px)">
-                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#fff"><i class="fas fa-globe-africa"></i></div>
+                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#fff"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 4 9 15 15 0 0 1-4 9 15 15 0 0 1-4-9 15 15 0 0 1 4-9z"/></svg></div>
                 <div style="font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--teal-bright);text-transform:uppercase;margin-bottom:4px">Humanities</div>
                 <div style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px">HOD — Humanities</div>
                 <div style="font-size:.82rem;color:rgba(232,244,248,0.65)">History · Geography · Divinity</div>
             </div>
             <div class="hod-card" style="background:rgba(26,58,92,0.4);border:1px solid rgba(56,189,248,0.25);border-radius:16px;padding:22px;text-align:center;backdrop-filter:blur(8px)">
-                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#fff"><i class="fas fa-language"></i></div>
+                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#fff"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M4 5h8"/><path d="M8 3v2"/><path d="M6 5c0 4.5-2 7-2 7"/><path d="M10 5c0 4.5 2.5 7 2.5 7"/><path d="m12 21 4.5-10 4.5 10"/><path d="M13.8 17h5.4"/></svg></div>
                 <div style="font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--teal-bright);text-transform:uppercase;margin-bottom:4px">Languages</div>
                 <div style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px">HOD — Languages</div>
                 <div style="font-size:.82rem;color:rgba(232,244,248,0.65)">English · Luganda · French</div>
             </div>
             <div class="hod-card" style="background:rgba(26,58,92,0.4);border:1px solid rgba(56,189,248,0.25);border-radius:16px;padding:22px;text-align:center;backdrop-filter:blur(8px)">
-                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#fff"><i class="fas fa-laptop-code"></i></div>
+                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#fff"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M2 20h20"/><path d="m9.5 8-2 2 2 2"/><path d="m14.5 8 2 2-2 2"/></svg></div>
                 <div style="font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--teal-bright);text-transform:uppercase;margin-bottom:4px">ICT</div>
                 <div style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px">HOD — ICT</div>
                 <div style="font-size:.82rem;color:rgba(232,244,248,0.65)">Computer Studies · Programming</div>
             </div>
             <div class="hod-card" style="background:rgba(26,58,92,0.4);border:1px solid rgba(56,189,248,0.25);border-radius:16px;padding:22px;text-align:center;backdrop-filter:blur(8px)">
-                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#fff"><i class="fas fa-futbol"></i></div>
+                <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#38bdf8);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.5rem;color:#fff"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m12 7.5 4.3 3.1-1.6 5H9.3l-1.6-5z"/><path d="M12 3v4.5"/><path d="m3.6 10.2 4.4 1"/><path d="m20.4 10.2-4.4 1"/><path d="m6 19 3.3-3.3"/><path d="m18 19-3.3-3.3"/></svg></div>
                 <div style="font-size:.7rem;font-weight:700;letter-spacing:2px;color:var(--teal-bright);text-transform:uppercase;margin-bottom:4px">Sports</div>
                 <div style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:4px">HOD — Sports</div>
                 <div style="font-size:.82rem;color:rgba(232,244,248,0.65)">PE · Football · Athletics</div>
@@ -995,7 +1030,7 @@
     </section>
 
 <!-- Gallery Section -->
-    <section class="gallery-section" id="gallery">
+    <section class="gallery-section bg-clear" id="gallery">
         <div class="section-header">
             <div class="section-tag">School Life</div>
             <h2>Moments at Kalinabiri</h2>
@@ -1005,31 +1040,31 @@
     </section>
 
     <!-- Contact Strip -->
-    <section class="contact-strip" id="contact">
+    <section class="contact-strip bg-solid" id="contact">
         <div class="contact-grid">
             <div class="contact-item">
-                <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                <div class="contact-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
                 <div>
                     <h4>Location</h4>
                     <p>Kalinabiri Road, Ntinda<br>Kampala, Uganda</p>
                 </div>
             </div>
             <div class="contact-item">
-                <div class="contact-icon"><i class="fas fa-phone-alt"></i></div>
+                <div class="contact-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></div>
                 <div>
                     <h4>Phone</h4>
                     <p>0792 861 645 (Head Teacher)<br>0701 120 729 (DOS)</p>
                 </div>
             </div>
             <div class="contact-item">
-                <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                <div class="contact-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg></div>
                 <div>
                     <h4>Email</h4>
-                    <p>Kalinabiri.ntinda@yahoo.com<br>Kalinabiri@yahoo.com</p>
+                    <p>kalinabirisecsch@gmail.com</p>
                 </div>
             </div>
             <div class="contact-item">
-                <div class="contact-icon"><i class="fas fa-clock"></i></div>
+                <div class="contact-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></div>
                 <div>
                     <h4>Hours</h4>
                     <p>Mon - Fri: 7:30AM - 5:00PM<br>Sat: 8:00AM - 12:00PM</p>
@@ -1039,19 +1074,18 @@
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer class="footer bg-blur">
         <div class="footer-grid">
             <div class="footer-brand">
                 <div class="footer-logo">
-                    <i class="fas fa-graduation-cap"></i>
+                    <img src="/assets/images/logo.jpeg" alt="Kalinabiri Secondary School crest">
                     <span>Kalinabiri SS</span>
                 </div>
-                <p>Nurturing minds, building character, and shaping the leaders of tomorrow since 1995. Kalinabiri Secondary School is committed to academic excellence and holistic development.</p>
+                <p>Nurturing minds, building character, and shaping the leaders of tomorrow since 1984. Kalinabiri Secondary School is committed to academic excellence and holistic development.</p>
                 <div class="footer-social">
-                    <a href="https://www.facebook.com/search/top?q=Kalinabiri%20Secondary%20School" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://x.com/search?q=Kalinabiri%20Secondary%20School" target="_blank" rel="noopener" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="https://www.instagram.com/explore/search/keyword/?q=kalinabiri" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="https://www.youtube.com/results?search_query=Kalinabiri+Secondary+School" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.facebook.com/Kalinabiri-secondary-school-230901343588597" target="_blank" rel="noopener" aria-label="Facebook"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+                    <a href="https://www.tiktok.com/@kalinabiri_ss" target="_blank" rel="noopener" aria-label="TikTok" title="Kalinabiri SS on TikTok"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M15 3.5v10.2a3.9 3.9 0 1 1-3.4-3.86"/><path d="M15 5.6a4.6 4.6 0 0 0 4.6 4.6"/></svg></a>
+                    <a href="https://www.youtube.com/results?search_query=Kalinabiri+Secondary+School" target="_blank" rel="noopener" aria-label="YouTube"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4"/><path d="m10 9 5 3-5 3z"/></svg></a>
                 </div>
             </div>
             <div class="footer-col">
@@ -1063,7 +1097,7 @@
                                 <li><a href="#hods-strip">Faculty &amp; HODs</a></li>
                                 <li><a href="#gallery">Gallery</a></li>
                                 <li><a href="#contact">Contact</a></li>
-                                <li><a href="/admissions/" style="color:var(--gold);font-weight:700;">Apply Now →</a></li>
+                                <li><a href="/admissions/" style="color:var(--gold);font-weight:700;">Apply Now <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a></li>
                             </ul>
                         </div>
                         <div class="footer-col">
@@ -1087,7 +1121,7 @@
         </div>
         <div class="footer-bottom">
             <p>&copy; 2025 Kalinabiri Secondary School. All rights reserved.</p>
-            <p>Designed with <i class="fas fa-heart" style="color:var(--teal);"></i> in Kampala</p>
+            <p>Proudly designed and hosted in Kampala, Uganda</p>
         </div>
     </footer>
 
@@ -1172,12 +1206,17 @@
         }, 400); });
 
         // Toast Notification System
+        const Icons = {
+            check: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.5 2.5L16 9.5"/></svg>',
+            warning: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4.5"/><path d="M12 16h.01"/></svg>',
+            info: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg>',
+        };
         function showToast(message, type = 'info') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = 'toast ' + type;
-            const icon = type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle';
-            toast.innerHTML = '<i class="fas ' + icon + '"></i> ' + message;
+            const icon = type === 'success' ? Icons.check : type === 'error' ? Icons.warning : Icons.info;
+            toast.innerHTML = icon + ' ' + message;
             container.appendChild(toast);
             setTimeout(() => { toast.remove(); }, 3200);
         }
@@ -1211,15 +1250,10 @@
 
         document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-        // Navbar scroll effect
-        window.addEventListener('scroll', () => {
-            const navbar = document.getElementById('navbar3d');
-            if (window.scrollY > 50) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
+        // NOTE: the navbar is injected by /assets/js/site-nav.js, which owns its
+        // own scroll state (see .kn-nav.is-scrolled). The handler that used to be
+        // here looked up #navbar3d - an element site-nav.js deletes - so it threw
+        // "Cannot read properties of null" on every single scroll event.
 
         // Active nav link
         function setActive(el) {
@@ -1257,8 +1291,12 @@
     
     // Mobile Menu Toggle
     function toggleMobileMenu() {
-      document.getElementById('navLinks').classList.toggle('mobile-open');
-      document.getElementById('mobileBtn').classList.toggle('active');
+      // legacy hook: the navbar is injected by site-nav.js and has no #navLinks
+      // / #mobileBtn, so guard the lookups instead of throwing.
+      var nl = document.getElementById('navLinks');
+      var mb = document.getElementById('mobileBtn');
+      if (nl) nl.classList.toggle('mobile-open');
+      if (mb) mb.classList.toggle('active');
     }
 
 </script>
@@ -1305,9 +1343,17 @@
       if (sec) sec.style.display = 'none';
       return;
     }
+    // Only images the school owns or that always resolve: the removable
+    // third-party directory hotlinks are skipped here.
+    imgs = imgs.filter(function (im) { return String(im.src || '').indexOf('schoolnet.africa') === -1; });
+    if (!imgs.length) {
+      var sec0 = document.getElementById('gallery');
+      if (sec0) sec0.style.display = 'none';
+      return;
+    }
     grid.innerHTML = imgs.slice(0, 6).map(function (im) {
       return '<div class="gallery-item reveal is-visible" style="opacity:1;transform:none">' +
-        '<img src="' + esc(im.src) + '" alt="' + esc(im.title) + '" loading="lazy">' +
+        '<img src="' + esc(im.src) + '" alt="' + esc(im.title) + '" loading="lazy" onerror="window.__mediaFallback(this)">' +
         '<div class="gallery-overlay"><h4>' + esc(im.title) + '</h4><p>' + esc(im.caption || '') + '</p></div></div>';
     }).join('');
   }).catch(function () {
@@ -1317,40 +1363,20 @@
 })();
 </script>
 <script>
-// DEFERRED HERO VIDEO — the page paints instantly with the gradient, then the
-// background video fades in only after the page has fully loaded. This keeps
-// first paint fast while restoring the cinematic hero.
-(function () {
-  var conn = navigator.connection || {};
-  if (conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '')) return; // respect data saver
-  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  function inject() {
-    var host = document.getElementById('heroBg');
-    if (!host || host.querySelector('video')) return;
-    var v = document.createElement('video');
-    v.setAttribute('data-keep', '1');
-    v.autoplay = true; v.muted = true; v.loop = true;
-    v.playsInline = true; v.setAttribute('playsinline', '');
-    v.preload = 'auto';
-    v.style.cssText = 'width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.2s ease';
-    v.src = 'https://kalibz-international.netlify.app/assets/videos/kalinabiri-kalibz-intro.mp4';
-    v.addEventListener('canplay', function () {
-      v.play().catch(function () {});
-      v.style.opacity = '1';
-    });
-    v.addEventListener('error', function () { v.remove(); }); // gradient stays as fallback
-    host.appendChild(v);
-  }
-  // Run when the DOM is ready + a beat (not window.load — a single slow
-  // third-party asset would delay the video forever). requestIdleCallback
-  // lets the browser paint first, so first paint stays instant.
-  function schedule() {
-    if ('requestIdleCallback' in window) requestIdleCallback(inject, { timeout: 1500 });
-    else setTimeout(inject, 600);
-  }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', schedule);
-  else schedule();
-})();
+// Any school photo served from the video CDN is requested at the highest
+// resolution first and steps down automatically if that size is missing, so
+// visitors never see a broken image.
+window.__mediaFallback = function (img) {
+  var s = img.src || '';
+  if (s.indexOf('maxresdefault') > -1) { img.src = s.replace('maxresdefault', 'hq720'); return; }
+  if (s.indexOf('hq720') > -1) { img.src = s.replace('hq720', 'hqdefault'); return; }
+  // Nothing left to try: hide the tile instead of showing a broken-image icon.
+  img.onerror = null;
+  img.removeAttribute('src');
+  var box = img.closest('figure, .gallery-item, .news-card, .campus-figure, .media-card');
+  if (box) box.style.display = 'none';
+  else img.style.display = 'none';
+};
 </script>
 </body>
 </html>

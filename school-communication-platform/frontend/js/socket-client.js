@@ -33,12 +33,13 @@
     if (typeof window.io !== 'function') return; // socket client not loaded
     if (socket) return;
 
-    const token = window.API.getToken();
-    if (!token) return;
+    // The session cookie is sent automatically (withCredentials) — no token is
+    // ever exposed to JavaScript, so nothing here can be stolen by XSS.
+    if (!window.API.hasSessionCookie()) return;
 
     try {
       socket = window.io(BASE, {
-        auth: { token },
+        withCredentials: true,
         transports: ['websocket', 'polling'],
         reconnectionAttempts: 3,
         timeout: 6000,

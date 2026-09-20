@@ -7,7 +7,7 @@ const { all, run } = require('../database/db');
 
 const DEFAULT_SCHOOL = {
   name: 'Kalinabiri Secondary School',
-  motto: 'Excellence in Education Since 1995',
+  motto: 'Determined To Excel With Trust In God',
   logo: null,
   phone: '',
   email: '',

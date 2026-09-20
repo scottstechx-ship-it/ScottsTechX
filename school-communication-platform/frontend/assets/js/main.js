@@ -54,12 +54,12 @@ function initNavbar() {
       document.body.classList.toggle('light-mode');
       const isLight = document.body.classList.contains('light-mode');
       localStorage.setItem('theme', isLight ? 'light' : 'dark');
-      modeToggle.textContent = isLight ? '🌙' : '☀️';
+      modeToggle.textContent = isLight ? 'Dark' : 'Light';
     });
     const saved = localStorage.getItem('theme');
     if (saved === 'light') {
       document.body.classList.add('light-mode');
-      modeToggle.textContent = '🌙';
+      modeToggle.textContent = 'Dark';
     }
   }
 }
@@ -147,7 +147,7 @@ function showToast(message, type = 'success') {
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
   toast.innerHTML = `
-    <span class="toast-icon">${type === 'success' ? '✓' : '✕'}</span>
+    <span class="toast-icon">${type === 'success' ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>' : '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>'}</span>
     <span>${message}</span>
   `;
   container.appendChild(toast);

@@ -32,7 +32,7 @@
 </style>
 </head>
 <body class="login-page role-student">
-<a href="/" class="kn-back" aria-label="Back to school website">← School website</a>
+<a href="/" class="kn-back" aria-label="Back to school website"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg> School website</a>
 <style>
 .kn-back { position: fixed; top: 14px; left: 14px; z-index: 50; display: inline-flex; align-items: center; gap: 6px;
   color: rgba(255,255,255,.85); text-decoration: none; font-weight: 700; font-size: .84rem; font-family: 'Inter', system-ui, sans-serif;
@@ -63,7 +63,7 @@
       <span>Student Portal</span>
     </div>
     <div class="icon-wrapper" aria-hidden="true">
-      <img src="/assets/images/logo.png" alt="Kalinabiri SS" style="width:48px;height:48px;border-radius:12px;object-fit:cover;border:2px solid rgba(59,130,246,0.3);">
+      <img src="/assets/images/logo.jpeg" alt="Kalinabiri SS" style="width:48px;height:48px;border-radius:12px;object-fit:cover;border:2px solid rgba(59,130,246,0.3);">
     </div>
     <h1>Welcome Back</h1>
     <p class="subtitle">Student Dashboard</p>
@@ -94,33 +94,10 @@
     <p class="footer-note">Kalinabiri Secondary School • Ntinda, Kampala</p>
   </div>
 </main>
+<script src="/js/config.js"></script>
+<script src="/js/api.js"></script>
 <script src="login-premium.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('loginForm');
-  const msg = document.getElementById('formMessage');
-  const btn = document.getElementById('submitBtn');
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const fd = new FormData(form);
-    const body = Object.fromEntries(fd);
-    btn.disabled = true; btn.querySelector('.btn-text').textContent = 'Signing in…'; btn.classList.add('loading');
-    msg.textContent = ''; msg.className = 'form-message';
-    try {
-      const res = await fetch('/api/auth/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Login failed');
-      localStorage.setItem('scp_token', data.token);
-      localStorage.setItem('scp_user', JSON.stringify(data.user));
-      msg.textContent = 'Redirecting…'; msg.className = 'form-message success';
-      setTimeout(() => window.location.href = '/student/', 600);
-    } catch (err) {
-      msg.textContent = err.message; msg.className = 'form-message error';
-      btn.disabled = false; btn.querySelector('.btn-text').textContent = 'Sign In'; btn.classList.remove('loading');
-    }
-  });
-});
-</script>
+
 <script>
 (function () {
   var pw = document.getElementById('password');
@@ -130,13 +107,13 @@ document.addEventListener('DOMContentLoaded', () => {
   wrap.style.position = 'relative';
   var btn = document.createElement('button');
   btn.type = 'button';
-  btn.className = 'pw-toggle-btn';
+  btn.className = 'pw-toggle-btn'; btn.style.minWidth = '52px';
   btn.setAttribute('aria-label', 'Show password');
-  btn.textContent = '👁';
+  btn.textContent = 'Show';
   btn.addEventListener('click', function () {
     var show = pw.type === 'password';
     pw.type = show ? 'text' : 'password';
-    btn.textContent = show ? '🙈' : '👁';
+    btn.textContent = show ? 'Hide' : 'Show';
     btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
   });
   wrap.appendChild(btn);

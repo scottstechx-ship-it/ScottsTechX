@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Verify email — School Portal</title>
-<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="/css/app.css">
 <style>
   body { display:flex; align-items:center; justify-content:center; min-height:100vh; background:linear-gradient(135deg,#1e3a8a,#2563eb); padding:16px; }
   .card { background:#fff; border-radius:16px; box-shadow:0 25px 60px rgba(2,6,23,.35); width:100%; max-width:420px; padding:32px; text-align:center; }
@@ -15,7 +15,7 @@
 </head>
 <body>
 <div class="card">
-  <div class="big" id="icon">📧</div>
+  <div class="big" id="icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg></div>
   <h1 id="title">Verifying your email…</h1>
   <div class="err" id="err"></div>
   <div class="ok" id="ok"></div>
@@ -26,14 +26,14 @@
   </div>
 </div>
 
-<script src="js/config.js"></script>
-<script src="js/api.js"></script>
-<script src="js/theme.js"></script>
+<script src="/js/config.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/theme.js"></script>
 <script>
   (function () {
     const token = new URLSearchParams(location.search).get('token');
     if (!token) {
-      document.getElementById('icon').textContent = '⚠️';
+      document.getElementById('icon').textContent = '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>';
       document.getElementById('title').textContent = 'Missing verification link';
       document.getElementById('detail').textContent = 'This link is incomplete. Check the email we sent you for the full link.';
       document.getElementById('actions').style.display = 'block';
@@ -42,14 +42,14 @@
     (async () => {
       try {
         const data = await API.post('/api/auth/verify-email', { token });
-        document.getElementById('icon').textContent = '✅';
+        document.getElementById('icon').textContent = '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
         document.getElementById('title').textContent = 'Email verified!';
         document.getElementById('detail').textContent = data.message || 'Your email is verified. Your registration is now awaiting admin approval.';
         document.getElementById('ok').textContent = 'You will be able to log in once the school administration approves your registration.';
         document.getElementById('ok').style.display = 'block';
         document.getElementById('actions').style.display = 'block';
       } catch (e) {
-        document.getElementById('icon').textContent = '⚠️';
+        document.getElementById('icon').textContent = '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>';
         document.getElementById('title').textContent = 'Could not verify';
         document.getElementById('detail').textContent = e.message;
         document.getElementById('err').textContent = e.message;

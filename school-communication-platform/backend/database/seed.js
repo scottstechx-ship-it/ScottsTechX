@@ -280,12 +280,12 @@ function runSeed() {
     // ---------------- settings ----------------
     setSetting('school', {
       name: 'Kalinabiri Secondary School',
-      motto: 'Excellence in Education Since 1995',
+      motto: 'Determined To Excel With Trust In God',
       logo: null,
       phone: '0792 861 645',
-      email: 'Kalinabiri.ntinda@yahoo.com',
+      email: 'kalinabirisecsch@gmail.com',
       address: 'Kalinabiri Road, Ntinda, Kampala, Uganda',
-      website: 'https://www.kalinabiriss.ac.ug',
+      website: 'https://schoolnet.africa/ug/lower/secondary-schools/kalinabiri-secondary-school/',
       academicYears: ['2025', '2026'],
       currentAcademicYear: '2026',
       streams: ['A', 'B', 'C'],
@@ -310,22 +310,46 @@ function runSeed() {
     // ---------------- website gallery (managed media) ----------------
     // The school's existing photos/videos become manageable records so the
     // super admin can edit or remove every one of them from the dashboard.
-    const REMOTE = 'https://kalibz-international.netlify.app/assets';
+    // Every item below is genuine, publicly published Kalinabiri Secondary
+    // School media: the campus photograph from the school's national schools
+    // directory profile (schoolnet.africa), and still frames from the school's
+    // own published lesson-practical and community videos on YouTube.
+    // The super admin can edit or remove any of them from the dashboard.
     const media = [
-      ['School Buildings', 'Our modern campus facilities', `${REMOTE}/images/kalibz/school%20buildings.jpg`, 'image', 'Campus', 1],
-      ['National Robotics Champions', 'June 2025 winners', `${REMOTE}/images/kalibz/award%20winning.jpg`, 'image', 'Achievements', 2],
-      ['Classroom Activities', 'Engaged learning in action', `${REMOTE}/images/kalibz/class%20rooms.jpg`, 'image', 'Academics', 3],
-      ['Students Learning', 'Hands-on science education', `${REMOTE}/images/kalibz/class%20rooms%20%282%29.jpg`, 'image', 'Academics', 4],
-      ['Modern Classrooms', 'Learning spaces', `${REMOTE}/images/kalibz/class%20rooms%20%283%29.jpg`, 'image', 'Academics', 5],
-      ['Our Students', 'Proud Kalinabiri learners', `${REMOTE}/images/kalibz/kalinabiri%20students.jpg`, 'image', 'Students', 6],
-      ['Student Projects', 'Innovation and creativity', `${REMOTE}/images/kalibz/projects.jpg`, 'image', 'Innovation', 7],
-      ['MRS. ASIIMWE SHAROM', 'Staff', `${REMOTE}/images/kalibz/MRS.%20ASIIMWE%20SHAROM.jpg`, 'image', 'Staff', 8],
-      ['School Bus', 'Transport', `${REMOTE}/images/kalibz/school%20bus.jpg`, 'image', 'Transport', 9],
-      ['School Environment', 'Campus', `${REMOTE}/images/kalibz/school%20enviroment.jpg`, 'image', 'Campus', 10],
+      ['Kalinabiri Secondary School Campus', 'Our school in Ntinda, Kampala', 'https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss.jpeg', 'image', 'Campus', 1],
+      ['School Grounds and Buildings', 'Our campus in Ntinda, Kampala', 'https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss-1.jpeg', 'image', 'Campus', 2],
+      ['Locally Made Thermometer Practical', 'S.1 physics: heat and measurement', 'https://i.ytimg.com/vi/mYhX2lFCMtE/hq720.jpg', 'image', 'Academics', 3],
+      ['Magnetism Demonstration', 'Students demonstrating magnetic fields', 'https://i.ytimg.com/vi/YsB_nSzRTbI/hq720.jpg', 'image', 'Academics', 4],
+      ['Electricity Practical', 'S.1 students building simple circuits', 'https://i.ytimg.com/vi/UoC0lHpgYCA/hq720.jpg', 'image', 'Academics', 5],
+      ['Heat and Energy Practical', 'Conduction and radiation with local materials', 'https://i.ytimg.com/vi/Ab96mYU4UcY/hq720.jpg', 'image', 'Academics', 6],
+      ['Light Demonstration', 'S.1 students demonstrating reflection', 'https://i.ytimg.com/vi/CBs7v5OIjpw/hq720.jpg', 'image', 'Academics', 7],
+      ['Community Health Outreach', 'Reusable sanitary towel campaign at the school', 'https://i.ytimg.com/vi/O1A6aQcmlmg/hq720.jpg', 'image', 'Community', 8],
+      ['Talent and Mentorship Day', 'SMASHED youth mentoring live at Kalinabiri SS', 'https://i.ytimg.com/vi/pMDWl5NuGWw/hq720.jpg', 'image', 'Events', 9],
     ];
     for (const [title, caption, url, type, cat, sort] of media) {
       run('INSERT OR IGNORE INTO site_gallery (title, caption, url, media_type, category, sort_order) VALUES (?, ?, ?, ?, ?, ?)',
         [title, caption, url, type, cat, sort]);
+    }
+
+    // ---------------- website news (genuine, published school events) --------
+    // Each item below corresponds to a publicly published video recorded at
+    // Kalinabiri SS, with a still from that same footage as its picture.
+    const news = [
+      ['Reusable Sanitary Towel Campaign at Kalinabiri SS',
+        'Kalinabiri Secondary School hosted a reusable sanitary towel campaign run in partnership with the Joel Ssenyonyi Foundation and She for She. The campaign equips girls with washable, long-lasting sanitary towels so that no learner has to miss lessons every month, and it includes practical hygiene education for the whole school.',
+        'https://i.ytimg.com/vi/O1A6aQcmlmg/hq720.jpg'],
+      ['S.1 Learners Demonstrate Science With Local Materials',
+        'Our Senior One learners continue to show that science needs curiosity more than expensive equipment. Working in groups, they built and demonstrated their own thermometer, simple electric circuits, magnetism and heat experiments using materials available around the school. Teaching science through practicals like these is at the heart of learning at Kalinabiri.',
+        'https://i.ytimg.com/vi/mYhX2lFCMtE/hq720.jpg'],
+      ['Youth Mentorship Day: SMASHED Live at Kalinabiri SS',
+        'Topowa Youth Mentoring Uganda brought the SMASHED youth mentorship experience to our campus. Learners spent the day in sessions on purpose, discipline and making positive life choices, closing with music and testimonies from the mentees themselves.',
+        'https://i.ytimg.com/vi/pMDWl5NuGWw/hq720.jpg'],
+      ['Guidance Session for Our Candidate Classes',
+        'Our S.4 and S.6 candidates were taken through an inspiring guidance and motivation session ahead of their national examinations. The session covered revision strategy, examination discipline, managing pressure and keeping faith, and the learners gave a vote of thanks on behalf of the whole candidate class.',
+        'https://i.ytimg.com/vi/sblZex31Ufk/hq720.jpg'],
+    ];
+    for (const [title, body, img] of news) {
+      run('INSERT OR IGNORE INTO site_news (title, body, image_url, published) VALUES (?, ?, ?, 1)', [title, body, img]);
     }
 
     setSetting('seeded', true);
@@ -351,10 +375,17 @@ if (require.main === module) {
   if (process.argv.includes('--reset')) {
     console.log('Resetting database...');
     db.exec('PRAGMA foreign_keys = OFF');
+    // EVERY content table must be dropped here, otherwise --reset leaves
+    // stale rows behind (e.g. old gallery items surviving into a fresh seed).
     const tables = ['announcement_reads', 'announcements', 'notifications', 'message_reads', 'messages',
       'conversation_participants', 'conversations', 'document_access', 'documents', 'folders',
       'parent_students', 'parents', 'students', 'teacher_classes', 'teachers', 'classes', 'users',
-      'activity_logs', 'settings'];
+      'activity_logs', 'settings',
+      'site_gallery', 'site_news', 'contact_messages', 'admission_applications',
+      'assignment_submissions', 'assignments', 'attendance', 'exam_results', 'exams',
+      'timetable_entries', 'fee_payments', 'student_fees', 'fee_structures', 'subjects',
+      'imports', 'email_verifications', 'password_resets', 'user_preferences',
+      'sessions', 'login_attempts'];
     for (const t of tables) db.exec(`DROP TABLE IF EXISTS ${t}`);
     db.exec('PRAGMA foreign_keys = ON');
     // re-apply schema

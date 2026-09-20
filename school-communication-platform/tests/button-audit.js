@@ -16,7 +16,7 @@ const PAGES = ['/', '/about/', '/admissions/', '/contact/', '/gallery/', '/news/
   '/platform/register.html', '/platform/forgot-password.html'];
 
 let fails = 0, checked = 0;
-const bad = (msg) => { fails++; console.log('  ✘ ' + msg); };
+const bad = (msg) => { fails++; console.log('  x ' + msg); };
 
 const linkCache = new Map();
 async function linkOk(url) {
@@ -29,6 +29,22 @@ async function linkOk(url) {
   } catch { linkCache.set(url, false); return false; }
 }
 
+/**
+ * A form's submit handler may live in an external script the page loads
+ * (e.g. login-premium.js) rather than inline. Concatenate the text of every
+ * local <script src> the page references so handler binding can be detected.
+ */
+async function pageScriptText(page, html) {
+  const refs = [...html.matchAll(/<script[^>]+src="([^"]+)"/g)].map((m) => m[1]);
+  const local = refs.filter((s) => !/^(https?:)?\/\//.test(s) && !s.startsWith('data:'));
+  const parts = [];
+  for (const src of local) {
+    const url = src.startsWith('/') ? src : new URL(src, BASE + page).pathname;
+    try { parts.push(await (await fetch(BASE + url)).text()); } catch { /* ignore */ }
+  }
+  return parts.join('\n');
+}
+
 (async () => {
   for (const page of PAGES) {
     const res = await fetch(BASE + page);
@@ -36,6 +52,7 @@ async function linkOk(url) {
     const html = await res.text();
     const dom = new JSDOM(html);
     const doc = dom.window.document;
+    const scriptText = await pageScriptText(page, html);
     console.log(`== ${page}`);
 
     // 1. every internal link resolves
@@ -66,7 +83,8 @@ async function linkOk(url) {
       if (/alert\(/.test(os) && !/fetch|API/.test(os)) bad(`${page}: form submits to alert() only`);
       const hasId = f.id;
       const hasAction = f.getAttribute('action');
-      const boundInPage = hasId && html.includes(`getElementById('${hasId}')`) || hasId && html.includes(`getElementById("${hasId}")`);
+      const allText = html + '\n' + scriptText;
+      const boundInPage = hasId && (allText.includes(`getElementById('${hasId}')`) || allText.includes(`getElementById("${hasId}")`));
       if (!os && !hasAction && !boundInPage) bad(`${page}: form <${hasId || 'anonymous'}> has no submit handler`);
     }
 
@@ -81,6 +99,6 @@ async function linkOk(url) {
     dom.window.close();
   }
   console.log(`\n${checked} elements audited across ${PAGES.length} pages.`);
-  console.log(fails === 0 ? '✅ EVERY LINK, BUTTON AND FORM IS WIRED UP' : `❌ ${fails} dead/broken elements`);
+  console.log(fails === 0 ? 'OK EVERY LINK, BUTTON AND FORM IS WIRED UP' : `FAIL ${fails} dead/broken elements`);
   process.exit(fails ? 1 : 0);
 })().catch((e) => { console.error('Harness error:', e); process.exit(1); });

@@ -21,10 +21,10 @@
           <label class="field" style="margin:0">Date
             <input type="date" id="att-date"></label>
           <button class="btn" id="att-load">Load roster</button>
-          <button class="btn success" id="att-save">💾 Save attendance</button>
+          <button class="btn success" id="att-save"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg> Save attendance</button>
         </div>
         <div class="card" id="att-roster"><div class="doc-meta">Pick a class and date, then load the roster.</div></div>
-        <div class="card"><h3>🕒 History</h3><div id="att-history"></div></div>`;
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg> History</h3><div id="att-history"></div></div>`;
 
       const classes = (await API.get('/api/classes')).classes || [];
       const sel = container.querySelector('#att-class');
@@ -41,7 +41,7 @@
         existing.forEach((a) => { statusMap[a.student_id] = a.status; });
         const box = container.querySelector('#att-roster');
         if (!students.length) { box.innerHTML = '<div class="doc-meta">No students in this class.</div>'; return; }
-        box.innerHTML = '<h3>📋 Roster for ' + date + '</h3><div id="roster-rows"></div>';
+        box.innerHTML = '<h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 13h6"/><path d="M9 17h4"/></svg> Roster for ' + date + '</h3><div id="roster-rows"></div>';
         const rows = box.querySelector('#roster-rows');
         for (const s of students) {
           const current = statusMap[s.id] || 'present';
@@ -96,8 +96,8 @@
             <td data-label="Status">${attBadge(a.status)}</td>
             <td data-label="Note">${UI.esc(a.note || '—')}</td>
             <td data-label="" class="actions-cell"><div class="actions">
-              <button class="btn secondary sm" data-edit="${a.id}">✏️</button>
-              <button class="btn danger sm" data-del="${a.id}">🗑</button>
+              <button class="btn secondary sm" data-edit="${a.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+              <button class="btn danger sm" data-del="${a.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
             </div></td>`;
           tbody.appendChild(tr);
           tr.querySelector('[data-edit]').onclick = async () => {
@@ -129,16 +129,16 @@
 
     /** Student / Parent: view own / children's attendance. */
     async viewer(container, { studentId, studentName } = {}) {
-      container.innerHTML = `<div id="att-summary"></div><div class="card"><h3>🕒 Attendance history — ${UI.esc(studentName || '')}</h3><div id="att-list"></div></div>`;
+      container.innerHTML = `<div id="att-summary"></div><div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg> Attendance history — ${UI.esc(studentName || '')}</h3><div id="att-list"></div></div>`;
       try {
         const summary = await API.get(`/api/attendance/summary/student/${studentId}`);
         const box = container.querySelector('#att-summary');
         const pct = summary.percentage === null ? '—' : summary.percentage + '%';
         box.innerHTML = `<div class="grid grid-4">
-          ${stat('📊', pct, 'Attendance rate')}
-          ${stat('✅', summary.present || 0, 'Present')}
-          ${stat('⚠️', summary.absent || 0, 'Absent')}
-          ${stat('⏰', summary.late || 0, 'Late')}
+          ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>', pct, 'Attendance rate')}
+          ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>', summary.present || 0, 'Present')}
+          ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>', summary.absent || 0, 'Absent')}
+          ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>', summary.late || 0, 'Late')}
         </div>
         ${summary.recentAbsences && summary.recentAbsences.length ? `<div class="card"><h3>Recent absences/lates</h3>${summary.recentAbsences.map((a) => `<div class="list-row"><span class="k">${UI.esc(a.date)}</span><span class="v">${attBadge(a.status)}</span></div>`).join('')}</div>` : ''}`;
         const data = (await API.get(`/api/attendance?studentId=${studentId}&limit=200`)).attendance || [];
@@ -187,7 +187,7 @@
         if (clsSel.value) params.set('classId', clsSel.value);
         const data = (await API.get('/api/assignments?' + params.toString())).assignments || [];
         const list = container.querySelector('#as-list');
-        if (!data.length) { list.innerHTML = '<div class="empty-state"><div class="big">📚</div>No assignments yet.</div>'; return; }
+        if (!data.length) { list.innerHTML = '<div class="empty-state"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>No assignments yet.</div>'; return; }
         list.innerHTML = '';
         for (const a of data) {
           const overdue = a.due_date && a.due_date < new Date().toISOString().slice(0, 10);
@@ -198,8 +198,8 @@
             </div>
             <div class="doc-actions">
               <button class="btn secondary sm" data-view="${a.id}">View / grade</button>
-              <button class="btn secondary sm" data-edit="${a.id}">✏️</button>
-              <button class="btn danger sm" data-del="${a.id}">🗑</button>
+              <button class="btn secondary sm" data-edit="${a.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+              <button class="btn danger sm" data-del="${a.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
             </div>
           </div>`));
         }
@@ -288,7 +288,7 @@
         wide: true,
         body: `<div class="doc-meta">${UI.esc(a.class_name || '')} · Due ${UI.esc(a.due_date || '—')} · ${subs.length} submission${subs.length === 1 ? '' : 's'}</div>
           <div id="subs-list"></div>
-          <button class="btn success" id="publish-grades" style="margin-top:12px">📣 Publish all grades to students</button>`,
+          <button class="btn success" id="publish-grades" style="margin-top:12px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg> Publish all grades to students</button>`,
         foot: '<button class="btn" data-close>Close</button>',
       });
       modal.backdrop.querySelector('[data-close]').onclick = () => modal.close();
@@ -298,7 +298,7 @@
         list.appendChild(UI.el(`<div class="doc-item">
           <div style="flex:1;min-width:0">
             <div class="doc-name">${UI.esc(s.student_name)}</div>
-            <div class="doc-meta">${UI.timeAgo(s.submitted_at)}${s.attachment_name ? ' · 📎 ' + UI.esc(s.attachment_name) : ''}</div>
+            <div class="doc-meta">${UI.timeAgo(s.submitted_at)}${s.attachment_name ? ' · <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3A5 5 0 0 0 13.5 3.4l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7.1 7.1l1.7-1.7"/></svg> ' + UI.esc(s.attachment_name) : ''}</div>
             ${s.content ? `<div style="white-space:pre-wrap;font-size:12.5px;margin-top:4px;background:var(--bg);padding:8px;border-radius:8px">${UI.esc(s.content)}</div>` : ''}
             ${s.grade !== null && s.grade !== undefined ? `<div class="doc-meta" style="margin-top:4px">Grade: <strong>${s.grade}%</strong>${s.released ? ' (released)' : ' (not released yet)'}</div>` : ''}
           </div>
@@ -326,7 +326,7 @@
       container.innerHTML = `<div id="as-list"></div>`;
       const data = (await API.get('/api/assignments')).assignments || [];
       const list = container.querySelector('#as-list');
-      if (!data.length) { list.innerHTML = '<div class="empty-state"><div class="big">📚</div>No assignments for your class yet.</div>'; return; }
+      if (!data.length) { list.innerHTML = '<div class="empty-state"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>No assignments for your class yet.</div>'; return; }
       for (const a of data) {
         const sub = a.my_submission;
         const overdue = a.due_date && a.due_date < new Date().toISOString().slice(0, 10);
@@ -335,7 +335,7 @@
             <div class="doc-name">${UI.esc(a.title)} ${a.due_date ? '<span class="badge amber">due ' + UI.esc(a.due_date) + '</span>' : ''} ${overdue ? '<span class="badge red">Overdue</span>' : ''}</div>
             <div class="doc-meta">${UI.esc(a.subject || '')} · ${UI.esc(a.teacher_name || '')}</div>
             ${sub ? `<div class="doc-meta" style="margin-top:4px">
-              ✅ Submitted ${UI.timeAgo(sub.submitted_at)}
+              <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Submitted ${UI.timeAgo(sub.submitted_at)}
               ${sub.grade !== null && sub.grade !== undefined ? ` · <strong>Grade: ${sub.grade}%</strong>` : (sub.released ? '' : ' · awaiting grade')}
             </div>` : '<div class="doc-meta" style="margin-top:4px">Not submitted yet</div>'}
           </div>
@@ -400,7 +400,7 @@
         if (clsSel.value) params.set('classId', clsSel.value);
         const data = (await API.get('/api/exams?' + params.toString())).exams || [];
         const list = container.querySelector('#ex-list');
-        if (!data.length) { list.innerHTML = '<div class="empty-state"><div class="big">📝</div>No exams yet.</div>'; return; }
+        if (!data.length) { list.innerHTML = '<div class="empty-state"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></div>No exams yet.</div>'; return; }
         list.innerHTML = '';
         for (const e of data) {
           list.appendChild(UI.el(`<div class="doc-item">
@@ -410,8 +410,8 @@
             </div>
             <div class="doc-actions">
               <button class="btn secondary sm" data-open="${e.id}">${e.status === 'published' ? 'View results' : 'Enter marks'}</button>
-              <button class="btn secondary sm" data-edit="${e.id}">✏️</button>
-              <button class="btn danger sm" data-del="${e.id}">🗑</button>
+              <button class="btn secondary sm" data-edit="${e.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+              <button class="btn danger sm" data-del="${e.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
             </div>
           </div>`));
         }
@@ -514,8 +514,8 @@
         body: `<div class="doc-meta">${UI.esc(e.class_name || '')} · ${UI.esc(e.date || 'no date')} · Status: ${UI.esc(e.status)}</div>
           ${e.status === 'published' ? `<div id="res-view"></div>` : `
           <div id="marks-grid"></div>
-          <button class="btn success" id="save-marks" style="margin-top:12px">💾 Save marks</button>`}
-          ${isAdmin && e.status === 'completed' ? `<button class="btn" id="publish-exam" style="margin-top:8px">📣 Publish results to students</button>` : ''}`,
+          <button class="btn success" id="save-marks" style="margin-top:12px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg> Save marks</button>`}
+          ${isAdmin && e.status === 'completed' ? `<button class="btn" id="publish-exam" style="margin-top:8px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg> Publish results to students</button>` : ''}`,
         foot: '<button class="btn" data-close>Close</button>',
       });
       modal.backdrop.querySelector('[data-close]').onclick = () => modal.close();
@@ -572,7 +572,7 @@
       container.innerHTML = `<div id="ex-list"></div>`;
       const data = (await API.get('/api/exams')).exams || [];
       const list = container.querySelector('#ex-list');
-      if (!data.length) { list.innerHTML = '<div class="empty-state"><div class="big">📝</div>No exams scheduled.</div>'; return; }
+      if (!data.length) { list.innerHTML = '<div class="empty-state"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></div>No exams scheduled.</div>'; return; }
       for (const e of data) {
         list.appendChild(UI.el(`<div class="doc-item">
           <div style="flex:1;min-width:0">
@@ -643,7 +643,7 @@
             <td data-label="Subject">${UI.esc(e.subject || '—')}</td>
             <td data-label="Teacher">${UI.esc(e.teacher_name || '—')}</td>
             <td data-label="Room">${UI.esc(e.room || '—')}</td>
-            ${manage ? '<td data-label="" class="actions-cell"><button class="btn danger sm" data-del="' + e.id + '">🗑</button></td>' : ''}`;
+            ${manage ? '<td data-label="" class="actions-cell"><button class="btn danger sm" data-del="' + e.id + '"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button></td>' : ''}`;
           tbody.appendChild(tr);
           const del = tr.querySelector('[data-del]');
           if (del) del.onclick = async () => {
@@ -709,7 +709,7 @@
           <h3 style="flex:1;margin:0">Fee structures</h3>
           <button class="btn" id="fee-create">＋ New fee structure</button>
         </div><div id="fee-structures"></div></div>
-        <div class="card"><h3>💳 Record a payment</h3>
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"/><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg> Record a payment</h3>
           <div class="form-row">
             <label class="field">Student<select id="fee-student"></select></label>
             <label class="field">Amount<input type="number" id="fee-amount" min="1"></label>
@@ -720,16 +720,16 @@
           </div>
           <button class="btn success" id="fee-pay">Record payment</button>
         </div>
-        <div class="card"><h3>📋 Outstanding balances</h3><div id="fee-report"></div></div>
-        <div class="card"><h3>🧾 Recent payments (undo a mistake)</h3><div id="fee-payments"></div></div>`;
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 13h6"/><path d="M9 17h4"/></svg> Outstanding balances</h3><div id="fee-report"></div></div>
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg> Recent payments (undo a mistake)</h3><div id="fee-payments"></div></div>`;
 
       const loadStats = async () => {
         const rep = await API.get('/api/fees/report');
         container.querySelector('#fee-stats').innerHTML =
-          stat('💰', UI.money(rep.totalDue), 'Total billed') +
-          stat('✅', UI.money(rep.totalPaid), 'Total paid') +
-          stat('⚠️', UI.money(rep.totalBalance), 'Outstanding') +
-          stat('🧑‍🎓', rep.outstandingStudents, 'Students with balances');
+          stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg>', UI.money(rep.totalDue), 'Total billed') +
+          stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>', UI.money(rep.totalPaid), 'Total paid') +
+          stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>', UI.money(rep.totalBalance), 'Outstanding') +
+          stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>', rep.outstandingStudents, 'Students with balances');
       };
       const loadStructures = async () => {
         const data = (await API.get('/api/fees/structures')).structures || [];
@@ -745,8 +745,8 @@
             <td data-label="Term">${UI.esc(f.term || '—')}</td>
             <td data-label="Assigned">${f.assigned_count || 0} students</td>
             <td data-label="" class="actions-cell"><div class="actions">
-              <button class="btn secondary sm" data-assign="${f.id}">👥 Assign</button>
-              <button class="btn danger sm" data-del="${f.id}">🗑</button>
+              <button class="btn secondary sm" data-assign="${f.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Assign</button>
+              <button class="btn danger sm" data-del="${f.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
             </div></td>`;
           tbody.appendChild(tr);
           tr.querySelector('[data-assign]').onclick = () => this.assignModal(f, () => loadStructures());
@@ -799,7 +799,7 @@
           for (const p of recent) {
             const tr = document.createElement('tr');
             tr.innerHTML = `<td data-label="Date">${UI.esc(p.paid_at)}</td><td data-label="Student">${UI.esc(p.student)}</td><td data-label="Amount">${UI.money(p.amount)}</td><td data-label="Method">${UI.esc(p.method)}</td><td data-label="Receipt">${UI.esc(p.receipt_no || '—')}</td>
-              <td data-label="" class="actions-cell"><button class="btn danger sm" data-undopay="${p.id}" data-sid="${p.studentId}">↩ Undo</button></td>`;
+              <td data-label="" class="actions-cell"><button class="btn danger sm" data-undopay="${p.id}" data-sid="${p.studentId}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg> Undo</button></td>`;
             tbody.appendChild(tr);
             tr.querySelector('[data-undopay]').onclick = async () => {
               const ok = await UI.confirmDialog(`Undo payment ${p.receipt_no || p.id} (${UI.money(p.amount)})? The balance will be recalculated.`, { title: 'Undo payment', confirmText: 'Undo', danger: true });
@@ -897,11 +897,11 @@
       try {
         const data = await API.get(`/api/fees/student/${studentId}`);
         const box = container.querySelector('#fee-detail');
-        box.innerHTML = `<h3>💳 Fees — ${UI.esc(studentName || '')}</h3>
+        box.innerHTML = `<h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"/><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg> Fees — ${UI.esc(studentName || '')}</h3>
           <div class="grid grid-3" style="margin-top:10px">
-            ${stat('💰', UI.money(data.totalDue), 'Total due')}
-            ${stat('✅', UI.money(data.totalPaid), 'Paid')}
-            ${stat('⚠️', UI.money(data.balance), 'Balance')}
+            ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg>', UI.money(data.totalDue), 'Total due')}
+            ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>', UI.money(data.totalPaid), 'Paid')}
+            ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>', UI.money(data.balance), 'Balance')}
           </div>
           ${data.balance > 0 ? '<div class="card" style="background:var(--warning-light)"><strong>Outstanding balance of ' + UI.money(data.balance) + ' — please settle before the deadline.</strong></div>' : ''}
           <div class="card"><h4>Fee items</h4>
@@ -933,7 +933,7 @@
         data.forEach((s) => {
           const tr = document.createElement('tr');
           tr.innerHTML = `<td data-label="Name">${UI.esc(s.name)}</td><td data-label="Code">${UI.esc(s.code || '—')}</td><td data-label="Dept">${UI.esc(s.department || '—')}</td>
-            <td data-label="" class="actions-cell"><div class="actions"><button class="btn secondary sm" data-edit="${s.id}">✏️</button><button class="btn danger sm" data-del="${s.id}">🗑</button></div></td>`;
+            <td data-label="" class="actions-cell"><div class="actions"><button class="btn secondary sm" data-edit="${s.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button><button class="btn danger sm" data-del="${s.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button></div></td>`;
           tbody.appendChild(tr);
           tr.querySelector('[data-edit]').onclick = () => edit(s, () => load());
           tr.querySelector('[data-del]').onclick = async () => {

@@ -6,6 +6,12 @@
   const API = window.API;
   const BASE = API.base;
 
+  /** Inline SVG icon (never emoji). Falls back to the label text. */
+  function icon(name, opts = {}) {
+    if (window.Icons) return window.Icons.svg(name, opts);
+    return '';
+  }
+
   function esc(s) {
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -31,13 +37,13 @@
 
   /**
    * Avatar URL for a user, or null when none is set.
-   * <img> tags cannot send auth headers, so the JWT rides along as a
-   * query parameter (the endpoint validates it exactly like a header).
+   * The request is authenticated by the session cookie the browser attaches
+   * automatically, so no token has to be embedded in the URL (URLs end up in
+   * logs, referrers and the browser history).
    */
   function avatarUrl(user) {
     if (user && user.profilePicture) {
-      const tok = encodeURIComponent(API.getToken() || '');
-      return `${API.base}/api/users/${user.id}/avatar?token=${tok}&ts=${Date.now()}`;
+      return `${API.base}/api/users/${user.id}/avatar?ts=${Date.now()}`;
     }
     return null;
   }
@@ -49,7 +55,7 @@
 
   /**
    * Fill a logo container with the school logo image, falling back to the
-   * 🎓 mark when no logo is set or the file cannot load.
+   * graduation mark when no logo is set or the file cannot load.
    */
   function applySchoolLogo(container) {
     if (!container) return;
@@ -60,7 +66,7 @@
       container.appendChild(img);
     };
     img.onerror = () => {
-      // fall back to the website logo, then the 🎓 mark
+      // fall back to the website logo, then the graduation mark
       const site = new Image();
       site.onload = () => {
         container.innerHTML = '';
@@ -68,7 +74,7 @@
         site.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;border-radius:9px';
         container.appendChild(site);
       };
-      site.onerror = () => { container.textContent = '🎓'; };
+      site.onerror = () => { container.innerHTML = icon('admissions', { size: 20 }); };
       site.src = '/assets/images/logo.jpeg';
       site.alt = 'School logo';
     };
@@ -185,8 +191,8 @@
   function toast(msg, type = 'info') {
     let box = document.getElementById('toasts');
     if (!box) { box = document.createElement('div'); box.id = 'toasts'; document.body.appendChild(box); }
-    const icons = { success: '✅', error: '⚠️', warning: '⚠️', info: 'ℹ️' };
-    const t = el(`<div class="toast ${type}"><span>${icons[type] || ''}</span><span>${esc(msg)}</span></div>`);
+    const iconName = { success: 'check', error: 'warning', warning: 'warning', info: 'info' }[type];
+    const t = el(`<div class="toast ${type}"><span class="t-ic">${icon(iconName, { size: 16 })}</span><span>${esc(msg)}</span></div>`);
     box.appendChild(t);
     setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 320); }, 3800);
   }
@@ -195,7 +201,7 @@
   function openModal({ title, body, foot, wide = false, onClose }) {
     const backdrop = el(`<div class="modal-backdrop">
       <div class="modal ${wide ? 'wide' : ''}">
-        <div class="modal-head"><h3>${esc(title)}</h3><button class="close-x" data-close>✕</button></div>
+        <div class="modal-head"><h3>${esc(title)}</h3><button class="close-x" data-close aria-label="Close">${icon('close', { size: 16 })}</button></div>
         <div class="modal-body"></div>
         ${foot ? '<div class="modal-foot"></div>' : ''}
       </div></div>`);
@@ -270,14 +276,14 @@
     // sidebar
     const sidebar = el(`<aside class="sidebar">
       <div class="brand">
-        <div class="logo" id="brand-logo">🎓</div>
+        <div class="logo" id="brand-logo">${icon('school', { size: 20 })}</div>
         <div style="min-width:0">
           <div class="name" id="school-name">Kalinabiri SS</div>
           <div class="role-tag">${esc(user.role.replace('_', ' '))} portal</div>
         </div>
       </div>
       <nav id="side-nav"></nav>
-      <button class="nav-item sidebar-logout" id="sidebar-logout"><span class="ic">🚪</span><span>Log out</span></button>
+      <button class="nav-item sidebar-logout" id="sidebar-logout"><span class="ic">${icon('logout', { size: 18 })}</span><span>Log out</span></button>
       <div class="sidebar-foot" id="school-motto">Kalinabiri Secondary School</div>
     </aside>`);
     const navWrap = sidebar.querySelector('#side-nav');
@@ -288,19 +294,19 @@
         navWrap.appendChild(el(`<div class="nav-section">${esc(item.section)}</div>`));
       }
       navWrap.appendChild(el(
-        `<button class="nav-item" data-nav="${esc(item.key)}"><span class="ic">${item.icon}</span><span>${esc(item.label)}</span><span class="badge" data-nav-badge="${esc(item.key)}" style="display:none"></span></button>`
+        `<button class="nav-item" data-nav="${esc(item.key)}"><span class="ic">${icon(item.icon, { size: 18 })}</span><span>${esc(item.label)}</span><span class="badge" data-nav-badge="${esc(item.key)}" style="display:none"></span></button>`
       ));
     }
 
     // topbar
     const topbar = el(`<div class="topbar">
-      <button class="hamburger" id="hamburger" aria-label="Open menu">☰</button>
+      <button class="hamburger" id="hamburger" aria-label="Open menu">${icon('filter', { size: 18 })}</button>
       <div class="page-title" id="page-title">${esc(title || 'Dashboard')}</div>
       <div class="spacer"></div>
-      <button class="icon-btn" id="theme-btn" title="Switch theme (light / dark / system)" aria-label="Switch theme">🌓</button>
-      <button class="icon-btn topbar-logout" id="logout-btn" title="Log out" aria-label="Log out">🚪</button>
+      <button class="icon-btn" id="theme-btn" title="Switch theme (light / dark / system)" aria-label="Switch theme">${icon('theme', { size: 18 })}</button>
+      <button class="icon-btn topbar-logout" id="logout-btn" title="Log out" aria-label="Log out">${icon('logout', { size: 18 })}</button>
       <div class="dropdown" id="notif-drop">
-        <button class="icon-btn" id="notif-btn">🔔<span class="count-dot" id="notif-dot" style="display:none">0</span></button>
+        <button class="icon-btn" id="notif-btn" aria-label="Notifications">${icon('notifications', { size: 18 })}<span class="count-dot" id="notif-dot" style="display:none">0</span></button>
         <div class="dropdown-menu" id="notif-menu"></div>
       </div>
       <div class="dropdown" id="user-drop">
@@ -313,12 +319,12 @@
         </button>
         <div class="user-menu" id="user-menu">
           <div class="um-head"><strong>${esc(user.fullName)}</strong><br><small>${esc(user.email || '')}</small></div>
-          <button class="um-item" data-um="profile">👤 My profile</button>
-          <button class="um-item" data-um="photo">📷 Change photo</button>
-          <button class="um-item" data-um="theme">🌓 Theme: <span id="um-theme-label">System</span></button>
-          <button class="um-item" data-um="password">🔑 Change password</button>
-          <button class="um-item" data-um="notifications">🔔 Notifications</button>
-          <button class="um-item danger" data-um="logout">🚪 Log out</button>
+          <button class="um-item" data-um="profile">${icon('profile', { size: 16 })} My profile</button>
+          <button class="um-item" data-um="photo">${icon('camera', { size: 16 })} Change photo</button>
+          <button class="um-item" data-um="theme">${icon('theme', { size: 16 })} Theme: <span id="um-theme-label">System</span></button>
+          <button class="um-item" data-um="password">${icon('key', { size: 16 })} Change password</button>
+          <button class="um-item" data-um="notifications">${icon('notifications', { size: 16 })} Notifications</button>
+          <button class="um-item danger" data-um="logout">${icon('logout', { size: 16 })} Log out</button>
         </div>
       </div>
     </div>`);
@@ -336,7 +342,7 @@
     if (bottomNav && window.innerWidth <= 768) {
       const bn = el('<div class="bottom-nav" id="bottom-nav"></div>');
       for (const item of bottomNav) {
-        bn.appendChild(el(`<button class="bn-item" data-bn="${esc(item.key)}"><span class="ic">${item.icon}</span><span>${esc(item.label)}</span><span class="bn-badge" data-bn-badge="${esc(item.key)}" style="display:none"></span></button>`));
+        bn.appendChild(el(`<button class="bn-item" data-bn="${esc(item.key)}"><span class="ic">${icon(item.icon, { size: 18 })}</span><span>${esc(item.label)}</span><span class="bn-badge" data-bn-badge="${esc(item.key)}" style="display:none"></span></button>`));
       }
       document.body.appendChild(bn);
       bn.querySelectorAll('.bn-item').forEach((b) => b.addEventListener('click', () => {
@@ -403,8 +409,8 @@
     });
 
     topbar.querySelector('#user-menu').querySelector('[data-um="logout"]').onclick = async () => {
-      try { await API.post('/api/auth/logout'); } catch {}
-      API.logout();
+      // API.logout() asks the server to revoke the session, then redirects.
+      await API.logout();
     };
     topbar.querySelector('#user-menu').querySelector('[data-um="password"]').onclick = () => openChangePassword();
     topbar.querySelector('#user-menu').querySelector('[data-um="photo"]').onclick = () => openAvatarUpload();
@@ -428,22 +434,22 @@
     const doLogout = async () => {
       const sure = await confirmDialog('Log out of your dashboard?', { title: 'Log out', confirmText: 'Log out' });
       if (!sure) return;
-      try { await API.post('/api/auth/logout'); } catch {}
-      API.logout();
+      // API.logout() asks the server to revoke the session, then redirects.
+      await API.logout();
     };
     topbar.querySelector('#logout-btn').onclick = doLogout;
     const themeBtn = topbar.querySelector('#theme-btn');
-    const themeIcon = () => ({ light: '☀️', dark: '🌙', system: '🌓' }[window.Theme.current() || 'system'] || '🌓');
-    themeBtn.textContent = themeIcon();
+    const themeIconName = () => ({ light: 'sun', dark: 'moon', system: 'theme' }[window.Theme.current() || 'system'] || 'theme');
+    themeBtn.innerHTML = icon(themeIconName(), { size: 18 });
     themeBtn.onclick = () => {
       const order = ['system', 'light', 'dark'];
       const next = order[(order.indexOf(window.Theme.current()) + 1) % order.length];
       window.Theme.set(next);
-      themeBtn.textContent = themeIcon();
+      themeBtn.innerHTML = icon(themeIconName(), { size: 18 });
       refreshThemeLabel();
       UI.toast(`Theme: ${next}`, 'info');
     };
-    document.addEventListener('theme:changed', () => { themeBtn.textContent = themeIcon(); });
+    document.addEventListener('theme:changed', () => { themeBtn.innerHTML = icon(themeIconName(), { size: 18 }); });
 
     // sidebar logout (same confirm flow as the topbar button)
     sidebar.querySelector('#sidebar-logout').onclick = doLogout;
@@ -489,9 +495,9 @@
     const menu = document.querySelector('#notif-menu');
     if (!menu) return;
     const items = await loadNotifications();
-    const icons = { message: '💬', document: '📄', announcement: '📢', system: '🔔', account: '🔐' };
+    const icons = { message: 'messages', document: 'document', announcement: 'announcements', system: 'notifications', account: 'lock' };
     if (!items.length) {
-      menu.innerHTML = `<div class="empty-state" style="padding:30px"><div class="big">🔕</div>No notifications yet</div>`;
+      menu.innerHTML = `<div class="empty-state" style="padding:30px"><div class="big">${icon('bellOff', { size: 22 })}</div>No notifications yet</div>`;
       return;
     }
     menu.innerHTML = `<div style="padding:12px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
@@ -499,7 +505,7 @@
         <button class="btn ghost sm" id="mark-all">Mark all read</button></div>`;
     for (const n of items) {
       menu.appendChild(el(`<div class="notif-item ${n.read ? '' : 'unread'}" data-nid="${n.id}" data-link="${esc(n.link || '')}">
-        <span class="n-ic">${icons[n.type] || '🔔'}</span>
+        <span class="n-ic">${icon(icons[n.type] || 'notifications', { size: 16 })}</span>
         <div><div class="n-title">${esc(n.title)}</div>
         ${n.body ? `<div class="n-body">${esc(n.body)}</div>` : ''}
         <div class="n-time">${timeAgo(n.created_at)}</div></div></div>`));
@@ -570,19 +576,19 @@
 
     container.innerHTML = `
       <div class="card">
-        <h3>🌓 Appearance</h3>
+        <h3>${icon('theme', { size: 16 })} Appearance</h3>
         <p class="doc-meta">Choose how the platform looks. Your choice is saved and follows you on every device.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button class="chip" data-theme-opt="system">System</button>
-          <button class="chip" data-theme-opt="light">☀️ Light</button>
-          <button class="chip" data-theme-opt="dark">🌙 Dark</button>
+          <button class="chip" data-theme-opt="light">${icon('sun', { size: 14 })} Light</button>
+          <button class="chip" data-theme-opt="dark">${icon('moon', { size: 14 })} Dark</button>
         </div>
       </div>
       <div class="card">
-        <h3>🔔 Notification preferences</h3>
+        <h3>${icon('notifications', { size: 16 })} Notification preferences</h3>
         <p class="doc-meta">Choose which notifications you receive. The school can also set defaults.</p>
         <div id="notif-prefs-list"></div>
-        <button class="btn" id="prefs-save" style="margin-top:12px">💾 Save preferences</button>
+        <button class="btn" id="prefs-save" style="margin-top:12px">${icon('save', { size: 14 })} Save preferences</button>
       </div>`;
 
     const themeOpts = container.querySelectorAll('[data-theme-opt]');

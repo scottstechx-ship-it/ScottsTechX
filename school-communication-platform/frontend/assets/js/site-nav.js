@@ -7,14 +7,27 @@
   'use strict';
 
   var LINKS = [
-    { href: '/',            icon: 'fa-home',           label: 'Home' },
-    { href: '/about/',      icon: 'fa-school',         label: 'About' },
-    { href: '/admissions/', icon: 'fa-pen-to-square',  label: 'Admissions' },
-    { href: '/gallery/',    icon: 'fa-images',         label: 'Gallery' },
-    { href: '/news/',       icon: 'fa-newspaper',      label: 'News' },
-    { href: '/staff/',      icon: 'fa-users',          label: 'Staff' },
-    { href: '/contact/',    icon: 'fa-envelope',       label: 'Contact' },
+    { href: '/',            icon: 'home',           label: 'Home' },
+    { href: '/about/',      icon: 'school',         label: 'About' },
+    { href: '/admissions/', icon: 'penToSquare',  label: 'Admissions' },
+    { href: '/gallery/',    icon: 'images',         label: 'Gallery' },
+    { href: '/news/',       icon: 'newspaper',      label: 'News' },
+    { href: '/staff/',      icon: 'users',          label: 'Staff' },
+    { href: '/contact/',    icon: 'envelope',       label: 'Contact' },
   ];
+
+  // Inline SVG icons (the site no longer uses an icon font).
+  var ICON = {
+    home:          '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V9.5z"/></svg>',
+    school:        '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M10 21v-6h4v6"/></svg>',
+    penToSquare:   '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+    images:        '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>',
+    newspaper:     '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M4 4h11a1 1 0 0 1 1 1v15H5a1 1 0 0 1-1-1V4z"/><path d="M16 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-3"/><path d="M7 8h5"/><path d="M7 12h5"/><path d="M7 16h3"/></svg>',
+    users:         '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    envelope:      '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>',
+    rightToBracket:'<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg>'
+  };
+  function icon(name) { return ICON[name] || ''; }
 
   function currentPath() {
     var p = location.pathname;
@@ -52,7 +65,7 @@
 
     var linksHtml = LINKS.map(function (l) {
       return '<li><a href="' + l.href + '"' + (isActive(l.href) ? ' class="active" aria-current="page"' : '') + '>' +
-        '<i class="fas ' + l.icon + '" aria-hidden="true"></i><span>' + l.label + '</span></a></li>';
+        icon(l.icon) + '<span>' + l.label + '</span></a></li>';
     }).join('');
 
     nav.innerHTML =
@@ -62,8 +75,8 @@
       '</a>' +
       '<ul class="kn-links">' + linksHtml + '</ul>' +
       '<div class="kn-actions">' +
-        '<a class="kn-portal" href="/dashboard-access.html"><i class="fas fa-right-to-bracket" aria-hidden="true"></i> Portals</a>' +
-        '<a class="kn-cta" href="/admissions/#application-form"><i class="fas fa-pen-to-square" aria-hidden="true"></i> Apply Now</a>' +
+        '<a class="kn-portal" href="/dashboard-access.html">' + icon('rightToBracket') + ' Portals</a>' +
+        '<a class="kn-cta" href="/admissions/#application-form">' + icon('penToSquare') + ' Apply Now</a>' +
         '<button class="kn-burger" id="knBurger" aria-label="Open menu" aria-expanded="false" aria-controls="knDrawer">' +
           '<span></span><span></span><span></span>' +
         '</button>' +
@@ -74,10 +87,10 @@
     drawer.id = 'knDrawer';
     drawer.innerHTML = LINKS.map(function (l) {
       return '<a href="' + l.href + '"' + (isActive(l.href) ? ' class="active"' : '') + '>' +
-        '<i class="fas ' + l.icon + '" aria-hidden="true"></i>' + l.label + '</a>';
+        icon(l.icon) + l.label + '</a>';
     }).join('') +
-      '<a class="kn-drawer-portal" href="/dashboard-access.html"><i class="fas fa-right-to-bracket" aria-hidden="true"></i> Portal Sign In</a>' +
-      '<a class="kn-drawer-cta" href="/admissions/#application-form"><i class="fas fa-pen-to-square" aria-hidden="true"></i> Apply Now</a>';
+      '<a class="kn-drawer-portal" href="/dashboard-access.html">' + icon('rightToBracket') + ' Portal Sign In</a>' +
+      '<a class="kn-drawer-cta" href="/admissions/#application-form">' + icon('penToSquare') + ' Apply Now</a>';
 
     var scrim = document.createElement('div');
     scrim.className = 'kn-scrim';
@@ -101,6 +114,19 @@
     drawer.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', function () { toggle(false); }); });
     window.addEventListener('resize', function () { if (window.innerWidth > 920) toggle(false); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') toggle(false); });
+
+    // scrolled state for the bar itself: it solidifies a little once the page moves
+    var ticking = false;
+    function markScrolled() {
+      ticking = false;
+      nav.classList.toggle('is-scrolled', window.scrollY > 50);
+    }
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(markScrolled);
+    }, { passive: true });
+    markScrolled();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);

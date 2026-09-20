@@ -13,8 +13,7 @@
   <meta charset="UTF-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://cdnjs.cloudflare.com">
-<link rel="dns-prefetch" href="https://kalibz-international.netlify.app">
+<link rel="preconnect" href="https://i.ytimg.com">
 <meta name="google-site-verification" content="0iFeDjaZvUCjm7CmNRcwsIKmQUKHDLlePEJhRPLuR_M">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admissions — Kalinabiri Secondary School</title>
@@ -30,7 +29,6 @@
 
     /* VIDEO BACKGROUND */
     .video-bg { position: fixed; inset: 0; z-index: 0; width: 100%; height: 100%; object-fit: cover; }
-    .video-overlay { position: fixed; inset: 0; z-index: 1; background: rgba(10,31,10,0.65); }
 
     /* MOBILE NAV */
     .mobile-nav { display: flex; position: fixed; top: 0; left: 0; right: 0; z-index: 1002; background: var(--dark); padding: 12px 20px; justify-content: space-between; align-items: center; }
@@ -131,7 +129,10 @@
 
     /* HERO */
     .adm-hero {
-      background: linear-gradient(135deg, var(--dark) 0%, var(--green) 100%);
+      background:
+        linear-gradient(135deg, rgba(6,44,24,.86) 0%, rgba(13,107,53,.82) 100%),
+        url('https://schoolnet.africa/ug/wp-content/uploads/sites/2/2016/07/Kalinabiri-ss-1.jpeg') center/cover no-repeat,
+        linear-gradient(135deg, var(--dark) 0%, var(--green) 100%);
       padding: 120px 20px 80px; text-align: center; position: relative; overflow: hidden;
     }
     .adm-hero::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4z'/%3E%3C/g%3E%3C/svg%3E"); }
@@ -142,18 +143,17 @@
 
     /* SECTIONS */
     .adm-section { padding: 80px 40px; max-width: 1200px; margin: 0 auto; position: relative; z-index: 2; }
-    .section-tag { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 3px; color: var(--green); text-transform: uppercase; margin-bottom: 10px; }
-    .adm-section h2 { font-family: 'Playfair Display', serif; font-size: clamp(1.5rem, 4vw, 2.2rem); color: var(--dark); margin-bottom: 16px; }
+    .section-tag { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 3px; color: #4ade80; text-transform: uppercase; margin-bottom: 10px; }
+    .adm-section h2 { font-family: 'Playfair Display', serif; font-size: clamp(1.5rem, 4vw, 2.2rem); color: #f1f7f3; margin-bottom: 16px; }
 
     /* REQUIREMENTS */
-    .req-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 32px; }
+    .req-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 20px; margin-top: 32px; }
     .req-card { background: #fff; border-radius: 16px; padding: 28px; border: 2px solid transparent; transition: 0.3s; }
     .req-card:hover { border-color: var(--green); transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
     .req-card .level-badge { display: inline-block; background: var(--green); color: #fff; padding: 4px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 700; margin-bottom: 14px; }
     .req-card h3 { font-size: 1.05rem; margin-bottom: 10px; color: var(--dark); }
     .req-card ul { list-style: none; padding: 0; }
     .req-card ul li { padding: 6px 0; font-size: 0.88rem; color: #64748b; display: flex; align-items: flex-start; gap: 8px; }
-    .req-card ul li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
 
     /* PROCESS block removed in this revision */
 
@@ -172,12 +172,12 @@
     .fees-note { margin-top: 16px; padding: 14px 18px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; font-size: 0.85rem; color: #166534; }
 
     /* DOCUMENTS */
-    .docs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 28px; }
+    .docs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 16px; margin-top: 28px; }
     .doc-item { display: flex; align-items: center; gap: 14px; background: #fff; border-radius: 12px; padding: 16px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.2s; }
     .doc-item:hover { transform: translateX(6px); box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
     .doc-icon { font-size: 1.8rem; }
     .doc-name { font-weight: 600; font-size: 0.9rem; color: var(--dark); }
-    .doc-desc { font-size: 0.78rem; color: #94a3b8; }
+    .doc-desc { font-size: 0.78rem; color: #64748b; }
 
     /* FORM */
     .form-section { background: #fff; border-radius: 20px; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.07); margin-top: 32px; }
@@ -188,7 +188,7 @@
     .form-group label { display: block; font-weight: 600; font-size: 0.88rem; color: #2c3e50; margin-bottom: 6px; }
     .form-control { width: 100%; padding: 12px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; transition: 0.2s; font-family: 'Inter', sans-serif;
       color: #0f172a; background: #fff; -webkit-text-fill-color: #0f172a; caret-color: #0d6b35; }
-    .form-control::placeholder { color: #94a3b8; -webkit-text-fill-color: #94a3b8; }
+    .form-control::placeholder { color: #64748b; -webkit-text-fill-color: #64748b; }
     .form-control:focus { border-color: var(--green); outline: none; box-shadow: 0 0 0 3px rgba(13,107,53,0.1); }
     select.form-control, select.form-control option { color: #0f172a; background: #fff; }
     select.form-control { cursor: pointer; }
@@ -202,7 +202,7 @@
 
     /* FOOTER */
     .footer { background: var(--dark); color: rgba(255,255,255,0.6); padding: 60px 40px 30px; margin-top: 60px; position: relative; z-index: 2; }
-    .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 40px; }
+    .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); gap: 40px; }
     .footer h3 { color: #fff; margin-bottom: 14px; font-size: 1rem; }
     .footer a { color: rgba(255,255,255,0.6); text-decoration: none; display: block; padding: 3px 0; font-size: 0.85rem; }
     .footer a:hover { color: #4ade80; }
@@ -214,28 +214,18 @@
 
     @media (max-width: 768px) { .adm-section { padding: 50px 16px; } .fees-table { font-size: 0.82rem; } .fees-table th, .fees-table td { padding: 10px 12px; } }
 
-/* Rotating Video Background */
-#video-rotator-bg { position:fixed;inset:0;z-index:-2;width:100%;height:100%; }
 #video-rotator-bg video { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.5s ease; }
 #video-rotator-bg video.active { opacity:1; }
-.video-overlay { position:fixed;inset:0;z-index:-1;
-      background:
-        radial-gradient(ellipse at 20% 10%, rgba(13,107,53,.35) 0%, transparent 55%),
-        radial-gradient(ellipse at 85% 90%, rgba(212,175,55,.12) 0%, transparent 50%),
-        linear-gradient(135deg, #0a1f0a 0%, #0d2b1a 55%, #0a1f0a 100%); }
   </style>
 <link rel="stylesheet" href="/assets/css/theme.css">
   <script src="/assets/js/theme.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-<link rel="stylesheet" href="/assets/css/site-nav.css?v=3">
-<script src="/assets/js/site-nav.js?v=3" defer></script>
+<link rel="stylesheet" href="/assets/css/site-nav.css?v=9">
+<script src="/assets/js/site-nav.js?v=9" defer></script>
+<script src="/assets/js/site-film.js?v=9" defer></script>
 <script src="/assets/js/site-animate.js" defer></script>
 <script src="/assets/js/site-perf.js" defer></script>
 </head>
 <body>
-  <div class="video-overlay"></div>
-<div class="video-overlay"></div>
 
 <!-- DESKTOP NAV -->
 <div class="page-body">
@@ -245,7 +235,7 @@
   <div class="adm-hero-content">
     <img src="../assets/images/logo.jpeg" alt="Kalinabiri SS">
     <h1>Join Kalinabiri Secondary School</h1>
-    <p>Applications for 2026 now open. Shape your future with nearly 60 years of educational excellence.</p>
+    <p>Applications are now open for the next intake. Join a government-aided day and boarding school that has served Ntinda and Kampala since 1984.</p>
   </div>
 </div>
 
@@ -258,35 +248,34 @@
       <div class="level-badge">S.1 Intake</div>
       <h3>Senior One (New Students)</h3>
       <ul>
-        <li>Completed Primary Leaving Examination (PLE)</li>
-        <li>Age between 12–14 years by intake year</li>
-        <li>Passed PLE with minimum score of 250 marks</li>
-        <li>Successfully completed entrance examination</li>
-        <li>Attended interview with parent/guardian</li>
-        <li>Submitted all required documents</li>
+        <li><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em;color:#4ade80;flex:0 0 auto;margin-top:.2em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Completed Primary Leaving Examination (PLE)</li>
+        <li><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em;color:#4ade80;flex:0 0 auto;margin-top:.2em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>PLE results slip for the year of application</li>
+        <li><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em;color:#4ade80;flex:0 0 auto;margin-top:.2em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Entry requirements and cut-off as set by the school for that intake</li>
+        <li><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em;color:#4ade80;flex:0 0 auto;margin-top:.2em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Attended interview with parent/guardian</li>
+        <li><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em;color:#4ade80;flex:0 0 auto;margin-top:.2em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Submitted all required documents</li>
       </ul>
     </div>
     <div class="req-card">
       <div class="level-badge">S.2 – S.4</div>
       <h3>Transfer Students (O-Level)</h3>
       <ul>
-        <li>Passed previous class with minimum Division 3</li>
-        <li>Valid UCE results slip (for S.4 transfers)</li>
-        <li>Transfer letter from previous school</li>
-        <li>Good conduct certificate from previous school</li>
-        <li>Passed school entrance assessment</li>
-        <li>Interview with parent/guardian</li>
+        <li><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em;color:#4ade80;flex:0 0 auto;margin-top:.2em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Reports from the previous class showing satisfactory progress</li>
+        <li><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em;color:#4ade80;flex:0 0 auto;margin-top:.2em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Valid results slip where examinations have been sat</li>
+        <li><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em;color:#4ade80;flex:0 0 auto;margin-top:.2em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Transfer letter from previous school</li>
+        <li><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em;color:#4ade80;flex:0 0 auto;margin-top:.2em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Good conduct certificate from previous school</li>
+        <li><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em;color:#4ade80;flex:0 0 auto;margin-top:.2em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Passed school entrance assessment</li>
+        <li><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em;color:#4ade80;flex:0 0 auto;margin-top:.2em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Interview with parent/guardian</li>
       </ul>
     </div>
     <div class="req-card">
       <div class="level-badge">S.5 – S.6</div>
       <h3>Advanced Level (A-Level)</h3>
       <ul>
-        <li>Passed UCE with minimum 8 subjects</li>
-        <li>Minimum aggregate of 16 points in best 8 subjects</li>
-        <li>Passed at least 2 science subjects for Science combination</li>
-        <li>Interview with student and parent/guardian</li>
-        <li>Showed commitment to A-Level curriculum</li>
+        <li><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em;color:#4ade80;flex:0 0 auto;margin-top:.2em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>UCE results slip showing passes in the subjects to be continued</li>
+        <li><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em;color:#4ade80;flex:0 0 auto;margin-top:.2em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Grades that meet the school's A-Level entry requirement for the chosen combination</li>
+        <li><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em;color:#4ade80;flex:0 0 auto;margin-top:.2em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Passed at least 2 science subjects for Science combination</li>
+        <li><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em;color:#4ade80;flex:0 0 auto;margin-top:.2em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Interview with student and parent/guardian</li>
+        <li><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em;color:#4ade80;flex:0 0 auto;margin-top:.2em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Showed commitment to A-Level curriculum</li>
       </ul>
     </div>
   </div>
@@ -295,28 +284,28 @@
 <!-- APPLICATION PROCESS removed per user request -->
 
 <!-- ACADEMIC PROGRAMS -->
-<div class="adm-section" style="background:#f8faf9;">
+<div class="adm-section">
   <div class="section-tag">ACADEMIC PROGRAMS</div>
   <h2>What We Offer</h2>
-  <p style="color:#64748b;margin-bottom:24px;">Kalinabiri SS offers a comprehensive curriculum at both O-Level and A-Level, blending core academics, sciences, and applied subjects to equip every learner.</p>
+  <p style="color:#aab8c8;margin-bottom:24px;">Kalinabiri SS offers a comprehensive curriculum at both O-Level and A-Level, blending core academics, sciences, and applied subjects to equip every learner.</p>
 
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;margin-top:32px;">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px, 100%),1fr));gap:24px;margin-top:32px;">
 
     <!-- A-LEVEL COMBINATIONS -->
     <div style="background:#fff;border-radius:16px;padding:28px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
       <div style="display:inline-block;background:var(--green);color:#fff;padding:4px 14px;border-radius:50px;font-size:0.8rem;font-weight:700;margin-bottom:14px;">A-Level (S.5 – S.6)</div>
       <h3 style="font-size:1.1rem;color:var(--dark);margin-bottom:14px;">A-Level Subject Combinations</h3>
       <ul style="list-style:none;padding:0;">
-        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;">📘</span> PCM / ICT (Physics, Chemistry, Mathematics)</li>
-        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;">📘</span> BCM / ICT (Biology, Chemistry, Mathematics)</li>
-        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;">📘</span> PEM / ICT (Physics, Economics, Mathematics)</li>
-        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;">📘</span> PCB / Sub-Math (Physics, Chemistry, Biology)</li>
-        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;">📘</span> BCFN / Sub-Math (Biology, Chemistry, Food & Nutrition)</li>
-        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;">📘</span> BCA / Sub-Math (Biology, Chemistry, Agriculture)</li>
-        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;">📘</span> MEG / ICT (Mathematics, Economics, Geography)</li>
-        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;">📘</span> MEE / ICT (Mathematics, Economics, Entrepreneurship)</li>
-        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;">📘</span> BCG (Biology, Chemistry, Geography)</li>
-        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;">📘</span> PMTD / ICT (Physics, Mathematics, Technical Drawing)</li>
+        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> PCM / ICT (Physics, Chemistry, Mathematics)</li>
+        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> BCM / ICT (Biology, Chemistry, Mathematics)</li>
+        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> PEM / ICT (Physics, Economics, Mathematics)</li>
+        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> PCB / Sub-Math (Physics, Chemistry, Biology)</li>
+        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> BCFN / Sub-Math (Biology, Chemistry, Food & Nutrition)</li>
+        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> BCA / Sub-Math (Biology, Chemistry, Agriculture)</li>
+        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> MEG / ICT (Mathematics, Economics, Geography)</li>
+        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> MEE / ICT (Mathematics, Economics, Entrepreneurship)</li>
+        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> BCG (Biology, Chemistry, Geography)</li>
+        <li style="padding:6px 0;font-size:0.88rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> PMTD / ICT (Physics, Mathematics, Technical Drawing)</li>
       </ul>
     </div>
 
@@ -325,13 +314,13 @@
       <div style="display:inline-block;background:var(--green);color:#fff;padding:4px 14px;border-radius:50px;font-size:0.8rem;font-weight:700;margin-bottom:14px;">O-Level (S.1 – S.4)</div>
       <h3 style="font-size:1.1rem;color:var(--dark);margin-bottom:6px;">Compulsory Core Subjects</h3>
       <ul style="list-style:none;padding:0;margin-bottom:18px;">
-        <li style="padding:5px 0;font-size:0.86rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;">✔</span> Physics</li>
-        <li style="padding:5px 0;font-size:0.86rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;">✔</span> Chemistry</li>
-        <li style="padding:5px 0;font-size:0.86rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;">✔</span> Biology</li>
-        <li style="padding:5px 0;font-size:0.86rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;">✔</span> History</li>
-        <li style="padding:5px 0;font-size:0.86rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;">✔</span> English</li>
-        <li style="padding:5px 0;font-size:0.86rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;">✔</span> Geography</li>
-        <li style="padding:5px 0;font-size:0.86rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;">✔</span> Mathematics</li>
+        <li style="padding:5px 0;font-size:0.86rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> Physics</li>
+        <li style="padding:5px 0;font-size:0.86rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> Chemistry</li>
+        <li style="padding:5px 0;font-size:0.86rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> Biology</li>
+        <li style="padding:5px 0;font-size:0.86rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> History</li>
+        <li style="padding:5px 0;font-size:0.86rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> English</li>
+        <li style="padding:5px 0;font-size:0.86rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> Geography</li>
+        <li style="padding:5px 0;font-size:0.86rem;color:#1a1a1a;display:flex;align-items:flex-start;gap:8px;"><span style="color:var(--green);font-weight:700;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span> Mathematics</li>
       </ul>
       <h3 style="font-size:1.1rem;color:var(--dark);margin-bottom:6px;">Optional Subjects</h3>
       <ul style="list-style:none;padding:0;">
@@ -351,72 +340,49 @@
 
 <!-- FEES -->
 <div class="adm-section">
-  <div class="section-tag">FEE STRUCTURE 2026</div>
-  <h2>School Fees Per Term</h2>
-  <table class="fees-table">
-    <thead>
-      <tr>
-        <th>Program</th>
-        <th>Tuition</th>
-        <th>Total Per Term</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><strong>S.1 – S.4 (Day)</strong></td>
-        <td>UGX 850,000</td>
-        <td><strong>UGX 1,200,000</strong></td>
-      </tr>
-      <tr>
-        <td><strong>S.5 – S.6 Arts (Day)</strong></td>
-        <td>UGX 950,000</td>
-        <td><strong>UGX 1,400,000</strong></td>
-      </tr>
-      <tr>
-        <td><strong>S.5 – S.6 Sciences (Day)</strong></td>
-        <td>UGX 1,050,000</td>
-        <td><strong>UGX 1,500,000</strong></td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="fees-note">💡 <strong>Payment Plans Available:</strong> Annual payments get a 5% discount. Termly installment plans (3 payments per year) available with a small administrative fee. Contact the bursar for details.</div>
+  <div class="section-tag">SCHOOL FEES</div>
+  <h2>Fees &amp; Bursary Information</h2>
+  <p style="max-width:760px;color:#b6c4d4;line-height:1.8;">
+    Kalinabiri Secondary School is a government-aided school. The fee structure for each class, day and boarding, is set by the school and confirmed by the bursar at the start of every term, so please contact the school office for the current term's fees before making any payment.
+  </p>
+  <div class="fees-note" style="max-width:760px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg> <strong>Ask the school office for the current fees:</strong> +256 414 222 668 or kalinabirisecsch@gmail.com. School address: P.O. Box 5061, Ntinda, Kampala.</div>
 </div>
 
 <!-- REQUIRED DOCUMENTS -->
-<div class="adm-section" style="background:#f8faf9;">
+<div class="adm-section">
   <div class="section-tag">REQUIRED DOCUMENTS</div>
   <h2>What to Submit</h2>
   <div class="docs-grid">
     <div class="doc-item">
-      <div class="doc-icon">📄</div>
+      <div class="doc-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg></div>
       <div><div class="doc-name">Birth Certificate</div><div class="doc-desc">Original or certified copy</div></div>
     </div>
     <div class="doc-item">
-      <div class="doc-icon">🎓</div>
+      <div class="doc-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg></div>
       <div><div class="doc-name">PLE Results Slip</div><div class="doc-desc">For S.1 applicants only</div></div>
     </div>
     <div class="doc-item">
-      <div class="doc-icon">📸</div>
+      <div class="doc-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
       <div><div class="doc-name">Passport Photos</div><div class="doc-desc">4 recent passport-size photos</div></div>
     </div>
     <div class="doc-item">
-      <div class="doc-icon">📋</div>
+      <div class="doc-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 13h6"/><path d="M9 17h4"/></svg></div>
       <div><div class="doc-name">Medical Form</div><div class="doc-desc">Completed by a medical doctor</div></div>
     </div>
     <div class="doc-item">
-      <div class="doc-icon">📜</div>
+      <div class="doc-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg></div>
       <div><div class="doc-name">Transfer Letter</div><div class="doc-desc">For S.2–S.4 transfers only</div></div>
     </div>
     <div class="doc-item">
-      <div class="doc-icon">📊</div>
+      <div class="doc-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div>
       <div><div class="doc-name">Previous Results</div><div class="doc-desc">Report cards from prior school</div></div>
     </div>
     <div class="doc-item">
-      <div class="doc-icon">📍</div>
+      <div class="doc-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
       <div><div class="doc-name">LC1 Recommendation</div><div class="doc-desc">Local council letter confirming residence</div></div>
     </div>
     <div class="doc-item">
-      <div class="doc-icon">💉</div>
+      <div class="doc-icon"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/></svg></div>
       <div><div class="doc-name">Vaccination Records</div><div class="doc-desc">For S.1 applicants</div></div>
     </div>
   </div>
@@ -425,7 +391,7 @@
 <!-- ONLINE APPLICATION FORM -->
 <div class="adm-section" id="application-form">
   <div class="section-tag">APPLY ONLINE</div>
-  <h2>Application Form 2026</h2>
+  <h2>Online Application Form</h2>
   <div class="form-section">
     <form id="applicationForm" onsubmit="submitApplication(event)">
       <div class="form-row">
@@ -465,8 +431,9 @@
           <label>Program</label>
           <select class="form-control" id="program">
             <option selected>Day Student</option>
+            <option>Boarding Student</option>
           </select>
-          <small style="color:#64748b;font-size:.78rem;display:block;margin-top:4px">Kalinabiri SS is a day school.</small>
+          <small style="color:#64748b;font-size:.78rem;display:block;margin-top:4px">Kalinabiri SS is a government-aided day and boarding school.</small>
         </div>
         <div class="form-group">
           <label>Combination (S.5/S.6 only)</label>
@@ -509,24 +476,24 @@
         <label>Why do you want to join Kalinabiri SS? *</label>
         <textarea class="form-control" id="motivation" rows="3" placeholder="Tell us in a few sentences why you want to join our school..." required></textarea>
       </div>
-      <button type="submit" class="btn-submit" id="submitBtn">🎓 Submit Application</button>
+      <button type="submit" class="btn-submit" id="submitBtn"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg> Submit Application</button>
     </form>
     <div class="form-success" id="formSuccess">
-      <div class="big-check">✅</div>
+      <div class="big-check"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
       <h3>Application Submitted Successfully!</h3>
       <p>Thank you for applying to Kalinabiri Secondary School. Our admissions team has been notified instantly and will review your application and contact you within 5 working days.</p>
-      <p style="margin-top:12px;font-size:0.85rem;color:#64748b;">A confirmation email has been sent to the parent email if provided.</p>
+      <p style="margin-top:12px;font-size:0.85rem;color:#64748b;">Your application has been recorded and the school office notified. We will contact you on the phone number you provided.</p>
     </div>
   </div>
 </div>
 
 <!-- CONTACT -->
-<div class="adm-section" style="background:#f8faf9;text-align:center;">
+<div class="adm-section" style="text-align:center;">
   <h2>Need Help With Your Application?</h2>
-  <p style="color:#64748b;margin-bottom:24px;">Our admissions team is ready to assist you.</p>
+  <p style="color:#aab8c8;margin-bottom:24px;">Our admissions team is ready to assist you.</p>
   <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
-    <a href="tel:0792861645" class="btn" style="background:var(--green);color:#fff;padding:14px 32px;border-radius:50px;font-weight:600;text-decoration:none;">📞 Call Admissions: 0792 861 645</a>
-    <a href="mailto:Kalinabiri@yahoo.com" class="btn" style="background:#fff;color:var(--green);border:2px solid var(--green);padding:14px 32px;border-radius:50px;font-weight:600;text-decoration:none;">✉️ Email Admissions</a>
+    <a href="tel:0792861645" class="btn" style="background:var(--green);color:#fff;padding:14px 32px;border-radius:50px;font-weight:600;text-decoration:none;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> Call Admissions: 0792 861 645</a>
+    <a href="mailto:kalinabirisecsch@gmail.com" class="btn" style="background:#fff;color:var(--green);border:2px solid var(--green);padding:14px 32px;border-radius:50px;font-weight:600;text-decoration:none;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg> Email Admissions</a>
   </div>
 </div>
 
@@ -538,7 +505,7 @@
     <div class="footer-logo"><img src="../assets/images/logo.jpeg" alt="Kalinabiri SS"><div><strong>Kalinabiri Secondary School</strong><span>Ntinda, Kampala</span></div></div>
     <div><h3>Quick Links</h3><a href='/'>Home</a><a href='/about/'>About</a><a href='/academics/'>Academics</a><a href='/news/'>News</a><a href='/gallery/'>Gallery</a></div>
     <div><h3>Portals</h3><a href='/student-portal/'>Student Portal</a><a href="../admin-login/">Admin</a><a href="../teacher-login/teacher-register.html">Teacher</a></div>
-    <div><h3>Contact</h3><a href="tel:0792861645">📞 0792 861 645</a><a href="mailto:Kalinabiri.ntinda@yahoo.com">✉️ Kalinabiri.ntinda@yahoo.com</a></div>
+    <div><h3>Contact</h3><a href="tel:0792861645"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> 0792 861 645</a><a href="mailto:kalinabirisecsch@gmail.com"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg> kalinabirisecsch@gmail.com</a></div>
   </div>
   <div class="footer-bottom"><p>© 2026 Kalinabiri Secondary School. All Rights Reserved. | Developed by <strong>ScottsTechX</strong></p></div>
 </footer>
@@ -548,7 +515,7 @@ async function submitApplication(e) {
   e.preventDefault();
   const btn = document.getElementById('submitBtn');
   const original = btn.textContent;
-  btn.textContent = '⏳ Submitting...';
+  btn.textContent = 'Submitting…';
   btn.disabled = true;
   const val = (id) => (document.getElementById(id) ? document.getElementById(id).value.trim() : '');
   try {
@@ -581,33 +548,6 @@ async function submitApplication(e) {
   }
 }
 </script>
-<script>
-// Three.js green particles
-(function(){
-  var canvas=document.createElement('canvas');canvas.style.cssText='position:fixed;inset:0;z-index:0;pointer-events:none;';document.body.prepend(canvas);
-  var s=new THREE.Scene(),c=new THREE.PerspectiveCamera(75,innerWidth/innerHeight,0.1,1000),r=new THREE.WebGLRenderer({canvas,alpha:true});
-  r.setSize(innerWidth,innerHeight);r.setPixelRatio(Math.min(devicePixelRatio,2));
-  var g=new THREE.BufferGeometry(),p=[],cl=[];
-  for(var i=0;i<600;i++){p.push((Math.random()-0.5)*80,(Math.random()-0.5)*80,(Math.random()-0.5)*80);cl.push(0.29,0.87,0.5);}
-  g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(p),3));
-  g.setAttribute('color',new THREE.BufferAttribute(new Float32Array(cl),3));
-  var m=new THREE.PointsMaterial({size:0.1,vertexColors:true,transparent:true,opacity:0.8});
-  s.add(new THREE.Points(g,m));c.position.z=30;
-  var mx=0,my=0;addEventListener('mousemove',e=>{mx=(e.clientX/innerWidth-0.5)*2;my=(e.clientY/innerHeight-0.5)*2;});
-  !function a(){requestAnimationFrame(a);s.rotation.y+=0.0005;s.rotation.x+=0.0002;c.position.x+=(mx*4-c.position.x)*0.02;c.position.y+=(-my*4-c.position.y)*0.02;c.lookAt(s.position);r.render(s,c);}();
-  addEventListener('resize',()=>{c.aspect=innerWidth/innerHeight;c.updateProjectionMatrix();r.setSize(innerWidth,innerHeight);});
-})();
-</script>
-
-<script>
-// Mobile Menu Toggle
-    function toggleMobileMenu() {
-      document.getElementById('navLinks').classList.toggle('mobile-open');
-      document.getElementById('mobileBtn').classList.toggle('active');
-    }
-
-</script>
-
 <!-- crafted with pride -->
 <div class="stx-sig" aria-hidden="true">
   <span class="stx-dot">·</span>
