@@ -171,6 +171,23 @@ async function status(url) {
       }
     }
 
+    // 11. platform pages that lay out around the notch / home indicator must
+    //     declare viewport-fit=cover, otherwise env(safe-area-inset-*) is 0
+    //     and the padding silently does nothing.
+    if (/^platform[\\/]/.test(rel)) {
+      let css = cssBlocks.join('\n');
+      for (const m of html.matchAll(/<link[^>]+href="([^"?#]+\.css)[^"]*"/g)) {
+        const sheet = m[1].startsWith('/')
+          ? path.join(FRONTEND, m[1])
+          : path.resolve(path.dirname(file), m[1]);
+        if (sheet.startsWith(FRONTEND) && fs.existsSync(sheet)) css += fs.readFileSync(sheet, 'utf8');
+      }
+      const viewport = (html.match(/<meta[^>]+name="viewport"[^>]*>/) || [''])[0];
+      if (/env\(\s*safe-area-inset-/.test(css) && !/viewport-fit\s*=\s*cover/.test(viewport)) {
+        add('CSS uses env(safe-area-inset-*) but the viewport meta lacks viewport-fit=cover');
+      }
+    }
+
     if (bad.length) {
       hygiene++;
       console.log(`x ${url}`);
