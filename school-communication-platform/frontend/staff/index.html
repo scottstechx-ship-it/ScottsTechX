@@ -74,9 +74,9 @@
     </style>
 <link rel="stylesheet" href="/assets/css/theme.css">
   <script src="/assets/js/theme.js"></script>
-<link rel="stylesheet" href="/assets/css/site-nav.css?v=9">
-<script src="/assets/js/site-nav.js?v=9" defer></script>
-<script src="/assets/js/site-film.js?v=9" defer></script>
+<link rel="stylesheet" href="/assets/css/site-nav.css?v=10">
+<script src="/assets/js/site-nav.js?v=10" defer></script>
+<script src="/assets/js/site-film.js?v=10" defer></script>
 <script src="/assets/js/site-animate.js" defer></script>
 <script src="/assets/js/site-perf.js" defer></script>
 </head>
@@ -350,7 +350,7 @@
   <script>
   (function(){
     var canvas=document.getElementById('webgl-bg');
-    if(!canvas||!window.THREE)return;
+    if(!canvas||!window.THREE||getComputedStyle(canvas).display==='none')return;
     var renderer=new THREE.WebGLRenderer({canvas:canvas,alpha:true,antialias:true});
     renderer.setSize(window.innerWidth,window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));

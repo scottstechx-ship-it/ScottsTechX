@@ -231,6 +231,11 @@ h1, h2, h3, h4, p, li, a, td, th { overflow-wrap: break-word; }
 html { background: #0b1a2d; }
 body { background: transparent; }   /* sections decide what shows through */
 
+/* the old decorative WebGL starfields are off everywhere: the film is the
+   background now, and a full-screen three.js loop was the heaviest thing on
+   the page (the home page already hid its own canvas this way) */
+#three-canvas, #particle-canvas, #webgl-bg { display: none !important; }
+
 /* the layer: one per section, clipped, behind that section's content */
 .bg-film {
   position: absolute; inset: 0; z-index: -1;
