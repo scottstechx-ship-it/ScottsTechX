@@ -784,9 +784,9 @@
     </style>
 <link rel="stylesheet" href="/assets/css/theme.css">
   <script src="/assets/js/theme.js"></script>
-<link rel="stylesheet" href="/assets/css/site-nav.css?v=9">
-<script src="/assets/js/site-nav.js?v=9" defer></script>
-<script src="/assets/js/site-film.js?v=9" defer></script>
+<link rel="stylesheet" href="/assets/css/site-nav.css?v=10">
+<script src="/assets/js/site-nav.js?v=10" defer></script>
+<script src="/assets/js/site-film.js?v=10" defer></script>
 <script src="/assets/js/site-animate.js" defer></script>
 <script src="/assets/js/site-perf.js" defer></script>
 </head>
@@ -1022,6 +1022,8 @@ if (!window.THREE || window.innerWidth < 768) return;
 // ============================================
 (function() {
   var canvas = document.getElementById('particle-canvas');
+  // decorative only, and it is switched off in site-nav.css: skip the WebGL setup
+  if (!canvas || window.getComputedStyle(canvas).display === 'none') return;
   var scene = new THREE.Scene();
   var camera = new THREE.PerspectiveCamera(75, innerWidth / innerHeight, 0.1, 1000);
   var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });

@@ -849,9 +849,9 @@
     </style>
 <link rel="stylesheet" href="/assets/css/theme.css">
   <script src="/assets/js/theme.js"></script>
-<link rel="stylesheet" href="/assets/css/site-nav.css?v=9">
-<script src="/assets/js/site-nav.js?v=9" defer></script>
-<script src="/assets/js/site-film.js?v=9" defer></script>
+<link rel="stylesheet" href="/assets/css/site-nav.css?v=10">
+<script src="/assets/js/site-nav.js?v=10" defer></script>
+<script src="/assets/js/site-film.js?v=10" defer></script>
 <script src="/assets/js/site-animate.js" defer></script>
 <script src="/assets/js/site-perf.js" defer></script>
 </head>
@@ -931,6 +931,8 @@ if (!window.THREE || window.innerWidth < 768) return;
 
         // Three.js Background
         const canvas = document.getElementById('three-canvas');
+        // decorative only, and it is switched off in site-nav.css: skip WebGL
+        if (!canvas || getComputedStyle(canvas).display === 'none') return;
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
