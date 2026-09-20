@@ -171,10 +171,10 @@ async function status(url) {
       }
     }
 
-    // 11. platform pages that lay out around the notch / home indicator must
-    //     declare viewport-fit=cover, otherwise env(safe-area-inset-*) is 0
-    //     and the padding silently does nothing.
-    if (/^platform[\\/]/.test(rel)) {
+    // 11. dashboards lay out around the notch / home indicator (app.css gives
+    //     the bottom nav and composer env(safe-area-inset-*) padding), so they
+    //     must declare viewport-fit=cover — without it those insets are 0.
+    if (/^platform[\\/][^\\/]+[\\/]index\.html$/.test(rel)) {
       let css = cssBlocks.join('\n');
       for (const m of html.matchAll(/<link[^>]+href="([^"?#]+\.css)[^"]*"/g)) {
         const sheet = m[1].startsWith('/')

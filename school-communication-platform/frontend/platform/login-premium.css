@@ -30,10 +30,6 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
   padding: 24px;
-  /* Notched phones (viewport-fit=cover): keep the card off the notch and
-     the home indicator. Falls back to the plain 24px above without env(). */
-  padding: calc(24px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right))
-           calc(24px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left));
 }
 
 /* ============================================================
@@ -551,13 +547,7 @@ body {
  * RESPONSIVE
  * ============================================================ */
 @media (max-width: 480px) {
-  .login-page {
-    padding: 12px; align-items: flex-start; padding-top: 64px; padding-bottom: 40px;
-    padding-left: calc(12px + env(safe-area-inset-left));
-    padding-right: calc(12px + env(safe-area-inset-right));
-    padding-top: calc(64px + env(safe-area-inset-top));
-    padding-bottom: calc(40px + env(safe-area-inset-bottom));
-  }
+  .login-page { padding: 12px; align-items: flex-start; padding-top: 64px; padding-bottom: 40px; }
   .login-card { padding: 28px 20px; border-radius: 20px; }
   .icon-wrapper { width: 68px; height: 68px; border-radius: 18px; }
   .icon-wrapper svg { width: 32px; height: 32px; }
