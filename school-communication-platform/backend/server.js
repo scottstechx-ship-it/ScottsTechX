@@ -21,7 +21,18 @@ seed.ensureSeeded();
 
 const app = express();
 app.disable('x-powered-by');
-app.set('trust proxy', true);
+// Trust exactly as many proxy hops as this deployment really has. `true`
+// would trust the whole client-supplied X-Forwarded-For chain, letting a
+// caller forge its own IP and walk straight past the per-IP rate limits and
+// the login-lockout counter.
+//   TRUST_PROXY=<hops>  -> explicit (Render/most PaaS = 1, extra CDN = 2...)
+//   production default  -> 1 hop (the platform's own load balancer)
+//   development default -> only loopback, so a stray X-Forwarded-For header on
+//                          http://localhost cannot spoof anything
+const trustProxyEnv = process.env.TRUST_PROXY;
+app.set('trust proxy', trustProxyEnv !== undefined
+  ? Number(trustProxyEnv)
+  : (env.NODE_ENV === 'production' ? 1 : 'loopback'));
 
 const { securityHeaders, corsHandler, rateLimit } = require('./middleware/security');
 const { csrfProtection } = require('./middleware/auth');

@@ -10,6 +10,11 @@ function securityHeaders(req, res, next) {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  // Only send HSTS over HTTPS — sending it from plain http://localhost during
+  // development would pin localhost to https in the developer's browser.
+  if (env.NODE_ENV === 'production' || req.secure) {
+    res.setHeader('Strict-Transport-Security', 'max-age=15552000; includeSubDomains');
+  }
   res.setHeader(
     'Content-Security-Policy',
     [
@@ -22,15 +27,25 @@ function securityHeaders(req, res, next) {
       // Google Fonts + Font Awesome (cdnjs)
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' data: https://fonts.gstatic.com",
-      // three.js (cdnjs), analytics & ads used by the public site
-      "script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://www.googletagmanager.com https://pagead2.googlesyndication.com",
+      // the only third-party scripts left are analytics & ads; the decorative
+      // three.js CDN library was removed from every page, so cdnjs is not
+      // allowed to execute code here any more.
+      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com",
       "connect-src 'self' ws: wss: https://www.googletagmanager.com https://*.google-analytics.com https://pagead2.googlesyndication.com",
       "frame-src https://www.google.com https://maps.google.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.youtube.com https://www.youtube-nocookie.com https://www.tiktok.com https://www.instagram.com",
       "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
       "frame-ancestors 'self'",
     ].join('; ')
   );
   res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
+  // Nothing in the product uses the device sensors, so deny them outright and
+  // leave only the features the media players genuinely need.
+  res.setHeader(
+    'Permissions-Policy',
+    'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), fullscreen=(self "https://www.youtube.com")'
+  );
   // JWT is sent in the Authorization header (not cookies) -> CSRF surface is minimal.
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
   next();

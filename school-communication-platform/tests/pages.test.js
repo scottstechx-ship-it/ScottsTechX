@@ -159,6 +159,17 @@ async function status(url) {
     for (const m of html.matchAll(/(?:placeholder|title|alt|aria-label|value)="[^"]*<svg/g)) {
       add(`attribute holds markup: ${m[0].slice(0, 70)}`);
     }
+    // 10. non-latin characters inside CSS — the classic paste corruption that
+    //     silently drops a declaration (e.g. "ease-inアウト").
+    const cssBlocks = [...html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1]);
+    for (const block of cssBlocks) {
+      const junk = block.match(/[\u3000-\u30ff\u4e00-\u9fff\uac00-\ud7af\u0400-\u04ff\u0600-\u06ff]/);
+      if (junk) {
+        const at = block.indexOf(junk[0]);
+        add(`non-latin text inside <style>: "${block.slice(Math.max(0, at - 30), at + 20).replace(/\n/g, ' ').trim()}"`);
+        break;
+      }
+    }
 
     if (bad.length) {
       hygiene++;
@@ -167,9 +178,32 @@ async function status(url) {
       if (bad.length > 8) console.log(`    ... +${bad.length - 8} more`);
     }
   }
+  // ---------------------------------------------------------------------
+  // Stylesheets: same non-latin corruption check for every linked .css file
+  // ---------------------------------------------------------------------
+  let cssJunk = 0;
+  const walkCss = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) return entry.name === 'node_modules' ? [] : walkCss(full);
+    return entry.name.endsWith('.css') ? [full] : [];
+  });
+  for (const file of walkCss(FRONTEND)) {
+    const text = fs.readFileSync(file, 'utf8');
+    const junk = text.match(/[\u3000-\u30ff\u4e00-\u9fff\uac00-\ud7af\u0400-\u04ff\u0600-\u06ff]/);
+    if (junk) {
+      cssJunk++;
+      const at = text.indexOf(junk[0]);
+      const line = text.slice(0, at).split('\n').length;
+      console.log(`x ${path.relative(FRONTEND, file)}:${line} non-latin text in CSS -> "${text.slice(Math.max(0, at - 40), at + 20).replace(/\n/g, ' ').trim()}"`);
+    }
+  }
+  console.log(cssJunk === 0
+    ? 'OK NO CORRUPTED CSS (no non-latin characters in any stylesheet)'
+    : `FAIL ${cssJunk} stylesheet(s) contain non-latin text`);
+
   console.log(hygiene === 0
-    ? 'OK NO MARKUP/CSS DEFECTS (markup in content:, icon fonts, dup ids, dead anchors, unguarded THREE, stacked overlays, mismatched mailto)'
+    ? 'OK NO MARKUP/CSS DEFECTS (markup in content:, icon fonts, dup ids, dead anchors, unguarded THREE, stacked overlays, mismatched mailto, corrupted CSS)'
     : `FAIL ${hygiene} page(s) have markup/CSS defects`);
 
-  process.exit(failures === 0 && hygiene === 0 ? 0 : 1);
+  process.exit(failures === 0 && hygiene === 0 && cssJunk === 0 ? 0 : 1);
 })().catch((e) => { console.error('Harness error:', e); process.exit(1); });

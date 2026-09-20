@@ -17,7 +17,7 @@ const express = require('express');
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
-const XLSX = require('xlsx');
+const { readSpreadsheet, SUPPORTED_EXTENSIONS, DANGEROUS_KEYS } = require('../services/spreadsheet');
 const bcrypt = require('bcryptjs');
 const router = express.Router();
 const { all, get, run, tx } = require('../database/db');
@@ -27,7 +27,9 @@ const { upload, handleUploadErrors } = require('../middleware/upload');
 const { cleanString, isEmail, isPhone, asInt } = require('../middleware/validate');
 const { log } = require('../services/audit');
 
-const IMPORT_TYPES = ['csv', 'xlsx', 'xls'];
+const IMPORT_TYPES = SUPPORTED_EXTENSIONS; // csv, xlsx
+const LEGACY_XLS_HINT = 'Legacy Excel .xls files are not supported. In Excel choose File \u2192 Save As \u2192 Excel Workbook (.xlsx) or CSV, then upload that.';
+const UNSUPPORTED_HINT = 'Only Excel (.xlsx) and CSV (.csv) files are supported.';
 const MAX_ROWS = 5000;
 
 // In-memory cache of parsed import sessions (survives the wizard steps).
@@ -114,15 +116,25 @@ function classForName(name, stream, academicYear) {
   return null;
 }
 
+/** Friendly reason why a file could not be read (legacy .xls gets its own hint). */
+function unsupportedMessage(ext) {
+  return ext === 'xls' ? LEGACY_XLS_HINT : UNSUPPORTED_HINT;
+}
+
+/** Read an uploaded spreadsheet (.csv / .xlsx) into header-keyed row objects. */
+function readRows(filePath, ext) {
+  return readSpreadsheet(filePath, ext);
+}
+
 // ---------------------------------------------------------------------------
 // Step 1 — upload & parse
 // ---------------------------------------------------------------------------
-router.post('/upload', authenticate, requireStaffAdmin, upload.single('file'), handleUploadErrors, (req, res) => {
+router.post('/upload', authenticate, requireStaffAdmin, upload.single('file'), handleUploadErrors, async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Choose a file to upload.' });
   const ext = (req.file.originalname.split('.').pop() || '').toLowerCase();
   if (!IMPORT_TYPES.includes(ext)) {
     fs.unlinkSync(req.file.path);
-    return res.status(400).json({ error: 'Only Excel (.xlsx, .xls) and CSV (.csv) files are supported.' });
+    return res.status(400).json({ error: unsupportedMessage(ext) });
   }
   const size = fs.statSync(req.file.path).size;
   if (size > 5 * 1024 * 1024) {
@@ -132,14 +144,7 @@ router.post('/upload', authenticate, requireStaffAdmin, upload.single('file'), h
 
   let rows;
   try {
-    if (ext === 'csv') {
-      const text = fs.readFileSync(req.file.path, 'utf8');
-      const wb = XLSX.read(text, { type: 'string' });
-      rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
-    } else {
-      const wb = XLSX.readFile(req.file.path);
-      rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
-    }
+    rows = await readRows(req.file.path, ext);
   } catch (e) {
     fs.unlinkSync(req.file.path);
     return res.status(400).json({ error: 'Unable to read that file. Check that it is a valid spreadsheet and try again.' });
@@ -458,22 +463,19 @@ router.get('/template.csv', authenticate, requireStaffAdmin, (req, res) => {
 // ---------------------------------------------------------------------------
 // One-step TEACHER import: upload -> validate -> create accounts + codes
 // ---------------------------------------------------------------------------
-function parseSpreadsheet(file) {
+async function parseSpreadsheet(file) {
   const ext = (file.originalname.split('.').pop() || '').toLowerCase();
-  if (!IMPORT_TYPES.includes(ext)) throw Object.assign(new Error('Only Excel (.xlsx, .xls) and CSV (.csv) files are supported.'), { status: 400 });
-  let rows;
-  if (ext === 'csv') {
-    const text = fs.readFileSync(file.path, 'utf8');
-    const wb = XLSX.read(text, { type: 'string' });
-    rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
-  } else {
-    const wb = XLSX.readFile(file.path);
-    rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: '' });
-  }
+  if (!IMPORT_TYPES.includes(ext)) throw Object.assign(new Error(unsupportedMessage(ext)), { status: 400 });
+  const rows = await readRows(file.path, ext);
   return rows
     .map((r) => {
       const o = {};
-      for (const k of Object.keys(r)) o[String(k).trim().toLowerCase()] = typeof r[k] === 'number' ? r[k] : String(r[k]).trim();
+      for (const k of Object.keys(r)) {
+        const key = String(k).trim().toLowerCase();
+        // prototype-polluting header keys can never become properties
+        if (DANGEROUS_KEYS.has(key)) continue;
+        o[key] = typeof r[k] === 'number' ? r[k] : String(r[k]).trim();
+      }
       return o;
     })
     // skip helper/comment rows from the template
@@ -495,10 +497,10 @@ function nextTeacherCode() {
   return 'TCH-' + Date.now().toString(36).toUpperCase();
 }
 
-router.post('/teachers', authenticate, requireStaffAdmin, upload.single('file'), handleUploadErrors, (req, res) => {
+router.post('/teachers', authenticate, requireStaffAdmin, upload.single('file'), handleUploadErrors, async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Choose a file to upload.' });
   let rows;
-  try { rows = parseSpreadsheet(req.file); }
+  try { rows = await parseSpreadsheet(req.file); }
   catch (e) { try { fs.unlinkSync(req.file.path); } catch {} return res.status(e.status || 400).json({ error: e.message }); }
   try { fs.unlinkSync(req.file.path); } catch {}
   if (!rows.length) return res.status(400).json({ error: 'The file contains no data rows.' });
@@ -564,10 +566,10 @@ router.post('/teachers', authenticate, requireStaffAdmin, upload.single('file'),
 // ---------------------------------------------------------------------------
 // One-step FEES import: each row -> fee structure (+ auto-assign to class)
 // ---------------------------------------------------------------------------
-router.post('/fees', authenticate, requireStaffAdmin, upload.single('file'), handleUploadErrors, (req, res) => {
+router.post('/fees', authenticate, requireStaffAdmin, upload.single('file'), handleUploadErrors, async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Choose a file to upload.' });
   let rows;
-  try { rows = parseSpreadsheet(req.file); }
+  try { rows = await parseSpreadsheet(req.file); }
   catch (e) { try { fs.unlinkSync(req.file.path); } catch {} return res.status(e.status || 400).json({ error: e.message }); }
   try { fs.unlinkSync(req.file.path); } catch {}
   if (!rows.length) return res.status(400).json({ error: 'The file contains no data rows.' });

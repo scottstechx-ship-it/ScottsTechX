@@ -198,26 +198,89 @@
   }
 
   // ---------------- modal ----------------
+  /** Modals are stacked (a dialog can open over another): Escape closes the top one. */
+  const modalStack = [];
+
+  /**
+   * Scroll lock, counted.
+   *
+   * Several things lock the page at once (a modal, the phone sidebar, a modal
+   * opened ON the sidebar). A boolean-style lock meant whichever closed last
+   * handed scrolling back — so closing the sidebar released the page behind an
+   * open dialog, and closing a dialog on top of the sidebar left the page
+   * frozen. Counting the locks makes the last owner release it, and the
+   * original inline value is restored exactly.
+   */
+  let scrollLocks = 0;
+  function lockScroll() {
+    scrollLocks++;
+    if (scrollLocks === 1) {
+      document.body.dataset.prevOverflow = document.body.style.overflow || '';
+      document.body.style.overflow = 'hidden';
+    }
+  }
+  function unlockScroll() {
+    if (scrollLocks === 0) return;
+    scrollLocks--;
+    if (scrollLocks === 0) {
+      document.body.style.overflow = document.body.dataset.prevOverflow || '';
+      delete document.body.dataset.prevOverflow;
+    }
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape' || !modalStack.length) return;
+    // only the topmost dialog reacts, so Escape never closes two at once
+    modalStack[modalStack.length - 1].close();
+  });
+
   function openModal({ title, body, foot, wide = false, onClose }) {
-    const backdrop = el(`<div class="modal-backdrop">
-      <div class="modal ${wide ? 'wide' : ''}">
+    // A dialog that is fading out is already gone as far as the user is
+    // concerned, but its DOM (and its ids) can still be in the page for another
+    // ~180ms. Two modals with the same field ids in the document at once is
+    // invalid HTML and makes `#id` lookups unpredictable, so clear the corpse
+    // before the next dialog is built.
+    document.querySelectorAll('.modal-backdrop:not(.open)').forEach((b) => b.remove());
+
+    const backdrop = el(`<div class="modal-backdrop" role="dialog" aria-modal="true">
+      <div class="modal ${wide ? 'wide' : ''}" tabindex="-1">
         <div class="modal-head"><h3>${esc(title)}</h3><button class="close-x" data-close aria-label="Close">${icon('close', { size: 16 })}</button></div>
         <div class="modal-body"></div>
         ${foot ? '<div class="modal-foot"></div>' : ''}
       </div></div>`);
+    const head = backdrop.querySelector('.modal-head h3');
+    if (head) backdrop.querySelector('.modal').setAttribute('aria-label', head.textContent);
     backdrop.querySelector('.modal-body').appendChild(typeof body === 'string' ? frag(body) : body);
     if (foot) backdrop.querySelector('.modal-foot').appendChild(typeof foot === 'string' ? frag(foot) : foot);
     document.body.appendChild(backdrop);
-    requestAnimationFrame(() => backdrop.classList.add('open'));
+
+    const control = { backdrop, close: () => close() };
+    let closed = false;
     function close() {
+      if (closed) return;
+      closed = true;
+      const at = modalStack.indexOf(control);
+      if (at > -1) modalStack.splice(at, 1);
       backdrop.classList.remove('open');
       setTimeout(() => backdrop.remove(), 180);
+      unlockScroll();
       if (onClose) onClose();
     }
+    control.close = close;
+
     backdrop.addEventListener('click', (e) => {
       if (e.target === backdrop || e.target.closest('[data-close]')) close();
     });
-    return { backdrop, close };
+
+    modalStack.push(control);
+    lockScroll();
+    requestAnimationFrame(() => {
+      backdrop.classList.add('open');
+      // move focus into the dialog so keyboards and screen readers land in it
+      const focusable = backdrop.querySelector('input, select, textarea, button:not(.close-x), [href]');
+      if (focusable && typeof focusable.focus === 'function') focusable.focus();
+      else backdrop.querySelector('.modal').focus();
+    });
+    return control;
   }
 
   function confirmDialog(message, { title = 'Are you sure?', danger = true, confirmText = 'Confirm' } = {}) {
@@ -338,8 +401,10 @@
     layout.appendChild(main);
     document.body.appendChild(layout);
 
-    // bottom nav
-    if (bottomNav && window.innerWidth <= 768) {
+    // bottom nav — built on demand so rotating a phone (or resizing a window
+    // across the breakpoint) does not leave the dashboard without navigation
+    function buildBottomNav() {
+      if (!bottomNav || document.getElementById('bottom-nav')) return;
       const bn = el('<div class="bottom-nav" id="bottom-nav"></div>');
       for (const item of bottomNav) {
         bn.appendChild(el(`<button class="bn-item" data-bn="${esc(item.key)}"><span class="ic">${icon(item.icon, { size: 18 })}</span><span>${esc(item.label)}</span><span class="bn-badge" data-bn-badge="${esc(item.key)}" style="display:none"></span></button>`));
@@ -350,7 +415,18 @@
         onNav(b.dataset.bn);
         content.scrollTop = 0;
       }));
+      // keep the badge in step with the sidebar
+      if (typeof window.__syncBadges === 'function') window.__syncBadges();
     }
+    if (window.innerWidth <= 768) buildBottomNav();
+    let wasNarrow = window.innerWidth <= 768;
+    window.addEventListener('resize', () => {
+      const narrow = window.innerWidth <= 768;
+      if (narrow === wasNarrow) return;
+      wasNarrow = narrow;
+      if (narrow) buildBottomNav();
+      else { closeSidebar(); }
+    }, { passive: true });
 
     // events
     sidebar.querySelectorAll('.nav-item[data-nav]').forEach((b) => b.addEventListener('click', () => {
@@ -363,15 +439,18 @@
     const scrim = el('<div class="sidebar-scrim" id="sidebar-scrim"></div>');
     document.body.appendChild(scrim);
     const anyOverlay = () => document.querySelectorAll('.sidebar-scrim, .mobile-overlay');
+    let sidebarLocked = false;
     function openSidebar() {
       sidebar.classList.add('open');
       anyOverlay().forEach((o) => o.classList.add('open'));
-      document.body.style.overflow = 'hidden';
+      if (!sidebarLocked) { sidebarLocked = true; lockScroll(); }
     }
     function closeSidebar() {
+      const wasOpen = sidebar.classList.contains('open') || sidebarLocked;
       sidebar.classList.remove('open');
       anyOverlay().forEach((o) => o.classList.remove('open'));
-      document.body.style.overflow = '';
+      if (sidebarLocked) { sidebarLocked = false; unlockScroll(); }
+      return wasOpen;
     }
     const burgerBtn = topbar.querySelector('#hamburger');
     // mark as bound so ux.js's fallback binder never double-binds this button
@@ -383,7 +462,11 @@
     document.addEventListener('click', (e) => {
       if (e.target.classList && e.target.classList.contains('mobile-overlay')) closeSidebar();
     });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSidebar(); });
+    document.addEventListener('keydown', (e) => {
+      // only when the drawer is really open, otherwise Escape would release the
+      // scroll lock of an unrelated open dialog
+      if (e.key === 'Escape' && sidebar.classList.contains('open')) closeSidebar();
+    });
 
     // render avatar image if the user has a photo
     const chipAvatar = topbar.querySelector('#user-chip .avatar');
@@ -403,10 +486,13 @@
       topbar.querySelector('#user-menu').classList.remove('open');
       if (topbar.querySelector('#notif-drop').classList.contains('open')) renderNotifications();
     };
-    document.addEventListener('click', () => {
+    const closeDropdowns = () => {
       topbar.querySelector('#user-menu').classList.remove('open');
       topbar.querySelector('#notif-drop').classList.remove('open');
-    });
+    };
+    document.addEventListener('click', closeDropdowns);
+    // keyboard users expect Escape to dismiss the open menu too
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDropdowns(); });
 
     topbar.querySelector('#user-menu').querySelector('[data-um="logout"]').onclick = async () => {
       // API.logout() asks the server to revoke the session, then redirects.
@@ -613,26 +699,37 @@
 
   // ---------------- change password / profile ----------------
   function openChangePassword() {
-    openModal({
+    // openModal() returns the modal control object synchronously — it is not a
+    // promise, so the handlers are bound here and not in a .then().
+    const m = openModal({
       title: 'Change password',
       body: `<label class="field">Current password<input type="password" id="pw-current" autocomplete="current-password"></label>
              <label class="field">New password<input type="password" id="pw-new" autocomplete="new-password"></label>
-             <label class="field">Confirm new password<input type="password" id="pw-confirm" autocomplete="new-password"></label>`,
+             <label class="field">Confirm new password<input type="password" id="pw-confirm" autocomplete="new-password"></label>
+             <p class="doc-meta" style="margin:0">Use at least 8 characters. You will stay signed in on this device.</p>`,
       foot: `<button class="btn secondary" data-cancel>Cancel</button><button class="btn" data-save>Update password</button>`,
-    }).then((m) => {
-      m.backdrop.querySelector('[data-cancel]').onclick = () => m.close();
-      m.backdrop.querySelector('[data-save]').onclick = async () => {
-        const cur = m.backdrop.querySelector('#pw-current').value;
-        const nw = m.backdrop.querySelector('#pw-new').value;
-        const cf = m.backdrop.querySelector('#pw-confirm').value;
-        if (nw !== cf) return toast('New passwords do not match.', 'error');
-        try {
-          await API.put('/api/auth/change-password', { currentPassword: cur, newPassword: nw });
-          toast('Password updated successfully.', 'success');
-          m.close();
-        } catch (e) { toast(e.message, 'error'); }
-      };
     });
+    const cancel = m.backdrop.querySelector('[data-cancel]');
+    const save = m.backdrop.querySelector('[data-save]');
+    if (!cancel || !save) return;
+    cancel.onclick = () => m.close();
+    save.onclick = async () => {
+      const cur = m.backdrop.querySelector('#pw-current').value;
+      const nw = m.backdrop.querySelector('#pw-new').value;
+      const cf = m.backdrop.querySelector('#pw-confirm').value;
+      if (!cur || !nw) return toast('Enter your current and new password.', 'error');
+      if (nw !== cf) return toast('New passwords do not match.', 'error');
+      save.disabled = true;
+      try {
+        await API.put('/api/auth/change-password', { currentPassword: cur, newPassword: nw });
+        toast('Password updated successfully.', 'success');
+        m.close();
+      } catch (e) {
+        toast(e.message, 'error');
+      } finally {
+        save.disabled = false;
+      }
+    };
   }
 
   // expose
@@ -643,5 +740,6 @@
     toast, openModal, modal: openModal, confirmDialog,
     initLayout, refreshUnreadCounts, loadNotifications,
     onUnreadChange, openChangePassword, openAvatarUpload, profileSettingsPanel,
+    lockScroll, unlockScroll,
   };
 })();

@@ -96,8 +96,8 @@
             <td data-label="Status">${attBadge(a.status)}</td>
             <td data-label="Note">${UI.esc(a.note || '—')}</td>
             <td data-label="" class="actions-cell"><div class="actions">
-              <button class="btn secondary sm" data-edit="${a.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
-              <button class="btn danger sm" data-del="${a.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+              <button aria-label="Edit" title="Edit" class="btn secondary sm" data-edit="${a.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+              <button aria-label="Delete" title="Delete" class="btn danger sm" data-del="${a.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
             </div></td>`;
           tbody.appendChild(tr);
           tr.querySelector('[data-edit]').onclick = async () => {
@@ -198,8 +198,8 @@
             </div>
             <div class="doc-actions">
               <button class="btn secondary sm" data-view="${a.id}">View / grade</button>
-              <button class="btn secondary sm" data-edit="${a.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
-              <button class="btn danger sm" data-del="${a.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+              <button aria-label="Edit" title="Edit" class="btn secondary sm" data-edit="${a.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+              <button aria-label="Delete" title="Delete" class="btn danger sm" data-del="${a.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
             </div>
           </div>`));
         }
@@ -410,8 +410,8 @@
             </div>
             <div class="doc-actions">
               <button class="btn secondary sm" data-open="${e.id}">${e.status === 'published' ? 'View results' : 'Enter marks'}</button>
-              <button class="btn secondary sm" data-edit="${e.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
-              <button class="btn danger sm" data-del="${e.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+              <button aria-label="Edit" title="Edit" class="btn secondary sm" data-edit="${e.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+              <button aria-label="Delete" title="Delete" class="btn danger sm" data-del="${e.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
             </div>
           </div>`));
         }
@@ -524,7 +524,7 @@
         const view = modal.backdrop.querySelector('#res-view');
         const results = (await API.get(`/api/exams/${id}`)).exam.results || [];
         view.innerHTML = results.length
-          ? `<table class="table"><thead><tr><th>Student</th><th>Marks</th><th>Grade</th></tr></thead><tbody>${results.map((r) => `<tr><td>${UI.esc(r.student_name)}</td><td>${r.marks}</td><td>${UI.esc(r.grade || '—')}</td></tr>`).join('')}</tbody></table>`
+          ? `<div class="table-responsive"><table class="table"><thead><tr><th>Student</th><th>Marks</th><th>Grade</th></tr></thead><tbody>${results.map((r) => `<tr><td data-label="Student">${UI.esc(r.student_name)}</td><td data-label="Marks">${r.marks}</td><td data-label="Grade">${UI.esc(r.grade || '—')}</td></tr>`).join('')}</tbody></table></div>`
           : '<div class="doc-meta">No results.</div>';
         return;
       }
@@ -533,15 +533,15 @@
       const students = (await API.get(`/api/classes/${e.class_id}/students`)).students || [];
       const existing = (e.results || []).reduce((m, r) => { m[r.student_id] = r; return m; }, {});
       const grid = modal.backdrop.querySelector('#marks-grid');
-      grid.innerHTML = `<table class="table"><thead><tr><th>Student</th><th>Marks (0-100)</th><th>Grade</th><th>Comment</th></tr></thead><tbody></tbody></table>`;
+      grid.innerHTML = `<div class="table-responsive"><table class="table"><thead><tr><th>Student</th><th>Marks (0-100)</th><th>Grade</th><th>Comment</th></tr></thead><tbody></tbody></table>`;
       const tbody = grid.querySelector('tbody');
       for (const s of students) {
         const cur = existing[s.id] || {};
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${UI.esc(s.full_name)}</td>
-          <td><input type="number" min="0" max="100" class="mk" data-sid="${s.id}" value="${cur.marks ?? ''}" style="width:80px"></td>
-          <td><input class="gr" data-sid="${s.id}" value="${UI.esc(cur.grade || '')}" style="width:50px"></td>
-          <td><input class="cm" data-sid="${s.id}" value="${UI.esc(cur.comments || '')}" style="width:100%"></td>`;
+        tr.innerHTML = `<td data-label="Student">${UI.esc(s.full_name)}</td>
+          <td data-label="Marks"><input type="number" min="0" max="100" class="mk" data-sid="${s.id}" value="${cur.marks ?? ''}" style="width:80px"></td>
+          <td data-label="Grade"><input class="gr" data-sid="${s.id}" value="${UI.esc(cur.grade || '')}" style="width:50px"></td>
+          <td data-label="Comment"><input class="cm" data-sid="${s.id}" value="${UI.esc(cur.comments || '')}" style="width:100%"></td>`;
         tbody.appendChild(tr);
       }
       const saveBtn = modal.backdrop.querySelector('#save-marks');
@@ -643,7 +643,7 @@
             <td data-label="Subject">${UI.esc(e.subject || '—')}</td>
             <td data-label="Teacher">${UI.esc(e.teacher_name || '—')}</td>
             <td data-label="Room">${UI.esc(e.room || '—')}</td>
-            ${manage ? '<td data-label="" class="actions-cell"><button class="btn danger sm" data-del="' + e.id + '"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button></td>' : ''}`;
+            ${manage ? '<td data-label="" class="actions-cell"><button aria-label="Delete" title="Delete" class="btn danger sm" data-del="' + e.id + '"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button></td>' : ''}`;
           tbody.appendChild(tr);
           const del = tr.querySelector('[data-del]');
           if (del) del.onclick = async () => {
@@ -746,7 +746,7 @@
             <td data-label="Assigned">${f.assigned_count || 0} students</td>
             <td data-label="" class="actions-cell"><div class="actions">
               <button class="btn secondary sm" data-assign="${f.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Assign</button>
-              <button class="btn danger sm" data-del="${f.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+              <button aria-label="Delete" title="Delete" class="btn danger sm" data-del="${f.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
             </div></td>`;
           tbody.appendChild(tr);
           tr.querySelector('[data-assign]').onclick = () => this.assignModal(f, () => loadStructures());
@@ -908,7 +908,7 @@
             ${data.fees.length ? data.fees.map((f) => `<div class="list-row"><span class="k">${UI.esc(f.name)}${f.term ? ' (' + UI.esc(f.term) + ')' : ''}</span><span class="v">${UI.money(f.due_amount)}</span></div>`).join('') : '<div class="doc-meta">No fees assigned.</div>'}
           </div>
           <div class="card"><h4>Payment history</h4>
-            ${data.payments.length ? `<div class="table-responsive"><table class="table"><thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Receipt</th></tr></thead><tbody>${data.payments.map((p) => `<tr><td>${UI.esc(p.paid_at)}</td><td>${UI.money(p.amount)}</td><td>${UI.esc(p.method)}</td><td>${UI.esc(p.receipt_no || '—')}</td></tr>`).join('')}</tbody></table></div>`
+            ${data.payments.length ? `<div class="table-responsive"><table class="table"><thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Receipt</th></tr></thead><tbody>${data.payments.map((p) => `<tr><td data-label="Date">${UI.esc(p.paid_at)}</td><td data-label="Amount">${UI.money(p.amount)}</td><td data-label="Method">${UI.esc(p.method)}</td><td data-label="Receipt">${UI.esc(p.receipt_no || '—')}</td></tr>`).join('')}</tbody></table></div>`
               : '<div class="doc-meta">No payments recorded yet.</div>'}
           </div>`;
       } catch (e) { UI.toast(e.message, 'error'); }
@@ -933,7 +933,7 @@
         data.forEach((s) => {
           const tr = document.createElement('tr');
           tr.innerHTML = `<td data-label="Name">${UI.esc(s.name)}</td><td data-label="Code">${UI.esc(s.code || '—')}</td><td data-label="Dept">${UI.esc(s.department || '—')}</td>
-            <td data-label="" class="actions-cell"><div class="actions"><button class="btn secondary sm" data-edit="${s.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button><button class="btn danger sm" data-del="${s.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button></div></td>`;
+            <td data-label="" class="actions-cell"><div class="actions"><button aria-label="Edit" title="Edit" class="btn secondary sm" data-edit="${s.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button><button aria-label="Delete" title="Delete" class="btn danger sm" data-del="${s.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button></div></td>`;
           tbody.appendChild(tr);
           tr.querySelector('[data-edit]').onclick = () => edit(s, () => load());
           tr.querySelector('[data-del]').onclick = async () => {

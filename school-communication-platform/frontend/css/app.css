@@ -42,10 +42,12 @@ h1, h2, h3, h4 { color: var(--ink); margin: 0 0 .5rem; }
 p { margin: 0 0 .75rem; }
 
 /* ---------- layout ---------- */
-.layout { display: flex; min-height: 100vh; }
+.layout { display: flex; min-height: 100vh; min-height: 100dvh; }
 .sidebar {
   width: 240px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--sidebar-text);
-  display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  display: flex; flex-direction: column; position: sticky; top: 0;
+  height: 100vh; height: 100dvh;   /* dvh = the visible area on mobile (no URL-bar gap) */
+  overflow-y: auto;
   z-index: 50;
 }
 .sidebar .brand { display: flex; align-items: center; gap: 10px; padding: 18px 16px; color: #fff; border-bottom: 1px solid rgba(255,255,255,.08); }
@@ -179,7 +181,7 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
 
 /* ---------- messaging ---------- */
-.msg-layout { display: grid; grid-template-columns: 320px 1fr; height: calc(100vh - 150px); min-height: 420px; gap: 14px; }
+.msg-layout { display: grid; grid-template-columns: 320px 1fr; height: calc(100vh - 150px); height: calc(100dvh - 150px); min-height: 420px; gap: 14px; }
 .msg-list { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow-y: auto; box-shadow: var(--shadow); }
 .msg-list .msg-list-head { padding: 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; position: sticky; top: 0; background: var(--card); z-index: 2; }
 .conv-item { display: flex; gap: 10px; padding: 12px 14px; cursor: pointer; border-bottom: 1px solid #f1f5f9; align-items: center; }
@@ -295,7 +297,7 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
   .content { padding: 14px; padding-bottom: 78px; }
   .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr 1fr; }
   .form-row { grid-template-columns: 1fr; }
-  .msg-layout { grid-template-columns: 1fr; height: calc(100vh - 190px); }
+  .msg-layout { grid-template-columns: 1fr; height: calc(100vh - 190px); height: calc(100dvh - 190px); }
   .msg-layout .msg-list { display: block; }
   .msg-layout.thread-open .msg-list { display: none; }
   .msg-layout .msg-thread { display: none; }
@@ -307,10 +309,18 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
   .table-responsive thead { display: none; }
   .table-responsive tbody, .table-responsive tr, .table-responsive td { display: block; width: 100%; }
   .table-responsive tr { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 10px; padding: 6px; background: var(--card); }
-  .table-responsive td { border: none; padding: 7px 10px; display: flex; justify-content: space-between; align-items: center; }
-  .table-responsive td::before { content: attr(data-label); font-weight: 700; color: var(--muted); font-size: 12px; text-transform: uppercase; }
+  .table-responsive td { border: none; padding: 7px 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .table-responsive td::before { content: attr(data-label); flex: 0 0 auto; font-weight: 700; color: var(--muted); font-size: 12px; text-transform: uppercase; }
   .table-responsive td.actions-cell { justify-content: flex-end; }
   .table-responsive td.actions-cell::before { display: none; }
+  /* fields inside a stacked row (e.g. entering marks) should fill the row
+     instead of keeping their desktop inline width */
+  .table-responsive td input,
+  .table-responsive td select,
+  .table-responsive td textarea { width: 100% !important; max-width: 100%; margin-top: 0; }
+  .table-responsive td > strong, .table-responsive td > span { text-align: right; }
+  /* a very long word (an email, a URL, a token) must wrap, never push the card */
+  .table-responsive td, .card, .doc-meta, .msg-content, .list-row .k { overflow-wrap: anywhere; }
 }
 @media (max-width: 480px) {
   .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
@@ -464,6 +474,28 @@ html[data-theme="dark"] .topbar .topbar-logout { color: #f87171; }
   .topbar .user-chip .meta { display: none; }
   .topbar { gap: 6px; padding-left: 10px; padding-right: 10px; }
   .topbar .page-title { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+}
+
+/* ---------- document previews (office text extraction) ----------
+   Was an inline `background:#f8fafc`, which an inline style keeps even in dark
+   mode — a bright white block with light-on-light text. A class fixes both. */
+.doc-preview {
+  white-space: pre-wrap; max-height: 70vh; overflow: auto;
+  background: #f8fafc; border: 1px solid var(--border);
+  border-radius: 8px; padding: 14px; margin: 0;
+  font-size: 12.5px; line-height: 1.55;
+}
+html[data-theme="dark"] .doc-preview { background: #0a0f1a; color: var(--text); }
+
+/* video preview tiles in the website manager keep a dark letterbox in both themes */
+.video-thumb { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; background: #0f172a; }
+
+/* ---------- PHONES: stop iOS zooming the layout on focus ----------
+   iOS Safari zooms the whole page whenever a field with a font-size below
+   16px receives focus, which throws the dashboard (and every sign-in / reset
+   card) off-centre and leaves the user pinching back out. */
+@media (max-width: 768px) {
+  input, select, textarea, .composer textarea { font-size: 16px; }
 }
 
 /* ============================================================

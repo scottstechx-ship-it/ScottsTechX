@@ -171,7 +171,7 @@
     /** Build header + scroll area + composer exactly once per conversation. */
     buildThreadShell(thread, conv, convId) {
       const head = UI.el(`<div class="thread-head">
-        <button class="back" id="back-btn"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></button>
+        <button aria-label="Back to conversations" title="Back to conversations" class="back" id="back-btn"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></button>
         <div style="min-width:0">
           <strong>${UI.esc(conv.title || 'Conversation')}</strong>
           <div style="font-size:12px;color:var(--muted)" id="thread-count"></div>

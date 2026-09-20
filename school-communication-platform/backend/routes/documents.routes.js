@@ -215,6 +215,48 @@ const OFFICE_MIMES = [
   'application/vnd.oasis.opendocument.presentation', // odp
 ];
 
+/**
+ * Flatten whatever `officeparser` hands back into readable text.
+ *
+ * officeparser 5.x resolved to a plain string; 6+/7+/8+ resolves to an AST
+ * object instead (and its `to()` method regenerates a *file*, not text), so a
+ * naive `String(ast)` produced the useless "[object Object]" preview. Walk the
+ * `content` tree and collect cell/paragraph text so every supported version
+ * yields real preview text.
+ */
+function officeAstToText(ast) {
+  if (!ast) return '';
+  if (typeof ast === 'string') return ast;
+  if (typeof ast.toText === 'function') return ast.toText();
+  const out = [];
+  const walk = (node) => {
+    if (!node) return;
+    if (typeof node === 'string') { out.push(node); return; }
+    if (Array.isArray(node)) { node.forEach(walk); return; }
+    if (typeof node !== 'object') return;
+    const nodes = node.content || node.children;
+    if (typeof node.text === 'string' && !Array.isArray(nodes)) {
+      out.push(node.text);
+      return;
+    }
+    if (Array.isArray(nodes)) {
+      nodes.forEach((child, i) => {
+        if (i && node.type === 'row') out.push('\t');
+        walk(child);
+      });
+    }
+    if (node.type === 'row' || node.type === 'paragraph' || node.type === 'sheet') out.push('\n');
+  };
+  walk(ast.content || ast);
+  // collapse the duplicate text nodes and blank runs the AST repeats
+  const lines = [];
+  for (const raw of out.join('').split('\n')) {
+    const line = raw.split('\t').map((cell) => cell.trim().replace(/\s+/g, ' ')).filter(Boolean);
+    if (line.length) lines.push(line.join('\t'));
+  }
+  return lines.join('\n');
+}
+
 /** GET /api/documents/:id/preview — inline preview (authenticated).
  *  Images/PDF/text stream inline; office files are text-extracted with
  *  officeparser and returned as JSON { type:'office', text }. */
@@ -243,7 +285,7 @@ router.get('/:id/preview', authenticate, (req, res) => {
     try { officeParser = require('officeparser'); } catch { return res.status(415).json({ error: 'Preview engine unavailable. Download the file instead.' }); }
     return officeParser.parseOffice(filePath)
       .then((ast) => {
-        const text = typeof ast.toText === 'function' ? ast.toText() : String(ast || '');
+        const text = officeAstToText(ast);
         if (!text || !text.trim()) {
           return res.status(415).json({ error: 'No previewable text could be extracted. Download the file instead.' });
         }

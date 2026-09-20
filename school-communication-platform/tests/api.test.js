@@ -981,3 +981,72 @@ test('teachers can still delete/edit only their own documents', async () => {
   const edit = await api(`/api/documents/${docId}`, { method: 'PUT', token: tokens.teacher1, body: { name: 'hacked.txt' } });
   assert.strictEqual(edit.status, 403);
 });
+
+// ---------------------------------------------------------------------------
+// Bulk import — real .xlsx workbooks (after dropping the vulnerable `xlsx` pkg)
+// ---------------------------------------------------------------------------
+
+test('bulk import: .xlsx workbook upload -> validation -> import (dates included)', async () => {
+  const { buildXlsx } = require('./_xlsx-fixture');
+  const workbook = buildXlsx([
+    ['Full Name', 'Student ID', 'Class', 'Stream', 'Gender', 'Date of Birth', 'Parent Name', 'Parent Phone'],
+    ['Excel Kid One', 'STU-XLS-001', 'Senior 2', 'A', 'Female', new Date(Date.UTC(2010, 0, 1)), 'Parent One', '+256700002221'],
+    ['Excel Kid Two', 'STU-XLS-002', 'Senior 3', 'A', 'Male', new Date(Date.UTC(2009, 5, 15)), 'Parent Two', '+256700002222'],
+  ]);
+  const form = new FormData();
+  form.append('file', new Blob([workbook], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), 'students.xlsx');
+
+  const up = await api('/api/imports/upload', { method: 'POST', token: tokens.admin, form });
+  assert.strictEqual(up.status, 200, JSON.stringify(up.data));
+  assert.deepStrictEqual(up.data.headers, ['Full Name', 'Student ID', 'Class', 'Stream', 'Gender', 'Date of Birth', 'Parent Name', 'Parent Phone']);
+
+  const mapping = { fullName: 'Full Name', studentCode: 'Student ID', className: 'Class', stream: 'Stream', gender: 'Gender', dateOfBirth: 'Date of Birth', parentName: 'Parent Name', parentPhone: 'Parent Phone' };
+  const val = await api('/api/imports/validate', { method: 'POST', token: tokens.admin, body: { importId: up.data.importId, mapping } });
+  assert.strictEqual(val.status, 200);
+  // the Excel date column must arrive as YYYY-MM-DD, not a raw serial number
+  assert.strictEqual(val.data.summary.errors, 0, JSON.stringify(val.data.results));
+  assert.strictEqual(val.data.summary.valid + val.data.summary.warnings, 2);
+
+  const imp = await api('/api/imports/import', { method: 'POST', token: tokens.admin, body: { importId: up.data.importId, mapping } });
+  assert.strictEqual(imp.status, 200, JSON.stringify(imp.data));
+  assert.strictEqual(imp.data.counts.imported, 2);
+
+  const search = await api('/api/students?search=Excel Kid', { token: tokens.admin });
+  const imported = search.data.students.find((s) => s.student_code === 'STU-XLS-001');
+  assert.ok(imported, 'xlsx row landed in the database');
+  assert.strictEqual(imported.date_of_birth, '2010-01-01');
+});
+
+test('bulk import: prototype-polluting headers are ignored, legacy .xls gets a clear message', async () => {
+  const { buildXlsx } = require('./_xlsx-fixture');
+  const evil = buildXlsx([
+    ['Full Name', '__proto__', 'constructor', 'Student ID'],
+    ['Polluted Kid', 'x', 'y', 'STU-XLS-003'],
+  ]);
+  const form = new FormData();
+  form.append('file', new Blob([evil], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), 'evil.xlsx');
+  const up = await api('/api/imports/upload', { method: 'POST', token: tokens.admin, form });
+  assert.strictEqual(up.status, 200, JSON.stringify(up.data));
+  assert.deepStrictEqual(up.data.headers, ['Full Name', 'Student ID']);
+  assert.strictEqual({}.polluted, undefined);
+  assert.strictEqual(Object.prototype.x, undefined, 'no prototype pollution');
+
+  const legacy = new FormData();
+  legacy.append('file', new Blob([Buffer.from([0xd0, 0xcf, 0x11, 0xe0])], { type: 'application/vnd.ms-excel' }), 'old.xls');
+  const bad = await api('/api/imports/upload', { method: 'POST', token: tokens.admin, form: legacy });
+  assert.strictEqual(bad.status, 400);
+  assert.match(bad.data.error, /\.xlsx/);
+});
+
+test('bulk import: teacher one-step import accepts a CSV with quoted commas', async () => {
+  const csv = [
+    'Full Name,Email,Phone,Subjects,Qualification,Date Joined',
+    'Ms. Csv Teacher,csv.teacher@example.com,+256700002333,"Mathematics, Physics",BSc Education,2024-02-01',
+  ].join('\n');
+  const form = new FormData();
+  form.append('file', new Blob([csv], { type: 'text/csv' }), 'teachers.csv');
+  const res = await api('/api/imports/teachers', { method: 'POST', token: tokens.admin, form });
+  assert.strictEqual(res.status, 200, JSON.stringify(res.data));
+  assert.strictEqual(res.data.counts.imported, 1, JSON.stringify(res.data));
+  assert.strictEqual(res.data.failures.length, 0, JSON.stringify(res.data.failures));
+});

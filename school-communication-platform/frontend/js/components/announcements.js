@@ -74,6 +74,25 @@
       return item;
     }
 
+    /**
+     * Read the chosen audience from the target <select>.
+     *
+     * The option values are JSON. Teachers get a blank "Select a class…"
+     * placeholder first, so an unguarded JSON.parse('') used to throw an
+     * unhandled error and the Publish button appeared to do nothing at all.
+     */
+    parseTarget(sel) {
+      const raw = sel ? String(sel.value || '').trim() : '';
+      if (!raw) return { error: 'Choose who this announcement is for.' };
+      try {
+        const v = JSON.parse(raw);
+        if (!v || typeof v !== 'object' || !v.targetType) return { error: 'Choose who this announcement is for.' };
+        return { targetType: v.targetType, targetValue: v.targetValue === undefined ? '' : v.targetValue };
+      } catch {
+        return { error: 'Choose who this announcement is for.' };
+      }
+    }
+
     async compose() {
       const options = await this.targetOptions();
       let modal;
@@ -94,13 +113,14 @@
         const content = modal.backdrop.querySelector('#ann-content').value.trim();
         if (!title || !content) return UI.toast('Title and message are required.', 'error');
         const sel = modal.backdrop.querySelector('#ann-target');
-        const parsed = JSON.parse(sel.value);
+        const target = this.parseTarget(sel);
+        if (target.error) return UI.toast(target.error, 'error');
         const important = modal.backdrop.querySelector('#ann-important').checked;
         try {
           await API.post('/api/announcements', {
             title, content,
-            targetType: parsed.targetType,
-            targetValue: parsed.targetValue,
+            targetType: target.targetType,
+            targetValue: target.targetValue,
             important,
           });
           UI.toast('Announcement published.', 'success');
@@ -127,6 +147,7 @@
         foot: `<button class="btn secondary" data-cancel>Cancel</button><button class="btn" data-save>Save changes</button>`,
       });
       const sel = modal.backdrop.querySelector('#ann-target');
+      if (!sel) { modal.close(); return UI.toast('Could not open the editor. Reload the page and try again.', 'error'); }
       // preselect the current target
       for (const opt of sel.options) {
         try {
@@ -139,14 +160,15 @@
         const title = modal.backdrop.querySelector('#ann-title').value.trim();
         const content = modal.backdrop.querySelector('#ann-content').value.trim();
         if (!title || !content) return UI.toast('Title and message are required.', 'error');
-        const parsed = JSON.parse(sel.value);
+        const target = this.parseTarget(sel);
+        if (target.error) return UI.toast(target.error, 'error');
         try {
           await API.put(`/api/announcements/${a.id}`, {
             title,
             content,
             important: modal.backdrop.querySelector('#ann-important').checked,
-            targetType: parsed.targetType,
-            targetValue: parsed.targetValue,
+            targetType: target.targetType,
+            targetValue: target.targetValue,
           });
           UI.toast('Announcement updated.', 'success');
           modal.close();

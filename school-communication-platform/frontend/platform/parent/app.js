@@ -308,14 +308,14 @@
           for (const e of published) {
             const exam = (await API.get(`/api/exams/${e.id}`)).exam;
             const res = (exam.results || []).find((r) => r.student_id === child.id);
-            html += `<tr><td>${UI.esc(e.title)}</td><td>${UI.esc(e.subject || '')}</td><td>${res ? res.marks : '—'}</td><td>${res ? UI.esc(res.grade || '—') : '—'}</td></tr>`;
+            html += `<tr><td data-label="Exam">${UI.esc(e.title)}</td><td data-label="Subject">${UI.esc(e.subject || '')}</td><td data-label="Marks">${res ? res.marks : '—'}</td><td data-label="Grade">${res ? UI.esc(res.grade || '—') : '—'}</td></tr>`;
           }
           tabBody.innerHTML = html + '</tbody></table></div>';
         } catch (e) { tabBody.innerHTML = `<div class="doc-meta">${UI.esc(e.message)}</div>`; }
       } else if (tab === 'timetable') {
         if (child.class_id) {
           const entries = (await API.get(`/api/timetable?classId=${child.class_id}`)).entries || [];
-          tabBody.innerHTML = entries.length ? `<div class="table-responsive"><table class="table"><thead><tr><th>Day</th><th>Time</th><th>Subject</th><th>Room</th></tr></thead><tbody>${entries.map((e) => `<tr><td>${UI.esc(e.day)}</td><td>${UI.esc(e.start_time)}-${UI.esc(e.end_time)}</td><td>${UI.esc(e.subject || '—')}</td><td>${UI.esc(e.room || '—')}</td></tr>`).join('')}</tbody></table></div>`
+          tabBody.innerHTML = entries.length ? `<div class="table-responsive"><table class="table"><thead><tr><th>Day</th><th>Time</th><th>Subject</th><th>Room</th></tr></thead><tbody>${entries.map((e) => `<tr><td data-label="Day">${UI.esc(e.day)}</td><td data-label="Time">${UI.esc(e.start_time)}-${UI.esc(e.end_time)}</td><td data-label="Subject">${UI.esc(e.subject || '—')}</td><td data-label="Room">${UI.esc(e.room || '—')}</td></tr>`).join('')}</tbody></table></div>`
             : '<div class="doc-meta">No timetable for this class yet.</div>';
         } else tabBody.innerHTML = '<div class="doc-meta">Child has no class assigned.</div>';
       } else if (tab === 'assignments') {

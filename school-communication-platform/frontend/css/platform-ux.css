@@ -38,7 +38,7 @@ button:focus-visible,a:focus-visible,.btn:focus-visible,.nav-item:focus-visible{
  .table-responsive{overflow-x:hidden}
  .topbar{height:58px}
  .topbar .page-title{font-size:15px}
- .dropdown-menu,.user-menu{position:fixed;left:10px;right:10px;width:auto;top:64px}
+ .dropdown-menu,.user-menu{position:fixed;left:10px;right:10px;width:auto;top:64px;max-height:calc(100dvh - 84px);overflow-y:auto}
  .modal-backdrop{padding:10px}
  .modal{max-height:92dvh;border-radius:16px}
  .modal .modal-body{padding:15px}
@@ -52,3 +52,30 @@ button:focus-visible,a:focus-visible,.btn:focus-visible,.nav-item:focus-visible{
 /* --- dark mode: the shimmer placeholder was a bright block on dark cards --- */
 html[data-theme="dark"] .skeleton { background: #1e293b; }
 html[data-theme="dark"] .skeleton::after { background: linear-gradient(90deg, transparent, rgba(148,163,184,.18), transparent); }
+
+/* ============================================================
+   MOBILE POLISH — the dashboard on a real phone
+   ============================================================ */
+
+/* iOS zooms the whole page when a field with font-size < 16px is focused.
+   The dashboard body is 14.5px, so every control is raised on small screens. */
+@media (max-width: 768px) {
+  input, select, textarea, .composer textarea { font-size: 16px; }
+  /* the modal close button was a ~14px hit area: give it a real target */
+  .modal .close-x {
+    min-width: 44px; min-height: 44px; margin: -8px -8px -8px 0;
+    display: grid; place-items: center; border-radius: 10px;
+  }
+  .modal .close-x:hover { background: var(--bg); }
+  /* topbar controls keep a 40px+ target */
+  .topbar .icon-btn { width: 42px; height: 42px; }
+  .bottom-nav .bn-item { min-height: 54px; }
+  /* a table that is only a few columns wide should not need sideways scrolling */
+  .table-wrap table.table { min-width: 520px; }
+}
+
+/* the bottom nav slides in instead of popping */
+@media (max-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .bottom-nav { animation: uxNavIn .28s cubic-bezier(.2,.8,.2,1); }
+  @keyframes uxNavIn { from { transform: translateY(100%); } to { transform: none; } }
+}

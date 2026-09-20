@@ -125,8 +125,8 @@
             <button class="btn secondary sm" data-preview><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg> Preview</button>
             <button class="btn secondary sm" data-download><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Download</button>
             ${this.canManage ? `<button class="btn secondary sm" data-share><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3A5 5 0 0 0 13.5 3.4l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7.1 7.1l1.7-1.7"/></svg> Share</button>` : ''}
-            ${this.canManage ? `<button class="btn secondary sm" data-rename><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>` : ''}
-            ${canDelete ? `<button class="btn danger sm" data-delete><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : ''}
+            ${this.canManage ? `<button aria-label="Rename" title="Rename" class="btn secondary sm" data-rename><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>` : ''}
+            ${canDelete ? `<button aria-label="Delete" title="Delete" class="btn danger sm" data-delete><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : ''}
           </div>
         </div>`);
         item.querySelector('[data-download]').onclick = () => DocumentsView.downloadDoc(d.id, d.name);
@@ -166,7 +166,7 @@
         if (ct.includes('application/json')) {
           // Office documents come back as extracted text.
           const data = await res.json();
-          inner = `<pre style="white-space:pre-wrap;max-height:70vh;overflow:auto;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:14px">${UI.esc(data.text || '')}</pre>
+          inner = `<pre class="doc-preview">${UI.esc(data.text || '')}</pre>
                    <p class="doc-meta">Text preview of ${UI.esc(doc.name)} — formatting may differ from the original.</p>`;
         } else {
           const blob = await res.blob();
@@ -255,7 +255,10 @@
         for (const [r, l] of roles) sel.appendChild(UI.el(`<option value='{"targetType":"role","targetId":"${r}"}'>${l}</option>`));
         for (const p of ref.parents) sel.appendChild(UI.el(`<option value='{"targetType":"user","targetId":${p.id}}'>Parent — ${UI.esc(p.full_name)}</option>`));
         for (const s of ref.students) sel.appendChild(UI.el(`<option value='{"targetType":"user","targetId":${s.id}}'>Student — ${UI.esc(s.full_name)}</option>`));
-      } catch {}
+      } catch (e) {
+        modal.backdrop.querySelector('#share-current').innerHTML =
+          `<p class="doc-meta">Sharing options could not be loaded (${UI.esc(e.message)}). Close this dialog and try again.</p>`;
+      }
 
       const renderCurrent = () => {
         const box = modal.backdrop.querySelector('#share-current');
@@ -264,8 +267,12 @@
         const label = (a) => {
           if (a.target_type === 'all') return 'Everyone';
           if (a.target_type === 'role') return 'All ' + a.target_id + 's';
-          if (a.target_type === 'class') return 'Class #' + a.target_id;
-          return 'User #' + a.target_id;
+          if (a.target_type === 'class') {
+            const opt = [...sel.options].find((o) => { try { return JSON.parse(o.value).targetId === a.target_id; } catch { return false; } });
+            return opt ? opt.textContent : 'Class #' + a.target_id;
+          }
+          const userOpt = [...sel.options].find((o) => { try { const v = JSON.parse(o.value); return v.targetType === 'user' && v.targetId === a.target_id; } catch { return false; } });
+          return userOpt ? userOpt.textContent : 'User #' + a.target_id;
         };
         box.innerHTML = '<h4 style="margin-top:12px">Current access</h4>';
         for (const a of access) {
@@ -281,7 +288,13 @@
       renderCurrent();
 
       modal.backdrop.querySelector('[data-save]').onclick = async () => {
-        if (!sel.value) return;
+        if (!sel.value) {
+          // the options come from the server; an empty list used to make this
+          // button do nothing at all with no explanation
+          return UI.toast(sel.options.length
+            ? 'Choose who to share this document with.'
+            : 'Sharing options could not be loaded. Reload the page and try again.', 'error');
+        }
         try {
           const t = JSON.parse(sel.value);
           await API.post(`/api/documents/${doc.id}/share`, t);
