@@ -6,6 +6,10 @@
   const API = window.API;
   const UI = window.UI;
 
+  // mute / unmute icons (shared by the thread head and the toggle handler)
+  const MUTE_ON = '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M13.7 21a2 2 0 0 1-3.4 0"/><path d="M18.6 13A17.9 17.9 0 0 0 18 8"/><path d="M6.3 6.3A5.9 5.9 0 0 0 6 8c0 7-3 9-3 9h14"/><path d="M18 8a6 6 0 0 0-9.3-5"/><path d="m1 1 22 22"/></svg>';
+  const MUTE_OFF = '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>';
+
   class MessagingView {
     constructor({ container, canCompose = true, allowClassChat = true, allowAttachments = true }) {
       this.container = container;
@@ -24,6 +28,7 @@
     }
 
     destroy() {
+      if (this.watch) { try { this.watch.disconnect(); } catch {} this.watch = null; }
       document.body.classList.remove('chat-open');
       if (this.pollTimer) clearInterval(this.pollTimer);
       (this.unsubs || []).forEach((u) => { try { u(); } catch {} });
@@ -81,10 +86,24 @@
         if (this.activeConvId) this.loadThread(this.activeConvId, { quiet: true });
       }));
 
+      // Switching to another dashboard tab replaces #content, which detached
+      // this view but left `chat-open` on <body> — the phone's bottom nav and
+      // the realtime subscription stayed in chat mode on every other screen.
+      // Watch our own container and tidy up the moment it leaves the document.
+      if (typeof MutationObserver === 'function') {
+        this.watch = new MutationObserver(() => {
+          try {
+            if (!this.container || !this.container.isConnected) this.destroy();
+          } catch { /* page torn down (or jsdom window closed) — nothing to clean */ }
+        });
+        this.watch.observe(document.body, { childList: true, subtree: true });
+      }
+
       await this.loadConversations();
     }
 
     async loadConversations({ quiet = false } = {}) {
+      this.searchSeq = (this.searchSeq || 0) + 1;   // cancel any in-flight search
       try {
         const data = await API.get('/api/messages/conversations');
         this.conversations = data.conversations || [];
@@ -94,6 +113,10 @@
       }
       const list = this.container.querySelector('#conv-list');
       if (!list) return;
+      // While a search is on screen the list shows results, not conversations:
+      // the realtime poll must not wipe them out mid-read.
+      const searchBox = this.container.querySelector('#msg-search');
+      if (quiet && searchBox && searchBox.value.trim()) return;
       if (!this.conversations.length) {
         list.innerHTML = `<div class="empty-state"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg></div>No conversations yet.<br>${this.canCompose ? 'Start one with the ＋ button.' : ''}</div>`;
       } else {
@@ -108,7 +131,9 @@
     convItem(c) {
       const unread = c.unread_count || 0;
       const name = UI.esc(c.title || 'Conversation');
-      const preview = c.last_message ? (c.last_sender_name ? c.last_sender_name + ': ' : '') + c.last_message : 'No messages yet';
+      const previewText = c.last_message
+        || (c.last_attachment_name ? 'Attachment — ' + c.last_attachment_name : '');
+      const preview = previewText ? (c.last_sender_name ? c.last_sender_name + ': ' : '') + previewText : 'No messages yet';
       const time = UI.timeAgo(c.last_message_at || c.created_at);
       const icon = c.type === 'class' ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>' : c.type === 'group' ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' : null;
       const item = UI.el(`<div class="conv-item ${this.activeConvId === c.id ? 'active' : ''}" data-cid="${c.id}">
@@ -181,15 +206,23 @@
         ${conv.type === 'broadcast' ? '<span class="badge amber">Broadcast</span>' : ''}
         ${conv.type === 'channel' && conv.created_by === API.getUser().id ? '<span class="badge green">Owner</span>' : ''}
         ${conv.type !== 'channel' ? `
-          <button class="btn secondary sm" id="mute-btn" title="Mute / unmute notifications">${conv.muted ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M13.7 21a2 2 0 0 1-3.4 0"/><path d="M18.6 13A17.9 17.9 0 0 0 18 8"/><path d="M6.3 6.3A5.9 5.9 0 0 0 6 8c0 7-3 9-3 9h14"/><path d="M18 8a6 6 0 0 0-9.3-5"/><path d="m1 1 22 22"/></svg>' : '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>'}</button>
+          <button class="btn secondary sm" id="mute-btn" title="Mute / unmute notifications">${conv.muted ? MUTE_ON : MUTE_OFF}</button>
           <button class="btn secondary sm" id="archive-btn" title="Archive / restore"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m12 2 9 5v10l-9 5-9-5V7z"/><path d="m3 7 9 5 9-5"/><path d="M12 12v10"/></svg></button>` : ''}
       </div>`);
       const body = UI.el('<div class="thread-messages" id="thread-msgs"></div>');
-      const composer = UI.el(`<div class="composer">
+      // A channel is read-only for everyone except its owner and the admins.
+      // Those readers used to get a live composer whose Send button always
+      // came back with "Only the channel owner and administrators can post
+      // here." — say so once, in place of the composer.
+      const canPost = conv.type !== 'channel'
+        || conv.created_by === API.getUser().id
+        || ['super_admin', 'admin'].includes(API.getUser().role);
+      const composer = canPost ? UI.el(`<div class="composer">
         ${this.allowAttachments ? '<button class="btn secondary" id="attach-btn" title="Attach a file"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3A5 5 0 0 0 13.5 3.4l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7.1 7.1l1.7-1.7"/></svg></button>' : ''}
         <textarea id="msg-input" placeholder="Type a message…" rows="1" enterkeyhint="send" autocomplete="off" autocorrect="on"></textarea>
         <button class="btn send-btn" id="send-btn" title="Send"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
-      </div>`);
+      </div>`)
+        : UI.el('<div class="composer read-only"><span class="doc-meta">Only the channel owner and administrators can post here. You will still get every announcement.</span></div>');
       thread.innerHTML = '';
       thread.appendChild(head);
       thread.appendChild(body);
@@ -202,7 +235,7 @@
       if (conv.type !== 'channel') {
         head.querySelector('#mute-btn').onclick = async () => {
           const muted = !conv.muted;
-          try { await API.put(`/api/messages/conversations/${convId}/mute`, { muted }); UI.toast(muted ? 'Conversation muted.' : 'Conversation unmuted.', 'success'); conv.muted = muted; head.querySelector('#mute-btn').textContent = muted ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M13.7 21a2 2 0 0 1-3.4 0"/><path d="M18.6 13A17.9 17.9 0 0 0 18 8"/><path d="M6.3 6.3A5.9 5.9 0 0 0 6 8c0 7-3 9-3 9h14"/><path d="M18 8a6 6 0 0 0-9.3-5"/><path d="m1 1 22 22"/></svg>' : '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>'; }
+          try { await API.put(`/api/messages/conversations/${convId}/mute`, { muted }); UI.toast(muted ? 'Conversation muted.' : 'Conversation unmuted.', 'success'); conv.muted = muted; head.querySelector('#mute-btn').innerHTML = muted ? MUTE_ON : MUTE_OFF; }
           catch (e) { UI.toast(e.message, 'error'); }
         };
         head.querySelector('#archive-btn').onclick = async () => {
@@ -215,20 +248,21 @@
 
       const input = composer.querySelector('#msg-input');
       const sendBtn = composer.querySelector('#send-btn');
-      const send = () => this.sendMessage(input.value);
-      sendBtn.onclick = (e) => { e.preventDefault(); send(); };
-      // keep the keyboard OPEN on phones: never let the send button steal focus
-      sendBtn.addEventListener('pointerdown', (e) => e.preventDefault());
-      input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
-      });
-      // auto-grow the textarea as you type (up to ~4 lines)
-      input.addEventListener('input', () => {
-        input.style.height = 'auto';
-        input.style.height = Math.min(input.scrollHeight, 116) + 'px';
-      });
-      if (this.allowAttachments) {
-        composer.querySelector('#attach-btn').onclick = () => this.attachFile(convId);
+      if (input && sendBtn) {          // absent in a read-only channel
+        const send = () => this.sendMessage(input.value);
+        sendBtn.onclick = (e) => { e.preventDefault(); send(); };
+        // keep the keyboard OPEN on phones: never let the send button steal focus
+        sendBtn.addEventListener('pointerdown', (e) => e.preventDefault());
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+        });
+        // auto-grow the textarea as you type (up to ~4 lines)
+        input.addEventListener('input', () => {
+          input.style.height = 'auto';
+          input.style.height = Math.min(input.scrollHeight, 116) + 'px';
+        });
+        const attach = composer.querySelector('#attach-btn');
+        if (this.allowAttachments && attach) attach.onclick = () => this.attachFile(convId);
       }
       // new-messages pill: appears when messages arrive while scrolled up
       const pill = UI.el('<button class="new-msg-pill" id="new-msg-pill" style="display:none"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg> New messages</button>');
@@ -257,9 +291,14 @@
       const prevScroll = body.scrollTop;
 
       body.innerHTML = '';
+      if (!msgs.length) {
+        // A brand-new conversation used to render as a blank grey panel.
+        body.innerHTML = '<div class="empty-state" style="margin:auto"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg></div><p>No messages yet — say hello.</p></div>';
+        return;
+      }
       let lastDay = null;
       for (const m of msgs) {
-        const day = String(m.created_at || '').slice(0, 10);
+        const day = this.dayKey(m.created_at);
         if (day && day !== lastDay) {
           lastDay = day;
           body.appendChild(UI.el(`<div class="day-sep"><span>${UI.esc(this.dayLabel(day))}</span></div>`));
@@ -276,6 +315,20 @@
           if (pill) pill.style.display = 'block';
         }
       }
+    }
+
+    /**
+     * Local calendar day (YYYY-MM-DD) for a stored timestamp.
+     * Messages are stored in UTC ('YYYY-MM-DD HH:MM:SS'), so slicing the string
+     * grouped a 10pm message under the wrong day for anyone who is not on UTC —
+     * the separator has to follow the reader's own calendar.
+     */
+    dayKey(createdAt) {
+      if (!createdAt) return '';
+      const iso = String(createdAt).replace(' ', 'T');
+      const d = new Date(/[zZ]|[+-]\d\d:?\d\d$/.test(iso) ? iso : iso + 'Z');
+      if (isNaN(d.getTime())) return String(createdAt).slice(0, 10);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     }
 
     /** Human date label for a YYYY-MM-DD day separator. */
@@ -300,7 +353,7 @@
         </div>` : '';
       const bubble = UI.el(`<div class="msg-bubble ${mine ? 'mine' : 'theirs'}">
         ${attach}
-        <div class="msg-content">${UI.esc(m.content || '')}${m.edited ? ' <small class="meta" style="opacity:.6">(edited)</small>' : ''}</div>
+        ${m.content ? `<div class="msg-content">${UI.esc(m.content)}${m.edited ? ' <small class="meta" style="opacity:.6">(edited)</small>' : ''}</div>` : ''}
         <div class="meta"><span>${mine ? 'You' : UI.esc(m.sender_name)}</span><span>${UI.fmtTime(m.created_at)}</span>${mine ? '<span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m1.5 12.5 4.5 4.5L15.5 7.5"/><path d="M9 16.5 10.5 18 21 8"/></svg></span>' : ''}
           ${mine && !m.attachment_id ? `<button class="msg-del" title="Edit message" data-edit="${m.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>` : ''}
           ${canDelete ? `<button class="msg-del" title="Delete message" data-del="${m.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>` : ''}</div>
@@ -374,9 +427,11 @@
               <div class="doc-name"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg> ${UI.esc(c.title)}</div>
               <div class="doc-meta">${c.subscriber_count} subscriber${c.subscriber_count === 1 ? '' : 's'} · ${c.post_count} post${c.post_count === 1 ? '' : 's'} · by ${UI.esc(c.creator_name || 'Admin')}</div>
             </div>
-            ${c.subscribed
-              ? `<button class="btn secondary sm" data-leave="${c.id}">Leave</button>`
-              : `<button class="btn sm" data-join="${c.id}">Subscribe</button>`}
+            ${c.created_by === me.id
+              ? '<span class="badge green">Owner</span>'
+              : c.subscribed
+                ? `<button class="btn secondary sm" data-leave="${c.id}">Leave</button>`
+                : `<button class="btn sm" data-join="${c.id}">Subscribe</button>`}
           </div>`);
           row.querySelector('[data-join]')?.addEventListener('click', async () => {
             try { await API.post(`/api/messages/channels/${c.id}/subscribe`); UI.toast('Subscribed.', 'success'); c.subscribed = true; renderChannels(); this.loadConversations({ quiet: true }); }
@@ -416,10 +471,12 @@
 
     /** Search my messages and show results in the conversation list. */
     async searchMessages(q) {
+      const seq = (this.searchSeq = (this.searchSeq || 0) + 1);
       let results;
       try {
         results = (await API.get('/api/messages/search?q=' + encodeURIComponent(q))).messages || [];
       } catch (e) { UI.toast(e.message, 'error'); return; }
+      if (seq !== this.searchSeq) return;          // a newer search already answered
       const list = this.container.querySelector('#conv-list');
       if (!list) return;
       if (!results.length) {
@@ -451,9 +508,11 @@
       const convId = this.activeConvId;
 
       // clear + refocus immediately so the phone keyboard NEVER closes
-      input.value = '';
-      input.style.height = 'auto';
-      input.focus();
+      if (input) {
+        input.value = '';
+        input.style.height = 'auto';
+        input.focus();
+      }
 
       // optimistic bubble: the message appears INSTANTLY
       const body = this.container.querySelector('#thread-msgs');
@@ -488,6 +547,7 @@
       input.click();
       input.onchange = async () => {
         const file = input.files[0];
+        input.remove();                       // one picker, one listener — no leaks
         if (!file) return;
         const maxMB = 15;
         if (file.size > maxMB * 1024 * 1024) return UI.toast(`File is too large. Maximum is ${maxMB} MB.`, 'error');

@@ -50,7 +50,9 @@ function conversationsForUser(userId, includeArchived = false) {
             ) AS unread_count,
             (SELECT m.content FROM messages m WHERE m.conversation_id = c.id ORDER BY m.id DESC LIMIT 1) AS last_message,
             (SELECT m.created_at FROM messages m WHERE m.conversation_id = c.id ORDER BY m.id DESC LIMIT 1) AS last_message_at,
-            (SELECT u.full_name FROM messages m JOIN users u ON u.id = m.sender_id WHERE m.conversation_id = c.id ORDER BY m.id DESC LIMIT 1) AS last_sender_name
+            (SELECT u.full_name FROM messages m JOIN users u ON u.id = m.sender_id WHERE m.conversation_id = c.id ORDER BY m.id DESC LIMIT 1) AS last_sender_name,
+            (SELECT d.name FROM messages m LEFT JOIN documents d ON d.id = m.attachment_id
+              WHERE m.conversation_id = c.id ORDER BY m.id DESC LIMIT 1) AS last_attachment_name
      FROM conversations c
      JOIN conversation_participants cp ON cp.conversation_id = c.id
      WHERE cp.user_id = ? ${archivedSql}
@@ -591,7 +593,7 @@ router.put('/:messageId', authenticate, (req, res) => {
 /** GET /api/messages/channels — announcement channels + my subscription state. */
 router.get('/channels', authenticate, (req, res) => {
   const channels = all(
-    `SELECT c.id, c.title, c.created_at, u.full_name AS creator_name,
+    `SELECT c.id, c.title, c.created_at, c.created_by, u.full_name AS creator_name,
             (SELECT 1 FROM conversation_participants cp WHERE cp.conversation_id = c.id AND cp.user_id = ?) AS subscribed,
             (SELECT COUNT(*) FROM conversation_participants cp WHERE cp.conversation_id = c.id) AS subscriber_count,
             (SELECT COUNT(*) FROM messages m WHERE m.conversation_id = c.id) AS post_count

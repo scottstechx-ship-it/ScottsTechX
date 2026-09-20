@@ -41,7 +41,15 @@ const env = {
 
   // Rate limiting
   RATE_LIMIT_PER_MINUTE: parseInt(process.env.RATE_LIMIT_PER_MINUTE || '600', 10),
-  LOGIN_RATE_LIMIT_PER_15MIN: parseInt(process.env.LOGIN_RATE_LIMIT_PER_15MIN || '20', 10),
+  // Brute-force ceiling for sign-ins: 20 per address per 15 minutes in
+  // production. Every automated suite (and every retry while developing)
+  // signs in repeatedly from the same address, so the development default is
+  // generous — set LOGIN_RATE_LIMIT_PER_15MIN to pin any value you want.
+  LOGIN_RATE_LIMIT_PER_15MIN: parseInt(
+    process.env.LOGIN_RATE_LIMIT_PER_15MIN
+      || ((process.env.NODE_ENV === 'production') ? '20' : '500'),
+    10
+  ),
 
   // Demo data
   SEED_DEMO_DATA: bool(process.env.SEED_DEMO_DATA, true),

@@ -537,6 +537,12 @@ html[data-theme="dark"] .doc-preview { background: #0a0f1a; color: var(--text); 
 }
 .composer .btn.secondary { width: 44px; height: 44px; min-width: 44px; border-radius: 50%; display: grid; place-items: center; padding: 0; flex: none; }
 
+/* a conversation you are not allowed to post in (announcement channels):
+   the notice replaces the composer so nobody taps a Send button that always
+   answers "only the owner and administrators can post here" */
+.composer.read-only { justify-content: center; padding: 14px 16px; }
+.composer.read-only .doc-meta { text-align: center; margin: 0; }
+
 /* smooth scrolling in the thread */
 .thread-messages { scroll-behavior: smooth; overscroll-behavior: contain; }
 .msg-bubble { animation: bubbleIn .18s ease; }

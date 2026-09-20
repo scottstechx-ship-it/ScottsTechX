@@ -552,7 +552,25 @@
     } catch { /* keep default */ }
     applySchoolLogo(sidebar.querySelector('#brand-logo'));
 
-    // notification polling loop
+    const setBadge = (key, count) => {
+      const b = sidebar.querySelector(`[data-nav-badge="${key}"]`);
+      const bb = document.querySelector(`[data-bn-badge="${key}"]`);
+      const show = count > 0;
+      for (const node of [b, bb]) {
+        if (!node) continue;
+        node.style.display = show ? 'inline-flex' : 'none';
+        node.textContent = count > 99 ? '99+' : count;
+      }
+    };
+
+    // notification polling loop — the counts it fetches must actually reach the
+    // sidebar / bottom-nav badges, otherwise a message that arrives while you
+    // are on another screen never shows a badge anywhere.
+    onUnreadChange(() => {
+      const u = window.__unread || {};
+      setBadge('messages', u.messages || 0);
+      setBadge('notifications', u.notifications || 0);
+    });
     refreshUnreadCounts();
     setInterval(refreshUnreadCounts, 30000);
 
@@ -563,16 +581,7 @@
         sidebar.querySelectorAll('.nav-item').forEach((b) => b.classList.toggle('active', b.dataset.nav === key));
         document.querySelectorAll('.bn-item').forEach((b) => b.classList.toggle('active', b.dataset.bn === key));
       },
-      setBadge: (key, count) => {
-        const b = sidebar.querySelector(`[data-nav-badge="${key}"]`);
-        const bb = document.querySelector(`[data-bn-badge="${key}"]`);
-        const show = count > 0;
-        for (const node of [b, bb]) {
-          if (!node) continue;
-          node.style.display = show ? 'inline-flex' : 'none';
-          node.textContent = count > 99 ? '99+' : count;
-        }
-      },
+      setBadge,
       sidebar,
     };
   }
