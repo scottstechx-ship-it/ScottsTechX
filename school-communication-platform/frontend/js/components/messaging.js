@@ -137,7 +137,7 @@
       const time = UI.timeAgo(c.last_message_at || c.created_at);
       const icon = c.type === 'class' ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>' : c.type === 'group' ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' : null;
       const item = UI.el(`<div class="conv-item ${this.activeConvId === c.id ? 'active' : ''}" data-cid="${c.id}">
-        <div class="avatar">${icon ? UI.esc(icon) : UI.esc(UI.initials(name))}</div>
+        <div class="avatar">${icon ? icon : UI.esc(UI.initials(name))}</div>
         <div class="body">
           <div class="name"><span>${icon ? icon + ' ' : ''}${name}</span><span class="time">${UI.esc(time)}</span></div>
           <div class="preview"><span>${UI.esc(preview)}</span><span class="unread ${unread ? '' : 'hidden'}">${unread > 99 ? '99+' : unread}</span></div>

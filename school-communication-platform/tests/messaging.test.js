@@ -260,6 +260,27 @@ const clean = (s) => String(s || '').replace(/\s+/g, ' ').trim();
     window.close();
   }
 
+  console.log('\n== student: conversation list renders real icons, not markup ==');
+  {
+    const { window, errors } = await bootMessaging({ username: 'student1', password: 'Student@123', dir: 'platform/student' });
+    const doc = window.document;
+    const list = doc.querySelector('#conv-list');
+    check('the student has conversations', !!list && list.querySelectorAll('.conv-item').length > 0);
+
+    const shown = (list ? list.textContent : '') || '';
+    check('no markup is printed as text in the list', !/<svg|<path|<rect|<circle/i.test(shown),
+      (shown.match(/<[a-z]+[^>]{0,40}/i) || [''])[0]);
+
+    const rows = [...doc.querySelectorAll('#conv-list .conv-item')];
+    const iconRows = rows.filter((r) => r.querySelector('.avatar svg'));
+    const textAvatars = rows.filter((r) => /<svg/i.test(r.querySelector('.avatar') ? r.querySelector('.avatar').textContent : ''));
+    check('every conversation avatar is either an icon or initials', textAvatars.length === 0,
+      `${textAvatars.length} avatar(s) show markup`);
+    check('class/group conversations draw their icon', iconRows.length > 0, `${iconRows.length} of ${rows.length} rows have an icon`);
+    check('rendering the list raises no error', errors.length === 0, errors.slice(0, 2).join(' | '));
+    window.close();
+  }
+
   console.log('\n== unread badges ==');
   {
     // an admin writes to the teacher; the teacher's dashboard must show the

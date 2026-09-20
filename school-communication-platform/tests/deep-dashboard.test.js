@@ -132,7 +132,17 @@ function hygieneProblems(window) {
     if (!text && !named) problems.push('icon-only button with no aria-label/title');
   }
 
-  // 6. images on the dashboards are content, so they need alt text
+  // 6. markup must never be PRINTED as text — an icon (or any other markup)
+  //    assigned with textContent / escaped through esc() shows the user
+  //    literal "<svg …>" instead of the drawing it was meant to be.
+  const visible = doc.body.textContent || '';
+  const shownTag = visible.match(/<(svg|path|rect|circle|div|span|button|br)\b/);
+  if (shownTag) {
+    const at = visible.indexOf(shownTag[0]);
+    problems.push(`markup is rendered as text: "...${visible.slice(Math.max(0, at - 30), at + 40).replace(/\s+/g, ' ').trim()}"`);
+  }
+
+  // 7. images on the dashboards are content, so they need alt text
   for (const img of doc.querySelectorAll('img')) {
     if (!img.hasAttribute('alt')) problems.push(`<img src="${(img.getAttribute('src') || '').slice(0, 40)}"> has no alt`);
   }
