@@ -167,17 +167,37 @@ const { purgeExpired: purgeSessions } = require('./services/sessions');
 purgeSessions();
 setInterval(purgeSessions, 60 * 60 * 1000).unref();
 
+// Rolling database snapshots, so an update can always be recovered
+const { startBackupInterval } = require('./services/backup');
+const autoBackup = !['0', 'false', 'no', 'off'].includes(String(process.env.AUTO_BACKUP || 'true').toLowerCase());
+if (autoBackup) startBackupInterval();
+
 server.listen(env.PORT, '0.0.0.0', () => {
   console.log(`==============================================`);
   console.log(` School Communication Platform`);
   console.log(` API:      ${env.API_BASE_URL}/api`);
   console.log(` Frontend: ${env.FRONTEND_URL}`);
+  console.log(` Storage:  ${env.DATA_DIR}  (${env.DATA_DIR_SOURCE})`);
   console.log(` Database: ${env.DATABASE_PATH}`);
+  console.log(` Uploads:  ${env.UPLOAD_DIR}`);
+  console.log(` Backups:  ${env.BACKUP_DIR}  (keep ${env.BACKUP_KEEP})`);
   console.log(` Socket.IO realtime enabled`);
   console.log(`==============================================`);
+  if (!env.DATA_DIR_SOURCE.startsWith('persistent') && env.NODE_ENV === 'production') {
+    console.log(` WARNING: the data folder is inside the source tree, so a redeploy`);
+    console.log(`          will erase every update. Mount a disk and set DATA_DIR`);
+    console.log(`          (or DATABASE_PATH/UPLOAD_DIR) to a persistent path.`);
+  }
 });
 
-process.on('SIGINT', () => { try { db.close(); } catch {} process.exit(0); });
-process.on('SIGTERM', () => { try { db.close(); } catch {} process.exit(0); });
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
+
+/** Fold the WAL back into the main file so a copy of it is always complete. */
+function shutdown() {
+  try { db.exec('PRAGMA wal_checkpoint(TRUNCATE)'); } catch { /* ignore */ }
+  try { db.close(); } catch { /* ignore */ }
+  process.exit(0);
+}
 
 module.exports = { app, server };

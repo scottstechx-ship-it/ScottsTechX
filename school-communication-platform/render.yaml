@@ -2,20 +2,34 @@
 # RENDER BLUEPRINT — Kalinabiri SS School Communication Platform
 # Deploys the Node/Express + SQLite + Socket.IO app that serves
 # both the public website and all five dashboards.
+#
+# WHERE THE DATA LIVES
+# --------------------
+# The app keeps everything (users, messages, news, gallery, documents, fees,
+# settings) in ONE folder: <DATA_DIR>/school.db, <DATA_DIR>/uploads and
+# <DATA_DIR>/backups. At boot it looks for a writable mount at /var/data,
+# /data or /mnt/data; if it finds one it uses it and carries an older
+# in-repo database across automatically. If there is no mount it falls back
+# to backend/data inside the source tree — which a redeploy wipes.
+#
+# So: attach a disk (any paid plan) and every update survives deploys and
+# restarts with no code change. On the free tier there is no persistent
+# filesystem, so run `npm run backup` before a deploy and keep the snapshot.
 # ============================================================
 services:
   - type: web
     name: kalinabiri-school-platform
     runtime: node
-    plan: free   # WARNING: FREE TIER = data resets on each deploy/restart.
-                 # For a REAL school: switch to "starter", uncomment the disk
-                 # below and the two env vars — then ALL data (users, news,
-                 # gallery, messages, fees) survives forever.
+    plan: starter                  # a disk needs a paid plan; see the note above
     rootDir: school-communication-platform
     buildCommand: npm install
     startCommand: node backend/server.js
     healthCheckPath: /api/health
     autoDeploy: true
+    disk:                          # <-- this is what makes data permanent
+      name: school-data
+      mountPath: /var/data         # the app finds this mount on its own
+      sizeGB: 1
     envVars:
       - key: NODE_ENV
         value: production
@@ -26,20 +40,20 @@ services:
       - key: STRONG_PASSWORDS
         value: "true"
       - key: SEED_DEMO_DATA
-        value: "true"                # demo accounts on first boot; set false for a real school
+        value: "true"                # demo accounts on first boot only; set false for a real school
       - key: MAX_FILE_SIZE_MB
         value: "15"
       - key: RATE_LIMIT_PER_MINUTE
         value: "600"
       - key: LOGIN_RATE_LIMIT_PER_15MIN
         value: "20"
-      # --- With a persistent disk (starter plan), uncomment these so the
-      #     database and uploads survive restarts/deploys: ---
-      # - key: DATABASE_PATH
-      #   value: /var/data/school.db
-      # - key: UPLOAD_DIR
-      #   value: /var/data/uploads
-    # disk:                          # requires a paid plan; free tier is ephemeral
-    #   name: school-data
-    #   mountPath: /var/data
-    #   sizeGB: 1
+      # --- storage: the mounted disk, spelled out so nothing is left to chance
+      - key: DATA_DIR
+        value: /var/data
+      # --- rolling snapshots: one every 6 hours, keep the newest 14
+      - key: BACKUP_EVERY_HOURS
+        value: "6"
+      - key: BACKUP_KEEP
+        value: "14"
+      - key: AUTO_BACKUP
+        value: "true"

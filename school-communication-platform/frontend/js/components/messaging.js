@@ -6,6 +6,21 @@
   const API = window.API;
   const UI = window.UI;
 
+  // Bell icons for the mute toggle. They are markup, never escaped text: the
+  // old code assigned them through .textContent, so the button briefly showed
+  // the literal string "<svg …" instead of the icon.
+  const svg = (paths) => `<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true">${paths}</svg>`;
+  const BELL_ON = svg('<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>');
+  const BELL_OFF = svg('<path d="M13.7 21a2 2 0 0 1-3.4 0"/><path d="M18.6 13A17.9 17.9 0 0 0 18 8"/><path d="M6.3 6.3A5.9 5.9 0 0 0 6 8c0 7-3 9-3 9h14"/><path d="M18 8a6 6 0 0 0-9.3-5"/><path d="m1 1 22 22"/>');
+
+  /** Paint the mute button from a boolean, keeping it an icon and in sync. */
+  function paintMuteButton(btn, muted) {
+    if (!btn) return;
+    btn.innerHTML = muted ? BELL_OFF : BELL_ON;
+    btn.dataset.muted = muted ? '1' : '0';
+    btn.title = muted ? 'Unmute notifications' : 'Mute notifications';
+  }
+
   class MessagingView {
     constructor({ container, canCompose = true, allowClassChat = true, allowAttachments = true }) {
       this.container = container;
@@ -75,6 +90,14 @@
         if (data && data.conversationId === this.activeConvId) {
           this.loadThread(this.activeConvId, { quiet: true });
         }
+        this.loadConversations({ quiet: true });
+      }));
+      // someone edited a message: the "(edited)" flag has to appear for
+      // everyone in the thread, not just the person who typed the change
+      this.unsubs.push(window.Realtime.on('message:edited', (data) => {
+        if (data && data.conversationId === this.activeConvId) {
+          this.loadThread(this.activeConvId, { quiet: true });
+        }
       }));
       this.unsubs.push(window.Realtime.on('poll', () => {
         this.loadConversations({ quiet: true });
@@ -110,14 +133,21 @@
       const name = UI.esc(c.title || 'Conversation');
       const preview = c.last_message ? (c.last_sender_name ? c.last_sender_name + ': ' : '') + c.last_message : 'No messages yet';
       const time = UI.timeAgo(c.last_message_at || c.created_at);
-      const icon = c.type === 'class' ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>' : c.type === 'group' ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' : null;
+      const icon = c.type === 'class' ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>' : c.type === 'group' ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' : c.type === 'channel' ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/></svg>' : c.type === 'broadcast' ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m3 11 18-8-8 18-2-8-8-2z"/></svg>' : null;
+      // `icon` is markup and must be inserted raw; only the initials fallback
+      // is user data. Escaping the icon made class/group avatars print
+      // "<svg …" as literal text.
       const item = UI.el(`<div class="conv-item ${this.activeConvId === c.id ? 'active' : ''}" data-cid="${c.id}">
-        <div class="avatar">${icon ? UI.esc(icon) : UI.esc(UI.initials(name))}</div>
+        <div class="avatar">${icon || UI.esc(UI.initials(name))}</div>
         <div class="body">
-          <div class="name"><span>${icon ? icon + ' ' : ''}${name}</span><span class="time">${UI.esc(time)}</span></div>
+          <div class="name"><span>${name}</span><span class="time">${UI.esc(time)}</span></div>
           <div class="preview"><span>${UI.esc(preview)}</span><span class="unread ${unread ? '' : 'hidden'}">${unread > 99 ? '99+' : unread}</span></div>
         </div>
       </div>`);
+      if (c.muted) {
+        const badge = UI.el(`<span class="conv-muted" title="Muted">${BELL_OFF}</span>`);
+        item.querySelector('.name').appendChild(badge);
+      }
       item.onclick = () => this.select(c.id);
       return item;
     }
@@ -159,7 +189,10 @@
         this.lastSig = null;
       }
       const cnt = thread.querySelector('#thread-count');
-      if (cnt) cnt.textContent = `${msgs.length} message${msgs.length === 1 ? '' : 's'}${conv.type === 'channel' ? ' · announcement channel' : ''}`;
+      if (cnt) {
+        const who = conv.memberCount > 2 ? ` · ${conv.memberCount} members` : '';
+        cnt.textContent = `${msgs.length} message${msgs.length === 1 ? '' : 's'}${who}${conv.type === 'channel' ? ' · announcement channel' : ''}`;
+      }
 
       this.renderMessages(msgs, conv);
 
@@ -181,7 +214,7 @@
         ${conv.type === 'broadcast' ? '<span class="badge amber">Broadcast</span>' : ''}
         ${conv.type === 'channel' && conv.created_by === API.getUser().id ? '<span class="badge green">Owner</span>' : ''}
         ${conv.type !== 'channel' ? `
-          <button class="btn secondary sm" id="mute-btn" title="Mute / unmute notifications">${conv.muted ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M13.7 21a2 2 0 0 1-3.4 0"/><path d="M18.6 13A17.9 17.9 0 0 0 18 8"/><path d="M6.3 6.3A5.9 5.9 0 0 0 6 8c0 7-3 9-3 9h14"/><path d="M18 8a6 6 0 0 0-9.3-5"/><path d="m1 1 22 22"/></svg>' : '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>'}</button>
+          <button class="btn secondary sm" id="mute-btn" title="Mute notifications"></button>
           <button class="btn secondary sm" id="archive-btn" title="Archive / restore"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m12 2 9 5v10l-9 5-9-5V7z"/><path d="m3 7 9 5 9-5"/><path d="M12 12v10"/></svg></button>` : ''}
       </div>`);
       const body = UI.el('<div class="thread-messages" id="thread-msgs"></div>');
@@ -200,13 +233,21 @@
         document.body.classList.remove('chat-open');
       };
       if (conv.type !== 'channel') {
+        // paint from the server's state so a muted/archived conversation opens
+        // showing the truth instead of the default icons
+        paintMuteButton(head.querySelector('#mute-btn'), !!conv.muted);
+        const arch = head.querySelector('#archive-btn');
+        if (arch) {
+          arch.dataset.archived = conv.archived ? '1' : '0';
+          arch.title = conv.archived ? 'Restore conversation' : 'Archive conversation';
+        }
         head.querySelector('#mute-btn').onclick = async () => {
           const muted = !conv.muted;
-          try { await API.put(`/api/messages/conversations/${convId}/mute`, { muted }); UI.toast(muted ? 'Conversation muted.' : 'Conversation unmuted.', 'success'); conv.muted = muted; head.querySelector('#mute-btn').textContent = muted ? '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M13.7 21a2 2 0 0 1-3.4 0"/><path d="M18.6 13A17.9 17.9 0 0 0 18 8"/><path d="M6.3 6.3A5.9 5.9 0 0 0 6 8c0 7-3 9-3 9h14"/><path d="M18 8a6 6 0 0 0-9.3-5"/><path d="m1 1 22 22"/></svg>' : '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>'; }
+          try { await API.put(`/api/messages/conversations/${convId}/mute`, { muted }); UI.toast(muted ? 'Conversation muted.' : 'Conversation unmuted.', 'success'); conv.muted = muted; paintMuteButton(head.querySelector('#mute-btn'), muted); }
           catch (e) { UI.toast(e.message, 'error'); }
         };
         head.querySelector('#archive-btn').onclick = async () => {
-          const ok = await UI.confirmDialog(conv.archived ? 'Restore this conversation?' : 'Archive this conversation? It will be hidden from your list (recoverable).', { title: 'Archive', confirmText: conv.archived ? 'Restore' : 'Archive', danger: false });
+          const ok = await UI.confirmDialog(conv.archived ? 'Restore this conversation?' : 'Archive this conversation? It will be hidden from your list (recoverable).', { title: conv.archived ? 'Restore conversation' : 'Archive conversation', confirmText: conv.archived ? 'Restore' : 'Archive', danger: false });
           if (!ok) return;
           try { await API.put(`/api/messages/conversations/${convId}/archive`, { archived: !conv.archived }); UI.toast('Done.', 'success'); this.loadConversations({ quiet: true }); this.renderedConvId = null; this.renderEmptyThread(); }
           catch (e) { UI.toast(e.message, 'error'); }
@@ -247,7 +288,9 @@
     renderMessages(msgs, conv) {
       const body = this.container.querySelector('#thread-msgs');
       if (!body) return;
-      const sig = msgs.map((m) => `${m.id}:${m.edited ? 1 : 0}`).join(',');
+      // The signature must change whenever the rendered text would: a second
+      // edit keeps `edited = 1`, so id+flag alone missed repeat edits.
+      const sig = msgs.map((m) => `${m.id}:${m.edited ? 1 : 0}:${(m.content || '').length}:${m.attachment_id || 0}:${m.updated_at || ''}`).join(',');
       if (sig === this.lastSig) return;              // nothing changed
       const firstRender = this.lastSig === null;
       const prevCount = this.lastSig === null ? 0 : this.lastSig.split(',').filter(Boolean).length;
@@ -485,9 +528,11 @@
     async attachFile(convId) {
       const input = UI.el('<input type="file" hidden>');
       document.body.appendChild(input);
-      input.click();
+      // bind BEFORE click(): the handler used to be attached after the picker
+      // opened, which is a race some browsers resolve by dropping the pick.
       input.onchange = async () => {
         const file = input.files[0];
+        input.remove();
         if (!file) return;
         const maxMB = 15;
         if (file.size > maxMB * 1024 * 1024) return UI.toast(`File is too large. Maximum is ${maxMB} MB.`, 'error');
@@ -498,8 +543,11 @@
           await API.post('/api/messages', { conversationId: convId, attachmentId: up.document.id });
           UI.toast('Attachment sent.', 'success');
           await this.loadThread(convId, { quiet: true });
+          this.loadConversations({ quiet: true });
         } catch (e) { UI.toast(e.message, 'error'); }
       };
+      input.oncancel = () => input.remove();
+      input.click();
     }
 
     async openComposer() {

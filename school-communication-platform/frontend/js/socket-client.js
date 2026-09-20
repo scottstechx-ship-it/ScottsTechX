@@ -57,6 +57,7 @@
 
       socket.on('message:new', (data) => emitLocal('message:new', data));
       socket.on('message', (data) => emitLocal('message:new', data));
+      socket.on('message:edited', (data) => emitLocal('message:edited', data));
       socket.on('message:deleted', (data) => emitLocal('message:deleted', data));
       socket.on('notification', (data) => emitLocal('notification', data));
       socket.on('connect_error', () => { /* fall back to polling */ });

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-page="news">
 <head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-RTR3K2H8HM"></script>
@@ -15,122 +15,798 @@
 <link rel="preconnect" href="https://i.ytimg.com">
 <meta name="google-site-verification" content="0iFeDjaZvUCjm7CmNRcwsIKmQUKHDLlePEJhRPLuR_M">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>News &amp; Events — Kalinabiri Secondary School</title>
+  <title>Newsroom — Kalinabiri Secondary School</title>
   <meta name="description" content="Latest news, events and updates from Kalinabiri Secondary School, Ntinda, Kampala.">
   <link rel="icon" type="image/x-icon" href="/assets/images/logo.ico">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
   <link rel="stylesheet" href="/assets/css/site-nav.css?v=10">
+  <link rel="stylesheet" href="/assets/css/page-bg.css?v=1">
   <script src="/assets/js/site-nav.js?v=10" defer></script>
-<script src="/assets/js/site-film.js?v=10" defer></script>
+  <!-- Deliberately NO site-film.js here: the newsroom has its own printed,
+       animated background instead of the campus video. -->
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       font-family: 'Inter', system-ui, sans-serif;
-      background: linear-gradient(180deg, #0c1829 0%, #0f1f35 100%);
-      color: #e2e8f0; min-height: 100vh; min-height: 100svh;
+      color: #dbe7f5; min-height: 100vh; min-height: 100svh;
+      -webkit-font-smoothing: antialiased;
     }
-    .page-hero {
-      text-align: center; padding: clamp(40px, 8vw, 80px) 20px 30px;
-    }
-    .page-hero .tag {
-      display: inline-block; background: rgba(14,165,233,.15); color: #38bdf8;
-      font-size: .78rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
-      padding: 7px 18px; border-radius: 999px; border: 1px solid rgba(56,189,248,.3); margin-bottom: 16px;
-    }
-    .page-hero h1 { font-size: clamp(1.9rem, 6vw, 3rem); font-weight: 800; color: #fff; }
-    .page-hero h1 span { color: #38bdf8; }
-    .page-hero p { color: #94a3b8; margin-top: 10px; font-size: 1.02rem; }
+    ::selection { background: rgba(56,189,248,.32); color: #fff; }
+    .nr-wrap { max-width: 1180px; margin: 0 auto; padding: 0 clamp(14px, 4vw, 32px); }
 
-    .news-wrap { max-width: 1100px; margin: 0 auto; padding: 20px clamp(14px, 4vw, 32px) 80px; }
-    .news-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 22px; }
+    /* ============ masthead ============ */
+    .nr-masthead {
+      position: relative; overflow: hidden;
+      padding: clamp(58px, 11vw, 104px) 0 clamp(22px, 4vw, 34px);
+      text-align: center;
+    }
+    .nr-rule {
+      width: min(680px, 84%); height: 1px; margin: 0 auto 22px;
+      background: linear-gradient(90deg, transparent, rgba(56,189,248,.55), rgba(212,175,55,.5), rgba(56,189,248,.55), transparent);
+      position: relative;
+    }
+    .nr-rule::after {
+      content: ""; position: absolute; top: -2px; left: 0; width: 90px; height: 5px; border-radius: 5px;
+      background: linear-gradient(90deg, transparent, #38bdf8, transparent);
+      filter: blur(1px);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .nr-rule::after { animation: nrSweep 4.6s cubic-bezier(.55,0,.45,1) infinite; }
+    }
+    @keyframes nrSweep { 0% { left: -12%; } 55%, 100% { left: 100%; } }
+
+    .nr-kicker {
+      display: inline-flex; align-items: center; gap: 9px;
+      font-size: .72rem; font-weight: 800; letter-spacing: .3em; text-transform: uppercase;
+      color: #7dd3fc; padding: 7px 16px 7px 12px; border-radius: 999px;
+      border: 1px solid rgba(56,189,248,.28); background: rgba(8,25,45,.5);
+    }
+    .nr-kicker .dot {
+      width: 7px; height: 7px; border-radius: 50%; background: #22d3ee;
+      box-shadow: 0 0 0 0 rgba(34,211,238,.6);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .nr-kicker .dot { animation: nrPulse 2.2s ease-out infinite; }
+    }
+    @keyframes nrPulse {
+      0% { box-shadow: 0 0 0 0 rgba(34,211,238,.55); }
+      70% { box-shadow: 0 0 0 9px rgba(34,211,238,0); }
+      100% { box-shadow: 0 0 0 0 rgba(34,211,238,0); }
+    }
+
+    .nr-masthead h1 {
+      font-size: clamp(2.1rem, 7.4vw, 3.9rem); font-weight: 800; letter-spacing: -.02em;
+      color: #fff; line-height: 1.06; margin: 18px 0 12px;
+    }
+    .nr-masthead h1 .amp {
+      background: linear-gradient(100deg, #38bdf8 0%, #a5b4fc 45%, #d4af37 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent; color: transparent;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .nr-masthead h1 .amp { animation: nrShimmer 6s linear infinite; }
+    }
+    @keyframes nrShimmer { to { background-position: 200% center; } }
+
+    .nr-masthead p.lead {
+      color: #93a9c4; font-size: clamp(.95rem, 2.4vw, 1.08rem);
+      max-width: 620px; margin: 0 auto; line-height: 1.65;
+    }
+    .nr-meta-row {
+      display: flex; flex-wrap: wrap; gap: 10px 26px; justify-content: center;
+      margin-top: 24px; font-size: .82rem; color: #7f95b0;
+    }
+    .nr-meta-row b { color: #cbd9ea; font-weight: 700; }
+    .nr-meta-row span { display: inline-flex; align-items: center; gap: 7px; }
+
+    /* ============ headline ticker ============ */
+    .nr-ticker {
+      position: relative; margin: 26px auto 0; max-width: 1180px;
+      border-top: 1px solid rgba(56,189,248,.16); border-bottom: 1px solid rgba(56,189,248,.16);
+      background: rgba(6,17,32,.42); overflow: hidden;
+      display: flex; align-items: center; min-height: 46px;
+    }
+    .nr-ticker[hidden] { display: none; }
+    .nr-ticker .tag {
+      flex: 0 0 auto; z-index: 2; display: inline-flex; align-items: center; gap: 7px;
+      padding: 0 16px; height: 46px; font-size: .68rem; font-weight: 800;
+      letter-spacing: .22em; text-transform: uppercase; color: #06111f;
+      background: linear-gradient(100deg, #38bdf8, #22d3ee);
+      clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+      padding-right: 26px;
+    }
+    .nr-ticker .track { flex: 1 1 auto; overflow: hidden; position: relative; height: 46px; }
+    .nr-ticker .track ul {
+      position: absolute; inset: 0; display: flex; align-items: center; gap: 46px;
+      list-style: none; white-space: nowrap; padding-left: 18px;
+    }
+    .nr-ticker .track li {
+      font-size: .84rem; color: #a8bdd4; display: inline-flex; align-items: center; gap: 9px;
+    }
+    .nr-ticker .track li::before {
+      content: ""; width: 5px; height: 5px; border-radius: 50%; background: #d4af37; flex: 0 0 auto;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .nr-ticker .track ul { animation: nrScroll 46s linear infinite; }
+      .nr-ticker:hover .track ul { animation-play-state: paused; }
+    }
+    @keyframes nrScroll { from { transform: translate3d(0,0,0); } to { transform: translate3d(-50%,0,0); } }
+
+    /* ============ toolbar ============ */
+    .nr-toolbar {
+      position: sticky; top: 0; z-index: 40;
+      margin: 26px auto 30px; max-width: 1180px;
+      display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+      padding: 12px clamp(12px, 3vw, 18px);
+      border: 1px solid rgba(56,189,248,.16); border-radius: 16px;
+      background: rgba(7,19,36,.82);
+      -webkit-backdrop-filter: blur(14px) saturate(1.2); backdrop-filter: blur(14px) saturate(1.2);
+      box-shadow: 0 14px 40px rgba(2,8,20,.45);
+    }
+    .nr-search { position: relative; flex: 1 1 230px; min-width: 180px; }
+    .nr-search input {
+      width: 100%; padding: 11px 14px 11px 40px; border-radius: 11px;
+      border: 1px solid rgba(56,189,248,.2); background: rgba(4,12,24,.7);
+      color: #e6eef8; font: inherit; font-size: .92rem; outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .nr-search input:focus { border-color: rgba(56,189,248,.6); box-shadow: 0 0 0 3px rgba(56,189,248,.14); }
+    .nr-search input::placeholder { color: #6d829c; }
+    .nr-search .ic {
+      position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+      color: #64829f; pointer-events: none; display: grid; place-items: center;
+    }
+    .nr-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+    .nr-chip {
+      font: inherit; font-size: .78rem; font-weight: 700; cursor: pointer;
+      padding: 7px 14px; border-radius: 999px; white-space: nowrap;
+      color: #9fb4cc; border: 1px solid rgba(148,163,184,.22); background: rgba(148,163,184,.06);
+      transition: color .2s, border-color .2s, background .2s, transform .2s;
+    }
+    .nr-chip:hover { color: #e2ecf7; border-color: rgba(56,189,248,.45); transform: translateY(-1px); }
+    .nr-chip[aria-pressed="true"] {
+      color: #04121f; border-color: transparent;
+      background: linear-gradient(100deg, #38bdf8, #22d3ee);
+    }
+    .nr-views { display: inline-flex; gap: 4px; padding: 3px; border-radius: 11px; background: rgba(4,12,24,.6); border: 1px solid rgba(148,163,184,.16); }
+    .nr-views button {
+      font: inherit; font-size: .78rem; font-weight: 700; cursor: pointer;
+      padding: 7px 12px; border: none; border-radius: 8px; background: transparent; color: #93a9c4;
+      display: inline-flex; align-items: center; gap: 6px; transition: background .2s, color .2s;
+    }
+    .nr-views button[aria-pressed="true"] { background: rgba(56,189,248,.16); color: #7dd3fc; }
+
+    /* ============ featured story ============ */
+    .nr-feature {
+      position: relative; overflow: hidden; border-radius: 22px;
+      border: 1px solid rgba(56,189,248,.2); margin-bottom: 34px;
+      background: linear-gradient(150deg, rgba(11,30,54,.9), rgba(6,17,32,.94));
+      display: grid; grid-template-columns: 1.05fr .95fr;
+      box-shadow: 0 24px 70px rgba(2,8,20,.55);
+    }
+    .nr-feature[hidden] { display: none; }
+    .nr-feature .shot { position: relative; min-height: 320px; overflow: hidden; background: #0a1c31; }
+    .nr-feature .shot img {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block;
+      transform: scale(1.02); transition: transform 1.1s cubic-bezier(.2,.7,.3,1);
+    }
+    .nr-feature:hover .shot img { transform: scale(1.09); }
+    .nr-feature .shot::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(100deg, rgba(6,17,32,.15) 0%, rgba(6,17,32,.75) 100%);
+    }
+    .nr-feature .body { padding: clamp(24px, 4vw, 42px); display: flex; flex-direction: column; gap: 14px; justify-content: center; }
+    .nr-flag {
+      align-self: flex-start; display: inline-flex; align-items: center; gap: 8px;
+      font-size: .68rem; font-weight: 800; letter-spacing: .2em; text-transform: uppercase;
+      color: #0a1a2b; padding: 6px 13px; border-radius: 999px;
+      background: linear-gradient(100deg, #d4af37, #f0cd6b);
+    }
+    .nr-feature h2 {
+      font-size: clamp(1.4rem, 3.4vw, 2.05rem); line-height: 1.18; color: #fff; font-weight: 800; letter-spacing: -.01em;
+    }
+    .nr-feature .excerpt { color: #a4b8d0; line-height: 1.72; font-size: .97rem; }
+    .nr-feature .foot { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin-top: 4px; }
+
+    .nr-pill {
+      display: inline-flex; align-items: center; gap: 6px; font-size: .74rem; font-weight: 700;
+      color: #7dd3fc; background: rgba(56,189,248,.1); border: 1px solid rgba(56,189,248,.24);
+      padding: 5px 11px; border-radius: 999px; white-space: nowrap;
+    }
+    .nr-pill.gold { color: #e5c46a; background: rgba(212,175,55,.1); border-color: rgba(212,175,55,.28); }
+    .nr-date { font-size: .78rem; color: #7f95b0; display: inline-flex; align-items: center; gap: 7px; }
+
+    .nr-open {
+      font: inherit; font-size: .84rem; font-weight: 800; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 9px; text-decoration: none;
+      color: #04121f; padding: 11px 20px; border-radius: 999px; border: none;
+      background: linear-gradient(100deg, #38bdf8, #22d3ee);
+      box-shadow: 0 10px 26px rgba(34,211,238,.28);
+      transition: transform .22s cubic-bezier(.2,.7,.3,1), box-shadow .22s, gap .22s;
+    }
+    .nr-open:hover { transform: translateY(-2px); gap: 14px; box-shadow: 0 16px 34px rgba(34,211,238,.36); }
+    .nr-open.ghost {
+      color: #a8bdd4; background: rgba(148,163,184,.07);
+      border: 1px solid rgba(148,163,184,.22); box-shadow: none;
+    }
+    .nr-open.ghost:hover { color: #e2ecf7; border-color: rgba(56,189,248,.45); box-shadow: none; }
+
+    /* ============ grid ============ */
+    .nr-section-head {
+      display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+      margin: 6px 0 18px; padding-bottom: 12px;
+      border-bottom: 1px solid rgba(56,189,248,.14);
+    }
+    .nr-section-head h2 { font-size: 1.06rem; font-weight: 800; color: #e6eef8; letter-spacing: .01em; }
+    .nr-section-head .count { font-size: .8rem; color: #6f86a1; }
+    .nr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 22px; }
+
     .news-card {
-      background: rgba(16,35,60,.6); border: 1px solid rgba(56,189,248,.15);
-      border-radius: 18px; overflow: hidden; display: flex; flex-direction: column;
-      transition: transform .25s, box-shadow .25s, border-color .25s;
+      position: relative; overflow: hidden; border-radius: 18px;
+      display: flex; flex-direction: column; text-align: left;
+      border: 1px solid rgba(56,189,248,.16);
+      background: linear-gradient(160deg, rgba(12,31,55,.78), rgba(7,19,36,.86));
+      cursor: pointer; width: 100%; font: inherit; color: inherit;
+      transition: transform .3s cubic-bezier(.2,.7,.3,1), border-color .3s, box-shadow .3s;
     }
-    .news-card:hover { transform: translateY(-4px); border-color: rgba(56,189,248,.4); box-shadow: 0 18px 44px rgba(2,6,23,.5); }
-    .news-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: #10233c; display: block; }
-    .news-body { padding: 20px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
-    .news-date { color: #38bdf8; font-size: .8rem; font-weight: 700; display: flex; align-items: center; gap: 7px; }
-    .news-title { font-size: 1.15rem; font-weight: 800; color: #fff; line-height: 1.35; }
-    .news-text { color: #94a3b8; font-size: .93rem; line-height: 1.6; flex: 1; }
-    .news-text.clamp { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
-    .news-more {
-      align-self: flex-start; background: none; border: none; cursor: pointer;
-      color: #38bdf8; font-weight: 700; font-size: .88rem; padding: 4px 0; font-family: inherit;
+    .news-card::after {
+      content: ""; position: absolute; inset: 0; border-radius: 18px; pointer-events: none;
+      background: radial-gradient(420px 200px at 50% -10%, rgba(56,189,248,.16), transparent 70%);
+      opacity: 0; transition: opacity .3s;
     }
-    .empty {
-      text-align: center; padding: 70px 24px; background: rgba(16,35,60,.5);
-      border: 1px dashed rgba(56,189,248,.3); border-radius: 18px; color: #94a3b8;
+    .news-card:hover { transform: translateY(-6px); border-color: rgba(56,189,248,.42); box-shadow: 0 22px 50px rgba(2,8,20,.55); }
+    .news-card:hover::after { opacity: 1; }
+    .news-card:focus-visible { outline: 2px solid #38bdf8; outline-offset: 3px; }
+    .news-card .shot { position: relative; aspect-ratio: 16/9; overflow: hidden; background: #0a1c31; }
+    .news-card .shot img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform .8s cubic-bezier(.2,.7,.3,1), filter .5s;
+      filter: saturate(.94);
     }
-    .empty .big { font-size: 3rem; margin-bottom: 12px; }
-    .skeleton { border-radius: 18px; background: rgba(16,35,60,.6); min-height: 320px; position: relative; overflow: hidden; }
+    .news-card:hover .shot img { transform: scale(1.07); filter: saturate(1.06); }
+    .news-card .shot .cat {
+      position: absolute; left: 12px; top: 12px; z-index: 2;
+      font-size: .66rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase;
+      padding: 5px 11px; border-radius: 999px; color: #eaf4ff;
+      background: rgba(4,14,28,.72); border: 1px solid rgba(56,189,248,.3);
+      -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    }
+    .news-card .body { padding: 18px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+    .news-card h3 { font-size: 1.06rem; font-weight: 800; color: #fff; line-height: 1.34; letter-spacing: -.005em; }
+    .news-card .excerpt {
+      color: #93a9c4; font-size: .9rem; line-height: 1.66;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .news-card .foot {
+      margin-top: auto; padding-top: 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      border-top: 1px dashed rgba(148,163,184,.16);
+    }
+    .news-card .read { font-size: .78rem; font-weight: 800; color: #38bdf8; display: inline-flex; align-items: center; gap: 7px; }
+    .news-card:hover .read { gap: 11px; }
+    .news-card .read, .news-card .foot .nr-date { transition: gap .25s; }
+
+    /* ============ timeline view ============ */
+    .nr-timeline { position: relative; padding-left: 30px; }
+    .nr-timeline[hidden] { display: none; }
+    .nr-timeline::before {
+      content: ""; position: absolute; left: 8px; top: 6px; bottom: 6px; width: 2px;
+      background: linear-gradient(180deg, rgba(56,189,248,.55), rgba(212,175,55,.35), rgba(56,189,248,.1));
+    }
+    .nr-tl-item { position: relative; padding: 0 0 22px; }
+    .nr-tl-item::before {
+      content: ""; position: absolute; left: -27px; top: 20px; width: 12px; height: 12px; border-radius: 50%;
+      background: #0b1a2d; border: 2px solid #38bdf8; box-shadow: 0 0 0 4px rgba(56,189,248,.12);
+    }
+    .nr-tl-card {
+      width: 100%; text-align: left; font: inherit; color: inherit; cursor: pointer;
+      border: 1px solid rgba(56,189,248,.14); border-radius: 15px; padding: 16px 18px;
+      background: linear-gradient(150deg, rgba(12,31,55,.7), rgba(7,19,36,.8));
+      display: flex; gap: 16px; align-items: flex-start;
+      transition: transform .28s cubic-bezier(.2,.7,.3,1), border-color .28s, box-shadow .28s;
+    }
+    .nr-tl-card:hover { transform: translateX(5px); border-color: rgba(56,189,248,.4); box-shadow: 0 16px 38px rgba(2,8,20,.5); }
+    .nr-tl-card:focus-visible { outline: 2px solid #38bdf8; outline-offset: 3px; }
+    .nr-tl-card .thumb {
+      flex: 0 0 96px; width: 96px; height: 66px; border-radius: 10px; overflow: hidden; background: #0a1c31;
+    }
+    .nr-tl-card .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .nr-tl-card h3 { font-size: 1rem; color: #fff; font-weight: 800; line-height: 1.34; margin-bottom: 6px; }
+    .nr-tl-card .excerpt {
+      color: #93a9c4; font-size: .86rem; line-height: 1.6;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .nr-tl-card .meta { margin-top: 9px; display: flex; flex-wrap: wrap; gap: 8px 14px; }
+
+    /* ============ states ============ */
+    .nr-empty, .nr-error {
+      text-align: center; padding: 64px 24px; border-radius: 20px;
+      border: 1px dashed rgba(56,189,248,.26); background: rgba(10,26,46,.5); color: #93a9c4;
+    }
+    .nr-empty h3, .nr-error h3 { color: #e6eef8; font-size: 1.1rem; margin: 14px 0 8px; }
+    .nr-empty .glyph, .nr-error .glyph { font-size: 2.6rem; color: #38bdf8; opacity: .8; }
+    .skeleton { border-radius: 18px; min-height: 300px; position: relative; overflow: hidden; background: rgba(12,31,55,.6); border: 1px solid rgba(56,189,248,.1); }
     .skeleton::after {
       content: ""; position: absolute; inset: 0; transform: translateX(-100%);
-      background: linear-gradient(90deg, transparent, rgba(56,189,248,.08), transparent);
-      animation: sh 1.4s infinite;
+      background: linear-gradient(90deg, transparent, rgba(56,189,248,.1), transparent);
     }
-    @keyframes sh { 100% { transform: translateX(100%); } }
-    footer { text-align: center; color: #64748b; font-size: .85rem; padding: 30px 16px; border-top: 1px solid rgba(56,189,248,.1); }
+    @media (prefers-reduced-motion: no-preference) {
+      .skeleton::after { animation: nrShine 1.5s infinite; }
+    }
+    @keyframes nrShine { 100% { transform: translateX(100%); } }
+
+    /* ============ reader ============ */
+    .nr-reader {
+      position: fixed; inset: 0; z-index: 900; display: none;
+      background: rgba(3,9,19,.78);
+      -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+      padding: clamp(10px, 4vw, 46px); overflow-y: auto;
+    }
+    .nr-reader.open { display: block; }
+    @media (prefers-reduced-motion: no-preference) {
+      .nr-reader.open { animation: nrFade .28s ease both; }
+      .nr-reader.open .sheet { animation: nrRise .34s cubic-bezier(.2,.7,.3,1) both; }
+    }
+    @keyframes nrFade { from { opacity: 0; } }
+    @keyframes nrRise { from { opacity: 0; transform: translateY(26px) scale(.985); } }
+    .nr-reader .sheet {
+      max-width: 820px; margin: 0 auto; border-radius: 22px; overflow: hidden;
+      border: 1px solid rgba(56,189,248,.22); background: linear-gradient(170deg, #0c2138, #071527 62%, #050f1d);
+      box-shadow: 0 40px 100px rgba(0,0,0,.6);
+    }
+    .nr-reader .cover { position: relative; aspect-ratio: 21/9; background: #0a1c31; }
+    .nr-reader .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .nr-reader .cover::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 30%, rgba(5,15,29,.92)); }
+    .nr-reader .cover .bar {
+      position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+      padding: 18px clamp(18px, 4vw, 34px); display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center;
+    }
+    .nr-reader .inner { padding: clamp(20px, 4vw, 38px); }
+    .nr-reader h2 { font-size: clamp(1.4rem, 4vw, 2.1rem); color: #fff; line-height: 1.2; margin-bottom: 12px; font-weight: 800; letter-spacing: -.015em; }
+    .nr-reader .text { color: #b9cbdf; line-height: 1.85; font-size: 1rem; white-space: pre-wrap; }
+    .nr-reader .text p { margin-bottom: 1em; }
+    .nr-reader .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; padding-top: 20px; border-top: 1px solid rgba(148,163,184,.16); }
+    .nr-close {
+      position: absolute; top: 14px; right: 14px; z-index: 5;
+      width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+      display: grid; place-items: center; color: #dbe7f5;
+      border: 1px solid rgba(148,163,184,.3); background: rgba(5,14,27,.7);
+      -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+      transition: transform .2s, background .2s, color .2s;
+    }
+    .nr-close:hover { transform: rotate(90deg); background: rgba(56,189,248,.2); color: #fff; }
+    body.nr-locked { overflow: hidden; }
+
+    /* ============ footer ============ */
+    .nr-footer {
+      margin-top: 68px; text-align: center; color: #64748b; font-size: .85rem;
+      padding: 34px 16px 26px; border-top: 1px solid rgba(56,189,248,.12);
+    }
+    .nr-footer a { color: #7dd3fc; text-decoration: none; font-weight: 700; }
+
+    /* ============ responsive ============ */
+    @media (max-width: 860px) {
+      .nr-feature { grid-template-columns: 1fr; }
+      .nr-feature .shot { min-height: 210px; aspect-ratio: 16/9; }
+      .nr-feature .shot::after { background: linear-gradient(180deg, rgba(6,17,32,.05) 0%, rgba(6,17,32,.7) 100%); }
+    }
+    @media (max-width: 620px) {
+      .nr-toolbar { position: static; }
+      .nr-tl-card { flex-direction: column; }
+      .nr-tl-card .thumb { width: 100%; flex-basis: auto; height: 140px; }
+      .nr-timeline { padding-left: 22px; }
+      .nr-tl-item::before { left: -19px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition-duration: .01ms !important; }
+    }
   </style>
 <script src="/assets/js/site-animate.js" defer></script>
 </head>
 <body>
-  <section class="page-hero">
-    <div class="tag">Stay Updated</div>
-    <h1>News &amp; <span>Events</span></h1>
-    <p>What's happening at Kalinabiri Secondary School</p>
-  </section>
 
-  <div class="news-wrap">
-    <div class="news-grid" id="newsGrid">
+  <header class="nr-masthead">
+    <div class="nr-wrap">
+      <div class="nr-rule"></div>
+      <div class="nr-kicker"><span class="dot"></span> Kalinabiri Newsroom</div>
+      <h1>News &amp; <span class="amp">Events</span></h1>
+      <p class="lead">Everything happening on campus at Kalinabiri Secondary School, Ntinda — assemblies, competitions, results, visits and community work, in one place.</p>
+      <div class="nr-meta-row">
+        <span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/></svg> <b id="nrToday">—</b></span>
+        <span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8z"/></svg> <b id="nrCount">—</b> stories</span>
+        <span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Updated <b id="nrUpdated">—</b></span>
+      </div>
+    </div>
+
+    <div class="nr-ticker" id="nrTicker" hidden aria-hidden="true">
+      <span class="tag">Latest</span>
+      <div class="track"><ul id="nrTickerList"></ul></div>
+    </div>
+  </header>
+
+  <main class="nr-wrap">
+    <div class="nr-toolbar">
+      <label class="nr-search">
+        <span class="ic"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
+        <input id="nrSearch" type="search" placeholder="Search stories, people, events…" aria-label="Search news">
+      </label>
+      <div class="nr-chips" id="nrChips" role="group" aria-label="Filter by topic"></div>
+      <div class="nr-views" role="group" aria-label="Change layout">
+        <button type="button" id="nrViewGrid" aria-pressed="true"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> Grid</button>
+        <button type="button" id="nrViewTime" aria-pressed="false"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg> Timeline</button>
+      </div>
+    </div>
+
+    <section class="nr-feature" id="nrFeature" hidden></section>
+
+    <div class="nr-section-head">
+      <h2 id="nrListTitle">All stories</h2>
+      <span class="count" id="nrListCount"></span>
+    </div>
+
+    <div class="nr-grid" id="nrGrid">
       <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
     </div>
+
+    <div class="nr-timeline" id="nrTimeline" hidden></div>
+  </main>
+
+  <div class="nr-reader" id="nrReader" role="dialog" aria-modal="true" aria-labelledby="nrReaderTitle">
+    <div class="sheet" id="nrSheet"></div>
   </div>
 
-  <footer>© 2026 Kalinabiri Secondary School — Ntinda, Kampala | Developed by <strong>ScottsTechX</strong></footer>
+  <footer class="nr-footer">
+    © 2026 Kalinabiri Secondary School — Ntinda, Kampala | Developed by <strong>ScottsTechX</strong>
+  </footer>
 
   <script>
-    (function () {
-      var grid = document.getElementById('newsGrid');
-      function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
-      function fmtDate(iso) {
-        try {
-          return new Date((iso || '').replace(' ', 'T') + (iso && iso.length <= 19 ? 'Z' : ''))
-            .toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-        } catch (e) { return iso || ''; }
+  (function () {
+    'use strict';
+
+    var ICON = {
+      calendar: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/></svg>',
+      clock: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+      arrow: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>',
+      close: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
+      link: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3A5 5 0 0 0 13.5 3.4l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7.1 7.1l1.7-1.7"/></svg>',
+      empty: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M4 4h11a1 1 0 0 1 1 1v15H5a1 1 0 0 1-1-1V4z"/><path d="M16 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-3"/><path d="M7 8h5"/><path d="M7 12h5"/><path d="M7 16h3"/></svg>',
+      error: '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M2 21h20"/></svg>'
+    };
+
+    // ---- topic rules (derived from the story text; no schema change needed) --
+    var TOPICS = [
+      { id: 'academics', label: 'Academics', words: ['exam', 'exams', 'result', 'results', 'mock', 'subject', 'curriculum', 'academic', 'science', 'mathematics', 'math', 'grade', 'grades', 'uace', 'uce', 'marks', 'classroom', 'lesson', 'teacher', 'library', 'stem', 'debate'] },
+      { id: 'sports', label: 'Sports', words: ['sport', 'sports', 'football', 'netball', 'athletics', 'tournament', 'match', 'game', 'team', 'chess', 'swimming', 'rugby', 'basketball', 'competition', 'champion'] },
+      { id: 'events', label: 'Events', words: ['event', 'ceremony', 'graduation', 'prize', 'prizing', 'speech', 'day', 'week', 'visit', 'assembly', 'celebration', 'cultural', 'music', 'drama', 'show'] },
+      { id: 'community', label: 'Community', words: ['parent', 'parents', 'community', 'health', 'sanitary', 'campaign', 'outreach', 'church', 'partner', 'foundation', 'mentorship', 'guidance', 'counselling', 'donation', 'sponsor'] },
+      { id: 'notices', label: 'Notices', words: ['notice', 'term', 'holiday', 'vacation', 'fees', 'fee', 'admission', 'admissions', 'registration', 'deadline', 'timetable', 'report', 'meeting', 'interview'] }
+    ];
+    var DEFAULT_TOPIC = { id: 'campus', label: 'Campus Life' };
+
+    function topicOf(story) {
+      var hay = ((story.title || '') + ' ' + (story.body || '')).toLowerCase();
+      var best = null, bestScore = 0;
+      for (var i = 0; i < TOPICS.length; i++) {
+        var score = 0;
+        for (var j = 0; j < TOPICS[i].words.length; j++) {
+          var w = TOPICS[i].words[j];
+          var re = new RegExp('\\b' + w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'g');
+          var m = hay.match(re);
+          if (m) score += m.length;
+        }
+        if (score > bestScore) { bestScore = score; best = TOPICS[i]; }
       }
-      fetch('/api/website/news')
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
-          var list = (data && data.news) || [];
-          if (!list.length) {
-            grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M4 4h11a1 1 0 0 1 1 1v15H5a1 1 0 0 1-1-1V4z"/><path d="M16 8h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-3"/><path d="M7 8h5"/><path d="M7 12h5"/><path d="M7 16h3"/></svg></div><h3>No news yet</h3><p>Check back soon for updates from the school.</p></div>';
-            return;
-          }
-          grid.innerHTML = list.map(function (n) {
-            var img = n.image ? '<img class="news-img" src="' + esc(n.image) + '" alt="" loading="lazy" onerror="window.__mediaFallback(this)">' : '';
-            return '<article class="news-card">' + img +
-              '<div class="news-body">' +
-                '<div class="news-date"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/></svg> ' + esc(fmtDate(n.created_at)) + '</div>' +
-                '<h2 class="news-title">' + esc(n.title) + '</h2>' +
-                '<p class="news-text clamp">' + esc(n.body) + '</p>' +
-                '<button class="news-more" type="button">Read more <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>' +
-              '</div></article>';
-          }).join('');
-          grid.querySelectorAll('.news-more').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-              var text = btn.previousElementSibling;
-              var open = text.classList.toggle('clamp') === false;
-              btn.innerHTML = open ? 'Show less <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>' : 'Read more <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
-            });
-          });
-        })
-        .catch(function () {
-          grid.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M2 21h20"/></svg></div><h3>Could not load news</h3><p>Please refresh the page to try again.</p></div>';
-        });
+      return bestScore >= 2 ? best : DEFAULT_TOPIC;
+    }
+
+    // ---- helpers ------------------------------------------------------------
+    function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; }
+
+    function parseDate(iso) {
+      if (!iso) return null;
+      var s = String(iso).trim();
+      var d = new Date(s.indexOf('T') > -1 ? s : s.replace(' ', 'T') + (s.length <= 19 ? 'Z' : ''));
+      return isNaN(d.getTime()) ? null : d;
+    }
+    function fmtDate(iso) {
+      var d = parseDate(iso);
+      return d ? d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : (iso || '');
+    }
+    function fmtShort(iso) {
+      var d = parseDate(iso);
+      return d ? d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : (iso || '');
+    }
+    function readTime(body) {
+      var words = String(body || '').trim().split(/\s+/).filter(Boolean).length;
+      return Math.max(1, Math.round(words / 200));
+    }
+    function excerpt(body, max) {
+      var t = String(body || '').replace(/\s+/g, ' ').trim();
+      if (t.length <= max) return t;
+      return t.slice(0, max).replace(/\s+\S*$/, '') + '…';
+    }
+    function paragraphs(body) {
+      return String(body || '').split(/\n{2,}|\r\n{2,}/).map(function (p) { return p.trim(); }).filter(Boolean);
+    }
+
+    // ---- state --------------------------------------------------------------
+    var all = [];
+    var activeTopic = 'all';
+    var query = '';
+    var view = 'grid';
+    var lastFocus = null;
+
+    var grid = document.getElementById('nrGrid');
+    var timeline = document.getElementById('nrTimeline');
+    var feature = document.getElementById('nrFeature');
+    var chips = document.getElementById('nrChips');
+    var reader = document.getElementById('nrReader');
+    var sheet = document.getElementById('nrSheet');
+    var searchBox = document.getElementById('nrSearch');
+
+    // ---- masthead meta ------------------------------------------------------
+    (function () {
+      var now = new Date();
+      document.getElementById('nrToday').textContent = now.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
     })();
+
+    // ---- ticker -------------------------------------------------------------
+    function buildTicker(list) {
+      var box = document.getElementById('nrTicker');
+      var ul = document.getElementById('nrTickerList');
+      if (!list.length) { box.hidden = true; return; }
+      // duplicate the run so the loop is seamless
+      var items = list.slice(0, 8);
+      var html = items.map(function (n) {
+        return '<li>' + esc(fmtShort(n.created_at)) + ' — ' + esc(excerpt(n.title, 70)) + '</li>';
+      }).join('');
+      ul.innerHTML = html + html;
+      box.hidden = false;
+      box.setAttribute('aria-hidden', 'false');
+    }
+
+    // ---- filtering ----------------------------------------------------------
+    function filtered() {
+      var q = query.toLowerCase();
+      return all.filter(function (n) {
+        if (activeTopic !== 'all' && n.__topic.id !== activeTopic) return false;
+        if (!q) return true;
+        return ((n.title || '') + ' ' + (n.body || '')).toLowerCase().indexOf(q) > -1;
+      });
+    }
+
+    function topicCounts() {
+      var counts = { all: all.length };
+      all.forEach(function (n) { counts[n.__topic.id] = (counts[n.__topic.id] || 0) + 1; });
+      return counts;
+    }
+
+    function renderChips() {
+      var counts = topicCounts();
+      var list = [{ id: 'all', label: 'All' }].concat(TOPICS, [DEFAULT_TOPIC])
+        .filter(function (t) { return t.id === 'all' || counts[t.id]; });
+      chips.innerHTML = '';
+      list.forEach(function (t) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'nr-chip';
+        b.setAttribute('aria-pressed', String(activeTopic === t.id));
+        b.textContent = t.label + (t.id === 'all' ? '' : ' · ' + counts[t.id]);
+        b.addEventListener('click', function () { activeTopic = t.id; render(); });
+        chips.appendChild(b);
+      });
+    }
+
+    // ---- cards --------------------------------------------------------------
+    function cardHTML(n) {
+      var t = n.__topic;
+      var img = n.image
+        ? '<div class="shot"><span class="cat">' + esc(t.label) + '</span><img src="' + esc(n.image) + '" alt="" loading="lazy" onerror="window.__mediaFallback(this)"></div>'
+        : '<div class="shot"><span class="cat">' + esc(t.label) + '</span></div>';
+      return img +
+        '<div class="body">' +
+          '<h3>' + esc(n.title) + '</h3>' +
+          '<p class="excerpt">' + esc(excerpt(n.body, 170)) + '</p>' +
+          '<div class="foot">' +
+            '<span class="nr-date">' + ICON.calendar + ' ' + esc(fmtDate(n.created_at)) + '</span>' +
+            '<span class="read">' + esc(readTime(n.body)) + ' min read ' + ICON.arrow + '</span>' +
+          '</div>' +
+        '</div>';
+    }
+
+    function timelineHTML(n) {
+      var t = n.__topic;
+      var thumb = n.image ? '<div class="thumb"><img src="' + esc(n.image) + '" alt="" loading="lazy" onerror="window.__mediaFallback(this)"></div>' : '';
+      return '<div class="nr-tl-item"><button type="button" class="nr-tl-card" data-open="' + esc(n.id) + '">' +
+        thumb +
+        '<div style="flex:1;min-width:0">' +
+          '<h3>' + esc(n.title) + '</h3>' +
+          '<p class="excerpt">' + esc(excerpt(n.body, 200)) + '</p>' +
+          '<div class="meta">' +
+            '<span class="nr-pill">' + esc(t.label) + '</span>' +
+            '<span class="nr-date">' + ICON.calendar + ' ' + esc(fmtDate(n.created_at)) + '</span>' +
+            '<span class="nr-date">' + ICON.clock + ' ' + esc(readTime(n.body)) + ' min</span>' +
+          '</div>' +
+        '</div>' +
+      '</button></div>';
+    }
+
+    // ---- reader -------------------------------------------------------------
+    function openReader(id) {
+      var n = null;
+      for (var i = 0; i < all.length; i++) if (String(all[i].id) === String(id)) n = all[i];
+      if (!n) return;
+      lastFocus = document.activeElement;
+
+      var cover = n.image
+        ? '<div class="cover"><img src="' + esc(n.image) + '" alt=""><div class="bar">' +
+            '<span class="nr-pill gold">' + esc(n.__topic.label) + '</span>' +
+            '<span class="nr-date">' + ICON.calendar + ' ' + esc(fmtDate(n.created_at)) + '</span>' +
+            '<span class="nr-date">' + ICON.clock + ' ' + esc(readTime(n.body)) + ' min read</span>' +
+          '</div></div>'
+        : '';
+
+      sheet.innerHTML =
+        '<button type="button" class="nr-close" id="nrReaderClose" aria-label="Close story">' + ICON.close + '</button>' +
+        cover +
+        '<div class="inner">' +
+          '<h2 id="nrReaderTitle">' + esc(n.title) + '</h2>' +
+          (cover ? '' : '<div class="meta" style="display:flex;gap:10px 16px;flex-wrap:wrap;margin-bottom:16px">' +
+            '<span class="nr-pill gold">' + esc(n.__topic.label) + '</span>' +
+            '<span class="nr-date">' + ICON.calendar + ' ' + esc(fmtDate(n.created_at)) + '</span>' +
+            '<span class="nr-date">' + ICON.clock + ' ' + esc(readTime(n.body)) + ' min read</span></div>') +
+          '<div class="text">' + paragraphs(n.body).map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') + '</div>' +
+          '<div class="actions">' +
+            '<button type="button" class="nr-open ghost" id="nrCopy">' + ICON.link + ' Copy link</button>' +
+            '<a class="nr-open ghost" href="/gallery/">See the photo gallery ' + ICON.arrow + '</a>' +
+            '<a class="nr-open" href="/contact/">Talk to the school ' + ICON.arrow + '</a>' +
+          '</div>' +
+        '</div>';
+
+      reader.classList.add('open');
+      document.body.classList.add('nr-locked');
+      sheet.querySelector('#nrReaderClose').addEventListener('click', closeReader);
+      sheet.querySelector('#nrCopy').addEventListener('click', function () {
+        var url = location.origin + location.pathname + '#story-' + n.id;
+        var done = function () { this.textContent = 'Link copied'; }.bind(this);
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(done, function () {});
+      });
+      var close = sheet.querySelector('#nrReaderClose');
+      if (close) close.focus();
+      if (history.replaceState) history.replaceState(null, '', '#story-' + n.id);
+    }
+
+    function closeReader() {
+      reader.classList.remove('open');
+      document.body.classList.remove('nr-locked');
+      if (history.replaceState) history.replaceState(null, '', location.pathname + location.search);
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+    }
+
+    reader.addEventListener('click', function (e) { if (e.target === reader) closeReader(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && reader.classList.contains('open')) closeReader();
+    });
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('[data-open]') : null;
+      if (btn) openReader(btn.getAttribute('data-open'));
+    });
+
+    // ---- render -------------------------------------------------------------
+    function render() {
+      renderChips();
+      var list = filtered();
+
+      document.getElementById('nrListCount').textContent = list.length
+        ? list.length + (list.length === 1 ? ' story' : ' stories')
+        : '';
+      var label = activeTopic === 'all' ? 'All stories'
+        : (TOPICS.concat([DEFAULT_TOPIC]).filter(function (t) { return t.id === activeTopic; })[0] || {}).label;
+      document.getElementById('nrListTitle').textContent = query ? 'Results for “' + query + '”' : label;
+
+      // featured story: only on the unfiltered "All" view
+      var showFeature = activeTopic === 'all' && !query && list.length > 0;
+      feature.hidden = !showFeature;
+
+      var rest = showFeature ? list.slice(1) : list;
+
+      if (showFeature) {
+        var f = list[0];
+        feature.innerHTML =
+          (f.image ? '<div class="shot"><img src="' + esc(f.image) + '" alt="" onerror="window.__mediaFallback(this)"></div>' : '') +
+          '<div class="body">' +
+            '<span class="nr-flag">Featured story</span>' +
+            '<h2>' + esc(f.title) + '</h2>' +
+            '<p class="excerpt">' + esc(excerpt(f.body, 300)) + '</p>' +
+            '<div class="foot">' +
+              '<span class="nr-pill gold">' + esc(f.__topic.label) + '</span>' +
+              '<span class="nr-date">' + ICON.calendar + ' ' + esc(fmtDate(f.created_at)) + '</span>' +
+              '<span class="nr-date">' + ICON.clock + ' ' + esc(readTime(f.body)) + ' min read</span>' +
+              '<button type="button" class="nr-open" data-open="' + esc(f.id) + '">Read the story ' + ICON.arrow + '</button>' +
+            '</div>' +
+          '</div>';
+      } else {
+        feature.innerHTML = '';
+      }
+
+      if (!list.length) {
+        grid.hidden = false;
+        timeline.hidden = true;
+        grid.innerHTML = '<div class="nr-empty" style="grid-column:1/-1">' +
+          '<div class="glyph">' + ICON.empty + '</div>' +
+          '<h3>Nothing here yet</h3>' +
+          '<p>' + (query || activeTopic !== 'all' ? 'No story matches this filter. Try a different word or topic.' : 'Check back soon for updates from the school.') + '</p></div>';
+        return;
+      }
+
+      if (view === 'timeline') {
+        grid.hidden = true;
+        timeline.hidden = false;
+        timeline.innerHTML = rest.map(timelineHTML).join('') ||
+          '<div class="nr-empty"><div class="glyph">' + ICON.empty + '</div><h3>More on the way</h3><p>The featured story above is the only one so far.</p></div>';
+      } else {
+        timeline.hidden = true;
+        grid.hidden = false;
+        grid.innerHTML = rest.map(function (n) {
+          return '<button type="button" class="news-card" data-open="' + esc(n.id) + '">' + cardHTML(n) + '</button>';
+        }).join('') ||
+          '<div class="nr-empty" style="grid-column:1/-1"><div class="glyph">' + ICON.empty + '</div><h3>More on the way</h3><p>The featured story above is the only one so far.</p></div>';
+      }
+
+      // re-arm the scroll-reveal for the freshly built cards
+      if (window.__kaRefresh) window.__kaRefresh();
+    }
+
+    // ---- controls -----------------------------------------------------------
+    var searchTimer = null;
+    searchBox.addEventListener('input', function () {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(function () { query = searchBox.value.trim(); render(); }, 220);
+    });
+
+    function setView(v) {
+      view = v;
+      document.getElementById('nrViewGrid').setAttribute('aria-pressed', String(v === 'grid'));
+      document.getElementById('nrViewTime').setAttribute('aria-pressed', String(v === 'timeline'));
+      render();
+    }
+    document.getElementById('nrViewGrid').addEventListener('click', function () { setView('grid'); });
+    document.getElementById('nrViewTime').addEventListener('click', function () { setView('timeline'); });
+
+    // ---- load ---------------------------------------------------------------
+    function fail() {
+      feature.hidden = true;
+      timeline.hidden = true;
+      grid.hidden = false;
+      grid.innerHTML = '<div class="nr-empty" style="grid-column:1/-1">' +
+        '<div class="glyph">' + ICON.error + '</div>' +
+        '<h3>Could not load the news</h3>' +
+        '<p>Check your connection, then refresh the page.</p></div>';
+    }
+
+    fetch('/api/website/news')
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (data) {
+        var list = (data && data.news) || [];
+        list.sort(function (a, b) {
+          var da = parseDate(a.created_at), db = parseDate(b.created_at);
+          return (db ? db.getTime() : 0) - (da ? da.getTime() : 0);
+        });
+        all = list.map(function (n) { n.__topic = topicOf(n); return n; });
+
+        document.getElementById('nrCount').textContent = String(all.length);
+        document.getElementById('nrUpdated').textContent = all.length ? fmtDate(all[0].created_at) : 'recently';
+        buildTicker(all);
+        render();
+
+        // deep link: /news/#story-7 opens that story straight away
+        var m = /^#story-(\d+)$/.exec(location.hash || '');
+        if (m) setTimeout(function () { openReader(m[1]); }, 260);
+      })
+      .catch(fail);
+  })();
   </script>
 
 <!-- crafted with pride -->
@@ -204,7 +880,7 @@ window.__mediaFallback = function (img) {
   // Nothing left to try: hide the tile instead of showing a broken-image icon.
   img.onerror = null;
   img.removeAttribute('src');
-  var box = img.closest('figure, .gallery-item, .news-card, .campus-figure, .media-card');
+  var box = img.closest('figure, .gallery-item, .news-card, .campus-figure, .media-card, .shot, .thumb, .cover');
   if (box) box.style.display = 'none';
   else img.style.display = 'none';
 };

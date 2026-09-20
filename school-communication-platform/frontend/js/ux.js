@@ -5,6 +5,7 @@
     if(reduce)return;
     const els=document.querySelectorAll('.card,.stat-card,.doc-item,.ann-item');
     els.forEach((el,i)=>{if(!el.hasAttribute('data-reveal')){el.setAttribute('data-reveal','');el.style.transitionDelay=Math.min(i*20,160)+'ms';}});
+    if(typeof IntersectionObserver!=='function'){document.querySelectorAll('[data-reveal]').forEach(el=>el.classList.add('is-visible'));return;}
     const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('is-visible');io.unobserve(e.target)}}),{threshold:.06});
     document.querySelectorAll('[data-reveal]').forEach(el=>io.observe(el));
   }

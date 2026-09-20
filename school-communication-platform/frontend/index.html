@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-page="home">
 <head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-RTR3K2H8HM"></script>
@@ -438,7 +438,7 @@
            stats      : covered completely
            portals    : frosted - the film shows through, blurred
            academics  : frosted
-           gallery    : sharp again, the film is the backdrop there
+           gallery    : frosted hard - the film is a distant backdrop there
            contact    : covered
            footer     : frosted                                                     */
         .hero.bg-clear { background: rgba(8,18,32,0.42); text-shadow: 0 2px 12px rgba(0,0,0,.6); }
@@ -453,7 +453,9 @@
             -webkit-backdrop-filter: blur(14px) saturate(1.1);
             backdrop-filter: blur(14px) saturate(1.1);
         }
-        .gallery-section.bg-clear { background: rgba(8,18,32,0.34); text-shadow: 0 2px 12px rgba(0,0,0,.6); }
+        /* the film behind the gallery is pushed right back (blur + dim +
+           vignette + slow wash) in home-fx.css, so the photos lead */
+        .gallery-section.bg-frosted { background: rgba(5,14,28,0.86); text-shadow: 0 2px 14px rgba(0,0,0,.8); }
         .contact-strip.bg-solid { background: #0b1a2d; }
         .footer.bg-blur {
             background: rgba(8,18,32,0.55);
@@ -718,6 +720,9 @@
         }
     </style>
 <link rel="stylesheet" href="assets/css/site-ux.css?v=10">
+<link rel="stylesheet" href="/assets/css/page-bg.css?v=1">
+<script src="/assets/js/compat.js?v=1"></script>
+<link rel="stylesheet" href="/assets/css/home-fx.css?v=1">
 <link rel="stylesheet" href="/assets/css/site-nav.css?v=10">
 <script src="/assets/js/site-nav.js?v=10" defer></script>
 <script src="/assets/js/site-film.js?v=10" defer></script>
@@ -736,6 +741,16 @@
     <!-- 3D Animated Navigation -->
         <!-- Hero Section -->
     <section class="hero bg-clear" id="home">
+        <!-- Atmosphere layers: they sit above the campus film and below the
+             headline, so the hero reads as depth instead of a flat scrim. -->
+        <div class="hero-fx" aria-hidden="true">
+            <span class="fx-aurora"></span>
+            <span class="fx-shafts"></span>
+            <span class="fx-grid"></span>
+            <span class="fx-dust"></span>
+            <span class="fx-horizon"></span>
+            <span class="fx-vignette"></span>
+        </div>
         <div class="hero-content">
             <div class="hero-badge">
                 <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="m12 3.5 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>
@@ -1030,7 +1045,7 @@
     </section>
 
 <!-- Gallery Section -->
-    <section class="gallery-section bg-clear" id="gallery">
+    <section class="gallery-section bg-frosted" id="gallery">
         <div class="section-header">
             <div class="section-tag">School Life</div>
             <h2>Moments at Kalinabiri</h2>

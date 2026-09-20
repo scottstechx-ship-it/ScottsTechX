@@ -193,16 +193,43 @@ router.post('/backup', authenticate, requireRole('super_admin'), (req, res) => {
 
 /** GET /api/settings/status — API health/status info. */
 router.get('/status', authenticate, requireRole('super_admin', 'admin'), (req, res) => {
-  const dbSize = require('fs').existsSync(require('../config/env').DATABASE_PATH)
-    ? require('fs').statSync(require('../config/env').DATABASE_PATH).size : 0;
+  const env = require('../config/env');
+  const fs = require('fs');
+  const dbSize = fs.existsSync(env.DATABASE_PATH) ? fs.statSync(env.DATABASE_PATH).size : 0;
+  let uploadCount = 0;
+  try { uploadCount = fs.readdirSync(env.UPLOAD_DIR).filter((f) => f !== '.gitkeep').length; } catch { /* ignore */ }
+  const snapshots = require('../services/backup').listBackups();
   res.json({
     serverTime: new Date().toISOString(),
     node: process.version,
-    database: { engine: 'SQLite', fileSizeBytes: dbSize },
-    uploads: { dir: require('../config/env').UPLOAD_DIR, maxFileSizeMB: require('../config/env').MAX_FILE_SIZE / 1024 / 1024 },
-    cors: { allowedOrigins: require('../config/env').ALLOWED_ORIGINS },
+    database: { engine: 'SQLite', fileSizeBytes: dbSize, path: env.DATABASE_PATH },
+    storage: {
+      dir: env.DATA_DIR,
+      source: env.DATA_DIR_SOURCE,
+      // "persistent" means the root sits outside the source tree — i.e. it is
+      // a mounted volume and survives redeploys. An in-repository root is
+      // wiped whenever the code is replaced.
+      persistent: env.DATA_DIR !== require('path').join(env.root, 'backend', 'data'),
+      backupsDir: env.BACKUP_DIR,
+      keepSnapshots: env.BACKUP_KEEP,
+      lastSnapshot: snapshots[0] || null,
+    },
+    uploads: { dir: env.UPLOAD_DIR, fileCount: uploadCount, maxFileSizeMB: env.MAX_FILE_SIZE / 1024 / 1024 },
+    cors: { allowedOrigins: env.ALLOWED_ORIGINS },
     smtp: { configured: !!process.env.SMTP_HOST, from: process.env.SMTP_FROM || null },
   });
+});
+
+/**
+ * POST /api/settings/backup/snapshot — take a database snapshot now.
+ * Returns the snapshot metadata; the file stays in <DATA_DIR>/backups.
+ */
+router.post('/backup/snapshot', authenticate, requireRole('super_admin', 'admin'), (req, res) => {
+  const backup = require('../services/backup');
+  const file = backup.backupNow('manual');
+  if (!file) return res.status(500).json({ error: 'Could not create the snapshot. Check that the data folder is writable.' });
+  log(req.user, 'BACKUP_CREATED', `Saved a database snapshot (${require('path').basename(file)})`, req.ip);
+  res.status(201).json({ message: 'Snapshot saved.', snapshots: backup.listBackups() });
 });
 
 module.exports = router;

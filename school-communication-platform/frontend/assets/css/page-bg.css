@@ -1,0 +1,357 @@
+/* ============================================================
+ * KALINABIRI SS — PER-PAGE BACKGROUND SIGNATURES
+ *
+ * Every public page gets its own atmosphere: a distinct colour story, a
+ * distinct geometric pattern and a distinct motion. Two fixed layers do all
+ * the work, so no page markup has to change:
+ *
+ *   body::before  the PATTERN layer  — repeating tiles that drift slowly
+ *   body::after   the LIGHT layer    — soft colour orbs that breathe
+ *
+ * Both sit at z-index:-1: above the page's base wash, below the content, so
+ * the sections' translucent panels let them glow through instead of hiding
+ * them. Everything is pure CSS, GPU-friendly (transform / background-position
+ * only), and switched off entirely for prefers-reduced-motion.
+ *
+ * A page opts in with a single attribute on <html>:  data-page="news".
+ * Pages with no data-page keep the plain house background.
+ * ============================================================ */
+
+/* ---- shared plumbing ----------------------------------------------------- */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  inset: -20%;                 /* bleed past the edges so drifts never show a seam */
+  z-index: -1;
+  pointer-events: none;
+  will-change: transform, background-position;
+}
+
+/* pattern layer: default is invisible until a page asks for one */
+body::before { opacity: 0; }
+
+/* light layer: two orbs + a vertical wash, tinted per page */
+body::after {
+  opacity: .55;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+  background-position: 12% 18%, 84% 66%, 50% 0%;
+  background-size: 46vmax 46vmax, 52vmax 52vmax, 100% 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body::after { animation: kbOrbs 34s ease-in-out infinite alternate; }
+}
+@keyframes kbOrbs {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(-2.5%, 2%, 0) scale(1.06); }
+  100% { transform: translate3d(2%, -2.5%, 0) scale(1.02); }
+}
+
+/* ============================================================
+ * HOME — deep harbour navy with an aurora sweep and a fine survey grid
+ * ============================================================ */
+html[data-page="home"] {
+  background:
+    radial-gradient(1200px 700px at 78% -8%, rgba(14, 165, 233, .22), transparent 62%),
+    radial-gradient(900px 620px at 8% 12%, rgba(16, 185, 129, .13), transparent 60%),
+    linear-gradient(168deg, #071527 0%, #0b1a2d 42%, #08172b 74%, #061120 100%);
+}
+html[data-page="home"] body::before {
+  opacity: .5;
+  background-image:
+    linear-gradient(rgba(56, 189, 248, .055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, .055) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(212, 175, 55, .16) 1px, transparent 1.6px);
+  background-size: 64px 64px, 64px 64px, 26px 26px;
+}
+html[data-page="home"] body::after {
+  background-image:
+    radial-gradient(circle, rgba(14, 165, 233, .30), transparent 68%),
+    radial-gradient(circle, rgba(212, 175, 55, .17), transparent 66%),
+    linear-gradient(180deg, rgba(2, 8, 18, .0), rgba(2, 8, 18, .45));
+}
+@media (prefers-reduced-motion: no-preference) {
+  html[data-page="home"] body::before { animation: kbGridDrift 26s linear infinite; }
+}
+@keyframes kbGridDrift {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to   { background-position: 64px 64px, 64px 64px, 26px 26px; }
+}
+
+/* ============================================================
+ * ABOUT — heritage indigo, concentric rings that turn like a crest
+ * ============================================================ */
+html[data-page="about"] {
+  background:
+    radial-gradient(1000px 640px at 18% 4%, rgba(129, 140, 248, .20), transparent 60%),
+    radial-gradient(760px 520px at 90% 88%, rgba(217, 70, 239, .12), transparent 62%),
+    linear-gradient(200deg, #0b1030 0%, #131a44 38%, #0d1330 70%, #080c22 100%);
+}
+html[data-page="about"] body::before {
+  opacity: .46;
+  background-image:
+    repeating-radial-gradient(circle at 50% 42%, rgba(165, 180, 252, .10) 0 1px, transparent 1px 58px),
+    repeating-linear-gradient(58deg, rgba(212, 175, 55, .05) 0 2px, transparent 2px 34px);
+  background-size: 100% 100%, 100% 100%;
+}
+html[data-page="about"] body::after {
+  background-image:
+    radial-gradient(circle, rgba(129, 140, 248, .28), transparent 66%),
+    radial-gradient(circle, rgba(236, 72, 153, .16), transparent 64%),
+    linear-gradient(180deg, rgba(6, 8, 26, 0), rgba(6, 8, 26, .5));
+}
+@media (prefers-reduced-motion: no-preference) {
+  html[data-page="about"] body::before { animation: kbRingTurn 90s linear infinite; }
+}
+@keyframes kbRingTurn { to { transform: rotate(360deg); } }
+
+/* ============================================================
+ * ACADEMICS — study green with a ruled-paper grid and a slow chalk sheen
+ * ============================================================ */
+html[data-page="academics"] {
+  background:
+    radial-gradient(980px 620px at 88% 6%, rgba(16, 185, 129, .18), transparent 60%),
+    radial-gradient(720px 520px at 4% 92%, rgba(45, 212, 191, .12), transparent 60%),
+    linear-gradient(160deg, #06201c 0%, #072a26 40%, #05201d 72%, #041614 100%);
+}
+html[data-page="academics"] body::before {
+  opacity: .5;
+  background-image:
+    linear-gradient(rgba(94, 234, 212, .06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(94, 234, 212, .06) 1px, transparent 1px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .035) 0 1px, transparent 1px 8px);
+  background-size: 40px 40px, 40px 40px, 8px 100%;
+}
+html[data-page="academics"] body::after {
+  background-image:
+    radial-gradient(circle, rgba(16, 185, 129, .26), transparent 66%),
+    radial-gradient(circle, rgba(56, 189, 248, .14), transparent 64%),
+    linear-gradient(180deg, rgba(2, 14, 12, 0), rgba(2, 14, 12, .5));
+}
+@media (prefers-reduced-motion: no-preference) {
+  html[data-page="academics"] body::before { animation: kbRuledDrift 30s ease-in-out infinite alternate; }
+}
+@keyframes kbRuledDrift {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to   { background-position: 0 40px, 40px 0, 8px 0; }
+}
+
+/* ============================================================
+ * ADMISSIONS — warm amber with rising steps and a dawn glow
+ * ============================================================ */
+html[data-page="admissions"] {
+  background:
+    radial-gradient(1000px 660px at 76% 0%, rgba(245, 158, 11, .20), transparent 62%),
+    radial-gradient(780px 540px at 6% 84%, rgba(244, 63, 94, .12), transparent 60%),
+    linear-gradient(172deg, #221305 0%, #2c1a07 38%, #1d1207 70%, #130c05 100%);
+}
+html[data-page="admissions"] body::before {
+  opacity: .5;
+  background-image:
+    repeating-linear-gradient(135deg, rgba(251, 191, 36, .07) 0 10px, transparent 10px 22px),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, .025) 0 1px, transparent 1px 30px);
+  background-size: 100% 100%, 100% 100%;
+}
+html[data-page="admissions"] body::after {
+  background-image:
+    radial-gradient(circle, rgba(251, 191, 36, .26), transparent 66%),
+    radial-gradient(circle, rgba(244, 63, 94, .16), transparent 64%),
+    linear-gradient(180deg, rgba(20, 12, 3, 0), rgba(20, 12, 3, .48));
+}
+@media (prefers-reduced-motion: no-preference) {
+  html[data-page="admissions"] body::before { animation: kbStepsRise 24s ease-in-out infinite alternate; }
+}
+@keyframes kbStepsRise {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-3%, -3.5%, 0); }
+}
+
+/* ============================================================
+ * NEWS — editorial ink blue, halftone dots and a slow ticker rule
+ * ============================================================ */
+html[data-page="news"] {
+  background:
+    radial-gradient(1100px 700px at 50% -10%, rgba(56, 189, 248, .18), transparent 60%),
+    radial-gradient(700px 520px at 96% 78%, rgba(244, 63, 94, .12), transparent 62%),
+    linear-gradient(184deg, #060f1f 0%, #0a1a30 34%, #071527 68%, #050d1a 100%);
+}
+html[data-page="news"] body::before {
+  opacity: .55;
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(148, 197, 255, .17) 1.1px, transparent 1.7px),
+    repeating-linear-gradient(0deg, rgba(56, 189, 248, .05) 0 1px, transparent 1px 46px),
+    repeating-linear-gradient(90deg, rgba(56, 189, 248, .035) 0 1px, transparent 1px 46px);
+  background-size: 18px 18px, 100% 46px, 46px 100%;
+}
+html[data-page="news"] body::after {
+  background-image:
+    radial-gradient(circle, rgba(56, 189, 248, .22), transparent 66%),
+    radial-gradient(circle, rgba(226, 32, 81, .14), transparent 64%),
+    linear-gradient(180deg, rgba(3, 9, 20, 0), rgba(3, 9, 20, .42));
+}
+@media (prefers-reduced-motion: no-preference) {
+  html[data-page="news"] body::before { animation: kbHalftone 20s linear infinite; }
+}
+@keyframes kbHalftone {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to   { background-position: 18px 18px, 0 46px, 46px 0; }
+}
+
+/* ============================================================
+ * GALLERY — violet mosaic: a soft tile grid that shifts like a contact sheet
+ * ============================================================ */
+html[data-page="gallery"] {
+  background:
+    radial-gradient(1000px 660px at 12% 6%, rgba(168, 85, 247, .20), transparent 60%),
+    radial-gradient(780px 540px at 92% 90%, rgba(14, 165, 233, .14), transparent 62%),
+    linear-gradient(196deg, #150a2b 0%, #1d1040 38%, #150b2c 70%, #0d0620 100%);
+}
+html[data-page="gallery"] body::before {
+  opacity: .5;
+  background-image:
+    linear-gradient(rgba(196, 181, 253, .07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(196, 181, 253, .07) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, rgba(244, 114, 182, .14) 2px, transparent 2.6px);
+  background-size: 96px 96px, 96px 96px, 96px 96px;
+}
+html[data-page="gallery"] body::after {
+  background-image:
+    radial-gradient(circle, rgba(168, 85, 247, .26), transparent 66%),
+    radial-gradient(circle, rgba(56, 189, 248, .16), transparent 64%),
+    linear-gradient(180deg, rgba(12, 5, 28, 0), rgba(12, 5, 28, .5));
+}
+@media (prefers-reduced-motion: no-preference) {
+  html[data-page="gallery"] body::before { animation: kbMosaic 40s ease-in-out infinite alternate; }
+}
+@keyframes kbMosaic {
+  from { background-position: 0 0, 0 0, 0 0; }
+  to   { background-position: 96px 0, 0 96px, 48px 48px; }
+}
+
+/* ============================================================
+ * CONTACT — cyan radar: pulsing rings spreading from the corner
+ * ============================================================ */
+html[data-page="contact"] {
+  background:
+    radial-gradient(940px 620px at 84% 10%, rgba(34, 211, 238, .20), transparent 60%),
+    radial-gradient(760px 520px at 8% 90%, rgba(59, 130, 246, .14), transparent 62%),
+    linear-gradient(176deg, #041824 0%, #06283a 38%, #04192a 70%, #03111c 100%);
+}
+html[data-page="contact"] body::before {
+  opacity: .48;
+  background-image:
+    repeating-radial-gradient(circle at 88% 8%, rgba(103, 232, 249, .12) 0 1px, transparent 1px 74px),
+    repeating-linear-gradient(90deg, rgba(103, 232, 249, .04) 0 1px, transparent 1px 52px);
+  background-size: 100% 100%, 100% 100%;
+}
+html[data-page="contact"] body::after {
+  background-image:
+    radial-gradient(circle, rgba(34, 211, 238, .26), transparent 66%),
+    radial-gradient(circle, rgba(59, 130, 246, .16), transparent 64%),
+    linear-gradient(180deg, rgba(2, 14, 22, 0), rgba(2, 14, 22, .46));
+}
+@media (prefers-reduced-motion: no-preference) {
+  html[data-page="contact"] body::before { animation: kbRadar 12s ease-out infinite; }
+}
+@keyframes kbRadar {
+  0%   { opacity: .18; transform: scale(.94); }
+  60%  { opacity: .52; }
+  100% { opacity: .18; transform: scale(1.06); }
+}
+
+/* ============================================================
+ * STAFF — brushed steel: woven diagonal threads
+ * ============================================================ */
+html[data-page="staff"] {
+  background:
+    radial-gradient(900px 600px at 20% 4%, rgba(148, 163, 184, .18), transparent 58%),
+    radial-gradient(700px 500px at 94% 86%, rgba(212, 175, 55, .12), transparent 60%),
+    linear-gradient(188deg, #0e1420 0%, #161e2c 38%, #0f1521 70%, #0a0f18 100%);
+}
+html[data-page="staff"] body::before {
+  opacity: .45;
+  background-image:
+    repeating-linear-gradient(63deg, rgba(203, 213, 225, .06) 0 2px, transparent 2px 12px),
+    repeating-linear-gradient(-63deg, rgba(203, 213, 225, .045) 0 2px, transparent 2px 12px);
+  background-size: 100% 100%, 100% 100%;
+}
+html[data-page="staff"] body::after {
+  background-image:
+    radial-gradient(circle, rgba(148, 163, 184, .22), transparent 66%),
+    radial-gradient(circle, rgba(212, 175, 55, .14), transparent 64%),
+    linear-gradient(180deg, rgba(6, 9, 15, 0), rgba(6, 9, 15, .48));
+}
+@media (prefers-reduced-motion: no-preference) {
+  html[data-page="staff"] body::before { animation: kbWeave 28s ease-in-out infinite alternate; }
+}
+@keyframes kbWeave {
+  from { transform: translate3d(0, 0, 0) skewX(0deg); }
+  to   { transform: translate3d(-1.6%, 1.2%, 0) skewX(1.4deg); }
+}
+
+/* ============================================================
+ * PORTAL GATEWAY — a single keyhole beam over deep slate
+ * ============================================================ */
+html[data-page="portal"] {
+  background:
+    radial-gradient(760px 520px at 50% 0%, rgba(56, 189, 248, .18), transparent 62%),
+    conic-gradient(from 200deg at 50% -10%, rgba(14, 165, 233, .16), transparent 24%, rgba(212, 175, 55, .10) 46%, transparent 70%),
+    linear-gradient(180deg, #071426 0%, #0b1c31 44%, #061120 100%);
+}
+html[data-page="portal"] body::before {
+  opacity: .4;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(56, 189, 248, .05) 0 1px, transparent 1px 30px),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, .05) 1px, transparent 1.5px);
+  background-size: 30px 100%, 22px 22px;
+}
+html[data-page="portal"] body::after {
+  background-image:
+    radial-gradient(circle, rgba(56, 189, 248, .22), transparent 62%),
+    radial-gradient(circle, rgba(212, 175, 55, .12), transparent 60%),
+    linear-gradient(180deg, rgba(3, 9, 18, 0), rgba(3, 9, 18, .4));
+}
+
+/* ============================================================
+ * SIGN-IN — a spotlight that sweeps once, then holds
+ * ============================================================ */
+html[data-page="signin"] {
+  background:
+    radial-gradient(680px 460px at 22% 12%, rgba(99, 102, 241, .20), transparent 62%),
+    radial-gradient(620px 460px at 82% 84%, rgba(14, 165, 233, .16), transparent 62%),
+    linear-gradient(160deg, #070d1c 0%, #0d1530 46%, #070d1c 100%);
+}
+html[data-page="signin"] body::before {
+  opacity: .38;
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(165, 180, 252, .12) 1px, transparent 1.6px),
+    repeating-linear-gradient(115deg, rgba(165, 180, 252, .04) 0 1px, transparent 1px 26px);
+  background-size: 24px 24px, 100% 100%;
+}
+html[data-page="signin"] body::after {
+  background-image:
+    radial-gradient(circle, rgba(99, 102, 241, .24), transparent 64%),
+    radial-gradient(circle, rgba(14, 165, 233, .16), transparent 62%),
+    linear-gradient(180deg, rgba(4, 7, 18, 0), rgba(4, 7, 18, .4));
+}
+@media (prefers-reduced-motion: no-preference) {
+  html[data-page="signin"] body::after { animation: kbSpotlight 26s ease-in-out infinite alternate; }
+}
+@keyframes kbSpotlight {
+  from { transform: translate3d(-3%, 0, 0) scale(1.02); }
+  to   { transform: translate3d(3%, -2%, 0) scale(1.08); }
+}
+
+/* ============================================================
+ * Reduced motion: keep every colour and pattern, drop the movement.
+ * ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  body::before, body::after { animation: none !important; }
+}
+
+/* Small screens: one layer of motion is plenty, and the orbs cost battery. */
+@media (max-width: 700px) {
+  body::after { opacity: .34; }
+  body::before { opacity: .34; }
+}

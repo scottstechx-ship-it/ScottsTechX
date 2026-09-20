@@ -98,6 +98,10 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 
+  // Pages that build cards after a fetch can call this to arm the reveal on
+  // the new elements (init is idempotent — already-armed nodes are skipped).
+  window.__kaRefresh = init;
+
   // FAILSAFE: nothing may stay invisible. If any reveal-style element is still
   // hidden 2.5s after load (missed observer, JS error elsewhere, odd scroll
   // restoration), force it visible.

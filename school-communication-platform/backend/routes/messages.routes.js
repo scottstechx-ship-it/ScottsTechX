@@ -90,7 +90,7 @@ router.get('/conversations', authenticate, (req, res) => {
     } else {
       const participants = participantsFor(c.id, req.user.id);
       c.participants = participants.slice(0, 8); // cap payload for large groups
-      c.memberCount = participants.length;
+      c.memberCount = participants.length + 1;   // + the viewer
       if (c.type === 'class' && c.class_id) {
         const cls = get('SELECT name, stream FROM classes WHERE id = ?', [c.class_id]);
         c.title = cls ? `${cls.name} ${cls.stream}` : (c.title || 'Class Chat');
@@ -108,6 +108,27 @@ router.get('/conversations/:id', authenticate, (req, res) => {
   if (!conv) return res.status(404).json({ error: 'Conversation not found.' });
   if (!isParticipant(req.user.id, convId)) {
     return res.status(403).json({ error: 'You do not have access to this conversation.' });
+  }
+  // muted/archived live on conversation_participants, so a plain
+  // `SELECT * FROM conversations` left the client with `undefined` and the
+  // mute/archive buttons always showed the wrong state.
+  const mine = get(
+    'SELECT archived, muted FROM conversation_participants WHERE conversation_id = ? AND user_id = ?',
+    [convId, req.user.id]
+  ) || {};
+  conv.archived = mine.archived || 0;
+  conv.muted = mine.muted || 0;
+
+  // Same shape the conversation list returns, so the UI never has to guess.
+  const participants = participantsFor(convId, req.user.id);
+  conv.participants = participants.slice(0, 8);
+  conv.memberCount = participants.length + 1;
+  if (conv.type === 'direct') {
+    conv.title = participants[0] ? participants[0].full_name : conv.title;
+    conv.avatar = participants[0] ? participants[0].profile_picture : null;
+  } else if (conv.type === 'class' && conv.class_id) {
+    const cls = get('SELECT name, stream FROM classes WHERE id = ?', [conv.class_id]);
+    conv.title = cls ? `${cls.name} ${cls.stream}` : (conv.title || 'Class Chat');
   }
 
   const messages = all(
@@ -150,10 +171,13 @@ router.get('/search', authenticate, (req, res) => {
 
 /** GET /api/messages/unread-count */
 router.get('/unread-count', authenticate, (req, res) => {
+  // Archived conversations are hidden from the list, so their unread messages
+  // must not keep the badge lit — otherwise the badge and the list disagree.
   const row = get(
     `SELECT COUNT(*) AS unread FROM messages m
      JOIN conversation_participants cp ON cp.conversation_id = m.conversation_id AND cp.user_id = ?
      WHERE m.sender_id != ?
+       AND cp.archived = 0
        AND NOT EXISTS (SELECT 1 FROM message_reads mr WHERE mr.message_id = m.id AND mr.user_id = ?)`,
     [req.user.id, req.user.id, req.user.id]
   );

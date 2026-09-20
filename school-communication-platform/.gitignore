@@ -1,7 +1,15 @@
 node_modules/
 .env
+
+# --- runtime data (never committed; back it up or mount a disk) ------------
 backend/data/
 backend/uploads/*
 !backend/uploads/.gitkeep
+var/
+*.db
+*.db-wal
+*.db-shm
+backups/
+
 *.log
 .DS_Store

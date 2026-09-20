@@ -67,6 +67,7 @@ function initNavbar() {
 // ── SCROLL REVEAL ─────────────────────────────────────────────────
 function initScrollReveal() {
   const reveals = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+  if (typeof IntersectionObserver !== 'function') { reveals.forEach(el => el.classList.add('visible')); return; }
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -80,6 +81,7 @@ function initScrollReveal() {
 // ── COUNTER ANIMATION ─────────────────────────────────────────────
 function initCounters() {
   const counters = document.querySelectorAll('.counter-number, .hero-stat-number, .stat-card-content h3, .counter');
+  if (typeof IntersectionObserver !== 'function') { counters.forEach(el => { const t = parseInt(el.getAttribute('data-target'), 10); if (!isNaN(t)) el.textContent = t.toLocaleString(); }); return; }
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -261,6 +263,7 @@ function initMarquee() {
 // ── PROGRESS BARS ─────────────────────────────────────────────────
 function initProgressBars() {
   const bars = document.querySelectorAll('.progress-fill');
+  if (typeof IntersectionObserver !== 'function') { bars.forEach(el => { el.style.width = el.dataset.width || '0%'; }); return; }
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
