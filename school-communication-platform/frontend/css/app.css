@@ -490,12 +490,16 @@ html[data-theme="dark"] .doc-preview { background: #0a0f1a; color: var(--text); 
 /* video preview tiles in the website manager keep a dark letterbox in both themes */
 .video-thumb { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; background: #0f172a; }
 
-/* ---------- PHONES: stop iOS zooming the layout on focus ----------
+/* ---------- PHONES: stop iOS zooming the dashboard on focus ----------
    iOS Safari zooms the whole page whenever a field with a font-size below
-   16px receives focus, which throws the dashboard (and every sign-in / reset
-   card) off-centre and leaves the user pinching back out. */
+   16px receives focus, which throws the layout off-centre and leaves the user
+   pinching back out. Scoped to the dashboard shell (.layout / .content) and
+   its dialogs (.modal-backdrop) so pages that merely reuse this stylesheet —
+   the sign-in and reset cards — are left exactly as they were. */
 @media (max-width: 768px) {
-  input, select, textarea, .composer textarea { font-size: 16px; }
+  .layout input, .layout select, .layout textarea,
+  .content input, .content select, .content textarea,
+  .modal-backdrop input, .modal-backdrop select, .modal-backdrop textarea { font-size: 16px; }
 }
 
 /* ============================================================
