@@ -51,4 +51,4 @@ needed). The remaining suites talk to a server on `http://localhost:4000`:
 | `npm test` | API behaviour (57 tests), frontend smoke, every page resolves its assets, no markup/CSS defects anywhere |
 | `npm run test:ui` | dashboard dialogs, editors and validation behave (no unhandled errors), delete flows, every link/button/form is wired |
 | `npm run test:deep` | every view of all 10 dashboards boots and renders, then the same views are re-rendered at 390px and 1280px and checked for layout defects (unwrapped/unlabelled tables, duplicate ids, unnamed icon buttons, missing alt text) |
-| `node tests/_audit.js <role> [width]` | clicks every control in every view as that role at 1280px and 390px and reports errors, unhandled rejections and buttons that do nothing |
+| `node tests/_audit.js <role> [width]` | clicks every control in every view as that role at 1280px and 390px and reports errors, unhandled rejections and buttons that do nothing. `<role>` is a partial match: `super-admin`, `admin`, `teacher`, `student`, `parent`. A role that matches nothing exits with code 2 instead of reporting a vacuous pass |

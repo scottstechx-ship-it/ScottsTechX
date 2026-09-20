@@ -101,9 +101,17 @@ const ROLES = [
 (async () => {
   const onlyRole = process.argv[2];
   const onlyWidth = process.argv[3] ? Number(process.argv[3]) : null;
+  // "super-admin", "super admin" and "super" all select the same dashboard;
+  // a role filter that matches nothing is an ERROR, not a silent pass.
+  const norm = (s) => String(s).toLowerCase().replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim();
+  const wanted = onlyRole ? norm(onlyRole) : '';
+  const matched = wanted ? ROLES.filter((r) => norm(r.name).includes(wanted)) : ROLES;
+  if (wanted && matched.length === 0) {
+    console.error(`No dashboard matches "${onlyRole}". Available: ${ROLES.map((r) => r.name).join(', ')}`);
+    process.exit(2);
+  }
   let problems = 0;
-  for (const role of ROLES) {
-    if (onlyRole && !role.name.toLowerCase().includes(onlyRole)) continue;
+  for (const role of matched) {
     for (const width of (onlyWidth ? [onlyWidth] : [1280, 390])) {
       console.log(`\n===== ${role.name} @ ${width}px =====`);
       const { window, errors, warns, restore } = await boot({ ...role, width });
