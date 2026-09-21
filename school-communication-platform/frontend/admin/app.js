@@ -426,10 +426,9 @@
   // ---------- IMPORT CENTER: students, teachers, fees + templates ----------
   async function downloadTemplate(type) {
     try {
-      // Session cookie is sent automatically; no token in JS any more.
-      const res = await fetch(`${API.base}/api/imports/template.csv?type=${type}`, {
-        credentials: 'include',
-      });
+      // Through the API client, so it gets the timeout, retry, session-expiry
+      // and connection-notice handling instead of a bare fetch that can hang.
+      const res = await API.raw(`/api/imports/template.csv?type=${type}`);
       if (!res.ok) throw new Error('Could not download the template.');
       const blob = await res.blob();
       const a = document.createElement('a');
@@ -695,7 +694,7 @@
       body.querySelector('[data-back]').onclick = () => { step = 4; setProgress(); renderValidate(); };
       body.querySelector('[data-import]').onclick = async () => {
         try {
-          const result = await API.post('/api/imports/import', { importId, mapping });
+          const result = await API.post('/api/imports/import', { importId, mapping }, { timeoutMs: 120000 });
           step = 6;
           setProgress();
           const c = result.counts;

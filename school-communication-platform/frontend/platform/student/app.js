@@ -194,7 +194,33 @@
   }
   async function renderResults(content) {
     content.innerHTML = `<div class="view active"></div>`;
-    await window.Academics.ExamsView.studentView(content.firstElementChild);
+    const box = content.firstElementChild;
+    await window.Academics.ExamsView.studentView(box);
+    await renderMyReportCards(box);
+  }
+
+  /** The student's own report cards, once the school has released them. */
+  async function renderMyReportCards(box) {
+    let data;
+    try { data = await API.get('/api/reports/my'); } catch { return; }
+    const cards = (data.students || []).flatMap((s) => s.reports || []);
+    if (!cards.length) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'card';
+    wrap.innerHTML = `
+      <strong>Report cards</strong>
+      <div class="muted" style="font-size:13px;margin:4px 0 8px">Released by the school — open one to read or save it.</div>
+      ${cards.map((r) => `
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--border)">
+          <span class="badge blue">${UI.esc(r.term || '')} ${UI.esc(r.academic_year || '')}</span>
+          ${r.average != null ? `<span class="muted" style="font-size:12.5px">avg ${r.average}%${r.position ? ` · position ${r.position}` : ''}</span>` : ''}
+          <span style="flex:1"></span>
+          <button class="btn sm" data-open="${r.id}">Open</button>
+        </div>`).join('')}`;
+    wrap.querySelectorAll('[data-open]').forEach((b) => {
+      b.onclick = () => window.open(`${API.base || ''}/api/reports/${b.dataset.open}/file`, '_blank');
+    });
+    box.appendChild(wrap);
   }
   async function renderAttendance(content) {
     content.innerHTML = `<div class="view active"></div>`;

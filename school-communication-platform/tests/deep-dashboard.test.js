@@ -67,8 +67,21 @@ async function bootDashboard({ username, password, htmlRel, appRel, width = 1280
   console.error = (...a) => { errors.push(a.join(' ')); };
 
 
-  const scripts = ['js/config.js', 'js/icons.js', 'js/api.js', 'js/theme.js', 'js/ui.js', 'js/socket-client.js',
-    'js/components/messaging.js', 'js/components/documents.js', 'js/components/announcements.js',
+  // Load exactly what the page loads, in the order it declares: a component that
+  // is added to a dashboard but forgotten here would otherwise go untested.
+  const dirRel = htmlRel.replace('/index.html', '');
+  const declared = [];
+  for (const m of html.matchAll(/<script src="([^"]+)"/g)) {
+    const src = m[1].replace(/^\//, '');
+    if (src === 'socket.io/socket.io.js') continue;
+    // page scripts are either root-absolute (/js/…) or relative to the dashboard
+    for (const candidate of [src, `${dirRel}/${src}`]) {
+      if (fs.existsSync(path.join(ROOT, 'frontend', candidate)) && !declared.includes(candidate)) declared.push(candidate);
+    }
+  }
+  if (!declared.includes(appRel)) declared.push(appRel);
+  const scripts = declared.length ? declared : ['js/config.js', 'js/icons.js', 'js/api.js', 'js/theme.js', 'js/ui.js',
+    'js/socket-client.js', 'js/components/messaging.js', 'js/components/documents.js', 'js/components/announcements.js',
     'js/components/academics.js', 'js/components/users.js', 'js/components/website.js', appRel];
   for (const rel of scripts) {
     if (!fs.existsSync(path.join(ROOT, 'frontend', rel))) continue;

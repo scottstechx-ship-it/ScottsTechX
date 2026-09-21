@@ -1252,5 +1252,7 @@
     },
   };
 
-  window.Academics = { AttendanceView, AssignmentsView, ExamsView, TimetableView, FeesView, SubjectsView, attBadge, statusBadge };
+  // Guarded: a view that fails (no network, server error) explains itself and
+  // offers a retry instead of leaving a blank panel and a console error.
+  window.Academics = UI.guardViews({ AttendanceView, AssignmentsView, ExamsView, TimetableView, FeesView, SubjectsView, attBadge, statusBadge });
 })();

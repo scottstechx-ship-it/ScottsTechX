@@ -140,5 +140,6 @@
     return `<span class="badge ${map[status] || 'gray'}">${UI.esc(status)}</span>`;
   }
 
-  window.UsersView = UsersView;
+  // Guarded so a failed load explains itself instead of a blank table.
+  window.UsersView = window.UI.guardViews({ UsersView }).UsersView;
 })();

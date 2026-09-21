@@ -42,6 +42,7 @@
     { key: 'messages', label: 'Messages', icon: 'messages', section: 'Main' },
     { key: 'documents', label: 'Documents', icon: 'document', section: 'Main' },
     { key: 'announcements', label: 'Announcements', icon: 'announcements', section: 'Main' },
+    { key: 'reports', label: 'Report Cards', icon: 'exams', section: 'Family' },
     { key: 'children', label: 'My Children', icon: 'parents', section: 'Family' },
     { key: 'notifications', label: 'Notifications', icon: 'notifications', section: 'Family' },
     { key: 'profile', label: 'Profile', icon: 'profile', section: 'Account' },
@@ -73,7 +74,7 @@
 
   async function show(key) {
     layout.setActive(key);
-    const titles = { home: 'Home', messages: 'Messages', documents: 'Documents', announcements: 'Announcements', children: 'My Children', notifications: 'Notifications', profile: 'Profile' };
+    const titles = { home: 'Home', messages: 'Messages', documents: 'Documents', announcements: 'Announcements', reports: 'Report Cards', children: 'My Children', notifications: 'Notifications', profile: 'Profile' };
     layout.setTitle(titles[key] || 'Dashboard');
     const content = layout.content;
 
@@ -81,6 +82,7 @@
     if (key === 'messages') return renderMessages(content);
     if (key === 'documents') return renderDocuments(content);
     if (key === 'announcements') return renderAnnouncements(content);
+    if (key === 'reports') return renderReports(content);
     if (key === 'children') return renderChildren(content);
     if (key === 'notifications') return renderNotifications(content);
     if (key === 'profile') return renderProfile(content);
@@ -104,6 +106,49 @@
     }));
   }
   let activeViewName = () => 'home';
+
+  // --------------------------------------------------------- REPORT CARDS
+  async function renderReports(content) {
+    activeViewName = () => 'reports';
+    content.innerHTML = `<div class="view active"></div>`;
+    const box = content.firstElementChild;
+    box.innerHTML = '<div class="empty-state">Loading report cards…</div>';
+    let data;
+    try { data = await API.get('/api/reports/my'); }
+    catch (e) { box.innerHTML = `<div class="empty-state">${UI.esc(e.message)}</div>`; return; }
+
+    const students = data.students || [];
+    const cards = students.flatMap((s) => (s.reports || []).map((r) => ({ ...r, studentName: s.studentName })));
+    if (!cards.length) {
+      box.innerHTML = `<div class="empty-state"><div class="big">📄</div>No report cards have been released yet.</div>`;
+      return;
+    }
+    box.innerHTML = `
+      <div class="card"><strong>${cards.length} report card${cards.length === 1 ? '' : 's'}</strong>
+        <div class="muted" style="font-size:13px;margin-top:4px">Report cards appear here as soon as the school releases them. Open one to read or save it.</div>
+      </div>
+      ${students.filter((s) => (s.reports || []).length).map((s) => `
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <strong style="flex:1">${UI.esc(s.studentName)}</strong>
+            <span class="muted" style="font-size:12.5px">${UI.esc(s.studentCode || '')}</span>
+          </div>
+          <div style="margin-top:8px">
+            ${s.reports.map((r) => `
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 0;border-top:1px solid var(--border)">
+                <span class="badge blue">${UI.esc(r.term || '')} ${UI.esc(r.academic_year || '')}</span>
+                ${r.average != null ? `<span class="muted" style="font-size:12.5px">avg ${r.average}%${r.position ? ` · position ${r.position}${r.class_size ? `/${r.class_size}` : ''}` : ''}</span>` : ''}
+                <span style="flex:1"></span>
+                <button class="btn sm" data-open="${r.id}">Open</button>
+                <button class="btn ghost sm" data-save="${r.id}">Download</button>
+              </div>`).join('')}
+          </div>
+        </div>`).join('')}`;
+
+    const open = (id) => window.open(`${API.base || ''}/api/reports/${id}/file`, '_blank');
+    box.querySelectorAll('[data-open]').forEach((b) => { b.onclick = () => open(b.dataset.open); });
+    box.querySelectorAll('[data-save]').forEach((b) => { b.onclick = () => open(b.dataset.save); });
+  }
 
   // ------------------------------------------------------------------ HOME
   async function renderHome(content) {

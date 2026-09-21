@@ -806,8 +806,18 @@
       setBadge('messages', u.messages || 0);
       setBadge('notifications', u.notifications || 0);
     });
+    // Counts only matter while somebody is looking: skip the poll in a hidden
+    // tab and refresh immediately when the tab comes back, so returning to a
+    // dashboard shows the current numbers instead of up to 30s-old ones.
+    const unreadMs = Number(window.APP_CONFIG.UNREAD_POLL_MS) || 30000;
+    const pollTick = () => { if (!document.hidden) refreshUnreadCounts(); };
     refreshUnreadCounts();
-    setInterval(refreshUnreadCounts, 30000);
+    setInterval(pollTick, unreadMs);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) return;
+      refreshUnreadCounts();
+      refreshInboxBadges();
+    });
 
     // Website intake badges: the two public-form inboxes must advertise
     // themselves on the sidebar/bottom nav, otherwise a parent's application
@@ -822,17 +832,34 @@
       } catch { /* offline / not permitted — leave the badges as they are */ }
     }
     refreshInboxBadges();
-    setInterval(refreshInboxBadges, 60000);
+    setInterval(() => { if (!document.hidden) refreshInboxBadges(); }, 60000);
+
+    // "Try again" on the connection notice reloads the section the user is
+    // looking at, so a view that failed while the network was down recovers
+    // without the user having to guess which tab to press.
+    let currentKey = null;
+    const retryCurrent = () => { if (currentKey) onNav(currentKey); };
+    if (window.NetStatus && !window.__netRetryWired) {
+      window.__netRetryWired = true;
+      window.NetStatus.onRetry(() => {
+        if (navigator.onLine === false) return;     // nothing to retry yet
+        retryCurrent();
+        refreshUnreadCounts();
+      });
+      window.addEventListener('online', () => { retryCurrent(); });
+    }
 
     return {
       content,
       setTitle: (t) => { topbar.querySelector('#page-title').textContent = t; },
       setActive: (key) => {
+        currentKey = key;
         sidebar.querySelectorAll('.nav-item').forEach((b) => b.classList.toggle('active', b.dataset.nav === key));
         document.querySelectorAll('.bn-item').forEach((b) => b.classList.toggle('active', b.dataset.bn === key));
       },
       setBadge,
       sidebar,
+      retryCurrent,
     };
   }
 
@@ -868,6 +895,61 @@
       menu.querySelectorAll('.notif-item').forEach((i) => i.classList.remove('unread'));
       refreshUnreadCounts();
     };
+  }
+
+  /**
+   * A failed view must SAY SO. Before this, a dropped connection left the panel
+   * showing its loading skeleton forever and threw an unhandled rejection into
+   * the console, so a teacher whose signal dropped saw a dashboard that simply
+   * stopped working. Every view object exposed by a component is wrapped here:
+   * any failure renders a short explanation with a Try again button.
+   */
+  function renderViewError(box, err, retry) {
+    if (!box || !box.isConnected) return;
+    const offline = err && (err.code === 'NETWORK' || err.code === 'TIMEOUT');
+    const message = offline
+      ? 'Cannot reach the school server. Check your connection — nothing here has been lost.'
+      : ((err && err.message) || 'Something went wrong while opening this section.');
+    const card = el(`<div class="card" style="border-left:4px solid var(--danger,#dc2626)">
+      <h3 style="margin:0 0 4px">${esc(offline ? 'No connection' : 'Could not open this section')}</h3>
+      <div class="doc-meta">${esc(message)}</div>
+      <button type="button" class="btn btn-sm" style="margin-top:10px">Try again</button>
+    </div>`);
+    card.querySelector('button').addEventListener('click', async (ev) => {
+      const btn = ev.currentTarget;
+      btn.disabled = true;
+      btn.textContent = 'Retrying…';
+      try { await retry(); } catch { /* the guard will render the error again */ }
+      btn.disabled = false;
+      btn.textContent = 'Try again';
+    });
+    box.innerHTML = '';
+    box.appendChild(card);
+  }
+
+  /**
+   * Wrap a component's view objects so every method fails visibly, never
+   * silently. Non-object values (helpers like attBadge) pass straight through.
+   */
+  function guardViews(api) {
+    const guarded = {};
+    for (const [name, view] of Object.entries(api || {})) {
+      if (!view || typeof view !== 'object') { guarded[name] = view; continue; }
+      guarded[name] = {};
+      for (const [method, fn] of Object.entries(view)) {
+        if (typeof fn !== 'function') { guarded[name][method] = fn; continue; }
+        guarded[name][method] = async function guardedView(box, ...rest) {
+          try {
+            return await fn.call(this, box, ...rest);
+          } catch (e) {
+            if (window.NetStatus && (e.code === 'NETWORK' || e.code === 'TIMEOUT')) window.NetStatus.offline();
+            else toast(e.message || 'Something went wrong.', 'error');
+            renderViewError(box, e, () => guarded[name][method].call(guarded[name], box, ...rest));
+          }
+        };
+      }
+    }
+    return guarded;
   }
 
   /**
@@ -1032,5 +1114,6 @@
     onUnreadChange, openChangePassword, openAvatarUpload, profileSettingsPanel, openPrintable,
     lockScroll, unlockScroll,
     navigateToLink,   // used by the notification bell; exported so it can be tested
+    guardViews, renderViewError,
   };
 })();

@@ -133,6 +133,53 @@ function backfillMessageAttachmentAccess() {
 }
 try { backfillMessageAttachmentAccess(); } catch { /* tables may not exist yet on very first boot */ }
 
+// ---- report cards -------------------------------------------------------
+// A report card is the deliverable that goes to a parent: either an imported
+// file (the school's own PDF/scan) or one generated from imported marks.
+// `sent_at` records delivery so the office can see who still needs theirs.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS report_cards (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    -- NULL while an imported file has not been matched to a child yet
+    student_id INTEGER,
+    class_id INTEGER,
+    term TEXT,
+    academic_year TEXT,
+    source TEXT NOT NULL DEFAULT 'marks',
+    file_name TEXT,
+    original_name TEXT,
+    mime_type TEXT,
+    size INTEGER,
+    storage_path TEXT,
+    total REAL,
+    average REAL,
+    position INTEGER,
+    class_size INTEGER,
+    teacher_comment TEXT,
+    sent_at TEXT,
+    sent_by INTEGER,
+    created_by INTEGER,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(student_id, term, academic_year)
+  );
+  CREATE INDEX IF NOT EXISTS idx_report_cards_term ON report_cards(term, academic_year);
+  CREATE INDEX IF NOT EXISTS idx_report_cards_student ON report_cards(student_id);
+  CREATE TABLE IF NOT EXISTS report_card_subjects (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    report_card_id INTEGER NOT NULL,
+    subject TEXT NOT NULL,
+    score REAL,
+    out_of REAL DEFAULT 100,
+    percentage REAL,
+    grade TEXT,
+    remarks TEXT
+  );
+  CREATE INDEX IF NOT EXISTS idx_report_subjects_card ON report_card_subjects(report_card_id);
+`);
+ensureColumn('report_cards', 'delivery_note', 'TEXT');
+ensureColumn('report_cards', 'import_batch', 'TEXT');
+
+
 // ---- helpers ----------------------------------------------------------
 const all = (sql, params = []) => db.prepare(sql).all(params);
 const get = (sql, params = []) => db.prepare(sql).get(params);
@@ -144,6 +191,60 @@ function tx(fn) {
 }
 
 /** Get one setting value parsed as JSON (or undefined). */
+/**
+ * Older databases were created with report_cards.student_id NOT NULL, which made
+ * it impossible to park an imported file that could not be matched to a child.
+ * SQLite cannot drop NOT NULL in place, so rebuild the table once, keeping rows.
+ */
+(function relaxReportCardStudent() {
+  const studentId = all('PRAGMA table_info(report_cards)').find((c) => c.name === 'student_id');
+  if (!studentId || !studentId.notnull) return;
+  try {
+    tx(() => {
+      run('DROP INDEX IF EXISTS idx_report_cards_term');
+      run('DROP INDEX IF EXISTS idx_report_cards_student');
+      run('ALTER TABLE report_cards RENAME TO report_cards_legacy');
+      run(`CREATE TABLE report_cards (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        student_id INTEGER,
+        class_id INTEGER,
+        term TEXT,
+        academic_year TEXT,
+        source TEXT NOT NULL DEFAULT 'marks',
+        file_name TEXT,
+        original_name TEXT,
+        mime_type TEXT,
+        size INTEGER,
+        storage_path TEXT,
+        total REAL,
+        average REAL,
+        position INTEGER,
+        class_size INTEGER,
+        teacher_comment TEXT,
+        sent_at TEXT,
+        sent_by INTEGER,
+        created_by INTEGER,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        delivery_note TEXT,
+        import_batch TEXT,
+        UNIQUE(student_id, term, academic_year)
+      )`);
+      run(`INSERT INTO report_cards (id, student_id, class_id, term, academic_year, source, file_name, original_name,
+             mime_type, size, storage_path, total, average, position, class_size, teacher_comment, sent_at, sent_by,
+             created_by, created_at, delivery_note, import_batch)
+           SELECT id, student_id, class_id, term, academic_year, source, file_name, original_name,
+             mime_type, size, storage_path, total, average, position, class_size, teacher_comment, sent_at, sent_by,
+             created_by, created_at, delivery_note, import_batch FROM report_cards_legacy`);
+      run('DROP TABLE report_cards_legacy');
+      run('CREATE INDEX IF NOT EXISTS idx_report_cards_term ON report_cards(term, academic_year)');
+      run('CREATE INDEX IF NOT EXISTS idx_report_cards_student ON report_cards(student_id)');
+    });
+    console.log('[db] report_cards rebuilt so unmatched report files can be parked');
+  } catch (e) {
+    console.error('[db] report_cards migration skipped:', e.message);
+  }
+})();
+
 function getSetting(key, fallback) {
   const row = get('SELECT value FROM settings WHERE key = ?', [key]);
   if (!row) return fallback;

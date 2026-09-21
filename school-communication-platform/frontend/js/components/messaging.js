@@ -160,6 +160,16 @@
       this.loadConversations({ quiet: true });
     }
 
+    /**
+     * Did the thread already contain this text (sent by us) when the request
+     * timed out? Used to avoid sending the same message twice on a slow link.
+     */
+    threadHasContent(convId, content) {
+      if (convId !== this.activeConvId) return false;
+      const mine = window.API.getUser && window.API.getUser();
+      return (this.lastMsgs || []).some((m) => m.content === content && (!mine || m.sender_id === mine.id));
+    }
+
     async loadThread(convId, { quiet = false } = {}) {
       let data;
       try {
@@ -186,6 +196,7 @@
       const cnt = thread.querySelector('#thread-count');
       if (cnt) cnt.textContent = `${msgs.length} message${msgs.length === 1 ? '' : 's'}${conv.type === 'channel' ? ' · announcement channel' : ''}`;
 
+      this.lastMsgs = msgs;
       this.renderMessages(msgs, conv);
 
       // mark as read
@@ -539,6 +550,12 @@
         await this.loadThread(convId, { quiet: true });   // replaces the pending bubble with the real one
         this.loadConversations({ quiet: true });
       } catch (e) {
+        // A slow link can time out AFTER the server stored the message. Look
+        // before offering "tap to retry", otherwise the user sends it twice.
+        if (e && e.code === 'TIMEOUT') {
+          const landed = await this.loadThread(convId, { quiet: true }).then(() => this.threadHasContent(convId, content)).catch(() => false);
+          if (landed) { this.loadConversations({ quiet: true }); return; }
+        }
         if (pending) {
           pending.classList.add('failed');
           pending.querySelector('.meta').innerHTML = '<span style="color:#f87171"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg> failed — tap to retry</span>';

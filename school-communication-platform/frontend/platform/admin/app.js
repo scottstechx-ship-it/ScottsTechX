@@ -23,7 +23,7 @@
     { key: 'documents', label: 'Documents', icon: 'document', section: 'Main' },
     { key: 'announcements', label: 'Announcements', icon: 'announcements', section: 'Main' },
     { key: 'students', label: 'Students', icon: 'students', section: 'Management' },
-    { key: 'import', label: 'Import Students', icon: 'import', section: 'Management' },
+    { key: 'import', label: 'Import Center', icon: 'import', section: 'Management' },
     { key: 'users', label: 'Users & Staff', icon: 'users', section: 'Management' },
     { key: 'teachers', label: 'Teachers', icon: 'teachers', section: 'Management' },
     { key: 'parents', label: 'Parents', icon: 'parents', section: 'Management' },
@@ -34,6 +34,7 @@
     { key: 'exams', label: 'Exams & Results', icon: 'exams', section: 'Academic' },
     { key: 'timetable', label: 'Timetable', icon: 'timetable', section: 'Academic' },
     { key: 'fees', label: 'Fees & Payments', icon: 'fees', section: 'Academic' },
+    { key: 'reports', label: 'Report Cards', icon: 'exams', section: 'Academic' },
     { key: 'admissions', label: 'Admissions', icon: 'admissions', section: 'Website' },
     { key: 'website-news', label: 'Website News', icon: 'news', section: 'Website' },
     { key: 'website-contact', label: 'Website Messages', icon: 'mail', section: 'Website' },
@@ -58,7 +59,7 @@
 
   async function show(key) {
     layout.setActive(key);
-    const titles = { home: 'Home', messages: 'Messages', documents: 'Documents', announcements: 'Announcements', students: 'Students', import: 'Import Students', users: 'Users & Staff', teachers: 'Teachers', parents: 'Parents', classes: 'Classes', subjects: 'Subjects', attendance: 'Attendance', assignments: 'Assignments', exams: 'Exams & Results', timetable: 'Timetable', fees: 'Fees & Payments', admissions: 'Admission Applications', 'website-news': 'Website News', 'website-contact': 'Website Messages', notifications: 'Notifications', profile: 'Profile' };
+    const titles = { home: 'Home', messages: 'Messages', documents: 'Documents', announcements: 'Announcements', students: 'Students', import: 'Import Center', reports: 'Report Cards', users: 'Users & Staff', teachers: 'Teachers', parents: 'Parents', classes: 'Classes', subjects: 'Subjects', attendance: 'Attendance', assignments: 'Assignments', exams: 'Exams & Results', timetable: 'Timetable', fees: 'Fees & Payments', admissions: 'Admission Applications', 'website-news': 'Website News', 'website-contact': 'Website Messages', notifications: 'Notifications', profile: 'Profile' };
     layout.setTitle(titles[key] || 'Dashboard');
     const content = layout.content;
 
@@ -68,7 +69,8 @@
     if (key === 'announcements') return renderAnnouncements(content);
     if (key === 'students') return renderStudents(content);
     if (key === 'users') return renderUsers(content);
-    if (key === 'import') return openImportWizard();
+    if (key === 'import') return mountComponent(content, 'ImportCenter', 'The Import Center could not load. Refresh the page and try again.');
+    if (key === 'reports') return mountComponent(content, 'ReportsView', 'Report Cards could not load. Refresh the page and try again.');
     if (key === 'teachers') return renderTeachers(content);
     if (key === 'parents') return renderParents(content);
     if (key === 'classes') return renderClasses(content);
@@ -85,6 +87,18 @@
     if (key === 'profile') return renderProfile(content);
   }
 
+  /** Render a component into the content area; never leave the page blank. */
+  function mountComponent(content, globalName, fallbackMessage) {
+    content.innerHTML = '<div class="view active"></div>';
+    const box = content.firstElementChild;
+    const component = window[globalName];
+    if (!component || typeof component.render !== 'function') {
+      box.innerHTML = `<div class="empty-state">${UI.esc(fallbackMessage)}</div>`;
+      return null;
+    }
+    return component.render(box);
+  }
+
   // ------------------------------------------------------------------ HOME
   async function renderHome(content) {
     content.innerHTML = `<div class="view active"></div>`;
@@ -96,6 +110,15 @@
       <div class="card" style="background:linear-gradient(135deg,#0f172a,#334155);color:#fff;border:none">
         <h2 style="color:#fff;margin-bottom:2px">Good day, ${UI.esc(user.fullName.split(' ')[0])}! <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></h2>
         <div style="opacity:.9">School operations overview.</div>
+      </div>
+      <div class="card" style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <div style="flex:1;min-width:200px">
+          <strong>Term setup</strong>
+          <div class="doc-meta" style="margin-top:2px">Bring the school's files in, in the order that links everything: timetable → teachers → students → guardians → attendance → fees → report cards.</div>
+        </div>
+        <button class="btn secondary" id="home-go-import">Import Center</button>
+        <button class="btn secondary" id="home-go-reports">Report Cards</button>
+        <button class="btn secondary" id="home-go-fees">Fees</button>
       </div>
       <div class="grid grid-4" style="margin-top:16px">
         ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>', c.students || 0, 'Students', 'ic-blue')}
@@ -116,6 +139,10 @@
         <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Assignments due soon</h3><div id="home-assign"></div></div>
         <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg> Recent announcements</h3><div id="home-ann"></div></div>
       </div>`;
+
+    box.querySelector('#home-go-import').onclick = () => show('import');
+    box.querySelector('#home-go-reports').onclick = () => show('reports');
+    box.querySelector('#home-go-fees').onclick = () => show('fees');
 
     UI.barChart(box.querySelector('#home-chart'), (stats.studentsPerClass || []).map((r) => ({ label: r.label, value: r.value })));
 
@@ -190,7 +217,8 @@
       </div>`;
 
     box.querySelector('#stu-add').onclick = () => studentModal(null, () => loadStudents(true));
-    box.querySelector('#stu-import').onclick = () => openImportWizard();
+    // the guided Import Center does the same job and links guardians/classes too
+    box.querySelector('#stu-import').onclick = () => show('import');
     const search = box.querySelector('#stu-search');
     const clsSel = box.querySelector('#stu-class');
     const statusSel = box.querySelector('#stu-status');
@@ -406,226 +434,6 @@
         onSave && onSave();
       } catch (e) { UI.toast(e.message, 'error'); }
     };
-  }
-
-  // ----------------------------------------------------------------- BULK IMPORT WIZARD
-  async function openImportWizard() {
-    let step = 1;
-    let importId = null;
-    let headers = [];
-    let mapping = {};
-    let validation = null;
-    let importDbId = null;
-
-    const wizard = UI.openModal({
-      title: 'Import students — Step 1 of 6: Upload',
-      titleIcon: 'upload',
-      wide: true,
-      body: `<div class="wiz-progress doc-meta" style="margin-bottom:14px"></div>
-        <div id="wiz-body"></div>`,
-      foot: '<button class="btn secondary" data-cancel>Close</button>',
-    });
-    const progress = wizard.backdrop.querySelector('.wiz-progress');
-    const body = wizard.backdrop.querySelector('#wiz-body');
-    wizard.backdrop.querySelector('[data-cancel]').onclick = () => wizard.close();
-
-    const setProgress = () => {
-      progress.textContent = `Step ${step} of 6: ${['Upload', 'Analyze', 'Map columns', 'Validate', 'Preview', 'Import'][step - 1]}`;
-    };
-
-    const renderUpload = () => {
-      body.innerHTML = `<p>Upload an Excel (.xlsx) or CSV file containing student information.</p>
-        <input type="file" id="imp-file" accept=".csv,.xlsx">
-        <p class="doc-meta" style="margin-top:10px">Tip: download a starter template below.</p>
-        <a class="btn secondary sm" href="${API.base}/api/imports/template.csv" target="_blank"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Download template</a>`;
-      body.querySelector('#imp-file').onchange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const form = new FormData();
-        form.append('file', file);
-        try {
-          const r = await API.upload('/api/imports/upload', form);
-          importId = r.importId;
-          importDbId = r.importDbId;
-          headers = r.headers;
-          step = 2;
-          setProgress();
-          renderMap(r);
-        } catch (err) { UI.toast(err.message, 'error'); }
-      };
-    };
-
-    const guess = (h) => {
-      const s = String(h).toLowerCase().replace(/[^a-z]/g, '');
-      if (s.includes('firstname') || s === 'first') return 'firstName';
-      if (s.includes('lastname') || s === 'last' || s.includes('surname')) return 'lastName';
-      if (s.includes('fullname') || s.includes('studentname')) return 'fullName';
-      if (s.includes('studentid') || s.includes('admission') || s.includes('regno') || s.includes('idnumber')) return 'studentCode';
-      if (s.includes('class') || s.includes('grade') || s.includes('yeargroup')) return 'className';
-      if (s.includes('stream')) return 'stream';
-      if (s.includes('gender') || s.includes('sex')) return 'gender';
-      if (s.includes('dateofbirth') || s.includes('dob') || s.includes('birth')) return 'dateOfBirth';
-      if (s.includes('parentname') || s.includes('guardian')) return 'parentName';
-      if (s.includes('parentphone') || s.includes('guardianphone') || s.includes('phone')) return 'parentPhone';
-      if (s.includes('parentemail') || s.includes('email')) return 'parentEmail';
-      if (s.includes('address')) return 'address';
-      if (s.includes('enrollment') || s.includes('admissiondate') || s.includes('enrolldate')) return 'enrollmentDate';
-      if (s.includes('username') || s.includes('login')) return 'username';
-      if (s.includes('password')) return 'password';
-      return '';
-    };
-
-    const renderMap = (r) => {
-      body.innerHTML = `<p>Map your spreadsheet columns to the school's student fields. The system guessed the mappings — correct them if needed.</p>
-        <div id="map-rows"></div>
-        <p class="doc-meta">Sample data: ${JSON.stringify(r.sample && r.sample[0] ? Object.values(r.sample[0]).slice(0, 4).join(' · ') : '')}</p>
-        <div class="modal-foot" style="position:static;padding:12px 0 0;border:none;display:flex;justify-content:flex-end;gap:8px">
-          <button class="btn secondary" data-back><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg> Back</button>
-          <button class="btn" data-next>Continue <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
-        </div>`;
-      const rows = body.querySelector('#map-rows');
-      headers.forEach((h) => {
-        const field = guess(h);
-        rows.appendChild(UI.el(`<div class="form-row" style="margin-bottom:8px">
-          <label class="field" style="margin:0">Spreadsheet column<strong>${UI.esc(h)}</strong></label>
-          <label class="field" style="margin:0">Maps to
-            <select data-map="${UI.esc(h)}">
-              <option value="">— Skip —</option>
-              ${Object.entries(r.fields || {}).map(([k, v]) => `<option value="${k}" ${field === k ? 'selected' : ''}>${UI.esc(v)}</option>`).join('')}
-            </select>
-          </label>
-        </div>`));
-      });
-      rows.querySelectorAll('select').forEach((sel) => sel.addEventListener('change', () => { mapping[sel.dataset.map] = sel.value; }));
-      // collect initial guesses
-      headers.forEach((h) => { const f = guess(h); if (f) mapping[h] = f; });
-      body.querySelector('[data-back]').onclick = () => { step = 1; setProgress(); renderUpload(); };
-      body.querySelector('[data-next]').onclick = async () => {
-        // read any changed selects
-        rows.querySelectorAll('select').forEach((sel) => { mapping[sel.dataset.map] = sel.value; });
-        if (!Object.values(mapping).some((v) => v)) return UI.toast('Map at least one column.', 'error');
-        if (!mapping.fullName && !(mapping.firstName && mapping.lastName)) {
-          // try to derive a fullName mapping
-          if (mapping.firstName || mapping.lastName) { /* validated server-side as missing names */ }
-          return UI.toast('Map a full name (or first + last name) column.', 'error');
-        }
-        step = 3;
-        setProgress();
-        await renderValidate();
-      };
-    };
-
-    const renderValidate = async () => {
-      body.innerHTML = '<div class="doc-meta">Validating…</div>';
-      try {
-        const r = await API.post('/api/imports/validate', { importId, mapping });
-        validation = r;
-        step = 4;
-        setProgress();
-        const s = r.summary;
-        body.innerHTML = `
-          <div class="grid grid-4">
-            ${wizStat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>', s.valid, 'Valid')}
-            ${wizStat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>', s.warnings, 'Need review')}
-            ${wizStat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>', s.errors, 'Will be skipped')}
-            ${wizStat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>', s.total, 'Total rows')}
-          </div>
-          <div id="val-rows" style="max-height:340px;overflow-y:auto;margin-top:12px"></div>
-          <div class="modal-foot" style="position:static;padding:12px 0 0;border:none;display:flex;justify-content:flex-end;gap:8px">
-            <button class="btn secondary" data-back><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg> Back</button>
-            <button class="btn" data-next>Preview & confirm <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
-          </div>`;
-        const list = body.querySelector('#val-rows');
-        r.rows.slice(0, 120).forEach((row) => {
-          const name = row.data.fullName || row.data.firstName + ' ' + row.data.lastName;
-          list.appendChild(UI.el(`<div class="doc-item">
-            <div style="flex:1;min-width:0">
-              <div class="doc-name">${UI.esc(name || 'Row ' + (row.index + 2))} ${row.data.studentCode ? '<small>· ' + UI.esc(row.data.studentCode) + '</small>' : ''}</div>
-              <div class="doc-meta">${row.errors.length ? row.errors.join('; ') : (row.warnings.length ? row.warnings.join('; ') : 'Ready to import')}</div>
-            </div>${valBadge(row.status)}
-          </div>`));
-        });
-        body.querySelector('[data-back]').onclick = () => { step = 2; setProgress(); renderMap({ headers, sample: validation.rows.slice(0, 5), fields: FIELD_LABELS() }); };
-        body.querySelector('[data-next]').onclick = () => { step = 5; setProgress(); renderPreview(); };
-      } catch (e) { UI.toast(e.message, 'error'); }
-    };
-
-    const FIELD_LABELS = () => {
-      const labels = {};
-      ['fullName', 'firstName', 'lastName', 'studentCode', 'className', 'stream', 'gender', 'dateOfBirth', 'parentName', 'parentPhone', 'parentEmail', 'address', 'enrollmentDate', 'username', 'password'].forEach((k) => { labels[k] = k; });
-      return labels;
-    };
-
-    const renderPreview = async () => {
-      body.innerHTML = '<div class="doc-meta">Loading preview…</div>';
-      const r = await API.post('/api/imports/preview', { importId, mapping, limit: 50 });
-      const s = r.summary;
-      step = 5;
-      setProgress();
-      body.innerHTML = `
-        <p><strong>${s.valid}</strong> valid · <strong>${s.warnings}</strong> need review · <strong>${s.errors}</strong> will be skipped (of ${r.total} rows)</p>
-        <div id="prev-rows" style="max-height:340px;overflow-y:auto"></div>
-        <div class="modal-foot" style="position:static;padding:12px 0 0;border:none;display:flex;justify-content:flex-end;gap:8px">
-          <button class="btn secondary" data-back><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg> Back</button>
-          <button class="btn success" data-import><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Import valid records</button>
-        </div>`;
-      const list = body.querySelector('#prev-rows');
-      r.rows.forEach((row) => {
-        const name = row.data.fullName || (row.data.firstName + ' ' + row.data.lastName);
-        list.appendChild(UI.el(`<div class="doc-item">
-          <div style="flex:1;min-width:0"><div class="doc-name">${UI.esc(name || 'Row ' + (row.index + 2))}</div>
-          <div class="doc-meta">${row.errors.length ? UI.esc(row.errors.join('; ')) : (row.warnings.length ? UI.esc(row.warnings.join('; ')) : 'Ready')}</div></div>
-          ${valBadge(row.status)}</div>`));
-      });
-      body.querySelector('[data-back]').onclick = () => { step = 4; setProgress(); renderValidate(); };
-      body.querySelector('[data-import]').onclick = async () => {
-        try {
-          const result = await API.post('/api/imports/import', { importId, mapping });
-          step = 6;
-          setProgress();
-          const c = result.counts;
-          body.innerHTML = `<div class="card" style="text-align:center;border:none">
-            <div style="font-size:40px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
-            <h3>Import complete</h3>
-            <div class="grid grid-4">
-              ${wizStat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>', c.imported, 'Imported')}
-              ${wizStat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>', c.skipped, 'Skipped')}
-              ${wizStat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>', c.failed, 'Failed')}
-              ${wizStat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>', c.warnings || 0, 'With warnings')}
-            </div>
-            ${result.failures && result.failures.length ? `<div class="doc-meta" style="margin-top:10px">${result.failures.slice(0, 5).map((f) => UI.esc('Row ' + f.row + ': ' + f.reason)).join('<br>')}</div>` : ''}
-            ${result.credentialsCount ? `<div class="card" style="margin-top:12px;text-align:left;background:var(--primary-light)">
-              <strong><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 8.3-8.3"/><path d="m16 6 3 3"/><path d="m19 3 3 3"/></svg> Login codes generated (${result.credentialsCount})</strong>
-              <p class="doc-meta">Each student was given a login code (username) and a default password. Share these with them — they will be asked to set their own password on first login.</p>
-              <div style="max-height:180px;overflow-y:auto;font-size:12.5px">${(result.credentials || []).slice(0, 50).map((c) => `<div class="list-row"><span class="k">${UI.esc(c.name)}</span><span class="v"><code>${UI.esc(c.username)}</code> / <code>${UI.esc(c.password)}</code></span></div>`).join('')}</div>
-              ${result.credentialsCount > 50 ? '<div class="doc-meta">… and more. Download the full list below.</div>' : ''}
-            </div>` : ''}
-            <button class="btn secondary sm" data-report><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg> Download error report</button>
-            ${result.credentialsCount ? '<button class="btn" data-creds><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 8.3-8.3"/><path d="m16 6 3 3"/><path d="m19 3 3 3"/></svg> Download login codes (CSV)</button>' : ''}
-            <button class="btn secondary" data-done style="margin-left:8px">Done</button>
-          </div>`;
-          body.querySelector('[data-done]').onclick = () => { wizard.close(); if (window.location.hash) {} location.reload(); };
-          const rep = body.querySelector('[data-report]');
-          if (rep) rep.onclick = () => { const a = document.createElement('a'); a.href = API.base + `/api/imports/${importDbId || ''}/report.csv`; a.download = 'import-report.csv'; document.body.appendChild(a); a.click(); a.remove(); };
-          const creds = body.querySelector('[data-creds]');
-          if (creds) creds.onclick = () => { const a = document.createElement('a'); a.href = API.base + `/api/imports/${importDbId || ''}/credentials.csv`; a.download = 'import-credentials.csv'; document.body.appendChild(a); a.click(); a.remove(); };
-          // refresh the students list behind the modal
-          try { await API.get('/api/imports'); } catch {}
-        } catch (e) { UI.toast(e.message, 'error'); }
-      };
-    };
-
-    function wizStat(icon, num, label) {
-      return `<div class="card stat-card" style="margin:0"><div class="stat-ic ic-blue">${icon}</div><div><div class="stat-num">${UI.esc(String(num))}</div><div class="stat-label">${UI.esc(label)}</div></div></div>`;
-    }
-    function valBadge(status) {
-      if (status === 'valid') return '<span class="badge green">Valid</span>';
-      if (status === 'warning') return '<span class="badge amber">Review</span>';
-      return '<span class="badge red">Skipped</span>';
-    }
-
-    setProgress();
-    renderUpload();
   }
 
   // ----------------------------------------------------------------- USERS & STAFF

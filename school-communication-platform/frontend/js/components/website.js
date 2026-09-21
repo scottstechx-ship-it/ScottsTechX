@@ -382,5 +382,6 @@
     },
   };
 
-  window.Website = { AdmissionsView, GalleryManager, NewsManager, ContactInbox };
+  // Guarded like the academics views: a failed inbox shows why and offers a retry.
+  window.Website = window.UI.guardViews({ AdmissionsView, GalleryManager, NewsManager, ContactInbox });
 })();

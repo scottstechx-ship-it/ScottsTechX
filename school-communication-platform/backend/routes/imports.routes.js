@@ -365,6 +365,29 @@ router.post('/import', authenticate, requireStaffAdmin, (req, res) => {
             );
             credentials.push({ name: d.fullName, username, password });
             imported++;
+
+            // Guardian columns become a real parent account linked to the child,
+            // so fees, reports and messages reach them from any import path.
+            if (d.parentName || d.parentPhone || d.parentEmail) {
+              try {
+                const hub = require('../services/importHub');
+                const studentRow = get('SELECT * FROM students WHERE student_code = ?', [studentCode]);
+                const guardian = hub.resolveParent({
+                  name: d.parentName || `Parent of ${d.fullName}`,
+                  phone: d.parentPhone,
+                  email: d.parentEmail,
+                  password: school.defaultParentPassword || 'Parent@123',
+                  bcrypt,
+                });
+                if (guardian && guardian.id && studentRow) {
+                  hub.linkParentStudent(guardian.id, studentRow.id, d.relationship || '');
+                  if (guardian.created && guardian.credentials) credentials.push(guardian.credentials);
+                }
+              } catch (e) {
+                // never fail a student import over the guardian: say so instead
+                failures.push({ row: r.index + 2, name: d.fullName, reason: `Student saved, guardian not linked: ${e.message}` });
+              }
+            }
           } else {
             failures.push({ row: r.index + 2, name: d.fullName, reason: `Username "${username}" already exists` });
           }
@@ -508,6 +531,7 @@ router.post('/teachers', authenticate, requireStaffAdmin, upload.single('file'),
 
   const school = require('../services/settingsService').readSettings().school;
   const defaultPassword = school.defaultTeacherPassword || 'Teacher@123';
+  const academicYear = String(new Date().getFullYear());
   let imported = 0;
   const failures = [];
   const credentials = [];
@@ -548,6 +572,28 @@ router.post('/teachers', authenticate, requireStaffAdmin, upload.single('file'),
       );
       credentials.push({ name: fullName, username, staffCode, password: defaultPassword });
       imported++;
+
+      // Link the teacher the way the platform reads it (class + subjects), so a
+      // teacher imported through this older screen behaves like an imported one.
+      try {
+        const hub = require('../services/importHub');
+        const teacherRow = get('SELECT * FROM teachers WHERE staff_code = ?', [staffCode]);
+        const subjectList = hub.splitList(pick(row, 'subjects', 'subject', 'teaching subjects'));
+        const classList = hub.splitList(pick(row, 'classes', 'class', 'class teacher of'));
+        for (const subj of subjectList) hub.resolveSubject(subj, { create: true });
+        for (const label of classList) {
+          const { name: cn, stream } = hub.splitClassLabel(label);
+          const cls = hub.resolveClass(cn, stream, academicYear, { create: true });
+          if (!cls.id) continue;
+          const rel = pick(row, 'role', 'position');
+          const asClassTeacher = /class\s*teacher|form master|form mistress/i.test(String(rel || ''));
+          for (const subj of (subjectList.length ? subjectList : [''])) {
+            hub.linkTeacherClass(teacherRow.id, cls.id, subj, { asClassTeacher: asClassTeacher && subj === (subjectList[0] || '') });
+          }
+        }
+      } catch (e) {
+        failures.push({ row: i + 2, name: fullName, reason: `Teacher saved, class links skipped: ${e.message}` });
+      }
     });
   });
 

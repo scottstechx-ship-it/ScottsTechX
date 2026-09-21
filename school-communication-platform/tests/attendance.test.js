@@ -122,8 +122,10 @@ const dayOffset = (n) => new Date(Date.now() - n * 864e5).toISOString().slice(0,
   for (const d of [3, 4, 7, 10, 14, 17]) {
     await post(teacher, '/api/attendance', { classId: klass.id, date: dayOffset(d), markAll: true });
   }
-  // the student account used below signs in as Sarah Okello
-  const sarah = roster.find((s) => /Sarah/.test(s.full_name));
+  // the student account used below signs in as Sarah Okello — pick THAT child,
+  // not merely the first student whose name starts with "Sarah"
+  const sarah = roster.find((s) => s.full_name === (student.user && student.user.fullName))
+    || roster.find((s) => /Sarah/.test(s.full_name));
   check('the chosen class contains the test student', !!sarah, roster.map((r) => r.full_name).join(', '));
   const sarahId = (sarah || roster[0]).id;
   for (const d of [3, 4, 7, 10]) {

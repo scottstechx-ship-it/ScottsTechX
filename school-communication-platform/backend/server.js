@@ -75,7 +75,12 @@ app.use('/api/assignments', require('./routes/assignments.routes'));
 app.use('/api/exams', require('./routes/exams.routes'));
 app.use('/api/timetable', require('./routes/timetable.routes'));
 app.use('/api/fees', require('./routes/fees.routes'));
+// The guided pipeline (guide / templates / starter-pack / run) comes first so
+// its /template.csv handles every kind; the original step-by-step wizard routes
+// stay mounted after it, untouched.
+app.use('/api/imports', require('./routes/imports.pipeline.routes'));
 app.use('/api/imports', require('./routes/imports.routes'));
+app.use('/api/reports', require('./routes/reports.routes'));
 app.use('/api/print', require('./routes/print.routes'));
 app.use('/api/search', require('./routes/search.routes'));
 app.use('/api/website', require('./routes/website.routes'));

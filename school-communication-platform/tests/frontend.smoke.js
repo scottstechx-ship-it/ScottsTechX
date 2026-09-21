@@ -111,7 +111,9 @@ async function switchView(w, key) {
     const asText = await switchView(window, 'assignments');
     check('assignments view renders', asText.includes('Assignment') || asText.includes('No assignments'));
     const resText = await switchView(window, 'results');
-    check('results view renders', resText.includes('Exam') || resText.includes('No exams'));
+    // a rendered result row counts too: imported report-card marks create exams
+    // whose titles are the term + subject rather than the word "Exam"
+    check('results view renders', /Exam|No exams|View result/.test(resText));
     const attText = await switchView(window, 'attendance');
     check('attendance view renders', attText.includes('Attendance') || attText.includes('No attendance'));
     const ttText = await switchView(window, 'timetable');
