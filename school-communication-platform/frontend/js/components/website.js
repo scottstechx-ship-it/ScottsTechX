@@ -16,6 +16,7 @@
    * ============================================================ */
   const AdmissionsView = {
     async render(box) {
+      if (AdmissionsView._off) { AdmissionsView._off(); AdmissionsView._off = null; }
       box.innerHTML = `
         <div class="card" style="margin-bottom:16px">
           <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
@@ -97,10 +98,14 @@
       }
 
       filter.onchange = load;
-      // realtime: refresh when a new application arrives
-      if (window.Realtime && window.Realtime.socket) {
-        try { window.Realtime.socket.off('admission:new'); window.Realtime.socket.on('admission:new', () => { UI.toast('New admission application received!', 'info'); load(); }); } catch {}
-      }
+      // realtime: refresh the moment an application arrives. Use the public
+      // Realtime API — reaching into Realtime.socket only works while the socket
+      // happens to be connected, so the inbox used to sit still on the polling
+      // fallback until the view was reopened.
+      AdmissionsView._off = window.Realtime && window.Realtime.on('admission:new', () => {
+        UI.toast('New admission application received!', 'info');
+        load();
+      });
       load();
     },
   };
@@ -325,6 +330,7 @@
    * ============================================================ */
   const ContactInbox = {
     async render(box) {
+      if (ContactInbox._off) { ContactInbox._off(); ContactInbox._off = null; }
       box.innerHTML = `
         <div class="card" style="margin-bottom:16px">
           <h3 style="margin:0"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg> Website Messages</h3>
@@ -368,9 +374,10 @@
           listBox.appendChild(card);
         }
       }
-      if (window.Realtime && window.Realtime.socket) {
-        try { window.Realtime.socket.off('contact:new'); window.Realtime.socket.on('contact:new', () => { UI.toast('New website message!', 'info'); load(); }); } catch {}
-      }
+      ContactInbox._off = window.Realtime && window.Realtime.on('contact:new', () => {
+        UI.toast('New website message!', 'info');
+        load();
+      });
       load();
     },
   };

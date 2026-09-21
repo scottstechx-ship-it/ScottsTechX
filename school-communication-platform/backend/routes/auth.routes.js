@@ -523,7 +523,7 @@ router.post('/register', rateLimit({
   const childList = students.map((s) => `${s.full_name} (${s.student_code})`).join(', ');
   const admins = all("SELECT id FROM users WHERE role IN ('admin','super_admin') AND status = 'active'").map((r) => r.id);
   notifyMany(admins, 'account', 'New parent registration to review',
-    `${fullName} (${email}) claims guardianship of: ${childList}. Approve or reject in Parents.`, '/parents');
+    `${fullName} (${email}) claims guardianship of: ${childList}. Approve or reject in Parents & Guardians.`, '/parents');
   log(null, 'PARENT_REGISTERED', `Parent registration: ${fullName} <${email}> for ${childList}`, req.ip);
 
   // Verification link: proves the address belongs to the applicant before an

@@ -44,12 +44,22 @@ function adminUserIds() {
  * ============================================================ */
 
 // Public submission — rate limited to stop abuse.
-router.post('/admissions', rateLimit({ windowMs: 15 * 60 * 1000, max: 10, label: 'admission submissions' }), async (req, res) => {
+// Visitors often arrive through one shared address (school office, or a mobile
+// carrier's NAT, which is the norm on Ugandan phone data), so a very low
+// per-address cap locks out genuine parents while barely slowing an abuser.
+// These caps still stop a scripted flood; the global API limiter sits above.
+router.post('/admissions', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 25,
+  label: 'admission submissions',
+  message: 'This form has been submitted several times from your connection. Please wait a few minutes and try again, or call the school office on 0792 861 645.',
+}), async (req, res) => {
   const fullName = cleanString(req.body.fullName, 150);
   const applyingFor = cleanString(req.body.applyingFor, 60);
   const parentName = cleanString(req.body.parentName, 150);
   const parentPhone = cleanString(req.body.parentPhone, 40);
   if (!fullName || !applyingFor || !parentName || !parentPhone) {
+    log(null, 'ADMISSION_REJECTED', `Incomplete admission application from ${req.ip} (name: "${fullName || '-'}")`, req.ip);
     return res.status(400).json({ error: 'Student name, class, parent name and parent phone are required.' });
   }
   const info = run(
@@ -66,12 +76,21 @@ router.post('/admissions', rateLimit({ windowMs: 15 * 60 * 1000, max: 10, label:
   const admins = adminUserIds();
   notifyMany(admins, 'system', `New admission application: ${fullName}`,
     `${applyingFor} · Parent: ${parentName} (${parentPhone})`, '/admissions');
+
+  // If the school has no admin account yet, the dashboard notification above
+  // reaches nobody — say so loudly rather than letting the application sit in a
+  // database nobody looks at.
+  if (!admins.length) {
+    console.warn('[website] admission application stored, but no active admin account exists to notify:', fullName);
+  }
   // Live dashboard refresh event
   if (io) for (const id of admins) io.to(`user:${id}`).emit('admission:new', { id: app_.id, fullName, applyingFor });
 
   // 2. Email the school + confirmation to the parent (best-effort; never blocks)
   const school = readSettings().school;
-  const schoolEmail = school.email || process.env.ADMISSIONS_EMAIL || '';
+  // Fall back to the office mailbox configured for the deployment when the
+  // school profile has no address saved yet — an enquiry must reach a human.
+  const schoolEmail = school.email || process.env.ADMISSIONS_EMAIL || process.env.SCHOOL_EMAIL || '';
   const summary = `
     <h2>New Admission Application</h2>
     <table cellpadding="6" style="border-collapse:collapse">
@@ -98,14 +117,19 @@ router.post('/admissions', rateLimit({ windowMs: 15 * 60 * 1000, max: 10, label:
     });
   }
 
-  res.status(201).json({ message: 'Application submitted. The admissions team has been notified.', id: app_.id });
+  log(null, 'ADMISSION_RECEIVED', `Website application #${app_.id}: ${fullName} (${applyingFor})`, req.ip);
+  res.status(201).json({
+    message: 'Application submitted. The admissions team has been notified.',
+    id: app_.id,
+    emailed: !!(schoolEmail || app_.parent_email),
+  });
 });
 
 // Staff: list / manage applications
 router.get('/admissions', authenticate, requireStaffAdmin, (req, res) => {
   const status = cleanString(req.query.status, 20);
   const where = status ? 'WHERE status = ?' : '';
-  const rows = all(`SELECT * FROM admission_applications ${where} ORDER BY created_at DESC LIMIT 500`, status ? [status] : []);
+  const rows = all(`SELECT * FROM admission_applications ${where} ORDER BY created_at DESC, id DESC LIMIT 500`, status ? [status] : []);
   res.json({ applications: rows });
 });
 
@@ -136,32 +160,45 @@ router.delete('/admissions/:id', authenticate, requireStaffAdmin, (req, res) => 
  * CONTACT MESSAGES (public POST -> admin inbox + email)
  * ============================================================ */
 
-router.post('/contact', rateLimit({ windowMs: 15 * 60 * 1000, max: 12, label: 'contact messages' }), async (req, res) => {
+router.post('/contact', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  label: 'contact messages',
+  message: 'You have sent several messages from this connection. Please wait a few minutes, or call the school office on 0792 861 645.',
+}), async (req, res) => {
   const name = cleanString(req.body.name, 150);
   const message = cleanString(req.body.message, 4000);
-  if (!name || !message) return res.status(400).json({ error: 'Your name and a message are required.' });
+  if (!name || !message) {
+    log(null, 'CONTACT_REJECTED', `Incomplete website message from ${req.ip}`, req.ip);
+    return res.status(400).json({ error: 'Your name and a message are required.' });
+  }
   const email = cleanString(req.body.email, 150);
   const info = run(
     'INSERT INTO contact_messages (name, email, phone, subject, message) VALUES (?, ?, ?, ?, ?)',
     [name, email, cleanString(req.body.phone, 40), cleanString(req.body.subject, 200), message]
   );
   const admins = adminUserIds();
-  notifyMany(admins, 'system', `New website message from ${name}`,
-    (cleanString(req.body.subject, 200) || message).slice(0, 120), '/contact-messages');
+  // The link must be a dashboard section key, not a page path: the bell
+  // navigates by section, and a path like "/contact-messages" silently did
+  // nothing when clicked (the inbox section is "website-contact").
+  notifyMany(admins, 'message', `New website message from ${name}`,
+    (cleanString(req.body.subject, 200) || message).slice(0, 120), '/website-contact');
   if (io) for (const id of admins) io.to(`user:${id}`).emit('contact:new', { id: info.lastInsertRowid, name });
   const school = readSettings().school;
-  if (school.email) {
+  const officeEmail = school.email || process.env.CONTACT_EMAIL || process.env.SCHOOL_EMAIL || '';
+  if (officeEmail) {
     sendEmail({
-      to: school.email,
+      to: officeEmail,
       subject: `Website contact: ${cleanString(req.body.subject, 200) || name}`,
-      html: `<p><b>From:</b> ${name} ${email ? '(' + email + ')' : ''}</p><p>${message}</p>`,
+      html: `<p><b>From:</b> ${name} ${email ? '(' + email + ')' : ''}${cleanString(req.body.phone, 40) ? ' · ' + cleanString(req.body.phone, 40) : ''}</p><p>${message}</p>`,
     });
   }
-  res.status(201).json({ message: 'Message sent. The school has been notified and will respond soon.' });
+  log(null, 'CONTACT_RECEIVED', `Website message #${info.lastInsertRowid} from ${name}`, req.ip);
+  res.status(201).json({ message: 'Message sent. The school has been notified and will respond soon.', id: info.lastInsertRowid });
 });
 
 router.get('/contact', authenticate, requireStaffAdmin, (req, res) => {
-  const rows = all('SELECT * FROM contact_messages ORDER BY created_at DESC LIMIT 300');
+  const rows = all('SELECT * FROM contact_messages ORDER BY created_at DESC, id DESC LIMIT 300');
   res.json({ messages: rows });
 });
 
@@ -307,7 +344,7 @@ router.get('/news', (req, res) => {
   const rows = all(
     `SELECT id, title, body, image_file, image_url, expires_at, created_at, updated_at FROM site_news
      WHERE published = 1 AND (expires_at IS NULL OR expires_at >= datetime('now'))
-     ORDER BY created_at DESC LIMIT 100`
+     ORDER BY created_at DESC, id DESC LIMIT 100`
   );
   res.json({
     news: rows.map((r) => ({ ...r, image: r.image_file ? `/api/website/news/${r.id}/image` : r.image_url })),
@@ -316,7 +353,7 @@ router.get('/news', (req, res) => {
 
 // Staff view includes drafts & expired posts
 router.get('/news/manage', authenticate, requireStaffAdmin, (req, res) => {
-  const rows = all('SELECT * FROM site_news ORDER BY created_at DESC LIMIT 300');
+  const rows = all('SELECT * FROM site_news ORDER BY created_at DESC, id DESC LIMIT 300');
   res.json({
     news: rows.map((r) => ({
       ...r,

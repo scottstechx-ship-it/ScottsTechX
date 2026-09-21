@@ -234,5 +234,32 @@ async function status(url) {
     ? 'OK NO MARKUP/CSS DEFECTS (markup in content:, icon fonts, dup ids, dead anchors, unguarded THREE, stacked overlays, mismatched mailto, corrupted CSS)'
     : `FAIL ${hygiene} page(s) have markup/CSS defects`);
 
+  // ---------------------------------------------------------------------
+  // Literal markup handed to textContent — the browser prints the tags to the
+  // user, who reads it as an error ("<svg class=...> Message sent"). Every
+  // string that reaches the screen through textContent must be plain text.
+  // ---------------------------------------------------------------------
+  const MARKUP_TO_TEXT = /(?:textContent|innerText)\s*=\s*(?:(?!;)[\s\S]){0,120}?(['"`])\s*<[a-zA-Z/]/g;
+  const walkJs = (dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      return ['node_modules', 'vendor'].includes(entry.name) ? [] : walkJs(full);
+    }
+    return entry.name.endsWith('.js') ? [full] : [];
+  });
+  let textMarkup = 0;
+  const sources = [...pages, ...walkJs(FRONTEND)];
+  for (const file of sources) {
+    const text = fs.readFileSync(file, 'utf8');
+    for (const m of text.matchAll(MARKUP_TO_TEXT)) {
+      textMarkup++;
+      const line = text.slice(0, m.index).split('\n').length;
+      console.log(`x ${path.relative(FRONTEND, file)}:${line} markup assigned to textContent -> "${m[0].replace(/\s+/g, ' ').slice(0, 90)}"`);
+    }
+  }
+  console.log(textMarkup === 0
+    ? 'OK NO MARKUP PRINTED AS TEXT (nothing assigns HTML to textContent/innerText)'
+    : `FAIL ${textMarkup} place(s) print markup as text`);
+
   process.exit(failures === 0 && hygiene === 0 && cssJunk === 0 ? 0 : 1);
 })().catch((e) => { console.error('Harness error:', e); process.exit(1); });

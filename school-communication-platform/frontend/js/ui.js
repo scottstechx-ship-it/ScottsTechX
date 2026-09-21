@@ -809,6 +809,21 @@
     refreshUnreadCounts();
     setInterval(refreshUnreadCounts, 30000);
 
+    // Website intake badges: the two public-form inboxes must advertise
+    // themselves on the sidebar/bottom nav, otherwise a parent's application
+    // can sit unseen until somebody happens to open that section.
+    async function refreshInboxBadges() {
+      try {
+        const o = await API.get('/api/stats/overview');
+        const w = (o && o.counts && o.counts.website) || null;
+        if (!w) return;                       // not an office role
+        setBadge('website-contact', w.contactNew || 0);
+        setBadge('admissions', w.admissionsNew || 0);
+      } catch { /* offline / not permitted — leave the badges as they are */ }
+    }
+    refreshInboxBadges();
+    setInterval(refreshInboxBadges, 60000);
+
     return {
       content,
       setTitle: (t) => { topbar.querySelector('#page-title').textContent = t; },
@@ -855,10 +870,41 @@
     };
   }
 
+  /**
+   * Follow a notification link. Links are dashboard section keys written as
+   * paths ("/website-contact"). Two things used to break a click:
+   *   1. the key did not exist on that role's dashboard (a parent gets an
+   *      attendance alert but has no "attendance" tab — the child's record is
+   *      under "children"), and
+   *   2. a genuinely wrong key (e.g. "/contact-messages") navigated nowhere.
+   * So resolve the intended section through an alias ladder, and if nothing
+   * matches, fall back to a view every dashboard has.
+   */
+  const LINK_ALIASES = {
+    exams: ['exams', 'results', 'children'],
+    results: ['results', 'exams', 'children'],
+    attendance: ['attendance', 'children'],
+    fees: ['fees', 'children'],
+    parents: ['parents', 'users'],
+    users: ['users', 'parents'],
+    admissions: ['admissions', 'website-contact', 'messages'],
+    'contact-messages': ['website-contact', 'messages'],
+    'website-contact': ['website-contact', 'messages'],
+    documents: ['documents', 'children'],
+    assignments: ['assignments', 'children'],
+  };
+  function hasSection(key) {
+    return !!document.querySelector(`.nav-item[data-nav="${key}"], .bn-item[data-bn="${key}"]`);
+  }
   function navigateToLink(link) {
-    // links are internal routes like "/messages" or "/documents"
     const handler = window.__navHandler;
-    if (handler && typeof handler === 'function') handler(link.replace(/^\//, ''));
+    if (typeof handler !== 'function') return;
+    const key = String(link || '').replace(/^\//, '').split('?')[0].split('#')[0];
+    if (!key) return;
+    const ladder = [key, ...(LINK_ALIASES[key] || [])];
+    const target = ladder.find(hasSection)
+      || ['messages', 'notifications', 'home'].find(hasSection);
+    if (target) handler(target);
   }
 
   // ---------------- profile picture ----------------
@@ -985,5 +1031,6 @@
     initLayout, refreshUnreadCounts, loadNotifications,
     onUnreadChange, openChangePassword, openAvatarUpload, profileSettingsPanel, openPrintable,
     lockScroll, unlockScroll,
+    navigateToLink,   // used by the notification bell; exported so it can be tested
   };
 })();

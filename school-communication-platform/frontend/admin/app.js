@@ -108,6 +108,7 @@
         ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>', c.unreadNotifications || 0, 'Notifications', 'ic-red')}
       </div>
       <div class="grid grid-2" style="margin-top:16px">
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg> Website enquiries</h3><div id="home-site"></div></div>
         <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg> Students per class</h3><div id="home-chart"></div></div>
         <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg> Fee snapshot</h3><div id="home-fees"></div></div>
       </div>
@@ -118,6 +119,19 @@
       </div>`;
 
     UI.barChart(box.querySelector('#home-chart'), (stats.studentsPerClass || []).map((r) => ({ label: r.label, value: r.value })));
+
+    // The public website feeds two inboxes. Surface them on the landing screen
+    // with one-click jumps, so a message or application cannot sit unread.
+    const site = c.website || {};
+    const siteBox = box.querySelector('#home-site');
+    siteBox.innerHTML =
+      `<div class="list-row"><span class="k">New message${(site.contactNew || 0) === 1 ? '' : 's'} from the contact form</span><span class="v">${site.contactNew || 0}</span></div>
+       <div class="list-row"><span class="k">New admission applications</span><span class="v">${site.admissionsNew || 0}</span></div>`;
+    for (const [key, label] of [['website-contact', 'Open messages'], ['admissions', 'Open admissions']]) {
+      const b = UI.el(`<button class="btn btn-sm" style="margin-top:8px;margin-right:6px">${UI.esc(label)}</button>`);
+      b.addEventListener('click', () => window.__navHandler(key));
+      siteBox.appendChild(b);
+    }
 
     const fees = stats.fees || {};
     box.querySelector('#home-fees').innerHTML =

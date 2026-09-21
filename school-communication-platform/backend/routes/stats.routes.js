@@ -37,6 +37,18 @@ function unreadMessagesSql() {
             AND NOT EXISTS (SELECT 1 FROM message_reads mr WHERE mr.message_id = m.id AND mr.user_id = ?)`;
 }
 
+/**
+ * Counts for the two public-site inboxes. They are shown in the admin sidebar
+ * badges and on the dashboard home cards, so an office that never opens the
+ * mail can still see that the website is producing enquiries.
+ */
+function websiteInboxCounts() {
+  return {
+    contactNew: get(`SELECT COUNT(*) c FROM contact_messages WHERE status = 'new'`).c,
+    admissionsNew: get(`SELECT COUNT(*) c FROM admission_applications WHERE status = 'new'`).c,
+  };
+}
+
 /** GET /api/stats/overview — returns data shaped for the caller's role. */
 router.get('/overview', authenticate, (req, res) => {
   const role = req.user.role;
@@ -58,6 +70,7 @@ router.get('/overview', authenticate, (req, res) => {
       exams: get('SELECT COUNT(*) c FROM exams').c,
       unreadNotifications: get('SELECT COUNT(*) c FROM notifications WHERE user_id = ? AND read = 0', [uid]).c,
       unreadMessages: get(unreadMessagesSql(), [uid, uid, uid]).c,
+      website: websiteInboxCounts(),
     };
     payload.recentActivity = all('SELECT * FROM activity_logs ORDER BY id DESC LIMIT 8');
     payload.recentDocuments = all('SELECT d.*, u.full_name AS uploader_name FROM documents d LEFT JOIN users u ON u.id = d.uploaded_by ORDER BY d.id DESC LIMIT 5');
@@ -87,6 +100,7 @@ router.get('/overview', authenticate, (req, res) => {
       attendanceToday: get("SELECT COUNT(*) c FROM attendance WHERE date = date('now')").c,
       unreadNotifications: get('SELECT COUNT(*) c FROM notifications WHERE user_id = ? AND read = 0', [uid]).c,
       unreadMessages: get(unreadMessagesSql(), [uid, uid, uid]).c,
+      website: websiteInboxCounts(),
     };
     payload.recentDocuments = all('SELECT d.*, u.full_name AS uploader_name FROM documents d LEFT JOIN users u ON u.id = d.uploaded_by ORDER BY d.id DESC LIMIT 5');
     payload.recentAnnouncements = all('SELECT a.*, u.full_name AS sender_name FROM announcements a LEFT JOIN users u ON u.id = a.sender_id ORDER BY a.id DESC LIMIT 5');

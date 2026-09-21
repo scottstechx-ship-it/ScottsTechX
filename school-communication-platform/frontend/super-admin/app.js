@@ -110,6 +110,7 @@
         <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M6 15h4"/></svg> Fees overview</h3><div id="home-fees"></div></div>
       </div>
       <div class="grid grid-2" style="margin-top:16px">
+        <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg> Website enquiries</h3><div id="home-site"></div></div>
         <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Users by role</h3><div id="home-roles"></div></div>
         <div class="card"><h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg> Recent activity</h3><div id="home-act"></div></div>
       </div>
@@ -119,6 +120,19 @@
       </div>`;
 
     UI.barChart(box.querySelector('#home-chart'), (stats.studentsPerClass || []).map((r) => ({ label: r.label, value: r.value })));
+
+    // What the public website has produced, with one-click jumps into the inboxes.
+    const site = c.website || {};
+    const siteBox = box.querySelector('#home-site');
+    siteBox.innerHTML =
+      `<div class="list-row"><span class="k">New contact-form messages</span><span class="v">${site.contactNew || 0}</span></div>
+       <div class="list-row"><span class="k">New admission applications</span><span class="v">${site.admissionsNew || 0}</span></div>`;
+    for (const [key, label] of [['website-contact', 'Open messages'], ['admissions', 'Open admissions']]) {
+      const b = UI.el(`<button class="btn btn-sm" style="margin-top:8px;margin-right:6px">${UI.esc(label)}</button>`);
+      b.addEventListener('click', () => window.__navHandler(key));
+      siteBox.appendChild(b);
+    }
+
     const fees = stats.fees || {};
     box.querySelector('#home-fees').innerHTML =
       `<div class="list-row"><span class="k">Total billed</span><span class="v">${UI.money(fees.due)}</span></div>
@@ -730,7 +744,7 @@
     (function loadCurrentLogo() {
       const img = new Image();
       img.onload = () => { logoBox.innerHTML = ''; logoBox.appendChild(img); logoStatus.textContent = 'Logo is set. You can replace or remove it below.'; };
-      img.onerror = () => { logoBox.textContent = '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>'; logoStatus.textContent = 'No logo uploaded yet — choose an image to get started.'; };
+      img.onerror = () => { logoBox.innerHTML = '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>'; logoStatus.textContent = 'No logo uploaded yet — choose an image to get started.'; };
       img.src = UI.logoUrl() + '?t=' + Date.now();
       img.alt = 'School logo';
       img.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block';
@@ -778,7 +792,7 @@
       try {
         await API.del('/api/settings/logo');
         UI.toast('School logo removed.', 'success');
-        logoBox.textContent = '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>';
+        logoBox.innerHTML = '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>';
         logoStatus.textContent = 'No logo uploaded yet.';
       } catch (e) { UI.toast(e.message, 'error'); }
     };

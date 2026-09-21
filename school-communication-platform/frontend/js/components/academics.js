@@ -201,7 +201,25 @@
       };
 
       // ---------------- term report + absence trend ----------------
-      const loadReport = async () => {
+      // The report must not open on a class with nothing recorded — an empty
+      // report reads as a broken feature. Probe the teacher's own classes (a
+      // handful) and, unless the teacher explicitly picked one, open on the
+      // class with the most marks in the chosen term.
+      let repClassTouched = false;
+      const reportDays = new Map();          // `${term}|${year}|${classId}` -> days
+      async function daysRecorded(cid, term, year) {
+        const key = `${term}|${year}|${cid}`;
+        if (reportDays.has(key)) return reportDays.get(key);
+        let days = 0;
+        try {
+          const r = await API.get(`/api/attendance/term-report?classId=${cid}${term ? `&term=${encodeURIComponent(term)}&year=${encodeURIComponent(year)}` : ''}`);
+          days = r.days || 0;
+        } catch { days = 0; }               // not permitted / offline: treat as empty
+        reportDays.set(key, days);
+        return days;
+      }
+
+      const loadReport = async (_retried) => {
         const classId = repClass.value;
         if (!classId) return;
         const threshold = Math.min(Math.max(Number(container.querySelector('#rep-threshold').value) || 80, 1), 100);
@@ -219,9 +237,25 @@
           body.innerHTML = `<div class="card"><div class="doc-meta">${UI.esc(e.message)}</div></div>`;
           return;
         }
+        let suggestion = '';
+        if (!rep.days) {
+          const others = classes.filter((c) => String(c.id) !== String(classId));
+          const probes = await Promise.all(others.map(async (c) => ({ c, days: await daysRecorded(c.id, term, year) })));
+          const withData = probes.filter((p) => p.days > 0).sort((a, b) => b.days - a.days);
+          if (withData.length && !repClassTouched && !_retried) {
+            repClass.value = String(withData[0].c.id);
+            return loadReport(true);
+          }
+          const cls = classes.find((c) => String(c.id) === String(classId)) || {};
+          suggestion = `<div class="card" style="border-left:4px solid var(--warning,#f59e0b)">
+            <h3 style="margin:0 0 4px">Nothing recorded for ${UI.esc(cls.name || 'this class')} ${UI.esc(cls.stream || '')} in ${UI.esc(rep.term || 'this term')} ${UI.esc(rep.year || '')}</h3>
+            <div class="doc-meta">Attendance is marked on the Register tab; anything saved there appears here.${withData.length ? ' These classes do have marks this term:' : ''}</div>
+            ${withData.slice(0, 4).map((p, i) => `<button class="btn btn-sm secondary" style="margin-top:8px;margin-right:6px" data-rep-suggest="${p.c.id}">${UI.esc(p.c.name)} ${UI.esc(p.c.stream || '')} — ${p.days} day${p.days === 1 ? '' : 's'}</button>`).join('')}
+          </div>`;
+        }
         const pct = (v) => (v === null || v === undefined ? '—' : v + '%');
         const period = rep.from && rep.to ? `${UI.esc(rep.from)} → ${UI.esc(rep.to)}` : 'all dates on record';
-        body.innerHTML = `
+        body.innerHTML = suggestion + `
           <div class="grid grid-4">
             ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>', pct(rep.summary.percentage), 'Class attendance')}
             ${stat('<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>', rep.days, 'Days recorded')}
@@ -256,10 +290,27 @@
           </div>`;
         const chart = body.querySelector('#rep-chart');
         if (chart) UI.barChart(chart, (trend.series || []).map((w) => ({ label: w.weekStart, value: w.percentage === null ? 0 : w.percentage })));
+
+        // one-click jump to a class that does have marks
+        body.querySelectorAll('[data-rep-suggest]').forEach((b) => b.addEventListener('click', () => {
+          repClassTouched = true;
+          repClass.value = b.dataset.repSuggest;
+          loadReport();
+        }));
       };
 
       container.querySelector('#rep-load').onclick = () => loadReport();
-      repClass.addEventListener('change', () => { if (!container.querySelector('[data-att-pane="report"]').hidden) loadReport(); });
+      repClass.addEventListener('change', () => {
+        repClassTouched = true;
+        if (!container.querySelector('[data-att-pane="report"]').hidden) loadReport();
+      });
+      // changing the term or the at-risk threshold should refresh the report
+      // instead of silently leaving the previous term's numbers on screen
+      for (const el of [container.querySelector('#rep-term'), container.querySelector('#rep-threshold')]) {
+        if (el) el.addEventListener('change', () => {
+          if (!container.querySelector('[data-att-pane="report"]').hidden) loadReport();
+        });
+      }
       container.querySelector('#rep-print').onclick = () => {
         const [term, year] = (container.querySelector('#rep-term').value || '|').split('|');
         const qs = new URLSearchParams({ classId: repClass.value });

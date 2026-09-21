@@ -59,6 +59,10 @@
       socket.on('message', (data) => emitLocal('message:new', data));
       socket.on('message:deleted', (data) => emitLocal('message:deleted', data));
       socket.on('notification', (data) => emitLocal('notification', data));
+      // public-website intake: the office inboxes refresh the moment a message
+      // or an admission application arrives
+      socket.on('contact:new', (data) => emitLocal('contact:new', data));
+      socket.on('admission:new', (data) => emitLocal('admission:new', data));
       socket.on('connect_error', () => { /* fall back to polling */ });
     } catch (e) { /* polling fallback remains active */ }
   }

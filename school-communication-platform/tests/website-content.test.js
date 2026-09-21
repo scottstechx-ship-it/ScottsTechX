@@ -63,13 +63,18 @@ const ok = (label, cond, extra = '') => { if (!cond) fails++; console.log(`${con
   const stuTry = await api(student.token, '/api/website/admissions');
   ok('student CANNOT list applications', stuTry.status === 403);
 
+  // Own per-visitor bucket, so this does not throttle the other suites' posts.
+  const spamIp = `198.51.100.${1 + Math.floor(Math.random() * 250)}`;
   let limited = false;
-  for (let i = 0; i < 11; i++) {
-    const r = await api(null, '/api/website/admissions', { method: 'POST', body: JSON.stringify({
+  let allowed = 0;
+  for (let i = 0; i < 40; i++) {
+    const r = await api(null, '/api/website/admissions', { method: 'POST', headers: { 'x-forwarded-for': spamIp }, body: JSON.stringify({
       fullName: 'Spam ' + i, applyingFor: 'S.1', parentName: 'X', parentPhone: '0700' }) });
     if (r.status === 429) { limited = true; break; }
+    if (r.status === 201) allowed++;
   }
   ok('spam protection (rate limit) kicks in', limited);
+  ok('a shared school/office address can still submit several genuine applications', allowed >= 15, `${allowed} allowed`);
 
   // ===== GALLERY FLOW =====
   console.log('-- GALLERY --');

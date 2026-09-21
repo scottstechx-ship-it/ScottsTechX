@@ -730,7 +730,7 @@
     (function loadCurrentLogo() {
       const img = new Image();
       img.onload = () => { logoBox.innerHTML = ''; logoBox.appendChild(img); logoStatus.textContent = 'Logo is set. You can replace or remove it below.'; };
-      img.onerror = () => { logoBox.textContent = '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>'; logoStatus.textContent = 'No logo uploaded yet — choose an image to get started.'; };
+      img.onerror = () => { logoBox.innerHTML = '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>'; logoStatus.textContent = 'No logo uploaded yet — choose an image to get started.'; };
       img.src = UI.logoUrl() + '?t=' + Date.now();
       img.alt = 'School logo';
       img.style.cssText = 'width:100%;height:100%;object-fit:contain;display:block';
@@ -778,7 +778,7 @@
       try {
         await API.del('/api/settings/logo');
         UI.toast('School logo removed.', 'success');
-        logoBox.textContent = '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>';
+        logoBox.innerHTML = '<svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12.5V17c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.5"/></svg>';
         logoStatus.textContent = 'No logo uploaded yet.';
       } catch (e) { UI.toast(e.message, 'error'); }
     };
