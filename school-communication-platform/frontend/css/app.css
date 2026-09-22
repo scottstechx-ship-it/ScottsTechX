@@ -696,6 +696,22 @@ html[data-theme="dark"] .btn.att-bulk.absent:hover { background: #3d1616; }
 .as-brief.clamp { max-height: 4.6em; overflow: hidden; }
 .as-file { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; padding: 8px 10px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); }
 .as-file span { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+.as-file .btn { flex: none; white-space: nowrap; }
+/* the answer button sits beside a tall brief — keep it button-sized */
+.as-card { align-items: flex-start; }
+.as-card .doc-actions { align-self: flex-start; flex: none; }
+.as-attach { margin-top: 8px; }
+.as-attach-label { font-weight: 700; font-size: 13px; color: var(--ink); margin-bottom: 6px; }
+label.as-pick { position: relative; overflow: hidden; cursor: pointer; width: auto; margin: 0; }
+label.as-pick input[type="file"] {
+  position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important;
+  margin: 0 !important; padding: 0 !important; opacity: 0 !important; cursor: pointer;
+  font-size: 16px !important; border: 0 !important; min-height: 0 !important; background: transparent !important;
+}
+@media (max-width: 640px) {
+  .as-card { flex-direction: column; }
+  .as-card .doc-actions { margin-left: 0; }
+}
 
 /* phones: the box becomes an icon that expands into a full-width overlay */
 @media (max-width: 900px) {

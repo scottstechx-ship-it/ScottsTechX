@@ -469,6 +469,32 @@
     if (!up.document || !up.document.id) throw new Error('The file did not upload.');
     return up.document;
   }
+  /** A normal button, not the browser's full-width file control. */
+  function filePickerHtml(id, label, multiple) {
+    return '<div class="as-attach"><div class="as-attach-label">' + UI.esc(label) + '</div>'
+      + '<label class="btn secondary sm as-pick">' + (multiple ? 'Choose files' : 'Choose file')
+      + '<input type="file" id="' + id + '"' + (multiple ? ' multiple' : '') + '></label>'
+      + '<span class="doc-meta" id="' + id + '-name">No file chosen</span></div>';
+  }
+  function bindFilePicker(root, id) {
+    const input = root.querySelector('#' + id);
+    const label = input && input.closest('label');
+    const note = root.querySelector('#' + id + '-name');
+    if (label && !label.dataset.bound) {
+      label.dataset.bound = '1';
+      label.addEventListener('click', (e) => {
+        if (!input || e.target === input || input.contains(e.target)) return;
+        e.preventDefault();
+        input.click();
+      });
+    }
+    if (input && note) {
+      input.addEventListener('change', () => {
+        const names = [...input.files].map((f) => f.name);
+        note.textContent = names.length ? names.join(', ') : 'No file chosen';
+      });
+    }
+  }
 
   const AssignmentsView = {
     async teacherView(container) {
@@ -537,12 +563,12 @@
         <div class="as-side teacher">
           <h4>What the student should do</h4>
           <label class="field">Instructions<textarea id="a-desc" rows="4" placeholder="Write the task. Students see this before they answer."></textarea></label>
-          <label class="field">Files for the class<input type="file" id="a-files" multiple>
-            <span class="doc-meta">Worksheet, notes or a photo of the board. The class can open these files.</span>
-          </label>
+          ${filePickerHtml('a-files', 'Files for the class', true)}
+          <span class="doc-meta">Worksheet, notes or a photo of the board. The class can open these files.</span>
         </div>`,
         foot: '<button class="btn secondary" data-cancel>Cancel</button><button class="btn" data-save>Create</button>',
       });
+      bindFilePicker(modal.backdrop, 'a-files');
       modal.backdrop.querySelector('[data-cancel]').onclick = () => modal.close();
       modal.backdrop.querySelector('[data-save]').onclick = async () => {
         const classId = modal.backdrop.querySelector('#a-class').value;
@@ -591,10 +617,11 @@
           <label class="field">Instructions<textarea id="a-desc" rows="4">${UI.esc(a.description || '')}</textarea></label>
           <div class="doc-meta">Files already shared with the class</div>
           <div id="a-existing">${assignmentFilesHtml(existing) || '<div class="doc-meta">No file attached yet.</div>'}</div>
-          <label class="field">Add more files<input type="file" id="a-files" multiple></label>
+          ${filePickerHtml('a-files', 'Add more files', true)}
         </div>`,
         foot: '<button class="btn secondary" data-cancel>Cancel</button><button class="btn" data-save>Save</button>',
       });
+      bindFilePicker(modal.backdrop, 'a-files');
       const kept = new Set(existing.map((f) => f.id));
       modal.backdrop.querySelectorAll('[data-dl]').forEach((b) => {
         const rm = document.createElement('button');
@@ -646,7 +673,7 @@
           </div>
           <div class="doc-meta" style="margin-top:10px">${UI.esc(a.class_name || '')} · Due ${UI.esc(a.due_date || '—')} · ${subs.length} submission${subs.length === 1 ? '' : 's'}</div>
           <div id="subs-list"></div>
-          <button class="btn success" id="publish-grades" style="margin-top:12px">Publish all grades to students</button>`,
+          <button class="btn success sm" id="publish-grades" style="margin-top:12px">Publish grades</button>`,
         foot: '<button class="btn" data-close>Close</button>',
       });
       bindAssignmentDownloads(modal.backdrop);
@@ -697,7 +724,7 @@
         const overdue = a.due_date && a.due_date < new Date().toISOString().slice(0, 10);
         const files = a.files || [];
         const brief = (a.description || '').trim();
-        list.appendChild(UI.el(`<div class="doc-item" style="align-items:stretch">
+        list.appendChild(UI.el(`<div class="doc-item as-card">
           <div style="flex:1;min-width:0">
             <div class="doc-name">${UI.esc(a.title)} ${a.due_date ? '<span class="badge amber">due ' + UI.esc(a.due_date) + '</span>' : ''} ${overdue ? '<span class="badge red">Overdue</span>' : ''}</div>
             <div class="doc-meta">${UI.esc(a.subject || '')} · ${UI.esc(a.teacher_name || '')}</div>
@@ -714,7 +741,7 @@
                 : '<div class="doc-meta">Not submitted yet. Read the instructions, then send your answer.</div>'}
             </div>
           </div>
-          <button class="btn ${sub ? 'secondary' : ''} sm" data-sub="${a.id}">${sub ? 'Update answer' : 'Send answer'}</button>
+          <div class="doc-actions"><button class="btn ${sub ? 'secondary' : ''} sm" data-sub="${a.id}">${sub ? 'Update answer' : 'Send answer'}</button></div>
         </div>`));
       }
       bindAssignmentDownloads(list);
@@ -740,13 +767,13 @@
             <h4>Your answer</h4>
             <label class="field">Write your answer<textarea id="sub-content" rows="5" placeholder="Write your answer here. You can also attach a file, or both.">${UI.esc(my.content || '')}</textarea></label>
             ${my.attachment_id ? '<div class="doc-meta">File already sent: ' + UI.esc(my.attachment_name || 'your file') + '. Leave the box empty to keep it.</div><div class="as-file"><span>' + UI.esc(my.attachment_name || 'Your file') + '</span><button type="button" class="btn secondary sm" data-dl="' + my.attachment_id + '" data-name="' + UI.esc(my.attachment_name || 'answer') + '">Download</button></div>' : ''}
-            <label class="field">Attach your work<input type="file" id="sub-file">
-              <span class="doc-meta">A photo of your book, a PDF, or a document. The teacher can open it.</span>
-            </label>
+            ${filePickerHtml('sub-file', 'Attach your work', false)}
+            <span class="doc-meta">A photo of your book, a PDF, or a document. The teacher can open it.</span>
           </div>`,
         foot: '<button class="btn secondary" data-cancel>Cancel</button><button class="btn" data-save>Send answer</button>',
       });
       bindAssignmentDownloads(modal.backdrop);
+      bindFilePicker(modal.backdrop, 'sub-file');
       modal.backdrop.querySelector('[data-cancel]').onclick = () => modal.close();
       modal.backdrop.querySelector('[data-save]').onclick = async () => {
         const saveBtn = modal.backdrop.querySelector('[data-save]');
