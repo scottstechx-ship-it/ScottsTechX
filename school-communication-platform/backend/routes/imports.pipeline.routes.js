@@ -29,6 +29,7 @@ const { readSpreadsheet, DANGEROUS_KEYS } = require('../services/spreadsheet');
 const { KINDS, PIPELINE, MAX_ROWS, MAX_DOC_EXT } = require('../services/importKinds');
 const templates = require('../services/importTemplates');
 const reports = require('../services/reports');
+const reportFormat = require('../services/reportFormatPdf');
 const { readZip, writeZip } = require('../services/zip');
 const { readSettings } = require('../services/settingsService');
 const hub = require('../services/importHub');
@@ -41,7 +42,9 @@ router.get('/guide', authenticate, requireStaffAdmin, (req, res) => {
     kinds[key] = {
       label: k.label, help: k.help, columns: k.columns, order: k.order,
       template: templates.template(key) ? templates.template(key).filename : null,
-      fileTypes: key === 'reports' ? ['csv', 'xlsx', 'pdf', 'docx', 'jpg', 'png', 'zip'] : ['csv', 'xlsx'],
+      fileTypes: key === 'reports'
+        ? ['csv', 'xlsx', 'pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'zip']
+        : ['csv', 'xlsx'],
     };
   }
   // live counts, so the guide can show what is already loaded
@@ -71,10 +74,24 @@ router.get('/template.csv', authenticate, requireStaffAdmin, (req, res) => {
   res.send(t.content);
 });
 
+/** GET /api/imports/report-format.pdf — the blank report card the school fills and uploads. */
+router.get('/report-format.pdf', authenticate, requireStaffAdmin, (req, res) => {
+  const school = readSettings().school || {};
+  const pdf = reportFormat.blankPdf({ schoolName: school.name || 'School' });
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', 'attachment; filename="report-card-format.pdf"');
+  res.send(pdf);
+});
+
 /** GET /api/imports/starter-pack.zip — every template + the order to use them. */
 router.get('/starter-pack.zip', authenticate, requireStaffAdmin, (req, res) => {
+  const school = readSettings().school || {};
   const files = [{ name: 'README-FIRST.txt', data: templates.README }];
   for (const t of templates.allTemplates()) files.push({ name: t.filename, data: t.content });
+  files.push({
+    name: '8-report-card-format.pdf',
+    data: reportFormat.blankPdf({ schoolName: school.name || 'School' }),
+  });
   const zip = writeZip(files);
   res.setHeader('Content-Type', 'application/zip');
   res.setHeader('Content-Disposition', 'attachment; filename="import-starter-pack.zip"');
@@ -82,6 +99,15 @@ router.get('/starter-pack.zip', authenticate, requireStaffAdmin, (req, res) => {
 });
 
 // ---------------------------------------------------------------------- run
+/** Report documents inside a zip. Instruction files that travel with the format pack are not cards. */
+function isReportDocument(name) {
+  const base = String(name || '').split(/[\\/]/).pop() || '';
+  const ext = (base.split('.').pop() || '').toLowerCase();
+  if (!MAX_DOC_EXT.includes(ext)) return false;
+  if (/^readme/i.test(base)) return false;
+  return true;
+}
+
 async function rowsFromSpreadsheet(filePath, ext) {
   const rows = await readSpreadsheet(filePath, ext);
   return rows
@@ -175,7 +201,7 @@ router.post('/run', authenticate, requireStaffAdmin, upload.single('file'), hand
       const incoming = ext === 'zip'
         ? readZip(buffer)
             // a school zip often carries the class list or a spreadsheet too — take the documents
-            .filter((f) => MAX_DOC_EXT.includes((f.name.split('.').pop() || '').toLowerCase()))
+            .filter((f) => isReportDocument(f.name))
             .map((f) => ({ name: f.name.split(/[\\/]/).pop(), data: f.data }))   // keep the file, drop the folder
         : [{ name: originalName, data: buffer }];
       if (!incoming.length) {

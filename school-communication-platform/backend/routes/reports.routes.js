@@ -19,6 +19,7 @@ const { log } = require('../services/audit');
 const { notify } = require('../services/notify');
 const { sendEmail } = require('../services/mailer');
 const reports = require('../services/reports');
+const reportFormat = require('../services/reportFormatPdf');
 const { currentTerm, termWindow, normaliseTerm } = require('../services/termCalendar');
 
 function resolveTerm(req) {
@@ -118,6 +119,32 @@ router.get('/unmatched', authenticate, requireStaffAdmin, (req, res) => {
       why: r.teacher_comment, uploadedAt: r.created_at,
     })),
   });
+});
+
+/**
+ * GET /api/reports/format.zip — the PDF format the school uploads.
+ * One card per child, already named with the student ID, plus a filename index.
+ * Replace a card with the school's own PDF (keep the name) and upload the zip.
+ */
+router.get('/format.zip', authenticate, requireStaffAdmin, (req, res) => {
+  const { term, year } = resolveTerm(req);
+  const classId = asInt(req.query.classId) || null;
+  const students = all(
+    `SELECT s.id, s.full_name, s.student_code, c.name AS class_name, c.stream AS class_stream
+     FROM students s LEFT JOIN classes c ON c.id = s.class_id
+     WHERE s.status = 'active' ${classId ? 'AND s.class_id = ?' : ''}
+     ORDER BY c.name, c.stream, s.full_name`,
+    classId ? [classId] : []
+  );
+  if (students.length > 4000) {
+    return res.status(400).json({ error: 'Too many students for one format pack. Choose a class, then download the PDF format.' });
+  }
+  const school = require('../services/settingsService').readSettings().school || {};
+  const zip = reportFormat.formatPack(students, { schoolName: school.name || 'School', term, year });
+  const safe = `${term || 'term'}-${year || ''}`.replace(/[^\w.-]+/g, '-').replace(/-+/g, '-');
+  res.setHeader('Content-Type', 'application/zip');
+  res.setHeader('Content-Disposition', `attachment; filename="report-card-format-${safe}.zip"`);
+  res.send(zip);
 });
 
 /** POST /api/reports/:id/match — say which child an unmatched file belongs to. */

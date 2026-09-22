@@ -919,7 +919,7 @@ const KINDS = {
     label: 'Report cards (marks)',
     template: 'report-card-import-template.csv',
     order: 9,
-    help: 'One row per subject per student. Totals, averages and positions are worked out automatically, and the marks appear in Exams & Results too. Report cards that already exist as PDFs are uploaded on the Reports screen instead.',
+    help: 'One row per subject per student, or upload the PDFs themselves. Totals, averages and positions are worked out from a spreadsheet. PDF report cards are matched by the file name — download the PDF format, keep each file name, and upload the PDF or the zip.',
     columns: ['Student ID', 'Student Name', 'Class', 'Term', 'Year', 'Subject', 'Score', 'Out Of', 'Grade', 'Remarks', 'Teacher Comment'],
     plan(row, ctx) {
       const admissionNo = field(row, COLS.reports, 'admissionNo');
@@ -987,7 +987,7 @@ const PIPELINE = [
   { key: 'attendance', label: '5. Attendance', why: 'Loads historical registers so attendance reports are complete from day one.', requirement: 'Attendance sheets (or one file per class).' },
   { key: 'fees', label: '6. Fees', why: 'Creates fee structures and bills the right students automatically.', requirement: 'Fee structure per class/term.' },
   { key: 'payments', label: '7. Payments', why: 'Records what has been paid, so the system knows which children have cleared.', requirement: 'Receipts / payment records.' },
-  { key: 'reports', label: '8. Report cards', why: 'Loads marks (or upload the PDFs) then sends each child their report to their parent with a few clicks.', requirement: 'Report card file — a spreadsheet of marks, or the PDFs themselves.' },
+  { key: 'reports', label: '8. Report cards', why: 'Loads a spreadsheet of marks, or the PDF report cards the school already prints, then sends each child their report.', requirement: 'A marks spreadsheet, or PDF report cards named with the student ID. Download the PDF format, keep the file names, and upload the PDF or the zip.' },
   { key: 'classes', label: 'Optional: classes', why: 'Fix class names, add streams or set class teachers.', requirement: 'Only when something needs correcting.' },
   { key: 'subjects', label: 'Optional: subjects', why: 'Add or correct subjects, codes and departments.', requirement: 'Only when something needs correcting.' },
 ];

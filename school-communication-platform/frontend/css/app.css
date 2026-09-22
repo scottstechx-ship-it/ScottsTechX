@@ -626,6 +626,23 @@ html[data-theme="dark"] .doc-open { background: #0b1220; }
 .gs-meta-row span { color: var(--muted); flex: none; }
 .gs-meta-row strong { text-align: right; font-weight: 600; word-break: break-word; min-width: 0; }
 
+/* Import Center upload: the file input covers the button so the browser opens
+   the picker. display:none inputs do not open from a button press. */
+label.ic-upload { position: relative; overflow: hidden; cursor: pointer; }
+label.ic-upload input[type="file"] {
+  position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important;
+  margin: 0 !important; padding: 0 !important; opacity: 0 !important; cursor: pointer;
+  /* a large font makes the native control cover the button; font-size:0 does not receive clicks */
+  font-size: 100px !important; border: 0 !important; min-height: 100% !important;
+}
+label.ic-upload:focus-within { outline: 2px solid var(--primary); outline-offset: 2px; }
+.ic-row {
+  display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap;
+  padding: 6px 0; border-top: 1px solid var(--border); font-size: 13px;
+}
+.ic-note { font-size: 12px; color: var(--danger); flex: 1 1 180px; }
+.ic-note.muted { color: var(--muted); }
+
 /* phones: the box becomes an icon that expands into a full-width overlay */
 @media (max-width: 900px) {
   .global-search { display: none; }

@@ -9,7 +9,7 @@
  *   5 Attendance
  *   6 Fees       → billed to the right students
  *   7 Payments
- *   8 Marks      → report cards (PDF report cards live on the Reports screen)
+ *   8 Marks      → report cards (spreadsheet, or PDFs named with the student ID)
  *
  * Every step previews first and saves second, and the preview is produced by the
  * same code that does the import, so it cannot promise something the import
@@ -20,6 +20,7 @@
   const UI = window.UI;
 
   const KINDS_WITH_TERM = new Set(['attendance', 'fees', 'payments', 'reports']);
+  const REPORT_TYPES = ['csv', 'xlsx', 'pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'zip'];
 
   /** UI.modal() gives us the dialog shell; swapping its body is our job. */
   function setBody(modal, html) {
@@ -27,12 +28,46 @@
     if (body) body.innerHTML = html;
   }
 
+  function icon(name, size) {
+    return window.Icons ? window.Icons.svg(name, { size: size || 18 }) : '';
+  }
+
   function fileIcon(name) {
     const ext = String(name || '').split('.').pop().toLowerCase();
-    if (ext === 'zip') return '📦';
-    if (ext === 'pdf') return '📄';
-    if (ext === 'xlsx' || ext === 'xls') return '📊';
-    return '📋';
+    if (ext === 'zip') return icon('package', 14);
+    if (ext === 'xlsx' || ext === 'xls' || ext === 'csv') return icon('chart', 14);
+    return icon('document', 14);
+  }
+
+  /**
+   * A click on the label text (or its icon) must open the file dialog exactly
+   * once. If the transparent input did not receive the click, open it here.
+   * Clicks that already hit the input are left alone, or the dialog opens twice.
+   */
+  function bindUploadLabel(label) {
+    if (!label || label.dataset.bound) return;
+    label.dataset.bound = '1';
+    label.addEventListener('click', (e) => {
+      const input = label.querySelector('input[type="file"]');
+      if (!input || e.target === input || input.contains(e.target)) return;
+      e.preventDefault();
+      input.click();
+    });
+  }
+
+  /** Save a same-origin download (session cookie included) and surface failures. */
+  async function downloadAuth(url, fallbackName) {
+    const res = await API.raw(url);
+    const blob = await res.blob();
+    const disp = res.headers.get('content-disposition') || '';
+    const match = /filename="([^"]+)"/.exec(disp);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = (match && match[1]) || fallbackName || 'download';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   }
 
   class ImportCenter {
@@ -99,26 +134,19 @@
         </div>
 
         <div class="grid grid-3" style="margin-bottom:14px">
-          <div class="card stat-card"><div class="stat-ic" style="background:var(--primary-light)">🏫</div>
-            <div><div class="stat-num">${counts.classes}</div><div class="stat-label">Classes</div></div></div>
-          <div class="card stat-card"><div class="stat-ic" style="background:var(--success-light)">👩‍🏫</div>
-            <div><div class="stat-num">${counts.teachers}</div><div class="stat-label">Teachers</div></div></div>
-          <div class="card stat-card"><div class="stat-ic" style="background:var(--warning-light)">🎒</div>
-            <div><div class="stat-num">${counts.students}</div><div class="stat-label">Students</div></div></div>
-          <div class="card stat-card"><div class="stat-ic" style="background:var(--primary-light)">👨‍👩‍👧</div>
-            <div><div class="stat-num">${counts.parents}</div><div class="stat-label">Guardians</div></div></div>
-          <div class="card stat-card"><div class="stat-ic" style="background:var(--success-light)">💰</div>
-            <div><div class="stat-num">${counts.payments}</div><div class="stat-label">Payments recorded</div></div></div>
-          <div class="card stat-card"><div class="stat-ic" style="background:var(--warning-light)">📄</div>
-            <div><div class="stat-num">${counts.reportCards + counts.reportFiles}</div><div class="stat-label">Report cards</div></div></div>
+          ${this.stat('school', 'ic-blue', counts.classes, 'Classes')}
+          ${this.stat('teachers', 'ic-green', counts.teachers, 'Teachers')}
+          ${this.stat('students', 'ic-amber', counts.students, 'Students')}
+          ${this.stat('parents', 'ic-blue', counts.parents, 'Guardians')}
+          ${this.stat('wallet', 'ic-green', counts.payments, 'Payments recorded')}
+          ${this.stat('document', 'ic-amber', counts.reportCards + counts.reportFiles, 'Report cards')}
         </div>
 
         <div id="ic-steps">${steps.map((s, i) => this.stepCard(s, i, counts)).join('')}</div>
       `;
 
-      this.container.querySelector('#ic-pack').onclick = () => {
-        window.open(`${API.base || ''}/api/imports/starter-pack.zip`, '_blank');
-      };
+      const pack = this.container.querySelector('#ic-pack');
+      if (pack) pack.onclick = () => { window.open(`${API.base || ''}/api/imports/starter-pack.zip`, '_blank'); };
       const termSel = this.container.querySelector('#ic-term');
       termSel.onchange = () => { this.term = termSel.value; };
       const yearInput = this.container.querySelector('#ic-year');
@@ -127,13 +155,43 @@
       this.container.querySelectorAll('[data-template]').forEach((b) => {
         b.onclick = () => window.open(`${API.base || ''}/api/imports/template.csv?type=${encodeURIComponent(b.dataset.template)}`, '_blank');
       });
+      this.container.querySelectorAll('[data-pdf-format]').forEach((b) => {
+        b.onclick = () => this.downloadPdfFormat();
+      });
+      // The file input sits over the Upload label, so the browser opens the
+      // picker itself. This handler is what runs after a file is chosen.
+      this.container.querySelectorAll('label.ic-upload').forEach(bindUploadLabel);
       this.container.querySelectorAll('[data-pick]').forEach((input) => {
         input.onchange = () => {
-          const file = input.files && input.files[0];
+          const files = input.files ? [...input.files] : [];
           input.value = '';
-          if (file) this.preview(input.dataset.pick, file);
+          if (!files.length) return;
+          if (files.length === 1) this.preview(input.dataset.pick, files[0]);
+          else this.previewMany(input.dataset.pick, files);
         };
       });
+    }
+
+    stat(name, cls, num, label) {
+      return `<div class="card stat-card"><div class="stat-ic ${cls}">${icon(name, 22)}</div>
+        <div><div class="stat-num">${num}</div><div class="stat-label">${UI.esc(label)}</div></div></div>`;
+    }
+
+    acceptFor(step, k) {
+      const types = new Set((k && k.fileTypes) || []);
+      if (!types.size) ['csv', 'xlsx'].forEach((t) => types.add(t));
+      if (step.key === 'reports') REPORT_TYPES.forEach((t) => types.add(t));
+      return [...types].map((t) => '.' + t).join(',');
+    }
+
+    async downloadPdfFormat() {
+      const q = `term=${encodeURIComponent(this.term)}&year=${encodeURIComponent(this.year)}`;
+      try {
+        await downloadAuth(`/api/reports/format.zip?${q}`, `report-card-format-${this.term}-${this.year}.zip`);
+        UI.toast('PDF format downloaded. Keep the file names, then upload the zip or the PDFs.', 'success');
+      } catch (e) {
+        UI.toast(e.message, 'error');
+      }
     }
 
     termOptions() {
@@ -171,12 +229,14 @@
               <p class="muted" style="margin:6px 0 4px;font-size:13px">${UI.esc(step.why)}</p>
               <p class="muted" style="margin:0;font-size:12.5px"><strong>What you need:</strong> ${UI.esc(step.requirement)}</p>
               <p class="muted" style="margin:6px 0 0;font-size:12px">Columns: ${UI.esc((k.columns || []).join(' · '))}</p>
-              ${isReports ? '<p class="muted" style="margin:6px 0 0;font-size:12px">Already have the cards as PDFs, Word files or scans? Use the <strong>Report Cards</strong> screen — single files or a whole zip.</p>' : ''}
+              ${isReports ? `<p class="muted" style="margin:6px 0 0;font-size:12.5px"><strong>PDF format:</strong> download it, keep each file name (the student ID, for example STU-2026-100.pdf), replace a card with the school's own PDF if you already have one, then press Upload. A zip of those PDFs is accepted, and so are Word files and scans with the same names.</p>` : ''}
             </div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
-              <button class="btn ghost sm" data-template="${step.key}">Template</button>
-              <button class="btn sm" data-open="${step.key}">Upload</button>
-              <input type="file" data-pick="${step.key}" accept="${k.fileTypes.map((t) => '.' + t).join(',')}" style="display:none">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+              <button type="button" class="btn ghost sm" data-template="${step.key}">${isReports ? 'Marks template' : 'Template'}</button>
+              ${isReports ? `<button type="button" class="btn ghost sm" data-pdf-format>${icon('document', 14)} PDF format</button>` : ''}
+              <label class="btn sm ic-upload">${icon('upload', 14)} Upload
+                <input type="file" data-pick="${step.key}" accept="${this.acceptFor(step, k)}" ${isReports ? 'multiple' : ''} aria-label="Upload ${UI.esc(step.label)}">
+              </label>
             </div>
           </div>
         </div>`;
@@ -190,9 +250,9 @@
     preview(kind, file) {
       const modal = UI.modal({
         title: `Preview — ${this.guide.kinds[kind].label}`,
-        icon: 'import',
+        titleIcon: 'import',
         wide: true,
-        body: `<div class="empty-state">Reading ${fileIcon(file.name)} ${UI.esc(file.name)}…</div>`,
+        body: `<div class="empty-state">Reading ${UI.esc(file.name)}…</div>`,
       });
 
       const form = new FormData();
@@ -220,8 +280,13 @@
       const c = data.counts || {};
       const isDocs = !!c.files && c.matched !== undefined;
       const rows = data.rows || [];
-      const okCount = isDocs ? c.imported || c.matched || 0 : (c.valid || 0) + (c.warnings || 0);
+      const okCount = isDocs ? (c.matched || 0) : (c.valid || 0) + (c.warnings || 0);
+      const fileCount = isDocs ? (c.files || 0) : 0;
       const problemCount = isDocs ? (c.unmatched || 0) + (c.failed || 0) : c.errors || 0;
+      const canApply = isDocs ? fileCount > 0 : okCount > 0;
+      const applyLabel = isDocs
+        ? `Import ${fileCount} file${fileCount === 1 ? '' : 's'}`
+        : `Import ${okCount} row${okCount === 1 ? '' : 's'}`;
 
       const listOf = (arr, emptyText) => (!arr || !arr.length ? `<div class="muted" style="font-size:13px">${emptyText}</div>`
         : arr.map((r) => `<div class="ic-row">
@@ -239,13 +304,14 @@
           <span class="badge gray">nothing saved yet</span>
         </div>
         <p style="margin:0 0 12px;font-size:13.5px">${UI.esc(data.message || '')}</p>
+        ${kind === 'reports' && isDocs ? '<p class="muted" style="margin:0 0 10px;font-size:12.5px">PDFs are matched by the file name. Use the student ID (STU-2026-100.pdf) or the child\'s full name. Files that do not match are still saved, so you can choose the child on Report Cards.</p>' : ''}
         ${isDocs
           ? `${(data.matched || []).length ? `<h4 style="margin:12px 0 6px;font-size:13px">Matched to a child</h4>${(data.matched || []).map((m) => `<div class="ic-row"><span class="badge green">${fileIcon(m.file)}</span><span style="flex:1">${UI.esc(m.file)}</span><span class="muted" style="font-size:12.5px">${UI.esc(m.student)}</span></div>`).join('')}` : ''}
              ${(data.unmatched || []).length ? `<h4 style="margin:12px 0 6px;font-size:13px">Needs a child chosen</h4>${(data.unmatched || []).map((m) => `<div class="ic-row"><span class="badge amber">${fileIcon(m.file)}</span><span style="flex:1">${UI.esc(m.file)}</span><span class="muted" style="font-size:12.5px">${UI.esc(m.why || '')}</span></div>`).join('')}` : ''}`
           : (rows.length ? `<div style="max-height:46vh;overflow:auto">${listOf(rows, '')}</div>` : '<div class="muted" style="font-size:13px">No data rows found.</div>')}
         <div class="modal-actions" style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap">
-          <button class="btn secondary" data-cancel>Cancel</button>
-          <button class="btn" data-apply ${okCount ? '' : 'disabled'}>Import ${okCount} row${okCount === 1 ? '' : 's'}</button>
+          <button type="button" class="btn secondary" data-cancel>Cancel</button>
+          <button type="button" class="btn" data-apply ${canApply ? '' : 'disabled'}>${applyLabel}</button>
         </div>`;
     }
 
@@ -275,11 +341,88 @@
       };
     }
 
+    /** Several PDFs (or a mix) chosen at once — preview each, then import the ones that can be read. */
+    async previewMany(kind, files) {
+      const modal = UI.modal({
+        title: `Preview — ${files.length} files`,
+        titleIcon: 'import',
+        wide: true,
+        body: `<div class="empty-state">Reading ${files.length} file(s)… nothing is saved yet.</div>`,
+      });
+      const rows = [];
+      for (const file of files) {
+        const form = new FormData();
+        form.append('kind', kind);
+        form.append('file', file);
+        form.append('dryRun', '1');
+        form.append('options', JSON.stringify(this.optionsFor(kind)));
+        try {
+          const data = await API.upload('/api/imports/run', form);
+          rows.push({ file, ok: true, summary: data.message || 'Ready' });
+        } catch (e) {
+          rows.push({ file, ok: false, summary: e.message });
+        }
+      }
+      const ready = rows.filter((r) => r.ok);
+      setBody(modal, `
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+          <span class="badge ${ready.length ? 'green' : 'gray'}">${ready.length} ready</span>
+          ${rows.length - ready.length ? `<span class="badge red">${rows.length - ready.length} could not be read</span>` : ''}
+          <span class="badge gray">nothing saved yet</span>
+        </div>
+        <p class="muted" style="margin:0 0 10px;font-size:12.5px">Name each PDF with the student ID (STU-2026-100.pdf) or the child's full name. A file that matches nobody is saved so you can choose the child on Report Cards.</p>
+        <div style="max-height:46vh;overflow:auto">
+          ${rows.map((r) => `<div class="ic-row"><span class="badge ${r.ok ? 'green' : 'red'}">${r.ok ? 'Ready' : 'Check'}</span><span style="flex:1">${fileIcon(r.file.name)} ${UI.esc(r.file.name)}</span><span class="muted" style="font-size:12.5px">${UI.esc(r.summary)}</span></div>`).join('')}
+        </div>
+        <div class="modal-actions" style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap">
+          <button type="button" class="btn secondary" data-cancel>Cancel</button>
+          <button type="button" class="btn" data-apply ${ready.length ? '' : 'disabled'}>Import ${ready.length} file${ready.length === 1 ? '' : 's'}</button>
+        </div>`);
+      const root = modal.backdrop;
+      const cancel = root.querySelector('[data-cancel]');
+      if (cancel) cancel.onclick = () => modal.close();
+      const apply = root.querySelector('[data-apply]');
+      if (!apply) return;
+      apply.onclick = async () => {
+        apply.disabled = true;
+        apply.textContent = 'Importing…';
+        const created = [];
+        const linked = [];
+        const failed = [];
+        let imported = 0;
+        for (const row of ready) {
+          const form = new FormData();
+          form.append('kind', kind);
+          form.append('file', row.file);
+          form.append('dryRun', '0');
+          form.append('options', JSON.stringify(this.optionsFor(kind)));
+          try {
+            const out = await API.upload('/api/imports/run', form);
+            imported += (out.counts && (out.counts.imported ?? out.counts.files)) || 0;
+            created.push(...(out.created || []));
+            linked.push(...(out.linked || []));
+            failed.push(...(out.failures || out.failed || []));
+          } catch (e) {
+            failed.push({ file: row.file.name, why: e.message });
+          }
+        }
+        this.showOutcome(modal, kind, {
+          message: `${imported} imported${failed.length ? `, ${failed.length} could not be saved` : ''}.`,
+          counts: { imported },
+          created, linked, failed,
+        });
+        this.refreshCounts();
+      };
+    }
+
     showOutcome(modal, kind, out) {
       const created = out.created || [];
       const linked = out.linked || [];
       const creds = out.credentials || [];
-      const failures = out.failures || [];
+      const failures = (out.failures || out.failed || []).map((f) => ({
+        row: f.row || f.file || '—',
+        reason: f.reason || f.why || '',
+      }));
       const html = `
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
           <span class="badge green">${UI.esc(String((out.counts && (out.counts.imported ?? out.counts.files)) || 0))} imported</span>
@@ -291,7 +434,7 @@
         ${linked.length ? `<h4 style="margin:12px 0 6px;font-size:13px">Linked automatically</h4>
           <div style="max-height:30vh;overflow:auto">${linked.slice(0, 200).map((c) => `<div class="ic-row"><span class="badge blue">→</span><span style="flex:1">${UI.esc(c)}</span></div>`).join('')}</div>` : ''}
         ${failures.length ? `<h4 style="margin:12px 0 6px;font-size:13px">Rows that could not be saved</h4>
-          ${failures.map((f) => `<div class="ic-row"><span class="badge red">Row ${f.row}</span><span style="flex:1">${UI.esc(f.reason || '')}</span></div>`).join('')}` : ''}
+          ${failures.map((f) => `<div class="ic-row"><span class="badge red">${UI.esc(String(f.row))}</span><span style="flex:1">${UI.esc(f.reason || '')}</span></div>`).join('')}` : ''}
         ${creds.length ? `<h4 style="margin:12px 0 6px;font-size:13px">${creds.length} new login(s)</h4>
           <p class="muted" style="margin:0 0 8px;font-size:12.5px">Download these now — the passwords are shown to the school only in this session.</p>
           <div style="max-height:30vh;overflow:auto">${creds.slice(0, 200).map((c) => `<div class="ic-row"><span class="badge gray">${UI.esc(c.username || '')}</span><span style="flex:1">${UI.esc(c.name || '')}</span><span class="muted" style="font-size:12.5px">${UI.esc(c.password || '')}</span></div>`).join('')}</div>

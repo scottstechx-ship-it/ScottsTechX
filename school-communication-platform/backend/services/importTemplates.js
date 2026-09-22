@@ -100,7 +100,7 @@ const TEMPLATES = {
       ',Brian Mukasa,Senior 2 A,Term 3,2026,Physics,55,100,D,Needs practice,\n' +
       '"# One row per subject per student. Totals, averages and class positions are worked out automatically.",,,,,,,,,,\n' +
       '"# These marks appear in Exams & Results as well, and the report card is built from them.",,,,,,,,,,\n' +
-      '"# Already have report cards as PDFs? Upload them on the Reports screen - bulk zips are supported.",,,,,,,,,,\n',
+      '"# Already have the cards as PDFs? Download the PDF format, keep each file name (the student ID), and upload the PDF or the zip.",,,,,,,,,,\n',
   },
   classes: {
     filename: 'optional-classes.csv',
@@ -137,8 +137,14 @@ typing anything twice.
   5. 5-attendance.csv    Loads historical registers (optional but recommended).
   6. 6-fees.csv          Creates fee structures and bills the right students.
   7. 7-payments.csv      Records payments, so the system knows who has cleared.
-  8. 8-report-cards.csv  Loads marks (or upload the PDFs on the Reports screen),
-                         then send each report to its parent in a few clicks.
+  8. 8-report-cards.csv  Loads marks. Totals, averages and positions are worked out
+                         for you.
+     8-report-card-format.pdf
+                         The PDF format. Once students are imported, Report Cards
+                         and Import Center also download a zip with one PDF per
+                         child, already named with the student ID. Keep those
+                         file names (or name your own PDFs the same way) and
+                         upload the PDF or the zip.
 
 optional-classes.csv and optional-subjects.csv are there only if something
 needs correcting later.
