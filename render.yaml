@@ -10,7 +10,7 @@ services:
                  # For a REAL school: switch to "starter", uncomment the disk
                  # below and the two env vars — then ALL data (users, news,
                  # gallery, messages, fees) survives forever.
-    branch: arena/01a007fd-scottstechx
+    branch: arena/01a0c98b-scottstechx
     rootDir: school-communication-platform
     buildCommand: npm install
     startCommand: node backend/server.js
