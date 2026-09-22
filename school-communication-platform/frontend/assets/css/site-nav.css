@@ -437,6 +437,42 @@ body { background: transparent; }   /* sections decide what shows through */
   padding: 16px 14px;
   background: rgba(16,35,60,.42);
   box-shadow: inset 0 3px 0 #38bdf8, 0 14px 30px rgba(0,0,0,.24);
+  min-width: 0;
+  max-width: 100%;
+}
+/* The school email is one long word. Keep it inside the card, not running through the frame. */
+.contact-strip .contact-item,
+.contact-card,
+.department-card {
+  min-width: 0;
+  max-width: 100%;
+}
+.contact-strip .contact-item > div,
+.contact-card p,
+.department-card p {
+  min-width: 0;
+  max-width: 100%;
+}
+.contact-strip .contact-item p,
+.contact-strip .contact-item a,
+.contact-card p,
+.contact-card a,
+.department-contact,
+.department-card a {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+.contact-strip .contact-item a {
+  color: #7dd3fc;
+  text-decoration: none;
+}
+.stx-home .contact-strip .stx-scroll,
+.stx-home .contact-strip .stx-scroll:not(.is-settled) {
+  opacity: 1;
+  transform: none !important;
 }
 .stx-look-paper { background: transparent; }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {

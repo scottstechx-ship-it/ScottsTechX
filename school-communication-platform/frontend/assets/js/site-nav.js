@@ -465,7 +465,7 @@
       document.body.appendChild(bar);
     }
     var nodes = document.querySelectorAll(
-      '.academics-section .combo-card, .academics-section div[style*="border-radius:16px"], .hods-strip-section .hod-card, .contact-strip .contact-item'
+      '.academics-section .combo-card, .academics-section div[style*="border-radius:16px"], .hods-strip-section .hod-card'
     );
     var cards = [];
     var seen = [];
