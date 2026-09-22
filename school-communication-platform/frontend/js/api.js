@@ -225,8 +225,14 @@
 
     if (res.status === 401) {
       lastFailure = { code: 'UNAUTHORIZED', message: 'Session expired' };
-      if (auth && !skipAuthRedirect && !path.includes('/auth/login')) redirectToLogin();
       const data = await res.json().catch(() => ({}));
+      // A badge refresh must not dump someone who is still signed in. Only
+      // leave the dashboard when /api/auth/me agrees the session is gone.
+      if (auth && !skipAuthRedirect && !path.includes('/auth/login')) {
+        const checkingMe = path.includes('/auth/me');
+        const dead = checkingMe ? true : await sessionReallyExpired();
+        if (dead) redirectToLogin();
+      }
       throw netError('UNAUTHORIZED', data.error || 'Your session has expired. Please log in again.');
     }
     if (res.status === 403) {
@@ -280,6 +286,24 @@
   /** Was the last /api/auth/me failure the server saying "not signed in"? */
   function sessionRejected() {
     return !!(lastFailure && lastFailure.code === 'UNAUTHORIZED');
+  }
+
+  /**
+   * A single 401 can be a cold server or a badge request racing a cookie
+   * refresh. Ask who we are before treating it as a logout. A network failure
+   * is not a logout.
+   */
+  let sessionCheck = null;
+  function sessionReallyExpired() {
+    if (sessionCheck) return sessionCheck;
+    sessionCheck = request('/api/auth/me', { skipAuthRedirect: true })
+      .then(() => {
+        lastFailure = null;
+        return false;
+      })
+      .catch((e) => !!(e && e.code === 'UNAUTHORIZED'))
+      .finally(() => { sessionCheck = null; });
+    return sessionCheck;
   }
 
   /**

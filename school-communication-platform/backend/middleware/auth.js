@@ -49,6 +49,14 @@ function authenticate(req, res, next) {
       sessions.clearSessionCookies(res);
       return res.status(401).json({ error: 'Your session has expired. Please log in again.' });
     }
+    // Keep the browser cookie alive for as long as the person is actually here.
+    if (resolved.refreshCookie) {
+      sessions.setSessionCookies(res, {
+        token: cookieToken,
+        csrfToken: resolved.session.csrf_token,
+        maxAge: resolved.maxAge,
+      }, req);
+    }
     req.user = resolved.user;
     req.session = resolved.session;
     req.authMethod = 'cookie';
@@ -124,7 +132,7 @@ function csrfProtection(req, res, next) {
   const cookieToken = sessions.cookieValue(req, sessions.COOKIE_NAME);
   if (!cookieToken) return next();
 
-  const resolved = sessions.resolveSession(cookieToken);
+  const resolved = sessions.resolveSession(cookieToken, { touch: false });
   if (!resolved) return next(); // authenticate() will reject with 401
 
   const supplied = req.headers[sessions.CSRF_HEADER] || req.headers['csrf-token'];

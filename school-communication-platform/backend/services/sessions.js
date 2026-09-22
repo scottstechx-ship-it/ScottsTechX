@@ -22,8 +22,12 @@ const COOKIE_NAME = process.env.SESSION_COOKIE_NAME || 'scp_session';
 const CSRF_COOKIE_NAME = COOKIE_NAME + '_csrf';
 const CSRF_HEADER = 'x-csrf-token';
 
-const ABSOLUTE_HOURS = parseInt(process.env.SESSION_TTL_HOURS || '12', 10) || 12;
-const IDLE_HOURS = parseInt(process.env.SESSION_IDLE_HOURS || '12', 10) || 12;
+// A person who is still in the dashboard must not be signed out on a fixed
+// clock. Use extends the session (up to two school weeks). It only ends after
+// they have actually left it alone, or after the hard cap.
+const ABSOLUTE_HOURS = parseInt(process.env.SESSION_TTL_HOURS || String(24 * 14), 10) || 24 * 14;
+const IDLE_HOURS = parseInt(process.env.SESSION_IDLE_HOURS || '16', 10) || 16;
+const HARD_CAP_HOURS = 24 * 30;
 
 /** Read a cookie value off a request without pulling in a dependency. */
 function cookieValue(req, name) {
@@ -123,9 +127,23 @@ function clearSessionCookies(res) {
   ]);
 }
 
+function cookieSeconds(maxAge) {
+  const n = Number(maxAge);
+  if (!Number.isFinite(n) || n <= 0) return 0;
+  // cookieOptions stores milliseconds. Max-Age and Expires are seconds.
+  return Math.floor(n / 1000);
+}
+
 function serializeCookie(name, value, opts = {}) {
   let out = `${name}=${encodeURIComponent(value)}`;
-  if (opts.maxAge !== undefined) out += `; Max-Age=${Math.max(0, Math.floor(opts.maxAge / 1000 || opts.maxAge))}`;
+  if (opts.maxAge !== undefined) {
+    const seconds = cookieSeconds(opts.maxAge);
+    // Phones drop a cookie that only has Max-Age when the screen locks or the
+    // person switches apps, which looked like a logout in the middle of use.
+    // Expires is what those browsers actually keep.
+    out += `; Max-Age=${seconds}`;
+    out += `; Expires=${new Date(Date.now() + seconds * 1000).toUTCString()}`;
+  }
   if (opts.path) out += `; Path=${opts.path}`;
   if (opts.httpOnly) out += '; HttpOnly';
   if (opts.secure) out += '; Secure';
@@ -133,18 +151,26 @@ function serializeCookie(name, value, opts = {}) {
   return out;
 }
 
+function parseTime(value) {
+  const t = new Date(value || '').getTime();
+  return Number.isFinite(t) ? t : NaN;
+}
+
 /**
  * Resolve a session cookie to a live user, or null.
- * Updates last_seen at most once a minute to keep writes cheap.
+ * While the dashboard is in use, the expiry slides forward (at most once a
+ * minute) and the caller refreshes the browser cookie. touch:false is for the
+ * CSRF check, which must not consume that minute before the real request does.
  */
-function resolveSession(token) {
+function resolveSession(token, { touch = true } = {}) {
   if (!token) return null;
   const row = get('SELECT * FROM sessions WHERE token_hash = ? AND revoked = 0', [hashToken(token)]);
   if (!row) return null;
 
   const now = Date.now();
-  if (new Date(row.expires_at).getTime() < now) return null;
-  const lastSeen = new Date(row.last_seen_at || row.created_at).getTime();
+  const expires = parseTime(row.expires_at);
+  if (Number.isFinite(expires) && expires < now) return null;
+  const lastSeen = parseTime(row.last_seen_at || row.created_at);
   if (Number.isFinite(lastSeen) && now - lastSeen > IDLE_HOURS * 3600 * 1000) {
     revokeSession(token);
     return null;
@@ -156,10 +182,21 @@ function resolveSession(token) {
   );
   if (!user || user.status !== 'active') return null;
 
-  if (now - lastSeen > 60 * 1000) {
-    run('UPDATE sessions SET last_seen_at = ? WHERE id = ?', [nowIso(), row.id]);
+  let refreshCookie = false;
+  let maxAge = Math.max(60, Math.ceil(((Number.isFinite(expires) ? expires : now + IDLE_HOURS * 3600 * 1000) - now) / 1000));
+  if (touch && (!Number.isFinite(lastSeen) || now - lastSeen > 60 * 1000)) {
+    const created = parseTime(row.created_at) || now;
+    const hardCap = created + HARD_CAP_HOURS * 3600 * 1000;
+    const slid = now + IDLE_HOURS * 3600 * 1000;
+    const next = Math.min(hardCap, Math.max(slid, Number.isFinite(expires) ? expires : 0));
+    const expiresAt = nowIso(next - now);
+    run('UPDATE sessions SET last_seen_at = ?, expires_at = ? WHERE id = ?', [nowIso(), expiresAt, row.id]);
+    row.last_seen_at = nowIso();
+    row.expires_at = expiresAt;
+    maxAge = Math.max(60, Math.ceil((next - now) / 1000));
+    refreshCookie = true;
   }
-  return { user, session: row };
+  return { user, session: row, refreshCookie, maxAge };
 }
 
 function revokeSession(token) {

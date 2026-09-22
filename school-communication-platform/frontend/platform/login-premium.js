@@ -80,7 +80,8 @@
 
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value;
-    const remember = document.getElementById('remember') ? document.getElementById('remember').checked : false;
+    const rememberEl = document.getElementById('remember') || document.querySelector('input[name="remember"]');
+    const remember = rememberEl ? rememberEl.checked : false;
 
     try {
       // The server sets an HttpOnly session cookie; nothing is stored in the
