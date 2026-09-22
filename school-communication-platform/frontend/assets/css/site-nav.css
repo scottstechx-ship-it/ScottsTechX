@@ -368,6 +368,133 @@ body { background: transparent; }   /* sections decide what shows through */
   }
 }
 
+/* ============================================================
+ * PHONE CARD ROWS
+ * site-nav.js tags groups of cards with .stx-swipe on narrow screens.
+ * One compact row, the next card peeking, instead of a tall stack.
+ * Forms, the navbar and the footer are never tagged.
+ * ============================================================ */
+@media (max-width: 760px) {
+  .stx-swipe {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 2px 2px 14px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 2px;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    box-sizing: border-box;
+  }
+  .stx-swipe::-webkit-scrollbar { display: none; height: 0; }
+  .stx-swipe:focus { outline: none; }
+  .stx-swipe:focus-visible {
+    outline: 2px solid rgba(56,189,248,.55);
+    outline-offset: 2px;
+  }
+  .stx-swipe > * {
+    flex: 0 0 78% !important;
+    width: 78% !important;
+    max-width: 280px !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    scroll-snap-align: start;
+    box-sizing: border-box;
+  }
+  /* text cards: enough padding to read, short enough that the row stays low */
+  .stx-swipe > .portal-card,
+  .stx-swipe > .combo-card,
+  .stx-swipe > .hod-card,
+  .stx-swipe > .req-card,
+  .stx-swipe > .doc-item,
+  .stx-swipe > .glass-card,
+  .stx-swipe > .facility-card,
+  .stx-swipe > .leader-card,
+  .stx-swipe > .accred-card,
+  .stx-swipe > .news-card,
+  .stx-swipe > .contact-card,
+  .stx-swipe > .memorial-card,
+  .stx-swipe > .trophy-item,
+  .stx-swipe > .department-card,
+  .stx-swipe > .card {
+    padding: 16px 14px !important;
+  }
+  .stx-swipe .card-icon {
+    width: 48px !important; height: 48px !important;
+    margin: 0 auto 10px !important;
+    font-size: 22px !important; border-radius: 14px !important;
+  }
+  .stx-swipe .fac-icon, .stx-swipe .accred-icon { font-size: 1.7rem !important; margin-bottom: 8px !important; }
+  .stx-swipe .leader-avatar { width: 52px !important; height: 52px !important; }
+  .stx-swipe > .leader-card,
+  .stx-swipe > .trophy-item {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+  .stx-swipe > .portal-card p,
+  .stx-swipe > .facility-card p,
+  .stx-swipe > .leader-card p,
+  .stx-swipe > .accred-card p,
+  .stx-swipe > .news-card p,
+  .stx-swipe > .memorial-card p,
+  .stx-swipe > .glass-card p,
+  .stx-swipe > .card > p {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .stx-swipe > .gallery-item,
+  .stx-swipe > .image-card,
+  .stx-swipe > .memorial-item {
+    flex-basis: 72% !important;
+    width: 72% !important;
+    max-width: 240px !important;
+    aspect-ratio: 4 / 3;
+    height: auto !important;
+  }
+  .stx-swipe > .tt-card,
+  .stx-swipe > .video-card {
+    flex-basis: 62% !important;
+    width: 62% !important;
+    max-width: 200px !important;
+  }
+  .stx-swipe > .tt-card iframe {
+    height: 280px !important;
+    aspect-ratio: auto !important;
+  }
+  /* titles stay readable without a hover, which phones do not have */
+  .gallery-item .gallery-overlay { transform: none; }
+  /* number tiles stay a compact 2-up grid, not a swipe and not a single column */
+  .stats-grid, .achievements-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    max-width: none !important;
+    width: 100% !important;
+    gap: 10px !important;
+  }
+  .stat-card, .achievement-stat { padding: 14px 10px !important; }
+  .stat-card .stat-number, .as-number { font-size: 1.55rem !important; }
+  /* the row should use the section width, so the next card can peek */
+  .portals-grid, .gallery-grid, .contact-grid, .news-grid, .hod-grid,
+  .leadership-grid, .facilities-grid, .accreditation-grid, .trophy-gallery,
+  .req-grid, .docs-grid, .card-grid, .image-gallery, .video-grid, .tt-grid,
+  .terms, .memorial-grid {
+    max-width: none !important;
+    width: 100% !important;
+  }
+}
+
 /* ---- more motion, all of it optional and switch-off-able --------------- */
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }          /* anchor jumps glide instead of snapping */
@@ -403,4 +530,6 @@ body { background: transparent; }   /* sections decide what shows through */
   /* cards rise a little further on hover on the pages that do not animate them */
   .hod-card:hover, .value-card:hover, .news-card:hover, .info-card:hover { transform: translateY(-4px); }
   .hod-card, .value-card, .news-card, .info-card { transition: transform .28s ease, box-shadow .28s ease; }
+}
+; }
 }

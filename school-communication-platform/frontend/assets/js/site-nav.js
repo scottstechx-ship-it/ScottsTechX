@@ -132,3 +132,120 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
   else build();
 })();
+
+
+/* Phone card rows: groups of cards become one sideways swipe instead of a
+   tall stack. Forms, navigation and the footer are left alone. Desktop is
+   untouched — the wrappers are removed as soon as the screen is wide. */
+(function () {
+  'use strict';
+
+  var SKIP = '.stx-swipe, form, nav, footer, .kn-nav, .kn-drawer, .form-section, .form-row, .footer-grid, .stats-grid, .achievements-grid, .page-nav-bar, .track-tabs, .search-filter-bar, .accordion, .two-column-grid, .stx-sig, .hero, .hero-actions, .modal, .lightbox, .toast-container, .jump, .cta, table, .table-scroll';
+
+  function isPhone() {
+    var w = window.innerWidth || 0;
+    if (w <= 0) return false;
+    try {
+      if (window.matchMedia) return window.matchMedia('(max-width: 760px)').matches;
+    } catch (e) {}
+    return w <= 760;
+  }
+
+  function className(el) {
+    return (el && typeof el.className === 'string') ? el.className : '';
+  }
+
+  function isCard(el) {
+    if (!el || el.nodeType !== 1) return false;
+    var tag = el.tagName;
+    if (tag !== 'DIV' && tag !== 'ARTICLE' && tag !== 'A' && tag !== 'LI' && tag !== 'FIGURE') return false;
+    if (el.closest && el.closest(SKIP)) return false;
+    var cls = className(el);
+    if (/\b(btn|card-grid|card-icon|card-link|track-tab|stat-card|achievement-stat|section-header|pn-item|term-head|term-body|term-num)\b/.test(cls)) return false;
+    if (/(^|\s)(combo-card|combo|portal-card|hod-card|news-card|gallery-item|req-card|doc-item|contact-item|contact-card|contact-card-wrapper|department-card|department-card-wrapper|facility-card|leader-card|accred-card|trophy-item|memorial-card|memorial-item|glass-card|image-card|video-card|tt-card|value-card|info-card|term)(\s|$)/.test(cls)) return true;
+    if (/(^|\s)card(\s|$)/.test(cls)) return true;
+    if (tag === 'A') return false;
+    var st = el.getAttribute('style') || '';
+    if (/display\s*:\s*(grid|flex|inline-flex)/i.test(st)) return false;
+    return /border-radius\s*:/i.test(st) && /padding\s*:/i.test(st);
+  }
+
+  function unwrapAll() {
+    var wraps = document.querySelectorAll('.stx-swipe');
+    for (var i = wraps.length - 1; i >= 0; i--) {
+      var wrap = wraps[i];
+      var parent = wrap.parentNode;
+      if (!parent) continue;
+      while (wrap.firstChild) parent.insertBefore(wrap.firstChild, wrap);
+      parent.removeChild(wrap);
+    }
+  }
+
+  function wrapRuns(box) {
+    if (!box || box.nodeType !== 1 || !box.children || box.children.length < 2) return;
+    if (box.classList && box.classList.contains('stx-swipe')) return;
+    if (box.closest && box.closest(SKIP)) return;
+    if (box.matches && box.matches(SKIP)) return;
+    var inline = box.getAttribute('style') || '';
+    if (/display\s*:\s*inline-flex/i.test(inline)) return;
+
+    var list = [];
+    for (var i = 0; i < box.children.length; i++) list.push(box.children[i]);
+    var run = [];
+    function flush() {
+      if (run.length >= 2) {
+        var wrap = document.createElement('div');
+        wrap.className = 'stx-swipe';
+        wrap.setAttribute('tabindex', '0');
+        wrap.setAttribute('role', 'region');
+        wrap.setAttribute('aria-label', 'Swipe sideways to see more');
+        run[0].parentNode.insertBefore(wrap, run[0]);
+        for (var j = 0; j < run.length; j++) wrap.appendChild(run[j]);
+      }
+      run = [];
+    }
+    for (var k = 0; k < list.length; k++) {
+      if (isCard(list[k])) run.push(list[k]);
+      else flush();
+    }
+    flush();
+  }
+
+  var busy = false;
+  var queued = false;
+  function apply() {
+    if (busy) { queued = true; return; }
+    if (!document.body) return;
+    busy = true;
+    try {
+      if (!isPhone()) {
+        unwrapAll();
+        return;
+      }
+      var nodes = document.querySelectorAll('div, section, ul');
+      for (var i = nodes.length - 1; i >= 0; i--) wrapRuns(nodes[i]);
+    } finally {
+      busy = false;
+      if (queued) { queued = false; apply(); }
+    }
+  }
+
+  function start() {
+    apply();
+    if (!window.MutationObserver || !document.body) return;
+    var timer = null;
+    var obs = new MutationObserver(function () {
+      if (timer) return;
+      timer = setTimeout(function () { timer = null; apply(); }, 80);
+    });
+    obs.observe(document.body, { childList: true, subtree: true });
+    var resizeTimer = null;
+    window.addEventListener('resize', function () {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(apply, 120);
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();
