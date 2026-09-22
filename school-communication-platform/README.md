@@ -103,5 +103,5 @@ needed). The remaining suites talk to a server on `http://localhost:4000`:
 
 ## Licence
 This system is proprietary. Copyright (c) 2026 ScottsTechX Enterprise (U) Ltd.
-A buyer may run it for one school and change it for that school. A buyer may not
-resell, publish, or give away the source. The full terms are in `LICENSE`.
+If it is sold to you, you have the rights in `LICENSE` after you pay the full amount.
+You may not resell, publish, or give away the source.

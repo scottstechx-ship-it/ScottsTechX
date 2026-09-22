@@ -1,42 +1,38 @@
 Copyright (c) 2026 ScottsTechX Enterprise (U) Ltd. All rights reserved.
 
 This school management system, including its source code, design, and
-documentation (the "Software"), is proprietary. It is not open-source
-software. ScottsTechX Enterprise (U) Ltd ("ScottsTechX") owns the copyright.
+documentation (the "Software"), is proprietary. It is not open-source software.
 
-1. What a buyer may do
+If this Software is sold to you, you have the rights below only after you have
+paid the full amount. Until the full amount is paid, you have no right to
+install, run, copy, or change the Software.
 
-A person or school that receives a copy directly from ScottsTechX may:
+1. Your rights after the full amount is paid
 
-  a. install and run the Software for one school or organization that they operate;
+After the full amount is paid, you may:
+
+  a. install and run the Software for your school or organization;
   b. change it for that school's own use;
   c. keep one backup copy.
 
-If a fee was agreed, these rights start when that fee is paid.
+2. What you may not do
 
-2. What a buyer may not do
-
-A buyer may not, and may not let anyone else:
+You may not, and you may not let anyone else:
 
   a. sell, rent, lend, give away, publish, or sublicense the Software or its source code;
   b. upload the source code to a public website or a public code host;
   c. remove or change this copyright notice;
-  d. use the source to build a product that they sell or give to other schools.
+  d. use the source to build a product that you sell or give to other schools.
 
-3. Ownership
-
-Paying for a copy does not transfer copyright. ScottsTechX remains the owner
-and may sell other copies.
-
-4. Libraries
+3. Libraries
 
 Packages installed with npm keep their own licenses. Those licenses cover only
 those packages, not this Software.
 
-5. No warranty
+4. No warranty
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-SCOTTSTECHX BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM
-THE SOFTWARE OR THE USE OF THE SOFTWARE.
+SCOTTSTECHX ENTERPRISE (U) LTD BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER
+LIABILITY ARISING FROM THE SOFTWARE OR THE USE OF THE SOFTWARE.
