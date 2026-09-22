@@ -192,6 +192,26 @@ const dayOffset = (n) => new Date(Date.now() - n * 864e5).toISOString().slice(0,
     const doc = window.document;
     check('register shows the roster controls', !!doc.querySelector('#att-class') && !!doc.querySelector('#att-load'));
     check('mark-all-present button is present', !!doc.querySelector('#att-all-present'), text.slice(0, 80));
+    doc.querySelector('#att-load').click();
+    await sleep(1800);
+    const row = doc.querySelector('#roster-rows .doc-item');
+    check('roster loads students', !!row, (doc.querySelector('#att-roster') || {}).textContent || '');
+    if (row) {
+      const absent = row.querySelector('button.att-status[data-status="absent"]');
+      absent.click();
+      let posted = null;
+      const origPost = window.API.post.bind(window.API);
+      window.API.post = async (path, body) => {
+        if (path === '/api/attendance') posted = body;
+        return origPost(path, body);
+      };
+      doc.querySelector('#att-save').click();
+      await sleep(800);
+      window.API.post = origPost;
+      check('saving the chosen mark sends the student id', !!(posted && posted.records && posted.records[0] && posted.records[0].studentId > 0), JSON.stringify(posted));
+      check('saving the chosen mark sends absent, not a blank row', posted && posted.records[0].status === 'absent', JSON.stringify(posted));
+      check('the save is not reported as zero records', posted && posted.records.length >= 1);
+    }
     check('the term being recorded is shown', !!doc.querySelector('#att-term'));
     check('a term report tab exists', !!doc.querySelector('[data-att-tab="report"]'));
     check('the report tab is hidden until chosen', doc.querySelector('[data-att-pane="report"]').hidden === true);

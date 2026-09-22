@@ -665,10 +665,10 @@ label.ic-upload:focus-within { outline: 2px solid var(--primary); outline-offset
 .att-status.is-on[data-status="late"] { background: #d97706; border-color: #78350f; }
 .att-status.is-on[data-status="permission"] { background: #2563eb; border-color: #1e3a8a; }
 .att-picked { font-size: 12px; font-weight: 800; margin-top: 3px; }
-.att-picked[data-status="present"] { color: #15803d; }
-.att-picked[data-status="absent"] { color: #b91c1c; }
-.att-picked[data-status="late"] { color: #b45309; }
-.att-picked[data-status="permission"] { color: #1d4ed8; }
+.att-picked[data-pick="present"] { color: #15803d; }
+.att-picked[data-pick="absent"] { color: #b91c1c; }
+.att-picked[data-pick="late"] { color: #b45309; }
+.att-picked[data-pick="permission"] { color: #1d4ed8; }
 .btn.att-bulk { background: var(--card); }
 .btn.att-bulk.present { color: #15803d; border: 2px solid #16a34a; }
 .btn.att-bulk.absent { color: #b91c1c; border: 2px solid #dc2626; }
@@ -680,10 +680,10 @@ html[data-theme="dark"] .att-status[data-status="present"] { background: #14351f
 html[data-theme="dark"] .att-status[data-status="absent"] { background: #3d1616; color: #fca5a5; border-color: #7f1d1d; }
 html[data-theme="dark"] .att-status[data-status="late"] { background: #3a2c10; color: #fcd34d; border-color: #78350f; }
 html[data-theme="dark"] .att-status[data-status="permission"] { background: #1e3a5f; color: #93c5fd; border-color: #1e3a8a; }
-html[data-theme="dark"] .att-picked[data-status="present"] { color: #86efac; }
-html[data-theme="dark"] .att-picked[data-status="absent"] { color: #fca5a5; }
-html[data-theme="dark"] .att-picked[data-status="late"] { color: #fcd34d; }
-html[data-theme="dark"] .att-picked[data-status="permission"] { color: #93c5fd; }
+html[data-theme="dark"] .att-picked[data-pick="present"] { color: #86efac; }
+html[data-theme="dark"] .att-picked[data-pick="absent"] { color: #fca5a5; }
+html[data-theme="dark"] .att-picked[data-pick="late"] { color: #fcd34d; }
+html[data-theme="dark"] .att-picked[data-pick="permission"] { color: #93c5fd; }
 html[data-theme="dark"] .btn.att-bulk.present:hover { background: #14351f; }
 html[data-theme="dark"] .btn.att-bulk.absent:hover { background: #3d1616; }
 

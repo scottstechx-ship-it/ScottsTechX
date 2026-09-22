@@ -119,7 +119,7 @@
           });
           const label = rows.querySelector('[data-chosen-label="' + sid + '"]');
           if (label) {
-            label.dataset.status = status;
+            label.dataset.pick = status;
             label.textContent = 'Selected: ' + statusLabel(status);
           }
         };
@@ -139,17 +139,21 @@
           rows.appendChild(UI.el('<div class="doc-item">'
             + '<div style="flex:1;min-width:0"><div class="doc-name">' + UI.esc(s.full_name) + '</div>'
             + '<div class="doc-meta">' + UI.esc(s.student_code) + '</div>'
-            + '<div class="att-picked" data-chosen-label="' + s.id + '" data-status="' + current + '">Selected: ' + statusLabel(current) + '</div></div>'
+            + '<div class="att-picked" data-chosen-label="' + s.id + '" data-pick="' + current + '">Selected: ' + statusLabel(current) + '</div></div>'
             + '<div class="att-picks">' + picks + '</div></div>'));
         }
         paintBulk();
-        rows.querySelectorAll('[data-status]').forEach((b) => b.addEventListener('click', () => {
+        rows.querySelectorAll('button.att-status').forEach((b) => b.addEventListener('click', () => {
           paintStatus(b.dataset.sid, b.dataset.status);
           paintBulk();
         }));
         const saveRecords = async (records) => {
           try {
             const r = await API.post('/api/attendance', { classId: Number(classId), date, records, ...chosenTerm() });
+            if (!r.marked) {
+              UI.toast('Nothing was saved. Load the roster and choose a mark again.', 'error');
+              return false;
+            }
             UI.toast(r.message, 'success');
             await loadHistory();
             return true;
@@ -158,12 +162,16 @@
         container.querySelector('#att-save').onclick = async () => {
           const records = [];
           rows.querySelectorAll('.doc-item').forEach((item) => {
-            const sid = Number(item.querySelector('[data-status]').dataset.sid);
-            const chosen = item.querySelector('[data-chosen="1"]');
-            const status = chosen ? chosen.dataset.status : 'present';
-            records.push({ studentId: sid, status });
+            // The "Selected" label also describes the mark. Read the filled
+            // button, which is the only element that carries the student id.
+            const chosen = item.querySelector('button.att-status[data-chosen="1"]')
+              || item.querySelector('button.att-status.is-on');
+            if (!chosen || !chosen.dataset.sid) return;
+            records.push({ studentId: Number(chosen.dataset.sid), status: chosen.dataset.status });
           });
-          await saveRecords(records);
+          if (!records.length) return UI.toast('Load the roster, then choose a mark for each student.', 'error');
+          const saved = await saveRecords(records);
+          if (saved) await loadRoster();
         };
         // one tap for the whole class — the filled bulk button shows which one is in use
         const markEveryone = async (status) => {
