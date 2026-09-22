@@ -82,7 +82,8 @@ longer a dependency.
 
 ## Run
 1. Copy `.env.example` to `.env` and set a strong `JWT_SECRET` for production.
-2. Install dependencies: `npm install`
+   Or, on the machine that will run the school: `npm run setup -- --url https://the-school-address`
+2. Install dependencies: `npm install` (the setup command does this)
 3. Start: `npm start`
 4. Open `http://localhost:4000/`
 

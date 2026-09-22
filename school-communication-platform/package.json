@@ -11,7 +11,8 @@
     "smoke": "node tests/frontend.smoke.js",
     "test:pages": "node tests/pages.test.js",
     "test:deep": "node tests/deep-dashboard.test.js",
-    "test:ui": "node tests/dashboard-bugs.test.js && node tests/messaging.test.js && node tests/ui-delete.test.js && node tests/button-audit.js"
+    "test:ui": "node tests/dashboard-bugs.test.js && node tests/messaging.test.js && node tests/ui-delete.test.js && node tests/button-audit.js",
+    "setup": "node scripts/setup.js"
   },
   "keywords": [
     "school",
