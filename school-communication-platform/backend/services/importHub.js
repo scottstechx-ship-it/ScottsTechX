@@ -77,8 +77,14 @@ function findClass(name, stream, year) {
     const exact = get('SELECT * FROM classes WHERE lower(name) = lower(?) AND lower(COALESCE(stream,\'\')) = lower(?) AND COALESCE(academic_year, ?) = ?', [n, s, y, y]);
     if (exact) return exact;
   }
-  const found = get('SELECT * FROM classes WHERE lower(name) = lower(?) AND COALESCE(academic_year, ?) = ? ORDER BY id LIMIT 1', [n, y, y])
-      || get('SELECT * FROM classes WHERE lower(name) = lower(?) ORDER BY id LIMIT 1', [n]);
+  // Name-only fallback. When the row NAMES a stream, only a class that has no
+  // stream of its own may absorb it: "S1 B" must never fold into "S1 A", or a
+  // school with parallel streams could never import its second stream.
+  const found = (s
+    ? get("SELECT * FROM classes WHERE lower(name) = lower(?) AND COALESCE(stream, '') = '' AND COALESCE(academic_year, ?) = ? ORDER BY id LIMIT 1", [n, y, y])
+      || get("SELECT * FROM classes WHERE lower(name) = lower(?) AND COALESCE(stream, '') = '' ORDER BY id LIMIT 1", [n])
+    : get('SELECT * FROM classes WHERE lower(name) = lower(?) AND COALESCE(academic_year, ?) = ? ORDER BY id LIMIT 1', [n, y, y])
+      || get('SELECT * FROM classes WHERE lower(name) = lower(?) ORDER BY id LIMIT 1', [n]));
   if (found) return found;
   // People write "Senior 2 A" (name + stream in one cell) far more often than
   // they split it, so retry with the label taken apart before giving up.
@@ -96,7 +102,9 @@ function resolveClass(name, stream, year, { create = true } = {}) {
   if (existing) return { id: existing.id, created: false, row: existing };
   if (!create) return { id: null, created: false, missing: n };
   const y = clean(year, 10) || YEAR();
-  const info = run('INSERT INTO classes (name, stream, academic_year) VALUES (?, ?, ?)', [n, clean(stream, 10) || null, y]);
+  // stream is NOT NULL in the schema: keep it an empty string (a class the file
+  // named without a stream) rather than NULL, which would crash the import.
+  const info = run('INSERT INTO classes (name, stream, academic_year) VALUES (?, ?, ?)', [n, clean(stream, 10), y]);
   return { id: info.lastInsertRowid, created: true, row: get('SELECT * FROM classes WHERE id = ?', [info.lastInsertRowid]) };
 }
 
