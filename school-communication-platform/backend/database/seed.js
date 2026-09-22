@@ -9,6 +9,9 @@
  *   teacher1   / Teacher@123      -> /teacher
  *   student1   / Student@123      -> /student
  *   parent1    / Parent@123       -> /parent
+ *
+ * Demo classes: Senior 1–6, streams A and B (12 classes). No Primary 7.
+ * There is no primary class — Kalinabiri is a secondary school.
  */
 const fs = require('fs');
 const path = require('path');
@@ -77,15 +80,12 @@ function runSeed() {
   console.log('Seeding demo data...');
   tx(() => {
     // ---------------- classes ----------------
-    const classes = [
-      { name: 'Primary 7', stream: 'A', year: '2026' },
-      { name: 'Senior 1', stream: 'A', year: '2026' },
-      { name: 'Senior 2', stream: 'A', year: '2026' },
-      { name: 'Senior 3', stream: 'A', year: '2026' },
-      { name: 'Senior 4', stream: 'A', year: '2026' },
-      { name: 'Senior 5', stream: 'A', year: '2026' },
-      { name: 'Senior 6', stream: 'A', year: '2026' },
-    ];
+    // S.1A then S.1B through S.6A then S.6B, so a fresh database keeps
+    // Senior 2 A at id 3 and Senior 3 B at id 6.
+    const classes = [];
+    for (const name of ['Senior 1', 'Senior 2', 'Senior 3', 'Senior 4', 'Senior 5', 'Senior 6']) {
+      for (const stream of ['A', 'B']) classes.push({ name, stream, year: '2026' });
+    }
     for (const c of classes) {
       run('INSERT OR IGNORE INTO classes (name, stream, academic_year) VALUES (?, ?, ?)', [c.name, c.stream, c.year]);
     }
@@ -96,66 +96,32 @@ function runSeed() {
     const adId = insertUser({ username: 'admin', password: 'Admin@123', fullName: 'Mr. David Kiggundu', email: 'admin@school.test', phone: '+256700000002', role: 'admin' });
 
     const t1Id = insertUser({ username: 'teacher1', password: 'Teacher@123', fullName: 'Ms. Mary Nakato', email: 'mary@school.test', phone: '+256700000011', role: 'teacher' });
-    const t2Id = insertUser({ username: 'teacher2', password: 'Teacher@123', fullName: 'Mr. John Okello', email: 'john@school.test', phone: '+256700000012', role: 'teacher' });
-    const t3Id = insertUser({ username: 'teacher3', password: 'Teacher@123', fullName: 'Ms. Grace Atim', email: 'grace@school.test', phone: '+256700000013', role: 'teacher' });
-
     const s1Id = insertUser({ username: 'student1', password: 'Student@123', fullName: 'Sarah Okello', email: 'sarah@school.test', role: 'student' });
-    const s2Id = insertUser({ username: 'student2', password: 'Student@123', fullName: 'David Okello', email: 'david@school.test', role: 'student' });
-    const s3Id = insertUser({ username: 'student3', password: 'Student@123', fullName: 'Michael Okello', email: 'michael@school.test', role: 'student' });
-    const s4Id = insertUser({ username: 'student4', password: 'Student@123', fullName: 'Amelia Namutebi', email: 'amelia@school.test', role: 'student' });
-    const s5Id = insertUser({ username: 'student5', password: 'Student@123', fullName: 'Brian Ssemwanga', email: 'brian@school.test', role: 'student' });
-    const s6Id = insertUser({ username: 'student6', password: 'Student@123', fullName: 'Aisha Nabirye', email: 'aisha@school.test', role: 'student' });
-
     const p1Id = insertUser({ username: 'parent1', password: 'Parent@123', fullName: 'Mr. John Okello', email: 'parent@school.test', phone: '+256700000020', role: 'parent' });
 
     // ---------------- teachers ----------------
     run('INSERT OR IGNORE INTO teachers (user_id, staff_code, full_name, subjects, phone, email, qualification, date_joined, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
       [t1Id, 'TCH-1001', 'Ms. Mary Nakato', JSON.stringify(['Mathematics', 'Physics']), '+256700000011', 'mary@school.test', 'BSc Education', '2020-01-15', 'active']);
-    run('INSERT OR IGNORE INTO teachers (user_id, staff_code, full_name, subjects, phone, email, qualification, date_joined, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [t2Id, 'TCH-1002', 'Mr. John Okello', JSON.stringify(['English', 'Literature']), '+256700000012', 'john@school.test', 'BA Education', '2019-02-01', 'active']);
-    run('INSERT OR IGNORE INTO teachers (user_id, staff_code, full_name, subjects, phone, email, qualification, date_joined, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [t3Id, 'TCH-1003', 'Ms. Grace Atim', JSON.stringify(['Biology', 'Chemistry']), '+256700000013', 'grace@school.test', 'MSc Science Education', '2021-08-10', 'active']);
 
     const t1row = get('SELECT id FROM teachers WHERE user_id = ?', [t1Id]).id;
-    const t2row = get('SELECT id FROM teachers WHERE user_id = ?', [t2Id]).id;
-    const t3row = get('SELECT id FROM teachers WHERE user_id = ?', [t3Id]).id;
 
-    // class teachers
-    run('UPDATE classes SET class_teacher_id = ? WHERE name = ?', [t1row, 'Senior 2']);
-    run('UPDATE classes SET class_teacher_id = ? WHERE name = ?', [t2row, 'Senior 5']);
-    run('UPDATE classes SET class_teacher_id = ? WHERE name = ?', [t3row, 'Senior 4']);
-    run('UPDATE classes SET class_teacher_id = ? WHERE name = ?', [t1row, 'Primary 7']);
+    // Class teacher of Sarah's class only — not every Senior 2 stream.
+    run('UPDATE classes SET class_teacher_id = ? WHERE name = ? AND stream = ?', [t1row, 'Senior 2', 'A']);
 
-    // teacher <-> class assignments
     const assign = (tid, cid, subject) => run('INSERT OR IGNORE INTO teacher_classes (teacher_id, class_id, subject) VALUES (?, ?, ?)', [tid, cid, subject]);
     assign(t1row, clsId('Senior 2', 'A'), 'Mathematics');
-    assign(t1row, clsId('Primary 7', 'A'), 'Mathematics');
-    assign(t2row, clsId('Senior 5', 'A'), 'English');
-    assign(t2row, clsId('Senior 2', 'A'), 'English');
-    assign(t3row, clsId('Senior 4', 'A'), 'Biology');
-    assign(t3row, clsId('Senior 2', 'A'), 'Science');
 
     // ---------------- students ----------------
-    const mkStudent = (userId, code, name, cls, stream, gender, dob, parentName, parentPhone) => {
-      run(`INSERT OR IGNORE INTO students (user_id, student_code, full_name, class_id, stream, gender, date_of_birth, parent_name, parent_phone, parent_email, address, enrollment_date, status)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')`,
-        [userId, code, name, cls, stream, gender, dob, parentName, parentPhone, 'parent@school.test', 'Kampala, Uganda', '2024-02-05']);
-    };
-    mkStudent(s1Id, 'STU-2024-001', 'Sarah Okello', clsId('Senior 2', 'A'), 'A', 'Female', '2010-04-12', 'Mr. John Okello', '+256700000020');
-    mkStudent(s2Id, 'STU-2024-002', 'David Okello', clsId('Senior 5', 'A'), 'A', 'Male', '2007-09-03', 'Mr. John Okello', '+256700000020');
-    mkStudent(s3Id, 'STU-2024-003', 'Michael Okello', clsId('Primary 7', 'A'), 'A', 'Male', '2013-01-25', 'Mr. John Okello', '+256700000020');
-    mkStudent(s4Id, 'STU-2024-004', 'Amelia Namutebi', clsId('Senior 2', 'A'), 'A', 'Female', '2010-11-08', 'Mrs. Rose Namutebi', '+256700000024');
-    mkStudent(s5Id, 'STU-2024-005', 'Brian Ssemwanga', clsId('Senior 2', 'A'), 'A', 'Male', '2009-07-19', 'Mr. Peter Ssemwanga', '+256700000025');
-    mkStudent(s6Id, 'STU-2024-006', 'Aisha Nabirye', clsId('Senior 5', 'A'), 'A', 'Female', '2008-03-30', 'Mrs. Fatima Nabirye', '+256700000026');
+    run(`INSERT OR IGNORE INTO students (user_id, student_code, full_name, class_id, stream, gender, date_of_birth, parent_name, parent_phone, parent_email, address, enrollment_date, status)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')`,
+      [s1Id, 'STU-2024-001', 'Sarah Okello', clsId('Senior 2', 'A'), 'A', 'Female', '2010-04-12', 'Mr. John Okello', '+256700000020', 'parent@school.test', 'Kampala, Uganda', '2024-02-05']);
 
     // ---------------- parent ----------------
     run('INSERT OR IGNORE INTO parents (user_id, parent_code, full_name, phone, email, address, occupation, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       [p1Id, 'PAR-2024-001', 'Mr. John Okello', '+256700000020', 'parent@school.test', 'Kampala, Uganda', 'Businessman', 'active']);
     const pRow = get('SELECT id FROM parents WHERE user_id = ?', [p1Id]).id;
-    const link = (p, s, rel) => run('INSERT OR IGNORE INTO parent_students (parent_id, student_id, relationship) VALUES (?, ?, ?)', [p, s, rel]);
-    link(pRow, get('SELECT id FROM students WHERE user_id = ?', [s1Id]).id, 'Father');
-    link(pRow, get('SELECT id FROM students WHERE user_id = ?', [s2Id]).id, 'Father');
-    link(pRow, get('SELECT id FROM students WHERE user_id = ?', [s3Id]).id, 'Father');
+    run('INSERT OR IGNORE INTO parent_students (parent_id, student_id, relationship) VALUES (?, ?, ?)',
+      [pRow, get('SELECT id FROM students WHERE user_id = ?', [s1Id]).id, 'Father']);
 
     // ---------------- folders & documents ----------------
     const fNotices = run('INSERT OR IGNORE INTO folders (name, owner_id) VALUES (\'School Notices\', ?)', [saId]).lastInsertRowid;
@@ -234,18 +200,12 @@ function runSeed() {
     msg(cT1S, t1Id, 'Sarah, please bring your textbook tomorrow — we start quadratic equations.');
     msg(cT1S, s1Id, 'Okay ma\'am, I will bring it.');
 
-    // Class chat Senior 2A
+    // Class chat Senior 2A — only the remaining demo teacher and student.
     const cClass = conv('class', 'Senior 2 A', clsId('Senior 2', 'A'), t1Id);
-    for (const sid of [t1Id, t2Id, s1Id, s4Id, s5Id]) part(cClass, sid);
+    for (const sid of [t1Id, s1Id]) part(cClass, sid);
     msg(cClass, t1Id, 'Welcome to the Senior 2A class chat! Use this for class communication.');
-    msg(cClass, s4Id, 'Thank you Ms. Mary!');
+    msg(cClass, s1Id, 'Thank you Ms. Mary!');
     msg(cClass, t1Id, 'Reminder: Mathematics test on Friday. Revise chapters 4 and 5.');
-
-    // Admin <-> all teachers style conversation (direct with Grace)
-    const cAdT = conv('direct', 'Ms. Grace Atim', null, adId);
-    part(cAdT, adId); part(cAdT, t3Id);
-    msg(cAdT, adId, 'Grace, please submit the Senior 4 mock exam timetable by Thursday.');
-    msg(cAdT, t3Id, 'Noted sir, I will send it tomorrow.');
 
     // ---------------- announcements ----------------
     const ann = (title, content, targetType, targetValue, sender, important) => {
@@ -363,12 +323,42 @@ function runSeed() {
   console.log('  parent1    / Parent@123');
 }
 
+const DEMO_KEEP = new Set(['superadmin', 'admin', 'teacher1', 'student1', 'parent1']);
+
+/**
+ * Bring an already-seeded database in line with the demo catalog without
+ * wiping admin work. Adds any missing Senior 1–6 A/B class, drops an empty
+ * Primary 7 row, and removes leftover @school.test demo accounts.
+ */
+function alignDemoCatalog() {
+  for (const name of ['Senior 1', 'Senior 2', 'Senior 3', 'Senior 4', 'Senior 5', 'Senior 6']) {
+    for (const stream of ['A', 'B']) {
+      run('INSERT OR IGNORE INTO classes (name, stream, academic_year) VALUES (?, ?, ?)', [name, stream, '2026']);
+    }
+  }
+  for (const c of all("SELECT id FROM classes WHERE name LIKE 'Primary%'")) {
+    const n = get('SELECT COUNT(*) AS c FROM students WHERE class_id = ?', [c.id]).c;
+    if (!n) run('DELETE FROM classes WHERE id = ?', [c.id]);
+  }
+  const extras = all(
+    `SELECT id, username FROM users
+     WHERE username IN ('teacher2','teacher3','student2','student3','student4','student5','student6')
+        OR lower(COALESCE(email, '')) LIKE '%@school.test'`
+  );
+  for (const u of extras) {
+    if (DEMO_KEEP.has(u.username)) continue;
+    run('DELETE FROM users WHERE id = ?', [u.id]);
+  }
+}
+
 function ensureSeeded() {
-  if (!env.SEED_DEMO_DATA) return;
-  // Seed ONLY a brand-new database. An existing database is NEVER reseeded or
-  // overwritten — every change an admin makes (news, gallery, users, settings,
-  // messages…) survives server restarts and redeploys.
-  if (!seeded()) runSeed();
+  if (env.SEED_DEMO_DATA && !seeded()) {
+    // Seed ONLY a brand-new database. An existing database is NEVER reseeded or
+    // overwritten — every change an admin makes (news, gallery, users, settings,
+    // messages…) survives server restarts and redeploys.
+    runSeed();
+  }
+  alignDemoCatalog();
 }
 
 if (require.main === module) {
@@ -407,4 +397,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { ensureSeeded, runSeed };
+module.exports = { ensureSeeded, runSeed, alignDemoCatalog };

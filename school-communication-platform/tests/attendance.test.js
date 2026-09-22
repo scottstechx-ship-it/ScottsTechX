@@ -100,8 +100,19 @@ const dayOffset = (n) => new Date(Date.now() - n * 864e5).toISOString().slice(0,
 
   console.log('\n== API: mark all present ==');
   const classes = (await getJson(teacher, '/api/classes')).classes || [];
-  const klass = classes.find((c) => /Senior 2/.test(c.name)) || classes[classes.length - 1];
-  const roster = (await getJson(teacher, `/api/classes/${klass.id}/students`)).students || [];
+  const klass = classes.find((c) => /Senior 2/.test(c.name) && c.stream === 'A') || classes.find((c) => /Senior 2/.test(c.name)) || classes[classes.length - 1];
+  let roster = (await getJson(teacher, `/api/classes/${klass.id}/students`)).students || [];
+  // The demo catalog keeps only Sarah in this class. Corrections need a second
+  // learner, so the test adds one instead of depending on removed demo students.
+  if (roster.length < 2) {
+    const extra = await post(admin, '/api/students', {
+      fullName: 'Attendance Classmate',
+      studentCode: 'STU-ATT-CLASSMATE',
+      classId: klass.id,
+    });
+    check('a classmate can be added so corrections can be tested', extra.status === 201, JSON.stringify(extra.body).slice(0, 180));
+    roster = (await getJson(teacher, `/api/classes/${klass.id}/students`)).students || [];
+  }
   const day = dayOffset(0);
   const all = await post(teacher, '/api/attendance', { classId: klass.id, date: day, markAll: true });
   check('markAll returns 200', all.status === 200, JSON.stringify(all.body));
@@ -181,6 +192,26 @@ const dayOffset = (n) => new Date(Date.now() - n * 864e5).toISOString().slice(0,
     const doc = window.document;
     check('register shows the roster controls', !!doc.querySelector('#att-class') && !!doc.querySelector('#att-load'));
     check('mark-all-present button is present', !!doc.querySelector('#att-all-present'), text.slice(0, 80));
+    doc.querySelector('#att-load').click();
+    await sleep(1800);
+    const row = doc.querySelector('#roster-rows .doc-item');
+    check('roster loads students', !!row, (doc.querySelector('#att-roster') || {}).textContent || '');
+    if (row) {
+      const absent = row.querySelector('button.att-status[data-status="absent"]');
+      absent.click();
+      let posted = null;
+      const origPost = window.API.post.bind(window.API);
+      window.API.post = async (path, body) => {
+        if (path === '/api/attendance') posted = body;
+        return origPost(path, body);
+      };
+      doc.querySelector('#att-save').click();
+      await sleep(800);
+      window.API.post = origPost;
+      check('saving the chosen mark sends the student id', !!(posted && posted.records && posted.records[0] && posted.records[0].studentId > 0), JSON.stringify(posted));
+      check('saving the chosen mark sends absent, not a blank row', posted && posted.records[0].status === 'absent', JSON.stringify(posted));
+      check('the save is not reported as zero records', posted && posted.records.length >= 1);
+    }
     check('the term being recorded is shown', !!doc.querySelector('#att-term'));
     check('a term report tab exists', !!doc.querySelector('[data-att-tab="report"]'));
     check('the report tab is hidden until chosen', doc.querySelector('[data-att-pane="report"]').hidden === true);

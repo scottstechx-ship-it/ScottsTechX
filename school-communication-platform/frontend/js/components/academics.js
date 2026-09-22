@@ -26,7 +26,8 @@
             <label class="field" style="margin:0">Date
               <input type="date" id="att-date"></label>
             <button class="btn" id="att-load">Load roster</button>
-            <button class="btn secondary" id="att-all-present">Mark all present</button>
+            <button class="btn att-bulk present" id="att-all-present" type="button">Mark all present</button>
+            <button class="btn att-bulk absent" id="att-all-absent" type="button">Mark all absent</button>
             <button class="btn success" id="att-save"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg> Save attendance</button>
           </div>
           <div class="card" id="att-term-note"><div class="doc-meta">Checking the school calendar…</div></div>
@@ -104,29 +105,55 @@
         existing.forEach((a) => { statusMap[a.student_id] = a.status; });
         const box = container.querySelector('#att-roster');
         if (!students.length) { box.innerHTML = '<div class="doc-meta">No students in this class.</div>'; return; }
-        box.innerHTML = '<h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 13h6"/><path d="M9 17h4"/></svg> Roster for ' + date + '</h3><div id="roster-rows"></div>';
+        const statusLabel = (st) => st[0].toUpperCase() + st.slice(1);
+        box.innerHTML = '<h3>Roster for ' + date + '</h3>'
+          + '<div class="att-legend"><span>The filled button with a tick is the mark that will be saved.</span></div>'
+          + '<div id="roster-rows"></div>';
         const rows = box.querySelector('#roster-rows');
+        const paintStatus = (sid, status) => {
+          rows.querySelectorAll('[data-sid="' + sid + '"]').forEach((x) => {
+            const on = x.dataset.status === status;
+            x.classList.toggle('is-on', on);
+            x.setAttribute('aria-pressed', on ? 'true' : 'false');
+            x.dataset.chosen = on ? '1' : '0';
+          });
+          const label = rows.querySelector('[data-chosen-label="' + sid + '"]');
+          if (label) {
+            label.dataset.pick = status;
+            label.textContent = 'Selected: ' + statusLabel(status);
+          }
+        };
+        const paintBulk = () => {
+          const chosen = [...rows.querySelectorAll('[data-chosen="1"]')].map((b) => b.dataset.status);
+          const allSame = chosen.length && chosen.every((s) => s === chosen[0]);
+          const presentBtn = container.querySelector('#att-all-present');
+          const absentBtn = container.querySelector('#att-all-absent');
+          if (presentBtn) presentBtn.classList.toggle('is-on', allSame && chosen[0] === 'present');
+          if (absentBtn) absentBtn.classList.toggle('is-on', allSame && chosen[0] === 'absent');
+        };
         for (const s of students) {
           const current = statusMap[s.id] || 'present';
-          rows.appendChild(UI.el(`<div class="doc-item">
-            <div style="flex:1;min-width:0"><div class="doc-name">${UI.esc(s.full_name)}</div>
-            <div class="doc-meta">${UI.esc(s.student_code)}</div></div>
-            <div style="display:flex;gap:6px;flex-wrap:wrap">
-              ${['present', 'absent', 'late', 'permission'].map((st) =>
-                `<button class="btn ${current === st ? '' : 'secondary'} sm" data-status="${st}" data-sid="${s.id}" style="${current === st ? 'box-shadow:inset 0 0 0 2px var(--primary)' : ''}">${st[0].toUpperCase() + st.slice(1)}</button>`).join('')}
-            </div>
-          </div>`));
+          const picks = ['present', 'absent', 'late', 'permission'].map((st) =>
+            '<button type="button" class="att-status' + (current === st ? ' is-on' : '') + '" data-status="' + st + '" data-sid="' + s.id + '" data-chosen="' + (current === st ? '1' : '0') + '" aria-pressed="' + (current === st ? 'true' : 'false') + '">' + statusLabel(st) + '</button>'
+          ).join('');
+          rows.appendChild(UI.el('<div class="doc-item">'
+            + '<div style="flex:1;min-width:0"><div class="doc-name">' + UI.esc(s.full_name) + '</div>'
+            + '<div class="doc-meta">' + UI.esc(s.student_code) + '</div>'
+            + '<div class="att-picked" data-chosen-label="' + s.id + '" data-pick="' + current + '">Selected: ' + statusLabel(current) + '</div></div>'
+            + '<div class="att-picks">' + picks + '</div></div>'));
         }
-        rows.querySelectorAll('[data-status]').forEach((b) => b.addEventListener('click', () => {
-          const sid = b.dataset.sid;
-          rows.querySelectorAll(`[data-sid="${sid}"]`).forEach((x) => { x.classList.remove('secondary'); x.style.boxShadow = ''; });
-          b.style.boxShadow = 'inset 0 0 0 2px var(--primary)';
-          b.dataset.chosen = '1';
-          rows.querySelectorAll(`[data-sid="${sid}"]`).forEach((x) => { if (x !== b) x.dataset.chosen = '0'; });
+        paintBulk();
+        rows.querySelectorAll('button.att-status').forEach((b) => b.addEventListener('click', () => {
+          paintStatus(b.dataset.sid, b.dataset.status);
+          paintBulk();
         }));
         const saveRecords = async (records) => {
           try {
             const r = await API.post('/api/attendance', { classId: Number(classId), date, records, ...chosenTerm() });
+            if (!r.marked) {
+              UI.toast('Nothing was saved. Load the roster and choose a mark again.', 'error');
+              return false;
+            }
             UI.toast(r.message, 'success');
             await loadHistory();
             return true;
@@ -135,24 +162,32 @@
         container.querySelector('#att-save').onclick = async () => {
           const records = [];
           rows.querySelectorAll('.doc-item').forEach((item) => {
-            const sid = Number(item.querySelector('[data-status]').dataset.sid);
-            const chosen = item.querySelector('[data-chosen="1"]');
-            const status = chosen ? chosen.dataset.status : 'present';
-            records.push({ studentId: sid, status });
+            // The "Selected" label also describes the mark. Read the filled
+            // button, which is the only element that carries the student id.
+            const chosen = item.querySelector('button.att-status[data-chosen="1"]')
+              || item.querySelector('button.att-status.is-on');
+            if (!chosen || !chosen.dataset.sid) return;
+            records.push({ studentId: Number(chosen.dataset.sid), status: chosen.dataset.status });
           });
-          await saveRecords(records);
-        };
-        // one tap for the normal case: everyone is here
-        const allBtn = container.querySelector('#att-all-present');
-        allBtn.onclick = async () => {
-          const ok = await UI.confirmDialog(
-            `Mark all ${students.length} students in this class present for ${date}?`,
-            { title: 'Mark everyone present', danger: false, confirmText: 'Mark all present' }
-          );
-          if (!ok) return;
-          const saved = await saveRecords(students.map((s) => ({ studentId: s.id, status: 'present' })));
+          if (!records.length) return UI.toast('Load the roster, then choose a mark for each student.', 'error');
+          const saved = await saveRecords(records);
           if (saved) await loadRoster();
         };
+        // one tap for the whole class — the filled bulk button shows which one is in use
+        const markEveryone = async (status) => {
+          const word = status === 'absent' ? 'absent' : 'present';
+          const ok = await UI.confirmDialog(
+            `Mark all ${students.length} students in this class ${word} for ${date}?`,
+            { title: `Mark everyone ${word}`, danger: status === 'absent', confirmText: `Mark all ${word}` }
+          );
+          if (!ok) return;
+          students.forEach((s) => paintStatus(String(s.id), status));
+          paintBulk();
+          const saved = await saveRecords(students.map((s) => ({ studentId: s.id, status })));
+          if (saved) await loadRoster();
+        };
+        container.querySelector('#att-all-present').onclick = () => markEveryone('present');
+        container.querySelector('#att-all-absent').onclick = () => markEveryone('absent');
       };
 
       const loadHistory = async () => {
@@ -402,6 +437,65 @@
   // =========================================================================
   // ASSIGNMENTS
   // =========================================================================
+  function assignmentFilesHtml(files) {
+    return (files || []).map((f) =>
+      '<div class="as-file"><span>' + UI.esc(f.name) + '</span>'
+      + '<button type="button" class="btn secondary sm" data-dl="' + f.id + '" data-name="' + UI.esc(f.name) + '">Download</button></div>'
+    ).join('');
+  }
+  function bindAssignmentDownloads(root) {
+    if (!root) return;
+    root.querySelectorAll('[data-dl]').forEach((b) => {
+      b.onclick = (e) => {
+        e.preventDefault();
+        if (window.DocumentsView) DocumentsView.downloadDoc(Number(b.dataset.dl), b.dataset.name);
+        else UI.toast('Open Documents to download this file.', 'warning');
+      };
+    });
+  }
+  async function uploadClassFile(file, classId) {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('description', 'Assignment file for the class');
+    if (classId) form.append('share', JSON.stringify([{ targetType: 'class', targetId: String(classId) }]));
+    const up = await API.upload('/api/documents', form);
+    if (!up.document || !up.document.id) throw new Error('The file did not upload.');
+    return up.document;
+  }
+  async function uploadOwnFile(file) {
+    const form = new FormData();
+    form.append('file', file);
+    const up = await API.upload('/api/documents', form);
+    if (!up.document || !up.document.id) throw new Error('The file did not upload.');
+    return up.document;
+  }
+  /** A normal button, not the browser's full-width file control. */
+  function filePickerHtml(id, label, multiple) {
+    return '<div class="as-attach"><div class="as-attach-label">' + UI.esc(label) + '</div>'
+      + '<label class="btn secondary sm as-pick">' + (multiple ? 'Choose files' : 'Choose file')
+      + '<input type="file" id="' + id + '"' + (multiple ? ' multiple' : '') + '></label>'
+      + '<span class="doc-meta" id="' + id + '-name">No file chosen</span></div>';
+  }
+  function bindFilePicker(root, id) {
+    const input = root.querySelector('#' + id);
+    const label = input && input.closest('label');
+    const note = root.querySelector('#' + id + '-name');
+    if (label && !label.dataset.bound) {
+      label.dataset.bound = '1';
+      label.addEventListener('click', (e) => {
+        if (!input || e.target === input || input.contains(e.target)) return;
+        e.preventDefault();
+        input.click();
+      });
+    }
+    if (input && note) {
+      input.addEventListener('change', () => {
+        const names = [...input.files].map((f) => f.name);
+        note.textContent = names.length ? names.join(', ') : 'No file chosen';
+      });
+    }
+  }
+
   const AssignmentsView = {
     async teacherView(container) {
       container.innerHTML = `
@@ -422,19 +516,21 @@
         if (clsSel.value) params.set('classId', clsSel.value);
         const data = (await API.get('/api/assignments?' + params.toString())).assignments || [];
         const list = container.querySelector('#as-list');
-        if (!data.length) { list.innerHTML = '<div class="empty-state"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>No assignments yet.</div>'; return; }
+        if (!data.length) { list.innerHTML = '<div class="empty-state"><div class="big">No assignments yet.</div></div>'; return; }
         list.innerHTML = '';
         for (const a of data) {
           const overdue = a.due_date && a.due_date < new Date().toISOString().slice(0, 10);
+          const files = a.files || [];
           list.appendChild(UI.el(`<div class="doc-item">
             <div style="flex:1;min-width:0">
               <div class="doc-name">${UI.esc(a.title)} ${overdue ? '<span class="badge red">Overdue</span>' : ''}</div>
-              <div class="doc-meta">${UI.esc(a.class_name || '')} ${UI.esc(a.class_stream || '')} · ${UI.esc(a.subject || '')} · Due ${UI.esc(a.due_date || '—')} · ${a.submission_count || 0} submissions</div>
+              <div class="doc-meta">${UI.esc(a.class_name || '')} ${UI.esc(a.class_stream || '')} · ${UI.esc(a.subject || '')} · Due ${UI.esc(a.due_date || '—')} · ${a.submission_count || 0} submissions · ${files.length} file${files.length === 1 ? '' : 's'} for students</div>
+              ${a.description ? '<div class="as-brief clamp" style="margin-top:8px">' + UI.esc(a.description) + '</div>' : ''}
             </div>
             <div class="doc-actions">
               <button class="btn secondary sm" data-view="${a.id}">View / grade</button>
-              <button aria-label="Edit" title="Edit" class="btn secondary sm" data-edit="${a.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
-              <button aria-label="Delete" title="Delete" class="btn danger sm" data-del="${a.id}"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+              <button aria-label="Edit" title="Edit" class="btn secondary sm" data-edit="${a.id}">Edit</button>
+              <button aria-label="Delete" title="Delete" class="btn danger sm" data-del="${a.id}">Delete</button>
             </div>
           </div>`));
         }
@@ -464,29 +560,50 @@
           <label class="field">Subject<input id="a-subject"></label>
           <label class="field">Due date<input type="date" id="a-due"></label>
         </div>
-        <label class="field">Instructions<textarea id="a-desc" rows="4"></textarea></label>`,
+        <div class="as-side teacher">
+          <h4>What the student should do</h4>
+          <label class="field">Instructions<textarea id="a-desc" rows="4" placeholder="Write the task. Students see this before they answer."></textarea></label>
+          ${filePickerHtml('a-files', 'Files for the class', true)}
+          <span class="doc-meta">Worksheet, notes or a photo of the board. The class can open these files.</span>
+        </div>`,
         foot: '<button class="btn secondary" data-cancel>Cancel</button><button class="btn" data-save>Create</button>',
       });
+      bindFilePicker(modal.backdrop, 'a-files');
       modal.backdrop.querySelector('[data-cancel]').onclick = () => modal.close();
       modal.backdrop.querySelector('[data-save]').onclick = async () => {
+        const classId = modal.backdrop.querySelector('#a-class').value;
         const body = {
           title: modal.backdrop.querySelector('#a-title').value.trim(),
-          classId: modal.backdrop.querySelector('#a-class').value,
+          classId,
           subject: modal.backdrop.querySelector('#a-subject').value.trim(),
           dueDate: modal.backdrop.querySelector('#a-due').value,
           description: modal.backdrop.querySelector('#a-desc').value.trim(),
+          resources: [],
         };
         if (!body.title || !body.classId) return UI.toast('Title and class are required.', 'error');
-        try { await API.post('/api/assignments', body); UI.toast('Assignment created.', 'success'); modal.close(); onSave && onSave(); }
-        catch (e) { UI.toast(e.message, 'error'); }
+        const saveBtn = modal.backdrop.querySelector('[data-save]');
+        saveBtn.disabled = true;
+        try {
+          const files = [...modal.backdrop.querySelector('#a-files').files];
+          for (const file of files) {
+            const doc = await uploadClassFile(file, classId);
+            body.resources.push(doc.id);
+          }
+          await API.post('/api/assignments', body);
+          UI.toast('Assignment created.', 'success');
+          modal.close();
+          onSave && onSave();
+        } catch (e) { UI.toast(e.message, 'error'); saveBtn.disabled = false; }
       };
     },
 
     async editAssignment(id, onSave) {
       let a;
       try { a = (await API.get(`/api/assignments/${id}`)).assignment; } catch (e) { return UI.toast(e.message, 'error'); }
+      const existing = a.files || [];
       const modal = UI.openModal({
         title: 'Edit assignment',
+        wide: true,
         body: `<div class="form-row">
           <label class="field">Title<input id="a-title" value="${UI.esc(a.title)}"></label>
           <label class="field">Subject<input id="a-subject" value="${UI.esc(a.subject || '')}"></label>
@@ -495,21 +612,47 @@
           <label class="field">Due date<input type="date" id="a-due" value="${UI.esc(a.due_date || '')}"></label>
           <label class="field">Status<select id="a-status"><option ${a.status === 'active' ? 'selected' : ''}>active</option><option ${a.status === 'archived' ? 'selected' : ''}>archived</option></select></label>
         </div>
-        <label class="field">Instructions<textarea id="a-desc" rows="4">${UI.esc(a.description || '')}</textarea></label>`,
+        <div class="as-side teacher">
+          <h4>What the student should do</h4>
+          <label class="field">Instructions<textarea id="a-desc" rows="4">${UI.esc(a.description || '')}</textarea></label>
+          <div class="doc-meta">Files already shared with the class</div>
+          <div id="a-existing">${assignmentFilesHtml(existing) || '<div class="doc-meta">No file attached yet.</div>'}</div>
+          ${filePickerHtml('a-files', 'Add more files', true)}
+        </div>`,
         foot: '<button class="btn secondary" data-cancel>Cancel</button><button class="btn" data-save>Save</button>',
       });
+      bindFilePicker(modal.backdrop, 'a-files');
+      const kept = new Set(existing.map((f) => f.id));
+      modal.backdrop.querySelectorAll('[data-dl]').forEach((b) => {
+        const rm = document.createElement('button');
+        rm.type = 'button';
+        rm.className = 'btn ghost sm';
+        rm.textContent = 'Remove';
+        rm.onclick = () => { kept.delete(Number(b.dataset.dl)); b.closest('.as-file').remove(); };
+        b.parentElement.appendChild(rm);
+      });
+      bindAssignmentDownloads(modal.backdrop);
       modal.backdrop.querySelector('[data-cancel]').onclick = () => modal.close();
       modal.backdrop.querySelector('[data-save]').onclick = async () => {
+        const saveBtn = modal.backdrop.querySelector('[data-save]');
+        saveBtn.disabled = true;
         try {
+          const resources = [...kept];
+          const files = [...modal.backdrop.querySelector('#a-files').files];
+          for (const file of files) {
+            const doc = await uploadClassFile(file, a.class_id);
+            resources.push(doc.id);
+          }
           await API.put(`/api/assignments/${id}`, {
             title: modal.backdrop.querySelector('#a-title').value.trim(),
             subject: modal.backdrop.querySelector('#a-subject').value.trim(),
             dueDate: modal.backdrop.querySelector('#a-due').value,
             status: modal.backdrop.querySelector('#a-status').value,
             description: modal.backdrop.querySelector('#a-desc').value.trim(),
+            resources,
           });
           UI.toast('Assignment updated.', 'success'); modal.close(); onSave && onSave();
-        } catch (e) { UI.toast(e.message, 'error'); }
+        } catch (e) { UI.toast(e.message, 'error'); saveBtn.disabled = false; }
       };
     },
 
@@ -517,24 +660,37 @@
       let a;
       try { a = (await API.get(`/api/assignments/${id}`)).assignment; } catch (e) { return UI.toast(e.message, 'error'); }
       const subs = a.submissions || [];
+      const files = a.files || [];
       let modal;
       modal = UI.openModal({
         title: `Grade — ${a.title}`,
         wide: true,
-        body: `<div class="doc-meta">${UI.esc(a.class_name || '')} · Due ${UI.esc(a.due_date || '—')} · ${subs.length} submission${subs.length === 1 ? '' : 's'}</div>
+        body: `<div class="as-side teacher">
+            <h4>What you asked the class to do</h4>
+            <div class="as-brief">${UI.esc(a.description || 'No written instructions.')}</div>
+            <div class="doc-meta" style="margin-top:8px">Files you attached</div>
+            ${assignmentFilesHtml(files) || '<div class="doc-meta">No file attached.</div>'}
+          </div>
+          <div class="doc-meta" style="margin-top:10px">${UI.esc(a.class_name || '')} · Due ${UI.esc(a.due_date || '—')} · ${subs.length} submission${subs.length === 1 ? '' : 's'}</div>
           <div id="subs-list"></div>
-          <button class="btn success" id="publish-grades" style="margin-top:12px"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l4 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M14.5 8.5a5 5 0 0 1 0 7"/><path d="M17.5 5.5a9 9 0 0 1 0 13"/></svg> Publish all grades to students</button>`,
+          <button class="btn success sm" id="publish-grades" style="margin-top:12px">Publish grades</button>`,
         foot: '<button class="btn" data-close>Close</button>',
       });
+      bindAssignmentDownloads(modal.backdrop);
       modal.backdrop.querySelector('[data-close]').onclick = () => modal.close();
       const list = modal.backdrop.querySelector('#subs-list');
       if (!subs.length) { list.innerHTML = '<div class="doc-meta">No submissions yet.</div>'; }
       for (const s of subs) {
-        list.appendChild(UI.el(`<div class="doc-item">
+        const answerFile = s.attachment_id
+          ? '<div class="as-file"><span>' + UI.esc(s.attachment_name || 'Student file') + '</span><button type="button" class="btn secondary sm" data-dl="' + s.attachment_id + '" data-name="' + UI.esc(s.attachment_name || 'answer') + '">Open student file</button></div>'
+          : '<div class="doc-meta">No file from this student.</div>';
+        list.appendChild(UI.el(`<div class="doc-item as-side student">
           <div style="flex:1;min-width:0">
             <div class="doc-name">${UI.esc(s.student_name)}</div>
-            <div class="doc-meta">${UI.timeAgo(s.submitted_at)}${s.attachment_name ? ' · <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l3-3A5 5 0 0 0 13.5 3.4l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7.1 7.1l1.7-1.7"/></svg> ' + UI.esc(s.attachment_name) : ''}</div>
-            ${s.content ? `<div style="white-space:pre-wrap;font-size:12.5px;margin-top:4px;background:var(--bg);padding:8px;border-radius:8px">${UI.esc(s.content)}</div>` : ''}
+            <div class="doc-meta">${UI.timeAgo(s.submitted_at)}</div>
+            <h4>Student's answer</h4>
+            ${s.content ? `<div class="as-brief">${UI.esc(s.content)}</div>` : '<div class="doc-meta">No written answer.</div>'}
+            ${answerFile}
             ${s.grade !== null && s.grade !== undefined ? `<div class="doc-meta" style="margin-top:4px">Grade: <strong>${s.grade}%</strong>${s.released ? ' (released)' : ' (not released yet)'}</div>` : ''}
           </div>
           <div>
@@ -543,6 +699,7 @@
           </div>
         </div>`));
       }
+      bindAssignmentDownloads(list);
       list.querySelectorAll('[data-grade]').forEach((b) => b.onclick = async () => {
         const sid = Number(b.dataset.grade);
         const grade = modal.backdrop.querySelector('#g-' + sid).value;
@@ -556,58 +713,87 @@
       };
     },
 
-    /** Student view: list + submit. */
+    /** Student view: read the teacher's task, then send text and/or a file. */
     async studentView(container, { studentId } = {}) {
       container.innerHTML = `<div id="as-list"></div>`;
       const data = (await API.get('/api/assignments')).assignments || [];
       const list = container.querySelector('#as-list');
-      if (!data.length) { list.innerHTML = '<div class="empty-state"><div class="big"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>No assignments for your class yet.</div>'; return; }
+      if (!data.length) { list.innerHTML = '<div class="empty-state"><div class="big">No assignments for your class yet.</div></div>'; return; }
       for (const a of data) {
         const sub = a.my_submission;
         const overdue = a.due_date && a.due_date < new Date().toISOString().slice(0, 10);
-        list.appendChild(UI.el(`<div class="doc-item">
+        const files = a.files || [];
+        const brief = (a.description || '').trim();
+        list.appendChild(UI.el(`<div class="doc-item as-card">
           <div style="flex:1;min-width:0">
             <div class="doc-name">${UI.esc(a.title)} ${a.due_date ? '<span class="badge amber">due ' + UI.esc(a.due_date) + '</span>' : ''} ${overdue ? '<span class="badge red">Overdue</span>' : ''}</div>
             <div class="doc-meta">${UI.esc(a.subject || '')} · ${UI.esc(a.teacher_name || '')}</div>
-            ${sub ? `<div class="doc-meta" style="margin-top:4px">
-              <svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Submitted ${UI.timeAgo(sub.submitted_at)}
-              ${sub.grade !== null && sub.grade !== undefined ? ` · <strong>Grade: ${sub.grade}%</strong>` : (sub.released ? '' : ' · awaiting grade')}
-            </div>` : '<div class="doc-meta" style="margin-top:4px">Not submitted yet</div>'}
+            <div class="as-side teacher">
+              <h4>What the teacher wants</h4>
+              <div class="as-brief clamp">${UI.esc(brief || 'No written instructions. Open the files, then send your answer.')}</div>
+              ${files.length ? '<div class="doc-meta" style="margin-top:8px">Teacher\'s files</div>' + assignmentFilesHtml(files) : '<div class="doc-meta" style="margin-top:6px">No file from the teacher.</div>'}
+            </div>
+            <div class="as-side student">
+              <h4>Your answer</h4>
+              ${sub ? `<div class="doc-meta">Submitted ${UI.timeAgo(sub.submitted_at)}${sub.grade !== null && sub.grade !== undefined ? ' · Grade: <strong>' + sub.grade + '%</strong>' : ' · awaiting grade'}</div>
+                ${sub.content ? '<div class="as-brief clamp">' + UI.esc(sub.content) + '</div>' : ''}
+                ${sub.attachment_id ? '<div class="as-file"><span>' + UI.esc(sub.attachment_name || 'Your file') + '</span><button type="button" class="btn secondary sm" data-dl="' + sub.attachment_id + '" data-name="' + UI.esc(sub.attachment_name || 'answer') + '">Download</button></div>' : '<div class="doc-meta">No file sent yet.</div>'}`
+                : '<div class="doc-meta">Not submitted yet. Read the instructions, then send your answer.</div>'}
+            </div>
           </div>
-          <button class="btn ${sub ? 'secondary' : ''} sm" data-sub="${a.id}">${sub ? 'Resubmit / view' : 'Submit'}</button>
+          <div class="doc-actions"><button class="btn ${sub ? 'secondary' : ''} sm" data-sub="${a.id}">${sub ? 'Update answer' : 'Send answer'}</button></div>
         </div>`));
       }
-      list.querySelectorAll('[data-sub]').forEach((b) => b.onclick = () => this.submitModal(Number(b.dataset.sub)));
+      bindAssignmentDownloads(list);
+      list.querySelectorAll('[data-sub]').forEach((b) => b.onclick = () => this.submitModal(Number(b.dataset.sub), () => this.studentView(container, { studentId })));
     },
 
-    async submitModal(id) {
+    async submitModal(id, onDone) {
       let a;
       try { a = (await API.get(`/api/assignments/${id}`)).assignment; } catch (e) { return UI.toast(e.message, 'error'); }
       const my = a.my_submission || {};
+      const files = a.files || [];
       const modal = UI.openModal({
-        title: `Submit — ${a.title}`,
+        title: `Answer — ${a.title}`,
         wide: true,
-        body: `<div class="doc-meta">${UI.esc(a.description || '')} · Due ${UI.esc(a.due_date || '—')}</div>
-          <label class="field">Your work<textarea id="sub-content" rows="5" placeholder="Write your answer here…">${UI.esc(my.content || '')}</textarea></label>
-          <label class="field">Attachment (optional)<input type="file" id="sub-file"></label>`,
-        foot: '<button class="btn secondary" data-cancel>Cancel</button><button class="btn" data-save>Submit</button>',
+        body: `<div class="as-side teacher">
+            <h4>What the teacher wants</h4>
+            <div class="doc-meta">Due ${UI.esc(a.due_date || '—')}</div>
+            <div class="as-brief">${UI.esc(a.description || 'No written instructions.')}</div>
+            <div class="doc-meta" style="margin-top:8px">Teacher's files</div>
+            ${assignmentFilesHtml(files) || '<div class="doc-meta">No file attached.</div>'}
+          </div>
+          <div class="as-side student">
+            <h4>Your answer</h4>
+            <label class="field">Write your answer<textarea id="sub-content" rows="5" placeholder="Write your answer here. You can also attach a file, or both.">${UI.esc(my.content || '')}</textarea></label>
+            ${my.attachment_id ? '<div class="doc-meta">File already sent: ' + UI.esc(my.attachment_name || 'your file') + '. Leave the box empty to keep it.</div><div class="as-file"><span>' + UI.esc(my.attachment_name || 'Your file') + '</span><button type="button" class="btn secondary sm" data-dl="' + my.attachment_id + '" data-name="' + UI.esc(my.attachment_name || 'answer') + '">Download</button></div>' : ''}
+            ${filePickerHtml('sub-file', 'Attach your work', false)}
+            <span class="doc-meta">A photo of your book, a PDF, or a document. The teacher can open it.</span>
+          </div>`,
+        foot: '<button class="btn secondary" data-cancel>Cancel</button><button class="btn" data-save>Send answer</button>',
       });
+      bindAssignmentDownloads(modal.backdrop);
+      bindFilePicker(modal.backdrop, 'sub-file');
       modal.backdrop.querySelector('[data-cancel]').onclick = () => modal.close();
       modal.backdrop.querySelector('[data-save]').onclick = async () => {
+        const saveBtn = modal.backdrop.querySelector('[data-save]');
+        saveBtn.disabled = true;
         try {
           const body = { content: modal.backdrop.querySelector('#sub-content').value.trim() };
           const file = modal.backdrop.querySelector('#sub-file').files[0];
           if (file) {
-            const form = new FormData();
-            form.append('file', file);
-            const up = await API.upload('/api/documents', form);
-            body.attachmentId = up.document.id;
+            const doc = await uploadOwnFile(file);
+            body.attachmentId = doc.id;
+          }
+          if (!body.content && !body.attachmentId && !my.attachment_id) {
+            saveBtn.disabled = false;
+            return UI.toast('Write an answer or attach a file.', 'error');
           }
           await API.post(`/api/assignments/${id}/submit`, body);
-          UI.toast('Assignment submitted.', 'success');
+          UI.toast('Answer sent.', 'success');
           modal.close();
-          location.reload();
-        } catch (e) { UI.toast(e.message, 'error'); }
+          if (onDone) onDone();
+        } catch (e) { UI.toast(e.message, 'error'); saveBtn.disabled = false; }
       };
     },
   };

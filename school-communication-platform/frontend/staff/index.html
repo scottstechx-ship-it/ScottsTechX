@@ -11,379 +11,742 @@
 </script>
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2956081143917614" crossorigin="anonymous"></script>
   <meta charset="UTF-8">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://cdnjs.cloudflare.com">
-<link rel="preconnect" href="https://i.ytimg.com">
-<meta name="google-site-verification" content="0iFeDjaZvUCjm7CmNRcwsIKmQUKHDLlePEJhRPLuR_M">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="0iFeDjaZvUCjm7CmNRcwsIKmQUKHDLlePEJhRPLuR_M">
   <meta name="author" content="ScottsTechX | Fred Scotts">
-  <meta name="description" content="Meet the Dedicated Team Behind Our Excellence - Kalinabiri Secondary School Staff Directory">
+  <meta name="description" content="Staff directory for Kalinabiri Secondary School, Ntinda. School leadership and heads of department, with the office phone and email.">
   <title>Our Staff Directory | Kalinabiri Secondary School</title>
   <link rel="icon" type="image/x-icon" href="/assets/images/logo.ico">
   <link rel="apple-touch-icon" href="/assets/images/logo.png">
-  
-  <link rel="stylesheet" href="../assets/css/style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
-<style>
-/* Rotating Video Background */
-#video-rotator-bg { position:fixed;inset:0;z-index:-2;width:100%;height:100%; }
-#video-rotator-bg video { position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.5s ease; }
-#video-rotator-bg video.active { opacity:1; }
-
-    .mobile-menu-btn.active span:nth-child(1) {
-      transform: translateY(7px) rotate(45deg);
-    }
-    .mobile-menu-btn.active span:nth-child(2) { opacity: 0; }
-    .mobile-menu-btn.active span:nth-child(3) {
-      transform: translateY(-7px) rotate(-45deg);
-    }
-
-    @media (max-width: 1000px) {
-      .nav-links {
-        position: fixed;
-        top: 68px;
-        left: 0;
-        right: 0;
-        flex-direction: column;
-        background: rgba(10, 31, 10, 0.98);
-        backdrop-filter: blur(20px);
-        padding: 1.5rem;
-        gap: 0.5rem;
-        border-bottom: 1px solid var(--glass-border);
-        transform: translateY(-120%);
-        opacity: 0;
-        transition: all 0.4s ease;
-        pointer-events: none;
-        z-index: 999;
-      }
-      .nav-links.mobile-open {
-        transform: translateY(0);
-        opacity: 1;
-        pointer-events: all;
-      }
-      .nav-links li { width: 100%; text-align: center; }
-      .nav-links a { display: block; padding: 0.75rem; font-size: 1rem; }
-      .navbar { padding: 0.75rem 1.5rem; }
-      .mobile-menu-btn { display: block; }
-      .nav-cta { display: none; }
-    }
-
-
-    html, body { overflow-x: hidden; /* kn-fit */ }
-    </style>
-<link rel="stylesheet" href="/assets/css/theme.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap">
+  <link rel="stylesheet" href="/assets/css/theme.css">
+  <link rel="stylesheet" href="/assets/css/site-nav.css?v=15">
   <script src="/assets/js/theme.js"></script>
-<link rel="stylesheet" href="/assets/css/site-nav.css?v=10">
-<script src="/assets/js/site-nav.js?v=10" defer></script>
-<script src="/assets/js/site-film.js?v=10" defer></script>
-<script src="/assets/js/site-animate.js" defer></script>
-<script src="/assets/js/site-perf.js" defer></script>
+  <script src="/assets/js/site-nav.js?v=15" defer></script>
+  <script src="/assets/js/site-animate.js" defer></script>
+  <script src="/assets/js/site-perf.js" defer></script>
+<style>
+/* Staff directory. No header film: this page does not load site-film.js
+   and the masthead is not a .page-header. */
+body.staff-dir,
+body.staff-dir.theme-loaded {
+  background: #0b1726 !important;
+  color: #e8eef6;
+}
+.staff-dir { margin: 0; }
+.dir-wrap {
+  width: min(1080px, calc(100% - 28px));
+  margin: 22px auto 48px;
+  background: #f6f3ec;
+  color: #142033;
+  border-radius: 28px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .28);
+  position: relative;
+  z-index: 1;
+}
+.dir-hero {
+  position: relative;
+  border-radius: 28px 28px 0 0;
+  padding: 36px 36px 28px;
+  background:
+    radial-gradient(520px 180px at 92% 0%, rgba(245, 158, 11, .22), transparent 70%),
+    radial-gradient(420px 200px at 0% 100%, rgba(56, 189, 248, .16), transparent 68%),
+    linear-gradient(160deg, #10243c 0%, #0b1726 72%);
+  color: #f8fafc;
+  overflow: hidden;
+}
+.dir-hero::after {
+  content: "";
+  position: absolute;
+  left: 36px;
+  right: 36px;
+  bottom: 0;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #f59e0b, #38bdf8);
+}
+.dir-kicker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.dir-crest {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  object-fit: cover;
+  border: 2px solid rgba(245, 158, 11, .7);
+  flex: none;
+}
+.dir-kicker span {
+  display: block;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #fbbf24;
+}
+.dir-kicker small {
+  display: block;
+  margin-top: 2px;
+  color: #cbd5e1;
+  font-size: .82rem;
+}
+.dir-hero h1 {
+  font-size: clamp(2.1rem, 5vw, 3.4rem);
+  line-height: 1.05;
+  margin: 0 0 10px;
+  color: #fff;
+  max-width: 12ch;
+}
+.dir-hero p {
+  max-width: 46rem;
+  margin: 0;
+  color: #d5e2ef;
+  font-size: 1.02rem;
+}
+.dir-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+.dir-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: .92rem;
+  text-decoration: none;
+}
+.dir-actions .is-gold {
+  background: #f59e0b;
+  color: #1a1203;
+}
+.dir-actions .is-line {
+  border: 1px solid rgba(226, 232, 240, .35);
+  color: #f8fafc;
+}
+.dir-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 26px;
+}
+.dir-facts div {
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(255, 255, 255, .08);
+}
+.dir-facts strong {
+  display: block;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.35rem;
+  color: #fff;
+}
+.dir-facts span { color: #cbd5e1; font-size: .8rem; }
+
+.dir-tools {
+  position: sticky;
+  top: var(--kn-nav-h, 68px);
+  z-index: 5;
+  display: grid;
+  gap: 12px;
+  padding: 16px 28px;
+  background: rgba(246, 243, 236, .96);
+  border-bottom: 1px solid rgba(20, 32, 51, .08);
+}
+.dir-search label {
+  display: block;
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+.dir-search input {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 14px;
+  border: 1px solid #d6d0c4;
+  background: #fff;
+  color: #142033;
+  padding: 12px 14px;
+  font-size: 1rem;
+}
+.dir-search input:focus {
+  outline: 2px solid #0ea5e9;
+  border-color: #0ea5e9;
+}
+.dir-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.dir-chip {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid #d6d0c4;
+  background: #fff;
+  color: #334155;
+  font-weight: 600;
+  font-size: .84rem;
+  cursor: pointer;
+}
+.dir-chip.is-on {
+  background: #10243c;
+  border-color: #10243c;
+  color: #fff;
+}
+.dir-count {
+  margin: 0;
+  color: #64748b;
+  font-size: .85rem;
+}
+
+.dir-body { padding: 8px 28px 32px; }
+.dir-group, .dir-close { scroll-margin-top: 150px; }
+.dir-group { margin-top: 26px; }
+.dir-group h2 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 12px;
+  font-size: 1.35rem;
+  color: #10243c;
+}
+.dir-group h2 em {
+  font-style: normal;
+  font-family: Inter, sans-serif;
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+.dir-lead {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.dir-person {
+  background: #fff;
+  border: 1px solid rgba(20, 32, 51, .08);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 8px 20px rgba(20, 32, 51, .04);
+}
+.dir-person.is-head {
+  background:
+    linear-gradient(180deg, rgba(245, 158, 11, .14), transparent 42%),
+    #fff;
+  border-color: rgba(245, 158, 11, .45);
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.staff-dir .dir-crest {
+  width: 52px;
+  height: 52px;
+}
+.dir-faculty { margin-top: 18px; }
+.staff-dir .dir-faculty-title {
+  margin: 0 0 8px;
+  font-family: Inter, sans-serif;
+  font-size: .78rem;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #0369a1;
+}
+.dir-note a { color: #0369a1; font-weight: 700; }
+.dir-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.dir-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  font-weight: 800;
+  color: #10243c;
+  background: #e2e8f0;
+}
+.dir-badge.gold { background: #fde68a; }
+.dir-badge.sky { background: #bae6fd; }
+.dir-badge.amber { background: #fed7aa; }
+.dir-badge.green { background: #bbf7d0; }
+.dir-badge.violet { background: #ddd6fe; }
+.dir-badge.rose { background: #fecdd3; }
+.dir-badge.cyan { background: #a5f3fc; }
+.dir-role {
+  margin: 0;
+  color: #0ea5e9;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.dir-person h3 {
+  margin: 2px 0 0;
+  font-size: 1.12rem;
+  color: #10243c;
+}
+.dir-meta {
+  margin: 12px 0 0;
+  color: #64748b;
+  font-size: .88rem;
+}
+.dir-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.dir-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #10243c;
+  color: #fff;
+  text-decoration: none;
+  font-size: .84rem;
+  font-weight: 700;
+}
+.dir-links a.is-quiet {
+  background: #eef2f6;
+  color: #10243c;
+}
+.dir-rows { display: grid; gap: 8px; }
+.dir-rows .dir-person {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+}
+.dir-rows .dir-meta { margin: 2px 0 0; }
+.dir-office {
+  color: #64748b;
+  font-size: .82rem;
+  text-align: right;
+}
+.dir-note, .dir-empty {
+  margin: 18px 0 0;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(16, 36, 60, .05);
+  color: #475569;
+  font-size: .92rem;
+}
+.dir-empty { display: none; }
+.dir-empty.is-on { display: block; }
+.dir-close {
+  margin-top: 28px;
+  padding: 22px;
+  border-radius: 20px;
+  background: #10243c;
+  color: #e8eef6;
+  display: grid;
+  grid-template-columns: 1.4fr .8fr;
+  gap: 18px;
+  align-items: center;
+}
+.dir-close h2 { margin: 0 0 6px; color: #fff; font-size: 1.5rem; }
+.dir-close p { margin: 0; color: #cbd5e1; }
+.dir-close .dir-actions { margin-top: 0; justify-content: flex-end; }
+.dir-foot {
+  padding: 22px 24px 8px;
+  text-align: center;
+  color: rgba(255, 255, 255, .55);
+  font-size: .85rem;
+}
+.dir-foot a { color: #38bdf8; text-decoration: none; }
+
+@media (max-width: 860px) {
+  .dir-lead { grid-template-columns: 1fr 1fr; }
+  .dir-person.is-head { flex-direction: column; align-items: flex-start; }
+  .dir-rows .dir-person { grid-template-columns: auto 1fr; }
+  .dir-office { grid-column: 2; text-align: left; }
+  .dir-close { grid-template-columns: 1fr; }
+  .dir-close .dir-actions { justify-content: flex-start; }
+}
+@media (max-width: 640px) {
+  .dir-wrap { width: min(100% - 16px, 1080px); margin-top: 12px; border-radius: 20px; }
+  .dir-hero, .dir-body { padding-left: 16px; padding-right: 16px; }
+  .dir-hero { padding-top: 22px; }
+  .dir-hero::after { left: 16px; right: 16px; }
+  .dir-tools { padding: 12px 16px; }
+  .dir-facts, .dir-lead { grid-template-columns: 1fr; }
+  .dir-hero h1 { max-width: none; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .dir-hero-copy { animation: dirIn .55s ease backwards; }
+  .dir-person { animation: dirRise .45s ease backwards; }
+}
+@keyframes dirIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes dirRise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+[hidden] { display: none !important; }
+</style>
 </head>
-<body>
-  <canvas id="webgl-bg" style="position:fixed;inset:0;z-index:-1;pointer-events:none;"></canvas>
-
-
-  <!-- TOP BAR -->
-  <div class="top-bar">
-    <div class="top-bar-inner">
-      <div class="top-bar-left">
-        <div class="top-bar-item">
-          <span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></span>
-          <a href="tel:0792861645">0792 861 645</a>
+<body class="staff-dir">
+<main class="staff-dir">
+  <div class="dir-wrap">
+    <header class="dir-hero">
+      <div class="dir-hero-copy">
+        <div class="dir-kicker">
+          <img class="dir-crest" src="/assets/images/logo.jpeg" alt="Kalinabiri Secondary School crest">
+          <div>
+            <span>Kalinabiri Secondary School</span>
+            <small>Ntinda, Kampala</small>
+          </div>
         </div>
-        <div class="top-bar-item">
-          <span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg></span>
-          <a href="mailto:kalinabirisecsch@gmail.com">kalinabirisecsch@gmail.com</a>
+        <h1>Staff directory</h1>
+        <p>School leadership first, then the head of each department. One list, so names are not repeated in a second place.</p>
+        <div class="dir-actions">
+          <a class="is-gold" href="tel:0792861645">Call the office</a>
+          <a class="is-line" href="mailto:kalinabirisecsch@gmail.com">Email the school</a>
+          <a class="is-line" href="#departments">Heads of department</a>
         </div>
-        <div class="top-bar-item">
-          <span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
-          <a href="https://www.google.com/maps/search/?api=1&query=Kalinabiri+Secondary+School+Ntinda+Kampala" target="_blank" rel="noopener">Kalinabiri, Ntinda, Kampala</a>
+        <div class="dir-facts">
+          <div><strong>4</strong><span>Office contacts</span></div>
+          <div><strong>13</strong><span>Department heads</span></div>
+          <div><strong>0792</strong><span>861 645, school line</span></div>
         </div>
       </div>
-      <div class="top-bar-right">
-        <div class="top-bar-social">
-          <a href="https://www.facebook.com/Kalinabiri-secondary-school-230901343588597" target="_blank" rel="noopener" aria-label="Facebook"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 4 9 15 15 0 0 1-4 9 15 15 0 0 1-4-9 15 15 0 0 1 4-9z"/></svg></a>
-          <a href="https://www.tiktok.com/@kalinabiri_ss" target="_blank" rel="noopener" aria-label="TikTok" title="Kalinabiri SS on TikTok"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M16 3v9.5a4.5 4.5 0 1 1-4.5-4.5"/><path d="M16 3c.4 2.6 2 4.2 4.5 4.6"/></svg></a>
-          <a href="https://www.youtube.com/results?search_query=Kalinabiri+Secondary+School" target="_blank" rel="noopener" aria-label="YouTube"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></a>
-        </div>
-        <a href="mailto:kalinabirisecsch@gmail.com?subject=Teaching%20Position%20Inquiry" class="btn-primary" style="padding: 6px 16px; font-size: 0.8rem;">Apply Now</a>
+    </header>
+
+    <div class="dir-tools">
+      <div class="dir-search">
+        <label for="staffSearch">Find a person</label>
+        <input id="staffSearch" type="search" placeholder="Search by name, subject, or office" autocomplete="off">
       </div>
+      <div class="dir-chips" role="toolbar" aria-label="Filter the directory">
+        <button type="button" class="dir-chip is-on" data-group="all">All</button>
+        <button type="button" class="dir-chip" data-group="leadership">Leadership</button>
+        <button type="button" class="dir-chip" data-group="sciences">Sciences</button>
+        <button type="button" class="dir-chip" data-group="mathematics">Mathematics</button>
+        <button type="button" class="dir-chip" data-group="languages">Languages</button>
+        <button type="button" class="dir-chip" data-group="humanities">Humanities</button>
+        <button type="button" class="dir-chip" data-group="sports">Sports</button>
+        <button type="button" class="dir-chip" data-group="ict">ICT</button>
+      </div>
+      <p class="dir-count" id="staffCount" aria-live="polite">Showing 17 people</p>
+    </div>
+
+    <div class="dir-body">
+      <p class="dir-empty" id="staffEmpty">No one matches that search. Try a subject, or clear the filter.</p>
+
+      <section class="dir-group" id="leadership">
+        <h2>Leadership <em>Who to call</em></h2>
+        <div class="dir-lead">
+          <article class="dir-person is-head" data-group="leadership" data-find="patricia mutesi head teacher administration 0792 861 645">
+            <div>
+              <div class="dir-top">
+                <div class="dir-badge gold">PM</div>
+                <div>
+                  <p class="dir-role">Head teacher</p>
+                  <h3>Ms. Patricia Mutesi</h3>
+                </div>
+              </div>
+              <p class="dir-meta">Leads the school. The main office line reaches her office.</p>
+            </div>
+            <div class="dir-links">
+              <a href="tel:0792861645">0792 861 645</a>
+            </div>
+          </article>
+          <article class="dir-person" data-group="leadership" data-find="lukwago rose director of studies dos academics 0701 120 729">
+            <div class="dir-top">
+              <div class="dir-badge gold">LR</div>
+              <div>
+                <p class="dir-role">Director of studies</p>
+                <h3>Mrs. Lukwago Rose</h3>
+              </div>
+            </div>
+            <p class="dir-meta">Academics</p>
+            <div class="dir-links"><a href="tel:0701120729">0701 120 729</a></div>
+          </article>
+          <article class="dir-person" data-group="leadership" data-find="ashaba fredrick assistant director of studies academics 0757 805 368">
+            <div class="dir-top">
+              <div class="dir-badge gold">AF</div>
+              <div>
+                <p class="dir-role">Assistant director of studies</p>
+                <h3>Mr. Ashaba Fredrick</h3>
+              </div>
+            </div>
+            <p class="dir-meta">Academics</p>
+            <div class="dir-links"><a href="tel:0757805368">0757 805 368</a></div>
+          </article>
+          <article class="dir-person" data-group="leadership" data-find="school office admissions general kalinabirisecsch@gmail.com 0792 861 645">
+            <div class="dir-top">
+              <div class="dir-badge gold">SO</div>
+              <div>
+                <p class="dir-role">School office</p>
+                <h3>General and admissions</h3>
+              </div>
+            </div>
+            <p class="dir-meta">Start here for any department.</p>
+            <div class="dir-links">
+              <a href="mailto:kalinabirisecsch@gmail.com">Email</a>
+              <a class="is-quiet" href="tel:0792861645">0792 861 645</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="dir-group" id="departments">
+        <h2>Heads of department <em>One leader each</em></h2>
+
+        <div class="dir-faculty" data-faculty="sciences">
+          <h3 class="dir-faculty-title">Sciences</h3>
+          <div class="dir-rows">
+            <article class="dir-person" data-group="sciences" data-find="byarugaba alex chemistry hod science lab">
+              <div class="dir-badge sky">BA</div>
+              <div>
+                <p class="dir-role">Chemistry</p>
+                <h3>Mr. Byarugaba Alex</h3>
+                <p class="dir-meta">Head of Chemistry</p>
+              </div>
+              <div class="dir-office">Chemistry Lab</div>
+            </article>
+            <article class="dir-person" data-group="sciences" data-find="achieng mary biology hod science lab">
+              <div class="dir-badge sky">AM</div>
+              <div>
+                <p class="dir-role">Biology</p>
+                <h3>Ms. Achieng Mary</h3>
+                <p class="dir-meta">Head of Biology</p>
+              </div>
+              <div class="dir-office">Biology Lab</div>
+            </article>
+            <article class="dir-person" data-group="sciences" data-find="nturanabo moses physics hod science lab">
+              <div class="dir-badge sky">NM</div>
+              <div>
+                <p class="dir-role">Physics</p>
+                <h3>Mr. Nturanabo Moses</h3>
+                <p class="dir-meta">Head of Physics</p>
+              </div>
+              <div class="dir-office">Physics Lab, Rm 14</div>
+            </article>
+          </div>
+        </div>
+
+        <div class="dir-faculty" data-faculty="mathematics">
+          <h3 class="dir-faculty-title">Mathematics</h3>
+          <div class="dir-rows">
+            <article class="dir-person" data-group="mathematics" data-find="twesigye patrick mathematics hod maths main block">
+              <div class="dir-badge amber">TP</div>
+              <div>
+                <p class="dir-role">Mathematics</p>
+                <h3>Mr. Twesigye Patrick</h3>
+                <p class="dir-meta">Head of Mathematics</p>
+              </div>
+              <div class="dir-office">Main Block, Rm 04</div>
+            </article>
+            <article class="dir-person" data-group="mathematics" data-find="balikitenda lenben technical drawing td workshop">
+              <div class="dir-badge amber">BL</div>
+              <div>
+                <p class="dir-role">Technical drawing</p>
+                <h3>Mr. Balikitenda Lenben</h3>
+                <p class="dir-meta">Head of Technical Drawing</p>
+              </div>
+              <div class="dir-office">TD Workshop</div>
+            </article>
+          </div>
+        </div>
+
+        <div class="dir-faculty" data-faculty="languages">
+          <h3 class="dir-faculty-title">Languages</h3>
+          <div class="dir-rows">
+            <article class="dir-person" data-group="languages" data-find="nafula judith english literature languages">
+              <div class="dir-badge green">NJ</div>
+              <div>
+                <p class="dir-role">English and literature</p>
+                <h3>Ms. Nafula Judith</h3>
+                <p class="dir-meta">Head of English / Literature</p>
+              </div>
+              <div class="dir-office">Languages Wing, Rm 21</div>
+            </article>
+            <article class="dir-person" data-group="languages" data-find="kabugho ismail kiswahili languages">
+              <div class="dir-badge green">KI</div>
+              <div>
+                <p class="dir-role">Kiswahili</p>
+                <h3>Mr. Kabugho Ismail</h3>
+                <p class="dir-meta">Head of Kiswahili</p>
+              </div>
+              <div class="dir-office">Languages Wing, Rm 23</div>
+            </article>
+          </div>
+        </div>
+
+        <div class="dir-faculty" data-faculty="humanities">
+          <h3 class="dir-faculty-title">Humanities</h3>
+          <div class="dir-rows">
+            <article class="dir-person" data-group="humanities" data-find="mumbere robert agriculture garden">
+              <div class="dir-badge violet">MR</div>
+              <div>
+                <p class="dir-role">Agriculture</p>
+                <h3>Mr. Mumbere Robert</h3>
+                <p class="dir-meta">Head of Agriculture</p>
+              </div>
+              <div class="dir-office">Agriculture Garden</div>
+            </article>
+            <article class="dir-person" data-group="humanities" data-find="nattimba miriam geography">
+              <div class="dir-badge violet">MN</div>
+              <div>
+                <p class="dir-role">Geography</p>
+                <h3>Ms. Nattimba Miriam</h3>
+                <p class="dir-meta">Head of Geography</p>
+              </div>
+              <div class="dir-office">Main Block, Rm 08</div>
+            </article>
+            <article class="dir-person" data-group="humanities" data-find="nabukalu teopista history">
+              <div class="dir-badge violet">NT</div>
+              <div>
+                <p class="dir-role">History</p>
+                <h3>Ms. Nabukalu Teopista</h3>
+                <p class="dir-meta">Head of History</p>
+              </div>
+              <div class="dir-office">Main Block, Rm 10</div>
+            </article>
+            <article class="dir-person" data-group="humanities" data-find="jjagwe adnan islamic religious education ire">
+              <div class="dir-badge violet">JA</div>
+              <div>
+                <p class="dir-role">Islamic religious education</p>
+                <h3>Mr. Jjagwe Adnan</h3>
+                <p class="dir-meta">Head of I.R.E.</p>
+              </div>
+              <div class="dir-office">Main Block, Rm 12</div>
+            </article>
+          </div>
+        </div>
+
+        <div class="dir-faculty" data-faculty="sports">
+          <h3 class="dir-faculty-title">Sports</h3>
+          <div class="dir-rows">
+            <article class="dir-person" data-group="sports" data-find="namatovu brenda physical education pe sports pavilion">
+              <div class="dir-badge rose">NB</div>
+              <div>
+                <p class="dir-role">Physical education</p>
+                <h3>Ms. Namatovu Brenda</h3>
+                <p class="dir-meta">Head of P.E.</p>
+              </div>
+              <div class="dir-office">Sports Office, Pavilion</div>
+            </article>
+          </div>
+        </div>
+
+        <div class="dir-faculty" data-faculty="ict">
+          <h3 class="dir-faculty-title">ICT</h3>
+          <div class="dir-rows">
+            <article class="dir-person" data-group="ict" data-find="ssempala simon ict computer lab">
+              <div class="dir-badge cyan">SS</div>
+              <div>
+                <p class="dir-role">ICT</p>
+                <h3>Mr. Ssempala Simon</h3>
+                <p class="dir-meta">Head of ICT</p>
+              </div>
+              <div class="dir-office">Computer Lab, Block C</div>
+            </article>
+          </div>
+        </div>
+
+        <p class="dir-note">Department heads do not yet have individual school emails. Reach them through the school office on 0792 861 645 or kalinabirisecsch@gmail.com. Room details are also on the <a href="/staff/hods.html">heads of department page</a>.</p>
+      </section>
+
+      <section class="dir-close" id="contact">
+        <div>
+          <h2>School office</h2>
+          <p>Kalinabiri, Ntinda, Kampala. For admissions, a teacher, or a department, start with the office.</p>
+        </div>
+        <div class="dir-actions">
+          <a class="is-gold" href="tel:0792861645">0792 861 645</a>
+          <a class="is-line" href="mailto:kalinabirisecsch@gmail.com?subject=Teaching%20Position%20Inquiry">Join the staff</a>
+          <a class="is-line" href="https://www.google.com/maps/search/?api=1&query=Kalinabiri+Secondary+School+Ntinda+Kampala" target="_blank" rel="noopener">Map</a>
+        </div>
+      </section>
     </div>
   </div>
+</main>
 
-  <!-- NAVBAR -->
-  <!-- PAGE HEADER -->
-  <section class="page-header">
-    <div class="container">
-      <h1 class="reveal">Our Staff Directory</h1>
-      <p class="page-subtitle reveal reveal-delay-1">Meet the Dedicated Team Behind Our Excellence</p>
-    </div>
-  </section>
-
-  <!-- SEARCH & FILTER -->
-  <section class="section">
-    <div class="container">
-      <div class="search-filter-bar reveal">
-        <input type="text" class="form-input" placeholder="Search staff by name or role..."
-        <select class="form-input">
-          <option value="">All Departments</option>
-          <option value="science">Science Department</option>
-          <option value="humanities">Humanities Department</option>
-          <option value="business">Business Department</option>
-          <option value="ict">ICT Department</option>
-          <option value="creative">Creative Arts Department</option>
-        </select>
-      </div>
-    </div>
-  </section>
-
-  <!-- STAFF GRID — real administration & department heads -->
-  <section class="section-gray">
-    <div class="container">
-      <h2 class="section-title" style="text-align:center;margin-bottom:8px;">Administration</h2>
-      <p style="text-align:center;color:rgba(255,255,255,.55);margin-bottom:28px;font-size:.92rem;">Our school leadership — reach them directly.</p>
-      <div class="card-grid card-grid-4" data-dept="administration">
-        <div class="glass-card reveal" style="text-align:center;padding:30px;">
-          <div class="avatar-circle" style="font-size:3rem;margin-bottom:16px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
-          <h4 style="margin-bottom:8px;">Ms. Patricia Mutesi</h4>
-          <p style="color:var(--accent);font-size:.85rem;margin-bottom:8px;">Head Teacher</p>
-          <p style="color:rgba(255,255,255,.5);font-size:.8rem;margin-bottom:12px;">Administration</p>
-          <a href="tel:0792861645" style="color:var(--accent);font-size:.85rem;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> 0792 861 645</a>
-        </div>
-        <div class="glass-card reveal reveal-delay-1" style="text-align:center;padding:30px;">
-          <div class="avatar-circle" style="font-size:3rem;margin-bottom:16px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
-          <h4 style="margin-bottom:8px;">Mrs. Lukwago Rose</h4>
-          <p style="color:var(--accent);font-size:.85rem;margin-bottom:8px;">Director of Studies (DOS)</p>
-          <p style="color:rgba(255,255,255,.5);font-size:.8rem;margin-bottom:12px;">Academics</p>
-          <a href="tel:0701120729" style="color:var(--accent);font-size:.85rem;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> 0701 120 729</a>
-        </div>
-        <div class="glass-card reveal reveal-delay-2" style="text-align:center;padding:30px;">
-          <div class="avatar-circle" style="font-size:3rem;margin-bottom:16px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
-          <h4 style="margin-bottom:8px;">Mr. Ashaba Fredrick</h4>
-          <p style="color:var(--accent);font-size:.85rem;margin-bottom:8px;">Assistant Director of Studies</p>
-          <p style="color:rgba(255,255,255,.5);font-size:.8rem;margin-bottom:12px;">Academics</p>
-          <a href="tel:0757805368" style="color:var(--accent);font-size:.85rem;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> 0757 805 368</a>
-        </div>
-        <div class="glass-card reveal reveal-delay-3" style="text-align:center;padding:30px;">
-          <div class="avatar-circle" style="font-size:3rem;margin-bottom:16px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
-          <h4 style="margin-bottom:8px;">School Office</h4>
-          <p style="color:var(--accent);font-size:.85rem;margin-bottom:8px;">General &amp; Admissions</p>
-          <p style="color:rgba(255,255,255,.5);font-size:.8rem;margin-bottom:12px;">Contact</p>
-          <a href="mailto:kalinabirisecsch@gmail.com" style="color:var(--accent);font-size:.8rem;display:block;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg> kalinabirisecsch@gmail.com</a>
-        </div>
-      </div>
-
-      <h2 class="section-title" style="text-align:center;margin:44px 0 8px;">Heads of Department</h2>
-      <p style="text-align:center;color:rgba(255,255,255,.55);margin-bottom:28px;font-size:.92rem;">Meet the leaders of every subject area — see the full directory on the <a href="/staff/hods.html" style="color:var(--accent);">HODs page</a>.</p>
-      <div class="card-grid card-grid-4" data-dept="hods">
-        <div class="glass-card reveal" style="text-align:center;padding:26px;"><div class="avatar-circle" style="font-size:2.4rem;margin-bottom:12px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M2 21h20"/></svg></div><h4 style="margin-bottom:6px;">Mr. Ssempala Simon</h4><p style="color:var(--accent);font-size:.85rem;">HOD — ICT</p></div>
-        <div class="glass-card reveal reveal-delay-1" style="text-align:center;padding:26px;"><div class="avatar-circle" style="font-size:2.4rem;margin-bottom:12px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div><h4 style="margin-bottom:6px;">Mr. Twesigye Patrick</h4><p style="color:var(--accent);font-size:.85rem;">HOD — Mathematics</p></div>
-        <div class="glass-card reveal reveal-delay-2" style="text-align:center;padding:26px;"><div class="avatar-circle" style="font-size:2.4rem;margin-bottom:12px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M9 3h6"/><path d="M10 3v6.5L5.5 19A2 2 0 0 0 7.3 22h9.4a2 2 0 0 0 1.8-3L14 9.5V3"/><path d="M7.5 15h9"/></svg></div><h4 style="margin-bottom:6px;">Mr. Byarugaba Alex</h4><p style="color:var(--accent);font-size:.85rem;">HOD — Chemistry</p></div>
-        <div class="glass-card reveal reveal-delay-3" style="text-align:center;padding:26px;"><div class="avatar-circle" style="font-size:2.4rem;margin-bottom:12px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M11 20A7 7 0 0 1 4 13c0-5 4-9 16-9-1 12-5 16-9 16z"/><path d="M4 21c4-4 6-6 9-9"/></svg></div><h4 style="margin-bottom:6px;">Mr. Mumbere Robert</h4><p style="color:var(--accent);font-size:.85rem;">HOD — Agriculture</p></div>
-        <div class="glass-card reveal" style="text-align:center;padding:26px;"><div class="avatar-circle" style="font-size:2.4rem;margin-bottom:12px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><h4 style="margin-bottom:6px;">Ms. Nafula Judith</h4><p style="color:var(--accent);font-size:.85rem;">HOD — English / Literature</p></div>
-        <div class="glass-card reveal reveal-delay-1" style="text-align:center;padding:26px;"><div class="avatar-circle" style="font-size:2.4rem;margin-bottom:12px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M9 3h6"/><path d="M10 3v6.5L5.5 19A2 2 0 0 0 7.3 22h9.4a2 2 0 0 0 1.8-3L14 9.5V3"/><path d="M7.5 15h9"/></svg></div><h4 style="margin-bottom:6px;">Ms. Achieng Mary</h4><p style="color:var(--accent);font-size:.85rem;">HOD — Biology</p></div>
-        <div class="glass-card reveal reveal-delay-2" style="text-align:center;padding:26px;"><div class="avatar-circle" style="font-size:2.4rem;margin-bottom:12px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div><h4 style="margin-bottom:6px;">Mr. Nturanabo Moses</h4><p style="color:var(--accent);font-size:.85rem;">HOD — Physics</p></div>
-        <div class="glass-card reveal reveal-delay-3" style="text-align:center;padding:26px;"><div class="avatar-circle" style="font-size:2.4rem;margin-bottom:12px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div><h4 style="margin-bottom:6px;">Mr. Balikitenda Lenben</h4><p style="color:var(--accent);font-size:.85rem;">HOD — Technical Drawing</p></div>
-        <div class="glass-card reveal" style="text-align:center;padding:26px;"><div class="avatar-circle" style="font-size:2.4rem;margin-bottom:12px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 4 9 15 15 0 0 1-4 9 15 15 0 0 1-4-9 15 15 0 0 1 4-9z"/></svg></div><h4 style="margin-bottom:6px;">Ms. Nattimba Miriam</h4><p style="color:var(--accent);font-size:.85rem;">HOD — Geography</p></div>
-        <div class="glass-card reveal reveal-delay-1" style="text-align:center;padding:26px;"><div class="avatar-circle" style="font-size:2.4rem;margin-bottom:12px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M10 21v-6h4v6"/></svg></div><h4 style="margin-bottom:6px;">Ms. Nabukalu Teopista</h4><p style="color:var(--accent);font-size:.85rem;">HOD — History</p></div>
-        <div class="glass-card reveal reveal-delay-2" style="text-align:center;padding:26px;"><div class="avatar-circle" style="font-size:2.4rem;margin-bottom:12px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v6a5 5 0 0 1-10 0z"/><path d="M7 6H4a2 2 0 0 0 2 4h1"/><path d="M17 6h3a2 2 0 0 1-2 4h-1"/></svg></div><h4 style="margin-bottom:6px;">Ms. Namatovu Brenda</h4><p style="color:var(--accent);font-size:.85rem;">HOD — Physical Education</p></div>
-        <div class="glass-card reveal reveal-delay-3" style="text-align:center;padding:26px;"><div class="avatar-circle" style="font-size:2.4rem;margin-bottom:12px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></svg></div><h4 style="margin-bottom:6px;">Mr. Jjagwe Adnan</h4><p style="color:var(--accent);font-size:.85rem;">HOD — I.R.E</p></div>
-        <div class="glass-card reveal" style="text-align:center;padding:26px;"><div class="avatar-circle" style="font-size:2.4rem;margin-bottom:12px;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg></div><h4 style="margin-bottom:6px;">Mr. Kabugho Ismail</h4><p style="color:var(--accent);font-size:.85rem;">HOD — Kiswahili</p></div>
-      </div>
-      <p style="text-align:center;color:rgba(255,255,255,.45);font-size:.8rem;margin-top:20px;">Department heads can be reached through the school office — individual school emails are being set up.</p>
-    </div>
-  </section>
-
-  <!-- TEACHING STAFF BY DEPARTMENT -->
-  <section class="section">
-    <div class="container">
-      <h2 class="section-title reveal">Teaching Staff by Department</h2>
-      
-      <!-- Science Dept -->
-      <div class="accordion reveal">
-        <div class="accordion-item">
-          <div class="accordion-header">
-            <h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M9 3h6"/><path d="M10 3v6.5L5.5 19A2 2 0 0 0 7.3 22h9.4a2 2 0 0 0 1.8-3L14 9.5V3"/><path d="M7.5 15h9"/></svg> Science Department</h3>
-            <span class="accordion-icon">+</span>
-          </div>
-          <div class="accordion-body">
-            <p style="margin-bottom: 16px;"><strong>HOD:</strong> Mr. Francis Tumusiime — PhD Physics, Makerere University</p>
-            <ul style="list-style: none; padding: 0;">
-              <li style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> Mr. Peter Ssenyonjo — Biology Teacher — BSc. Biology, Makerere</li>
-              <li style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> Ms. Judith Nabukalu — Chemistry Teacher — MSc. Chemistry, Makerere</li>
-              <li style="padding: 8px 0;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> Mr. Charles Okoth — Physics & Mathematics — BSc. Physics, MUK</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <!-- Humanities Dept -->
-      <div class="accordion reveal">
-        <div class="accordion-item">
-          <div class="accordion-header">
-            <h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Humanities Department</h3>
-            <span class="accordion-icon">+</span>
-          </div>
-          <div class="accordion-body">
-            <p style="margin-bottom: 16px;"><strong>HOD:</strong> Ms. Peace Amono — MA History, Makerere University</p>
-            <ul style="list-style: none; padding: 0;">
-              <li style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> Mr. Joseph Mugisha — History & Religious Studies — MA Divinity, MUK</li>
-              <li style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> Ms. Flavia Nakato — Geography Teacher — BSc. Geography, MUK</li>
-              <li style="padding: 8px 0;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> Mr. Moses Sserwadda — Literature & English — MA English, Kyambogo</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <!-- Business Dept -->
-      <div class="accordion reveal">
-        <div class="accordion-item">
-          <div class="accordion-header">
-            <h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> Business Department</h3>
-            <span class="accordion-icon">+</span>
-          </div>
-          <div class="accordion-body">
-            <p style="margin-bottom: 16px;"><strong>HOD:</strong> Mr. David Kigozi — MBA Finance, UMI</p>
-            <ul style="list-style: none; padding: 0;">
-              <li style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> Mr. Richard Wasswa — Accounting Teacher — CPA, UPS</li>
-              <li style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> Ms. Grace Birungi — Entrepreneurship — BBA, MUBS</li>
-              <li style="padding: 8px 0;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> Mr. Francis Ssettela — Commerce & Economics — MSc. Economics, MUK</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <!-- ICT Dept -->
-      <div class="accordion reveal">
-        <div class="accordion-item">
-          <div class="accordion-header">
-            <h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M2 21h20"/></svg> ICT Department</h3>
-            <span class="accordion-icon">+</span>
-          </div>
-          <div class="accordion-body">
-            <p style="margin-bottom: 16px;"><strong>HOD:</strong> Ms. Ruth Nabisere — MSc Computer Science, UEA</p>
-            <ul style="list-style: none; padding: 0;">
-              <li style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> Mr. John Bbosa — Programming & Web Dev — BSc. IT, Ndejje</li>
-              <li style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> Ms. Sharon Namuli — Digital Literacy — Cert. ICT, MUK</li>
-              <li style="padding: 8px 0;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> Mr. Daniel Opio — Computer Applications — MSc. IT, UMI</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <!-- Creative Arts -->
-      <div class="accordion reveal">
-        <div class="accordion-item">
-          <div class="accordion-header">
-            <h3><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> Creative Arts Department</h3>
-            <span class="accordion-icon">+</span>
-          </div>
-          <div class="accordion-body">
-            <p style="margin-bottom: 16px;"><strong>HOD:</strong> Ms. Harriet Nansubuga — MA Fine Arts, Makerere University</p>
-            <ul style="list-style: none; padding: 0;">
-              <li style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> Mr. Sam Ssemanda — Art & Design — BA Art, Makerere</li>
-              <li style="padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1);"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> Ms. Carolyne Mbabazi — Music Teacher — BA Music, MUK</li>
-              <li style="padding: 8px 0;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg> Mr. Patrick Ssekitoleko — Drama & Theatre — Cert. Performing Arts</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <div class="footer-logo">
-          <span style="font-size: 2rem;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span>
-          <div>
-            <span>KALINABIRI</span>
-            <span style="display: block; font-size: 0.7rem; font-weight: 400; color: rgba(255,255,255,0.4);">SECONDARY SCHOOL</span>
-          </div>
-        </div>
-        <p style="margin-top: 16px;">A government-aided secondary school in Ntinda, Kampala, teaching S.1 to S.6 learners since 1984. Determined to excel, with trust in God.</p>
-        <div class="footer-social" style="margin-top: 20px;">
-          <a href="https://www.facebook.com/search/top?q=Kalinabiri%20Secondary%20School" target="_blank" rel="noopener" aria-label="Facebook"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 4 9 15 15 0 0 1-4 9 15 15 0 0 1-4-9 15 15 0 0 1 4-9z"/></svg></a>
-          <a href="https://www.tiktok.com/@kalinabiri_ss" target="_blank" rel="noopener" aria-label="TikTok" title="Kalinabiri SS on TikTok"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M16 3v9.5a4.5 4.5 0 1 1-4.5-4.5"/><path d="M16 3c.4 2.6 2 4.2 4.5 4.6"/></svg></a>
-          <a href="https://www.youtube.com/results?search_query=Kalinabiri+Secondary+School" target="_blank" rel="noopener" aria-label="YouTube"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></a>
-        </div>
-      </div>
-      <div>
-        <h4>Quick Links</h4>
-        <ul>
-          <li><a href='/'>Home</a></li>
-          <li><a href='/about/'>About Us</a></li>
-          <li><a href='/academics/'>Academics</a></li>
-          <li><a href='/admissions/'>Admissions</a></li>
-          <li><a href='/contact/'>Contact</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Portals</h4>
-        <ul>
-          <li><a href="../student-portal/student-register.html">Student Portal</a></li>
-          <li><a href="../teacher-login/teacher-register.html">Teacher Portal</a></li>
-          <li><a href="../admin-login/">Admin Portal</a></li>
-          <li><a href="/dashboard-access.html">E-Learning Platform</a></li>
-          <li><a href="/dashboard-access.html">School App</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4>Contact Info</h4>
-        <ul>
-          <li><a href="https://www.google.com/maps/search/?api=1&query=Kalinabiri+Secondary+School+Ntinda+Kampala" target="_blank" rel="noopener"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Kalinabiri, Ntinda, Kampala, Uganda</a></li>
-          <li><a href="tel:0792861645"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> 0792 861 645</a></li>
-          <li><a href="mailto:kalinabirisecsch@gmail.com"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg> kalinabirisecsch@gmail.com</a></li>
-          <li><a href="https://schoolnet.africa/ug/lower/secondary-schools/kalinabiri-secondary-school/" target="_blank" rel="noopener"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 4 9 15 15 0 0 1-4 9 15 15 0 0 1-4-9 15 15 0 0 1 4-9z"/></svg> School profile on Schoolnet Uganda</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>© 2026 Kalinabiri Secondary School. All Rights Reserved.</p>
-      <p>Developed by <strong>ScottsTechX</strong> | <strong>Fred Scotts</strong></p>
-    </div>
-  </footer>
-
-<script src="../assets/js/main.js"></script>
-  <script>
-  (function(){
-    var canvas=document.getElementById('webgl-bg');
-    if(!canvas||!window.THREE||getComputedStyle(canvas).display==='none')return;
-    var renderer=new THREE.WebGLRenderer({canvas:canvas,alpha:true,antialias:true});
-    renderer.setSize(window.innerWidth,window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-    var scene=new THREE.Scene();
-    var camera=new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,.1,1000);
-    camera.position.z=30;
-    var geo=new THREE.BufferGeometry;
-    var count=window.innerWidth<768?500:1500;
-    var pos=new Float32Array(count*3);
-    var col=new Float32Array(count*3);
-    var colors=[[.0,.96,.83],[.48,.18,.97],[.97,.18,1],[1,.84,0]];
-    for(var i=0;i<count*3;i++){pos[i]=(Math.random()-.5)*80;var c=colors[Math.floor(Math.random()*colors.length)];col[i]=c[i%3]}
-    geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
-    geo.setAttribute('color',new THREE.BufferAttribute(col,3));
-    var mat=new THREE.PointsMaterial({size:.18,vertexColors:true,transparent:true,opacity:.85,sizeAttenuation:true});
-    scene.add(new THREE.Points(geo,mat));
-    var mouse={x:0,y:0};
-    document.addEventListener('mousemove',function(e){mouse.x=(e.clientX/window.innerWidth)*2-1;mouse.y=-(e.clientY/window.innerHeight)*2+1});
-    function animate(){requestAnimationFrame(animate);camera.position.x+=(mouse.x*5-camera.position.x)*.03;camera.position.y+=(mouse.y*5-camera.position.y)*.03;camera.lookAt(scene.position);renderer.render(scene,camera)}animate();
-    window.addEventListener('resize',function(){camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight)})})();
-  </script>
+<footer class="dir-foot">
+  <p>&copy; 2026 <a href="/">Kalinabiri Secondary School</a> &middot; Ntinda, Kampala</p>
+</footer>
 
 <script>
-// Mobile Menu Toggle
-    function toggleMobileMenu() {
-      // legacy hook: the navbar is injected by site-nav.js and has no #navLinks
-      // / #mobileBtn, so guard the lookups instead of throwing.
-      var nl = document.getElementById('navLinks');
-      var mb = document.getElementById('mobileBtn');
-      if (nl) nl.classList.toggle('mobile-open');
-      if (mb) mb.classList.toggle('active');
-    }
+(function () {
+  var input = document.getElementById('staffSearch');
+  var chips = document.querySelectorAll('.dir-chip');
+  var people = document.querySelectorAll('.dir-person');
+  var faculties = document.querySelectorAll('.dir-faculty');
+  var groups = document.querySelectorAll('.dir-group');
+  var empty = document.getElementById('staffEmpty');
+  var count = document.getElementById('staffCount');
+  var active = 'all';
 
+  function apply() {
+    var term = (input.value || '').trim().toLowerCase();
+    var shown = 0;
+    for (var i = 0; i < people.length; i++) {
+      var person = people[i];
+      var blob = (person.getAttribute('data-find') || '').toLowerCase();
+      var group = person.getAttribute('data-group') || '';
+      var ok = (active === 'all' || group === active) && (!term || blob.indexOf(term) !== -1);
+      person.hidden = !ok;
+      if (ok) shown++;
+    }
+    for (var f = 0; f < faculties.length; f++) {
+      var box = faculties[f];
+      var any = box.querySelector('.dir-person:not([hidden])');
+      box.hidden = !any;
+    }
+    for (var g = 0; g < groups.length; g++) {
+      var block = groups[g];
+      var visible = block.querySelector('.dir-person:not([hidden])');
+      block.hidden = !visible;
+    }
+    empty.classList.toggle('is-on', shown === 0);
+    count.textContent = shown === 1 ? 'Showing 1 person' : 'Showing ' + shown + ' people';
+  }
+
+  for (var c = 0; c < chips.length; c++) {
+    chips[c].addEventListener('click', function () {
+      active = this.getAttribute('data-group') || 'all';
+      for (var n = 0; n < chips.length; n++) {
+        var on = chips[n] === this;
+        chips[n].classList.toggle('is-on', on);
+        chips[n].setAttribute('aria-pressed', on ? 'true' : 'false');
+      }
+      apply();
+    });
+  }
+  input.addEventListener('input', apply);
+  apply();
+})();
 </script>
 
 <!-- crafted with pride -->

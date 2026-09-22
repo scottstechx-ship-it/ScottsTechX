@@ -588,7 +588,7 @@
 
     // topbar
     const topbar = el(`<div class="topbar">
-      <button class="hamburger" id="hamburger" aria-label="Open menu">${icon('filter', { size: 18 })}</button>
+      <button class="hamburger" id="hamburger" aria-label="Open sidebar" aria-expanded="false" title="Sidebar">${icon('sidebar', { size: 18 })}</button>
       <div class="page-title" id="page-title">${esc(title || 'Dashboard')}</div>
       <div class="global-search" id="global-search">
         <span class="gs-ic" aria-hidden="true">${icon('search', { size: 16 })}</span>
@@ -674,20 +674,27 @@
     const scrim = el('<div class="sidebar-scrim" id="sidebar-scrim"></div>');
     document.body.appendChild(scrim);
     const anyOverlay = () => document.querySelectorAll('.sidebar-scrim, .mobile-overlay');
+    const burgerBtn = topbar.querySelector('#hamburger');
     let sidebarLocked = false;
+    function markSidebar(open) {
+      burgerBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      burgerBtn.setAttribute('aria-label', open ? 'Close sidebar' : 'Open sidebar');
+      burgerBtn.title = open ? 'Close sidebar' : 'Sidebar';
+    }
     function openSidebar() {
       sidebar.classList.add('open');
       anyOverlay().forEach((o) => o.classList.add('open'));
+      markSidebar(true);
       if (!sidebarLocked) { sidebarLocked = true; lockScroll(); }
     }
     function closeSidebar() {
       const wasOpen = sidebar.classList.contains('open') || sidebarLocked;
       sidebar.classList.remove('open');
       anyOverlay().forEach((o) => o.classList.remove('open'));
+      markSidebar(false);
       if (sidebarLocked) { sidebarLocked = false; unlockScroll(); }
       return wasOpen;
     }
-    const burgerBtn = topbar.querySelector('#hamburger');
     // mark as bound so ux.js's fallback binder never double-binds this button
     burgerBtn.dataset.uxBound = '1';
     burgerBtn.onclick = () => {

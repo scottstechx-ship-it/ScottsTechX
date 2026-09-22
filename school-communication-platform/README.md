@@ -38,7 +38,7 @@ Everything the school already keeps in spreadsheets goes in through one screen,
 | 5 Attendance | one row per student per day | upserts by student + date, so re-importing a corrected day never duplicates |
 | 6 Fees | fee structures | billed to the class named, or to one student, or the whole school |
 | 7 Payments | receipts | matched to the student, receipts deduplicated |
-| 8 Report cards | marks per subject | report cards with totals, averages and class positions, plus the same marks in **Exams & Results** |
+| 8 Report cards | marks per subject, or PDF report cards | report cards with totals, averages and class positions, plus the same marks in **Exams & Results**. PDF cards are matched by file name — download the PDF format first |
 
 Every step shows a **preview first** ("nothing has been saved yet") and only then
 imports, and the preview is produced by the same code that does the import, so it
@@ -53,6 +53,9 @@ plus a README explaining the order.
 ## Report cards
 **Admin Dashboard → Report Cards** is the end-of-term job:
 
+* download the **PDF format** (one card per child, already named with the student
+  ID). Fill it, or replace each file with the school's own PDF and keep the file
+  name, then upload the zip;
 * upload the cards themselves — **PDF, Word, JPG/PNG scans**, one file or a whole
   **zip** (the file name should carry the student ID or the child's name), or
   import a spreadsheet of marks in the Import Center;

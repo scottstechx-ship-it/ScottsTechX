@@ -55,13 +55,16 @@
             <div style="flex:1;min-width:230px">
               <h2 style="margin:0 0 6px">Report Cards</h2>
               <p class="muted" style="margin:0;font-size:13.5px">
-                Upload the term's report cards, check who has cleared their fees, then send them to parents.
-                Report cards can be PDF, Word or a photo of a scan — drop in a whole zip and the platform sorts them by child.
+                Upload the term's report cards as PDF — one file per child, or a zip. Name each PDF with the student ID
+                (for example STU-2026-100.pdf) or the child's full name. Download the PDF format to get a card for every
+                child already named, fill it or replace it with the school's own PDF, then upload the zip.
               </p>
             </div>
             <div style="display:flex;gap:8px;flex-wrap:wrap">
-              <button class="btn" id="rp-upload">Upload report cards</button>
-              <input type="file" id="rp-files" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.csv,.xlsx,.zip" style="display:none">
+              <button type="button" class="btn secondary" id="rp-format">PDF format</button>
+              <label class="btn ic-upload" id="rp-upload">Upload report cards
+                <input type="file" id="rp-files" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.csv,.xlsx,.zip" aria-label="Upload report card PDFs">
+              </label>
             </div>
           </div>
           <div class="grid grid-3" style="margin-top:14px;gap:10px">
@@ -102,7 +105,17 @@
         </div>
       `;
 
-      this.container.querySelector('#rp-upload').onclick = () => this.container.querySelector('#rp-files').click();
+      this.container.querySelector('#rp-format').onclick = () => this.downloadFormat();
+      const uploadLabel = this.container.querySelector('#rp-upload');
+      if (uploadLabel && !uploadLabel.dataset.bound) {
+        uploadLabel.dataset.bound = '1';
+        uploadLabel.addEventListener('click', (e) => {
+          const input = uploadLabel.querySelector('input[type="file"]');
+          if (!input || e.target === input || input.contains(e.target)) return;
+          e.preventDefault();
+          input.click();
+        });
+      }
       this.container.querySelector('#rp-files').onchange = (e) => this.uploadFiles([...(e.target.files || [])]);
       this.container.querySelector('#rp-term').onchange = (e) => { this.term = e.target.value; this.selected.clear(); this.load(); };
       this.container.querySelector('#rp-year').onchange = (e) => { this.year = e.target.value.trim() || this.year; this.selected.clear(); this.load(); };
@@ -240,6 +253,26 @@
           window.open(`${API.base || ''}/api/reports/${b.dataset.open}/file`, '_blank');
         };
       });
+    }
+
+    /** Named PDFs for this class and term — the format the school uploads. */
+    async downloadFormat() {
+      const q = `term=${encodeURIComponent(this.term)}&year=${encodeURIComponent(this.year)}${this.classId ? `&classId=${encodeURIComponent(this.classId)}` : ''}`;
+      try {
+        const res = await API.raw(`/api/reports/format.zip?${q}`);
+        const blob = await res.blob();
+        const a = document.createElement('a');
+        const safe = `${this.term}-${this.year}`.replace(/[^\w.-]+/g, '-');
+        a.href = URL.createObjectURL(blob);
+        a.download = `report-card-format-${safe}.zip`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+        UI.toast('PDF format downloaded. Keep the file names, then upload the zip.', 'success');
+      } catch (e) {
+        UI.toast(e.message, 'error');
+      }
     }
 
     /** Upload one or many files; a zip is expanded on the server. */

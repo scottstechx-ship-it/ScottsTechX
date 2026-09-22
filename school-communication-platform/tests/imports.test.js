@@ -255,6 +255,19 @@ function cleanupTestData(since, codes) {
   const entries = readZip(packBuf).map((f) => f.name);
   ok(pack.status === 200 && entries.includes('README-FIRST.txt'), 'starter pack downloads and holds the README');
   ok(entries.filter((n) => n.endsWith('.csv')).length >= 8, `starter pack holds every template (${entries.length} files)`);
+  ok(entries.includes('8-report-card-format.pdf'), 'starter pack includes the PDF report-card format');
+
+  const blankPdf = await fetch(`${BASE}/api/imports/report-format.pdf`, { headers: { Authorization: `Bearer ${creds.token}` } });
+  const blankBytes = Buffer.from(await blankPdf.arrayBuffer());
+  ok(blankPdf.status === 200 && blankBytes.slice(0, 5).toString() === '%PDF-', 'a blank PDF report format downloads');
+  ok(blankBytes.includes(Buffer.from('REPORT CARD')), 'the PDF format is a report card, not an empty file');
+
+  const formatZip = await fetch(`${BASE}/api/reports/format.zip?term=${encodeURIComponent(TERM)}&year=${YEAR}`, { headers: { Authorization: `Bearer ${creds.token}` } });
+  const formatBuf = Buffer.from(await formatZip.arrayBuffer());
+  const formatFiles = formatZip.status === 200 ? readZip(formatBuf) : [];
+  ok(formatZip.status === 200 && formatBuf.slice(0, 2).toString() === 'PK', 'the school can download a PDF format pack to upload');
+  ok(formatFiles.some((f) => /README/i.test(f.name)), 'the format pack explains how to name and upload the PDFs');
+  ok(formatFiles.some((f) => f.name.toLowerCase().endsWith('.pdf') && f.data.slice(0, 5).toString() === '%PDF-'), 'the format pack contains a real PDF the school can upload');
 
   // ------------------------------------------------------- a dry run saves nothing
   console.log('\n== dry run vs apply ==');
@@ -403,6 +416,10 @@ function cleanupTestData(since, codes) {
   ok(stepCards[0] && stepCards[0].getAttribute('data-step') === 'timetable', 'the first step on screen is the timetable');
   ok(!!window.document.querySelector('[data-template="timetable"]'), 'each step offers its own template download');
   ok(/Download all templates/.test(icText), 'the whole starter pack can be downloaded in one click');
+  const uploadLabels = [...window.document.querySelectorAll('label.ic-upload')];
+  ok(uploadLabels.length >= 8 && uploadLabels.every((l) => l.querySelector('input[type="file"]')), `every Upload control opens a file picker (${uploadLabels.length})`);
+  ok(!!window.document.querySelector('[data-step="reports"] [data-pdf-format]'), 'report cards offer a PDF format the school can upload');
+  ok(!/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(icText), 'the Import Center does not use emoji');
   const icMarkupShown = /<(svg|path|div|span)\b/.test(icText);
   ok(!icMarkupShown, 'no markup is printed as text on the Import Center');
 

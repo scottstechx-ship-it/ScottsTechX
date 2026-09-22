@@ -37,14 +37,36 @@ function scopedClassIds(user) {
   return [];
 }
 
+/** Turn the stored resource id list into downloadable file rows, in that order. */
+function filesFor(raw) {
+  let ids = raw;
+  if (typeof raw === 'string') {
+    try { ids = JSON.parse(raw || '[]'); } catch { ids = []; }
+  }
+  if (!Array.isArray(ids)) ids = [];
+  ids = [...new Set(ids.map((n) => Number(n)).filter(Boolean))];
+  if (!ids.length) return [];
+  const rows = all(
+    `SELECT id, name, mime_type, size FROM documents WHERE id IN (${ids.map(() => '?').join(',')})`,
+    ids
+  );
+  const byId = new Map(rows.map((r) => [r.id, r]));
+  return ids.map((id) => byId.get(id)).filter(Boolean);
+}
+
 function withSubmissionsCount(assignments, user) {
+  const student = user.role === 'student' ? get('SELECT id FROM students WHERE user_id = ?', [user.id]) : null;
   for (const a of assignments) {
     const count = get('SELECT COUNT(*) c FROM assignment_submissions WHERE assignment_id = ?', [a.id]).c;
     a.submission_count = count;
-    if (user.role === 'student') {
+    a.files = filesFor(a.resources);
+    if (student) {
       const mine = get(
-        'SELECT grade, released, submitted_at FROM assignment_submissions WHERE assignment_id = ? AND student_id = ?',
-        [a.id, get('SELECT id FROM students WHERE user_id = ?', [user.id]).id]
+        `SELECT s.grade, s.released, s.submitted_at, s.content, s.attachment_id, d.name AS attachment_name
+         FROM assignment_submissions s
+         LEFT JOIN documents d ON d.id = s.attachment_id
+         WHERE s.assignment_id = ? AND s.student_id = ?`,
+        [a.id, student.id]
       );
       a.my_submission = mine || null;
     }
@@ -131,6 +153,7 @@ router.get('/:id', authenticate, (req, res) => {
   if (!a) return res.status(404).json({ error: 'Assignment not found.' });
   const scoped = scopedClassIds(req.user);
   if (scoped !== null && !scoped.includes(a.class_id)) return res.status(403).json({ error: 'You do not have access to this assignment.' });
+  a.files = filesFor(a.resources);
   try { a.resources = JSON.parse(a.resources || '[]'); } catch { a.resources = []; }
   const cls = get('SELECT name, stream FROM classes WHERE id = ?', [a.class_id]);
   a.class_name = cls ? `${cls.name} ${cls.stream}` : '';
@@ -152,7 +175,13 @@ router.get('/:id', authenticate, (req, res) => {
   } else if (req.user.role === 'student') {
     const me = get('SELECT id, class_id, full_name FROM students WHERE user_id = ?', [req.user.id]);
     if (me) {
-      const my = get('SELECT * FROM assignment_submissions WHERE assignment_id = ? AND student_id = ?', [id, me.id]);
+      const my = get(
+      `SELECT s.*, d.name AS attachment_name
+       FROM assignment_submissions s
+       LEFT JOIN documents d ON d.id = s.attachment_id
+       WHERE s.assignment_id = ? AND s.student_id = ?`,
+      [id, me.id]
+    );
       if (my && !my.released) {
         // Hide grades/comments until the teacher releases them.
         my.grade = null;
@@ -179,10 +208,13 @@ router.put('/:id', authenticate, requireRole('super_admin', 'admin', 'teacher'),
   const subject = req.body.subject !== undefined ? cleanString(req.body.subject, 120) : a.subject;
   const dueDate = req.body.dueDate !== undefined ? cleanString(req.body.dueDate, 20) : a.due_date;
   const status = req.body.status !== undefined ? cleanString(req.body.status, 20) : a.status;
+  const resources = Array.isArray(req.body.resources)
+    ? JSON.stringify(req.body.resources.map(asInt).filter(Boolean))
+    : a.resources;
   if (dueDate && !/^\d{4}-\d{2}-\d{2}$/.test(dueDate)) return res.status(400).json({ error: 'Due date must be YYYY-MM-DD.' });
   if (status && !['active', 'archived'].includes(status)) return res.status(400).json({ error: 'Invalid status.' });
-  run('UPDATE assignments SET title = ?, description = ?, subject = ?, due_date = ?, status = ?, updated_at = ? WHERE id = ?',
-    [title, description || null, subject || null, dueDate || null, status || 'active', new Date().toISOString(), id]);
+  run('UPDATE assignments SET title = ?, description = ?, subject = ?, due_date = ?, status = ?, resources = ?, updated_at = ? WHERE id = ?',
+    [title, description || null, subject || null, dueDate || null, status || 'active', resources || '[]', new Date().toISOString(), id]);
   log(req.user, 'ASSIGNMENT_UPDATED', `Updated assignment "${title}"`, req.ip);
   res.json({ message: 'Assignment updated.' });
 });
@@ -208,11 +240,22 @@ router.post('/:id/submit', authenticate, requireRole('student'), (req, res) => {
   const me = get('SELECT id, class_id, full_name FROM students WHERE user_id = ?', [req.user.id]);
   if (!me || me.class_id !== a.class_id) return res.status(403).json({ error: 'This assignment is not for your class.' });
   const content = cleanString(req.body.content, 4000);
-  const attachmentId = asInt(req.body.attachmentId);
+  const sentAttachment = asInt(req.body.attachmentId);
+  const previous = get('SELECT attachment_id FROM assignment_submissions WHERE assignment_id = ? AND student_id = ?', [id, me.id]);
+  // A resubmit with no new file keeps the answer the student already attached.
+  const attachmentId = sentAttachment || (previous && previous.attachment_id) || null;
   if (!content && !attachmentId) return res.status(400).json({ error: 'Add some work text or an attachment.' });
-  if (attachmentId) {
-    const doc = get('SELECT * FROM documents WHERE id = ?', [attachmentId]);
+  if (sentAttachment) {
+    const doc = get('SELECT * FROM documents WHERE id = ?', [sentAttachment]);
     if (!doc || doc.uploaded_by !== req.user.id) return res.status(403).json({ error: 'You can only attach your own documents.' });
+    // The class teacher must be able to open the answer. Do not share it with
+    // the rest of the class — it is the student's own work.
+    const teacherIds = new Set(teachersForClass(a.class_id).map((t) => t.userId).filter(Boolean));
+    const owner = get('SELECT user_id FROM teachers WHERE id = ?', [a.teacher_id]);
+    if (owner && owner.user_id) teacherIds.add(owner.user_id);
+    for (const uid of teacherIds) {
+      run('INSERT OR IGNORE INTO document_access (document_id, target_type, target_id) VALUES (?, ?, ?)', [sentAttachment, 'user', String(uid)]);
+    }
   }
   run(
     `INSERT INTO assignment_submissions (assignment_id, student_id, content, attachment_id, submitted_at, updated_at)

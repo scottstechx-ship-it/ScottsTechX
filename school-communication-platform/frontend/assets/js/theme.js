@@ -82,9 +82,7 @@
     function footerHTML() {
       return ''
         + '&copy; 2026 <a href="' + root + '">Kalinabiri Secondary School</a> '
-        + '&middot; Ntinda, Kampala, Uganda '
-        + '&middot; Built with care by '
-        + '<a href="https://fredscottsbulls.github.io/scottechx-site/" target="_blank" rel="noopener">ScottsTechX</a>';
+        + '&middot; Ntinda, Kampala, Uganda';
     }
 
     // ── 4. Mount navbar ─────────────────────────────────────────────

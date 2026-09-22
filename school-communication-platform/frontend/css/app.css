@@ -626,6 +626,93 @@ html[data-theme="dark"] .doc-open { background: #0b1220; }
 .gs-meta-row span { color: var(--muted); flex: none; }
 .gs-meta-row strong { text-align: right; font-weight: 600; word-break: break-word; min-width: 0; }
 
+/* Import Center upload: the file input covers the button so the browser opens
+   the picker. display:none inputs do not open from a button press. */
+label.ic-upload { position: relative; overflow: hidden; cursor: pointer; }
+label.ic-upload input[type="file"] {
+  position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important;
+  margin: 0 !important; padding: 0 !important; opacity: 0 !important; cursor: pointer;
+  /* a large font makes the native control cover the button; font-size:0 does not receive clicks */
+  font-size: 100px !important; border: 0 !important; min-height: 100% !important;
+}
+label.ic-upload:focus-within { outline: 2px solid var(--primary); outline-offset: 2px; }
+.ic-row {
+  display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap;
+  padding: 6px 0; border-top: 1px solid var(--border); font-size: 13px;
+}
+.ic-note { font-size: 12px; color: var(--danger); flex: 1 1 180px; }
+.ic-note.muted { color: var(--muted); }
+
+/* ---------- attendance register: the filled button is the one that is selected ----------
+   Present, absent, late and permission must never share one blue fill, or the
+   teacher cannot tell which mark will be saved. */
+.att-legend { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 10px; }
+.att-legend span { font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--border); }
+.att-picks { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.att-status {
+  appearance: none; border: 2px solid var(--border); background: var(--card); color: var(--text);
+  font-weight: 800; font-size: 12.5px; border-radius: 999px; padding: 7px 12px; cursor: pointer;
+  min-height: 36px; line-height: 1.1;
+}
+.att-status[data-status="present"] { color: #15803d; border-color: #86efac; background: #f0fdf4; }
+.att-status[data-status="absent"] { color: #b91c1c; border-color: #fca5a5; background: #fff1f2; }
+.att-status[data-status="late"] { color: #b45309; border-color: #fcd34d; background: #fffbeb; }
+.att-status[data-status="permission"] { color: #1d4ed8; border-color: #93c5fd; background: #eff6ff; }
+.att-status.is-on { color: #fff; box-shadow: 0 0 0 3px rgba(15, 23, 42, .12); }
+.att-status.is-on::before { content: "✓ "; }
+.att-status.is-on[data-status="present"] { background: #16a34a; border-color: #14532d; }
+.att-status.is-on[data-status="absent"] { background: #dc2626; border-color: #7f1d1d; }
+.att-status.is-on[data-status="late"] { background: #d97706; border-color: #78350f; }
+.att-status.is-on[data-status="permission"] { background: #2563eb; border-color: #1e3a8a; }
+.att-picked { font-size: 12px; font-weight: 800; margin-top: 3px; }
+.att-picked[data-pick="present"] { color: #15803d; }
+.att-picked[data-pick="absent"] { color: #b91c1c; }
+.att-picked[data-pick="late"] { color: #b45309; }
+.att-picked[data-pick="permission"] { color: #1d4ed8; }
+.btn.att-bulk { background: var(--card); }
+.btn.att-bulk.present { color: #15803d; border: 2px solid #16a34a; }
+.btn.att-bulk.absent { color: #b91c1c; border: 2px solid #dc2626; }
+.btn.att-bulk.present:hover { background: #dcfce7; color: #15803d; }
+.btn.att-bulk.absent:hover { background: #fee2e2; color: #b91c1c; }
+.btn.att-bulk.present.is-on, .btn.att-bulk.present.is-on:hover { background: #16a34a; color: #fff; border-color: #14532d; }
+.btn.att-bulk.absent.is-on, .btn.att-bulk.absent.is-on:hover { background: #dc2626; color: #fff; border-color: #7f1d1d; }
+html[data-theme="dark"] .att-status[data-status="present"] { background: #14351f; color: #86efac; border-color: #166534; }
+html[data-theme="dark"] .att-status[data-status="absent"] { background: #3d1616; color: #fca5a5; border-color: #7f1d1d; }
+html[data-theme="dark"] .att-status[data-status="late"] { background: #3a2c10; color: #fcd34d; border-color: #78350f; }
+html[data-theme="dark"] .att-status[data-status="permission"] { background: #1e3a5f; color: #93c5fd; border-color: #1e3a8a; }
+html[data-theme="dark"] .att-picked[data-pick="present"] { color: #86efac; }
+html[data-theme="dark"] .att-picked[data-pick="absent"] { color: #fca5a5; }
+html[data-theme="dark"] .att-picked[data-pick="late"] { color: #fcd34d; }
+html[data-theme="dark"] .att-picked[data-pick="permission"] { color: #93c5fd; }
+html[data-theme="dark"] .btn.att-bulk.present:hover { background: #14351f; }
+html[data-theme="dark"] .btn.att-bulk.absent:hover { background: #3d1616; }
+
+/* assignment: teacher materials on one side, the student's answer on the other */
+.as-side { margin-top: 10px; padding: 12px; border-radius: 12px; border: 1px solid var(--border); }
+.as-side.teacher { border-left: 4px solid #2563eb; background: var(--primary-light); }
+.as-side.student { border-left: 4px solid #16a34a; background: var(--success-light); }
+.as-side h4 { margin: 0 0 6px; font-size: 13.5px; }
+.as-brief { white-space: pre-wrap; font-size: 13.5px; color: var(--ink); background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+.as-brief.clamp { max-height: 4.6em; overflow: hidden; }
+.as-file { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; padding: 8px 10px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); }
+.as-file span { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+.as-file .btn { flex: none; white-space: nowrap; }
+/* the answer button sits beside a tall brief — keep it button-sized */
+.as-card { align-items: flex-start; }
+.as-card .doc-actions { align-self: flex-start; flex: none; }
+.as-attach { margin-top: 8px; }
+.as-attach-label { font-weight: 700; font-size: 13px; color: var(--ink); margin-bottom: 6px; }
+label.as-pick { position: relative; overflow: hidden; cursor: pointer; width: auto; margin: 0; }
+label.as-pick input[type="file"] {
+  position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important;
+  margin: 0 !important; padding: 0 !important; opacity: 0 !important; cursor: pointer;
+  font-size: 16px !important; border: 0 !important; min-height: 0 !important; background: transparent !important;
+}
+@media (max-width: 640px) {
+  .as-card { flex-direction: column; }
+  .as-card .doc-actions { margin-left: 0; }
+}
+
 /* phones: the box becomes an icon that expands into a full-width overlay */
 @media (max-width: 900px) {
   .global-search { display: none; }

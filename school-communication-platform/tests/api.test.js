@@ -75,10 +75,7 @@ test('demo accounts can log in with the correct role', async () => {
     ['superadmin', 'SuperAdmin@123', 'super_admin'],
     ['admin', 'Admin@123', 'admin'],
     ['teacher1', 'Teacher@123', 'teacher'],
-    ['teacher2', 'Teacher@123', 'teacher'],
-    ['teacher3', 'Teacher@123', 'teacher'],
     ['student1', 'Student@123', 'student'],
-    ['student2', 'Student@123', 'student'],
     ['parent1', 'Parent@123', 'parent'],
   ];
   for (const [u, p, role] of cases) {
@@ -87,6 +84,36 @@ test('demo accounts can log in with the correct role', async () => {
     assert.strictEqual(me.data.user.role, role, `${u} role`);
     assert.strictEqual(me.status, 200);
   }
+  for (const gone of ['teacher2', 'teacher3', 'student2', 'student3', 'student4', 'student5', 'student6']) {
+    const r = await api('/api/auth/login', { method: 'POST', body: { username: gone, password: 'Teacher@123' } });
+    assert.strictEqual(r.status, 401, `${gone} should not be a demo account`);
+  }
+});
+
+test('demo catalog is S.1A–S.6B, and only the five demo accounts', async () => {
+  const classes = await api('/api/classes', { token: tokens.admin });
+  assert.strictEqual(classes.status, 200, JSON.stringify(classes.data));
+  const labels = classes.data.classes.map((c) => `${c.name} ${c.stream}`);
+  assert.ok(!labels.some((l) => /primary/i.test(l)), 'Primary 7 must not be seeded');
+  for (const level of ['Senior 1', 'Senior 2', 'Senior 3', 'Senior 4', 'Senior 5', 'Senior 6']) {
+    for (const stream of ['A', 'B']) {
+      assert.ok(labels.includes(`${level} ${stream}`), `missing ${level} ${stream}`);
+    }
+  }
+  assert.strictEqual(labels.length, 12);
+  const users = await api('/api/users?limit=200', { token: tokens.superadmin });
+  const names = users.data.users.map((u) => u.username);
+  for (const keep of ['admin', 'parent1', 'student1', 'superadmin', 'teacher1']) {
+    assert.ok(names.includes(keep), `missing demo account ${keep}`);
+  }
+  for (const gone of ['teacher2', 'teacher3', 'student2', 'student3', 'student4', 'student5', 'student6']) {
+    assert.ok(!names.includes(gone), `${gone} should not be seeded`);
+  }
+  const kids = await api('/api/parents/children', { token: tokens.parent1 });
+  assert.strictEqual(kids.data.children.length, 1);
+  assert.strictEqual(kids.data.children[0].student_code, 'STU-2024-001');
+  assert.strictEqual(kids.data.children[0].class_name, 'Senior 2');
+  assert.strictEqual(kids.data.children[0].stream, 'A');
 });
 
 test('wrong password is rejected with a friendly message', async () => {
@@ -168,16 +195,22 @@ test('parent may message their child\'s class teacher', async () => {
 });
 
 test('parent cannot message a student directly', async () => {
+  const student = (await api('/api/auth/me', { token: tokens.student1 })).data.user;
   const r = await api('/api/messages/conversations', {
-    method: 'POST', token: tokens.parent1, body: { type: 'direct', participantId: 6 }, // student1 user id = 6
+    method: 'POST', token: tokens.parent1, body: { type: 'direct', participantId: student.id },
   });
   assert.strictEqual(r.status, 403);
 });
 
 test('student cannot message a teacher of another class', async () => {
-  // student2 (S.5A) trying to reach teacher3 (Grace, S.4A) — user id 5
+  // A teacher assigned only to Senior 1 A — not Sarah's Senior 2 A.
+  const created = await api('/api/teachers', {
+    method: 'POST', token: tokens.admin,
+    body: { fullName: 'Other Stream Teacher', classIds: [1], email: 'other.stream@test.local' },
+  });
+  assert.strictEqual(created.status, 201, JSON.stringify(created.data));
   const r = await api('/api/messages/conversations', {
-    method: 'POST', token: tokens.student2, body: { type: 'direct', participantId: 5 },
+    method: 'POST', token: tokens.student1, body: { type: 'direct', participantId: created.data.teacher.user_id },
   });
   assert.strictEqual(r.status, 403);
 });
@@ -214,7 +247,7 @@ test('non-participants cannot read a conversation', async () => {
     method: 'POST', token: tokens.parent1, body: { type: 'direct', participantId: 3 },
   });
   const convId = conv.data.conversation.id;
-  const r = await api(`/api/messages/conversations/${convId}`, { token: tokens.student2 });
+  const r = await api(`/api/messages/conversations/${convId}`, { token: tokens.student1 });
   assert.strictEqual(r.status, 403);
 });
 
@@ -237,10 +270,9 @@ test('document upload, sharing, scoped listing and download', async () => {
   const dl = await api(`/api/documents/${docId}/download`, { token: tokens.student1 });
   assert.strictEqual(dl.status, 200);
 
-  // non-granted user: use a teacher account not granted anything (teacher3, S.4A)
-  const tokenT3 = await login('teacher3', 'Teacher@123');
-  const denied = await api(`/api/documents/${docId}/download`, { token: tokenT3 });
-  assert.strictEqual(denied.status, 403, 'teacher without access must be denied');
+  // shared with the student role only — a parent is not granted it
+  const denied = await api(`/api/documents/${docId}/download`, { token: tokens.parent1 });
+  assert.strictEqual(denied.status, 403, 'parent without access must be denied');
 
   // delete
   const del = await api(`/api/documents/${docId}`, { method: 'DELETE', token: tokens.admin });
@@ -256,32 +288,40 @@ test('rejecting an invalid file type', async () => {
 
 // ---------------------------------------------------------------- announcements
 test('teacher class announcement reaches that class only (students, teachers, parents)', async () => {
-  // teacher2 (John) is the class teacher of Senior 5 A (class id 6). Only he may post it.
+  // teacher1 teaches Senior 2 A (class id 3). Only she may post to it.
   const created = await api('/api/announcements', {
-    method: 'POST', token: tokens.teacher2,
-    body: { title: 'English Essay Due Friday', content: 'Submit your essay by 4pm.', targetType: 'class', targetValue: '6', important: false },
+    method: 'POST', token: tokens.teacher1,
+    body: { title: 'Senior 2A Class Notice', content: 'Bring your textbook tomorrow.', targetType: 'class', targetValue: '3', important: false },
   });
   assert.strictEqual(created.status, 201, JSON.stringify(created.data));
 
-  // student2 (David, S.5A) sees it
-  const s2 = await api('/api/announcements', { token: tokens.student2 });
-  assert.ok(s2.data.announcements.some((a) => a.title === 'English Essay Due Friday'));
-
-  // student1 (Sarah, S.2A) does NOT see it
   const s1 = await api('/api/announcements', { token: tokens.student1 });
-  assert.ok(!s1.data.announcements.some((a) => a.title === 'English Essay Due Friday'));
+  assert.ok(s1.data.announcements.some((a) => a.title === 'Senior 2A Class Notice'));
 
-  // teacher2 (the sender) sees it
-  const t2ann = await api('/api/announcements', { token: tokens.teacher2 });
-  assert.ok(t2ann.data.announcements.some((a) => a.title === 'English Essay Due Friday'));
-
-  // teacher1 (Mary, S.2A only) does NOT see it
   const t1ann = await api('/api/announcements', { token: tokens.teacher1 });
-  assert.ok(!t1ann.data.announcements.some((a) => a.title === 'English Essay Due Friday'));
+  assert.ok(t1ann.data.announcements.some((a) => a.title === 'Senior 2A Class Notice'));
 
-  // parent1 (David's parent) sees it
   const p1 = await api('/api/parents/announcements', { token: tokens.parent1 });
-  assert.ok(p1.data.announcements.some((a) => a.title === 'English Essay Due Friday'));
+  assert.ok(p1.data.announcements.some((a) => a.title === 'Senior 2A Class Notice'));
+
+  // A notice for Senior 1 A must not reach Sarah, her teacher, or her parent.
+  const other = await api('/api/announcements', {
+    method: 'POST', token: tokens.admin,
+    body: { title: 'Senior 1A Only Notice', content: 'For Senior 1 A only.', targetType: 'class', targetValue: '1', important: false },
+  });
+  assert.strictEqual(other.status, 201, JSON.stringify(other.data));
+  const s1b = await api('/api/announcements', { token: tokens.student1 });
+  assert.ok(!s1b.data.announcements.some((a) => a.title === 'Senior 1A Only Notice'));
+  const t1b = await api('/api/announcements', { token: tokens.teacher1 });
+  assert.ok(!t1b.data.announcements.some((a) => a.title === 'Senior 1A Only Notice'));
+  const p1b = await api('/api/parents/announcements', { token: tokens.parent1 });
+  assert.ok(!p1b.data.announcements.some((a) => a.title === 'Senior 1A Only Notice'));
+
+  const denied = await api('/api/announcements', {
+    method: 'POST', token: tokens.teacher1,
+    body: { title: 'Not my class', content: 'no', targetType: 'class', targetValue: '6' },
+  });
+  assert.strictEqual(denied.status, 403);
 });
 
 test('teachers cannot post school-wide announcements', async () => {
@@ -329,7 +369,7 @@ test('admins cannot change settings', async () => {
 });
 
 test('audit log records logins and super admin can browse it', async () => {
-  await login('teacher2', 'Teacher@123');
+  await login('teacher1', 'Teacher@123');
   const logs = await api('/api/logs?limit=50', { token: tokens.superadmin });
   assert.strictEqual(logs.status, 200);
   assert.ok(logs.data.logs.some((l) => l.action === 'LOGIN'));
@@ -499,13 +539,13 @@ test('notification preferences gate in-app notifications', async () => {
     method: 'PUT', token: tokens.superadmin,
     body: { newDocument: false },
   });
-  const before = await api('/api/notifications/unread-count', { token: tokens.student2 });
+  const before = await api('/api/notifications/unread-count', { token: tokens.student1 });
   const file = Buffer.from('notice for prefs test');
   const form = new FormData();
   form.append('file', new Blob([file]), 'prefs-notice.txt');
   form.append('share', JSON.stringify([{ targetType: 'role', targetId: 'student' }]));
   await api('/api/documents', { method: 'POST', token: tokens.admin, form });
-  const after = await api('/api/notifications/unread-count', { token: tokens.student2 });
+  const after = await api('/api/notifications/unread-count', { token: tokens.student1 });
   assert.strictEqual(after.data.unread, before.data.unread, 'no notification should be created when disabled');
 
   // re-enable
@@ -546,10 +586,10 @@ test('subjects CRUD (admin) and read (teacher)', async () => {
 
 test('attendance: teacher marks own class, cannot mark another', async () => {
   // teacher1 (Mary) teaches S.2A (class 3)
-  const ok = await api('/api/attendance', { method: 'POST', token: tokens.teacher1, body: { classId: 3, date: '2026-08-14', records: [{ studentId: 1, status: 'present' }, { studentId: 4, status: 'absent' }] } });
+  const ok = await api('/api/attendance', { method: 'POST', token: tokens.teacher1, body: { classId: 3, date: '2026-08-14', records: [{ studentId: 1, status: 'present' }] } });
   assert.strictEqual(ok.status, 200, JSON.stringify(ok.data));
-  assert.strictEqual(ok.data.marked, 2);
-  // teacher1 does not teach S.5A (class 6)
+  assert.strictEqual(ok.data.marked, 1);
+  // teacher1 does not teach Senior 3 B (class 6)
   const denied = await api('/api/attendance', { method: 'POST', token: tokens.teacher1, body: { classId: 6, date: '2026-08-14', records: [{ studentId: 2, status: 'present' }] } });
   assert.strictEqual(denied.status, 403);
 });
@@ -558,8 +598,12 @@ test('attendance: parents see only their own children; summary works', async () 
   const summary = await api('/api/attendance/summary/student/1', { token: tokens.parent1 });
   assert.strictEqual(summary.status, 200);
   assert.ok(summary.data.total >= 1);
-  // parent1 is not linked to student 5 (Brian) — no access
-  const denied = await api('/api/attendance/summary/student/5', { token: tokens.parent1 });
+  const otherStudent = await api('/api/students', {
+    method: 'POST', token: tokens.admin,
+    body: { fullName: 'Unlinked Attendance Child', studentCode: 'STU-ATT-UNLINK', classId: 1 },
+  });
+  assert.strictEqual(otherStudent.status, 201, JSON.stringify(otherStudent.data));
+  const denied = await api(`/api/attendance/summary/student/${otherStudent.data.student.id}`, { token: tokens.parent1 });
   assert.strictEqual(denied.status, 403);
   // student sees own only
   const own = await api('/api/attendance?studentId=1', { token: tokens.student1 });
@@ -604,6 +648,72 @@ test('assignments: create, submit, grade, publish with notifications', async () 
   assert.strictEqual(denied.status, 403);
 });
 
+test('assignment files go both ways: teacher worksheet and student answer', async () => {
+  const sheet = new FormData();
+  sheet.append('file', new Blob(['Solve questions 1 to 4.'], { type: 'text/plain' }), 'worksheet.txt');
+  sheet.append('share', JSON.stringify([{ targetType: 'class', targetId: '3' }]));
+  const up = await api('/api/documents', { method: 'POST', token: tokens.teacher1, form: sheet });
+  assert.strictEqual(up.status, 201, JSON.stringify(up.data));
+
+  const created = await api('/api/assignments', {
+    method: 'POST', token: tokens.teacher1,
+    body: {
+      title: 'Worksheet with file',
+      classId: 3,
+      subject: 'Mathematics',
+      description: 'Read the worksheet, then send your working.',
+      dueDate: '2026-09-20',
+      resources: [up.data.document.id],
+    },
+  });
+  assert.strictEqual(created.status, 201, JSON.stringify(created.data));
+  const id = created.data.assignment.id;
+
+  const seen = await api(`/api/assignments/${id}`, { token: tokens.student1 });
+  assert.strictEqual(seen.status, 200);
+  assert.match(seen.data.assignment.description, /Read the worksheet/);
+  assert.ok(seen.data.assignment.files.some((f) => f.id === up.data.document.id && f.name === 'worksheet.txt'));
+  const studentSheet = await api(`/api/documents/${up.data.document.id}/download`, { token: tokens.student1 });
+  assert.strictEqual(studentSheet.status, 200, 'student must be able to open the teacher file');
+
+  const ans = new FormData();
+  ans.append('file', new Blob(['My working: x = 2'], { type: 'text/plain' }), 'my-answer.txt');
+  const ansUp = await api('/api/documents', { method: 'POST', token: tokens.student1, form: ans });
+  assert.strictEqual(ansUp.status, 201, JSON.stringify(ansUp.data));
+  const beforeShare = await api(`/api/documents/${ansUp.data.document.id}/download`, { token: tokens.teacher1 });
+  assert.strictEqual(beforeShare.status, 403, 'teacher cannot open an answer that has not been submitted');
+
+  const sub = await api(`/api/assignments/${id}/submit`, {
+    method: 'POST', token: tokens.student1,
+    body: { content: 'See attached working.', attachmentId: ansUp.data.document.id },
+  });
+  assert.strictEqual(sub.status, 200, JSON.stringify(sub.data));
+  const graded = await api(`/api/assignments/${id}`, { token: tokens.teacher1 });
+  const submission = graded.data.assignment.submissions[0];
+  assert.strictEqual(submission.attachment_name, 'my-answer.txt');
+  assert.strictEqual(submission.content, 'See attached working.');
+  const teacherDl = await api(`/api/documents/${ansUp.data.document.id}/download`, { token: tokens.teacher1 });
+  assert.strictEqual(teacherDl.status, 200, 'teacher must be able to open the student answer file');
+
+  const classmate = await api('/api/students', {
+    method: 'POST', token: tokens.admin,
+    body: { fullName: 'Classmate Answer Check', studentCode: 'STU-ANS-CLASS', classId: 3, username: 'ansclass', password: 'Classmate@123' },
+  });
+  assert.strictEqual(classmate.status, 201, JSON.stringify(classmate.data));
+  const classmateToken = await login('ansclass', 'Classmate@123');
+  const leaked = await api(`/api/documents/${ansUp.data.document.id}/download`, { token: classmateToken });
+  assert.strictEqual(leaked.status, 403, 'a classmate must not open another student answer');
+
+  const again = await api(`/api/assignments/${id}/submit`, {
+    method: 'POST', token: tokens.student1,
+    body: { content: 'Updated the written part only.' },
+  });
+  assert.strictEqual(again.status, 200, JSON.stringify(again.data));
+  const kept = await api(`/api/assignments/${id}`, { token: tokens.teacher1 });
+  assert.strictEqual(kept.data.assignment.submissions[0].attachment_name, 'my-answer.txt');
+  assert.strictEqual(kept.data.assignment.submissions[0].content, 'Updated the written part only.');
+});
+
 test('exams: draft -> marks -> completed -> published (admin only)', async () => {
   const created = await api('/api/exams', { method: 'POST', token: tokens.teacher1, body: { title: 'End Term Science', classId: 3, subject: 'Science', date: '2026-09-05' } });
   assert.strictEqual(created.status, 201);
@@ -614,7 +724,7 @@ test('exams: draft -> marks -> completed -> published (admin only)', async () =>
   assert.ok(!hidden.data.exams.some((e) => e.id === id));
 
   // enter marks
-  const marks = await api(`/api/exams/${id}/results`, { method: 'PUT', token: tokens.teacher1, body: { results: [{ studentId: 1, marks: 82 }, { studentId: 4, marks: 65 }] } });
+  const marks = await api(`/api/exams/${id}/results`, { method: 'PUT', token: tokens.teacher1, body: { results: [{ studentId: 1, marks: 82 }] } });
   assert.strictEqual(marks.status, 200);
   const exam = await api(`/api/exams/${id}`, { token: tokens.teacher1 });
   assert.strictEqual(exam.data.exam.status, 'completed');
@@ -633,15 +743,16 @@ test('exams: draft -> marks -> completed -> published (admin only)', async () =>
 
   // parent sees only own child's results
   const parentView = await api(`/api/exams/${id}`, { token: tokens.parent1 });
-  assert.ok(parentView.data.exam.results.every((r) => r.student_id === 1 || r.student_id === 2 || r.student_id === 3));
+  assert.ok(parentView.data.exam.results.length >= 1);
+  assert.ok(parentView.data.exam.results.every((r) => r.student_id === 1));
 });
 
 test('timetable: conflict prevention and class scoping', async () => {
   const first = await api('/api/timetable', { method: 'POST', token: tokens.admin, body: { classId: 3, subject: 'Maths', teacherId: 1, room: 'R1', day: 'Monday', startTime: '08:00', endTime: '09:00' } });
   assert.strictEqual(first.status, 201);
-  const conflict = await api('/api/timetable', { method: 'POST', token: tokens.admin, body: { classId: 3, subject: 'English', teacherId: 2, room: 'R2', day: 'Monday', startTime: '08:30', endTime: '09:30' } });
+  const conflict = await api('/api/timetable', { method: 'POST', token: tokens.admin, body: { classId: 3, subject: 'English', teacherId: 1, room: 'R2', day: 'Monday', startTime: '08:30', endTime: '09:30' } });
   assert.strictEqual(conflict.status, 409);
-  const okNonConflict = await api('/api/timetable', { method: 'POST', token: tokens.admin, body: { classId: 3, subject: 'English', teacherId: 2, room: 'R2', day: 'Tuesday', startTime: '08:00', endTime: '09:00' } });
+  const okNonConflict = await api('/api/timetable', { method: 'POST', token: tokens.admin, body: { classId: 3, subject: 'English', teacherId: 1, room: 'R2', day: 'Tuesday', startTime: '08:00', endTime: '09:00' } });
   assert.strictEqual(okNonConflict.status, 201);
   // teacher sees only their classes
   const t = await api('/api/timetable?classId=3', { token: tokens.teacher1 });
@@ -653,7 +764,7 @@ test('timetable: conflict prevention and class scoping', async () => {
 test('fees: structure, assignment, payment, balances and visibility', async () => {
   const created = await api('/api/fees/structures', { method: 'POST', token: tokens.admin, body: { name: 'Tuition Term 2', amount: 500000, academicYear: '2026', assign: true } });
   assert.strictEqual(created.status, 201, JSON.stringify(created.data));
-  assert.ok(created.data.assigned >= 6);
+  assert.ok(created.data.assigned >= 1);
 
   // student 1 fee summary
   const s1 = await api('/api/fees/student/1', { token: tokens.parent1 });
@@ -670,16 +781,18 @@ test('fees: structure, assignment, payment, balances and visibility', async () =
   assert.strictEqual(after.data.totalPaid, 200000);
   assert.strictEqual(after.data.balance, after.data.totalDue - 200000);
 
-  // parent of another student cannot see student 1 fees? parent1 IS linked to student1.
-  // use a fresh parent-less check: student2's parent? parent1 is not linked to student5 (Brian) via seed.
-  // parent1 -> linked to students 1,2,3 only. check student 5:
-  const other = await api('/api/fees/student/5', { token: tokens.parent1 });
+  const unlinked = await api('/api/students', {
+    method: 'POST', token: tokens.admin,
+    body: { fullName: 'Unlinked Fees Child', studentCode: 'STU-FEE-UNLINK', classId: 1 },
+  });
+  assert.strictEqual(unlinked.status, 201, JSON.stringify(unlinked.data));
+  const other = await api(`/api/fees/student/${unlinked.data.student.id}`, { token: tokens.parent1 });
   assert.strictEqual(other.status, 403);
 
   // students see their own fees only
   const self = await api('/api/fees/student/1', { token: tokens.student1 });
   assert.strictEqual(self.status, 200);
-  const otherStu = await api('/api/fees/student/2', { token: tokens.student1 });
+  const otherStu = await api(`/api/fees/student/${unlinked.data.student.id}`, { token: tokens.student1 });
   assert.strictEqual(otherStu.status, 403);
 });
 
@@ -879,7 +992,12 @@ test('parent self-registration → student codes → pending blocked → approve
 });
 
 test('rejected parents cannot log in', async () => {
-  const reg = await api('/api/auth/register', { method: 'POST', body: { fullName: 'Mr. Reject Me', email: 'rejectme@test.local', studentCodes: 'STU-2024-002' } });
+  const child = await api('/api/students', {
+    method: 'POST', token: tokens.admin,
+    body: { fullName: 'Reject Child', studentCode: 'STU-REJ-002', classId: 1 },
+  });
+  assert.strictEqual(child.status, 201, JSON.stringify(child.data));
+  const reg = await api('/api/auth/register', { method: 'POST', body: { fullName: 'Mr. Reject Me', email: 'rejectme@test.local', studentCodes: 'STU-REJ-002' } });
   assert.strictEqual(reg.status, 200, JSON.stringify(reg.data));
   const pending = await api('/api/parents/pending', { token: tokens.admin });
   const row = pending.data.pending.find((p) => p.email === 'rejectme@test.local');

@@ -1,133 +1,100 @@
 /**
- * Background film — one layer per section, clipped by that section.
+ * Background film - the upper part of a page only.
  *
- * The footage sits INSIDE the sections that are meant to show it: every layer
- * is absolutely positioned inside its own section and clipped by its own box
- * (see .bg-film in site-nav.css), so the video can never spill out of the top
- * of its container or run down over the content below it. The old version was
- * a single viewport-fixed layer for the whole document, which is exactly what
- * read as "the video has escaped its section".
+ * One clip, clipped inside the first hero or page header. It never continues
+ * into the sections below, and it never sits behind the photo galleries.
+ * The gallery page has no film at all. Everything under the hero is a classic
+ * panel over the shared 3D field (see .stx-depth in site-nav.js).
  *
- * Sections that show the footage sharply:
- *   .bg-clear            the home page's film sections
- *   .page-header, .adm-hero, .news-hero, .page-hero, .about-hero
- *                        the inner pages' header media
- * Sections that show it blurred (frosted panels):
- *   .bg-blur, .section:not(.section-gray), .about-section:not(.alt-bg),
- *   .adm-section, .news-wrap, .gallery-section, .news-grid
- *
- * A page picks up to three layers (one on phones). Only the layer on screen
- * plays; the others stay as still frames. Skipped for data-saver and
- * reduced-motion visitors; a layer removes itself if the file cannot play,
- * leaving that section's own background in place.
+ * Skipped for data-saver and reduced-motion visitors. If the file cannot
+ * play, the layer removes itself and the hero's own background stays.
  */
 (function () {
   'use strict';
 
   var SRC = '/assets/video/kalinabiri-kalibz-intro.mp4';
-
-  var SHARP = '.bg-clear, .page-header, .adm-hero, .news-hero, .page-hero, .about-hero';
-  var SOFT = '.bg-blur, .section:not(.section-gray), .about-section:not(.alt-bg), ' +
-             '.adm-section, .news-wrap, .gallery-section, .news-grid';
+  var HERO = '.hero.bg-clear, .page-header, .adm-hero, .news-hero, .page-hero, .about-hero';
 
   var conn = navigator.connection || {};
   if (conn.saveData || /(^|-)2g$/.test(conn.effectiveType || '')) return;
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  var small = window.matchMedia && window.matchMedia('(max-width: 700px)').matches;
-  var MAX_LAYERS = small ? 1 : 4;   // phones keep one layer: fastest, and enough
+  function isGalleryPage() {
+    var path = (location.pathname || '').replace(/\/index\.html$/, '');
+    if (path.length > 1 && path.charAt(path.length - 1) === '/') path = path.slice(0, -1);
+    return path === '/gallery';
+  }
 
   function collect(selector) {
     return Array.prototype.slice.call(document.querySelectorAll(selector)).filter(function (el) {
-      return !el.closest('.kn-nav, .kn-drawer');
+      if (!el || (el.closest && el.closest('.kn-nav, .kn-drawer'))) return false;
+      if (el.id === 'gallery') return false;
+      if (el.classList && (el.classList.contains('gallery-section') || el.classList.contains('photo-stage'))) return false;
+      if (el.closest && el.closest('#gallery, .gallery-section, .photo-stage, .stx-stage')) return false;
+      return true;
     });
   }
 
-  function inDocumentOrder(list) {
-    return list.sort(function (a, b) {
-      var pos = a.compareDocumentPosition(b);
-      if (pos & Node.DOCUMENT_POSITION_FOLLOWING) return -1;
-      if (pos & Node.DOCUMENT_POSITION_PRECEDING) return 1;
-      return 0;
-    });
-  }
-
-  function pickSections() {
-    var picked = inDocumentOrder(collect(SHARP));
-    if (picked.length >= MAX_LAYERS) return picked.slice(0, MAX_LAYERS);
-
-    collect(SOFT).forEach(function (el) {
-      if (picked.indexOf(el) === -1) picked.push(el);
-    });
-    return inDocumentOrder(picked).slice(0, MAX_LAYERS);
+  function pickSection() {
+    if (isGalleryPage()) return null;
+    var heroes = collect(HERO);
+    return heroes.length ? heroes[0] : null;
   }
 
   function build() {
-    var layers = [];
+    var section = pickSection();
+    if (!section || section.querySelector('.bg-film')) return;
 
-    pickSections().forEach(function (section, index) {
-      if (section.querySelector('.bg-film')) return;
-      if (window.getComputedStyle(section).position === 'static') section.style.position = 'relative';
+    if (window.getComputedStyle(section).position === 'static') section.style.position = 'relative';
 
-      var wrap = document.createElement('div');
-      wrap.className = 'bg-film';
-      wrap.setAttribute('aria-hidden', 'true');
-      // frosted sections get the footage blurred; an explicit .bg-clear wins
-      if (!section.matches(SHARP) && section.matches(SOFT)) wrap.className += ' is-soft';
+    var wrap = document.createElement('div');
+    wrap.className = 'bg-film';
+    wrap.setAttribute('aria-hidden', 'true');
 
-      var video = document.createElement('video');
-      video.muted = true;
-      video.defaultMuted = true;
-      video.loop = true;
-      video.autoplay = true;
-      video.setAttribute('muted', '');
-      video.setAttribute('playsinline', '');
-      video.setAttribute('preload', index === 0 ? 'auto' : 'metadata');
-      video.setAttribute('disablepictureinpicture', '');
-      video.setAttribute('tabindex', '-1');
-      video.setAttribute('aria-hidden', 'true');
-      video.src = SRC;
+    var video = document.createElement('video');
+    video.muted = true;
+    video.defaultMuted = true;
+    video.loop = true;
+    video.autoplay = true;
+    video.setAttribute('muted', '');
+    video.setAttribute('playsinline', '');
+    video.setAttribute('preload', 'auto');
+    video.setAttribute('disablepictureinpicture', '');
+    video.setAttribute('tabindex', '-1');
+    video.setAttribute('aria-hidden', 'true');
+    video.src = SRC;
 
-      wrap.appendChild(video);
-      section.insertBefore(wrap, section.firstChild);
+    wrap.appendChild(video);
+    section.insertBefore(wrap, section.firstChild);
 
-      var layer = { wrap: wrap, video: video, section: section, visible: false };
-      layers.push(layer);
-
-      video.addEventListener('loadeddata', function () { wrap.classList.add('is-ready'); });
-      video.addEventListener('playing', function () { wrap.classList.add('is-ready'); });
-      video.addEventListener('error', function () { wrap.remove(); });
-    });
-
-    if (!layers.length) return;
-
-    function play(layer) {
-      var started = layer.video.play();
+    var visible = false;
+    function play() {
+      var started = video.play();
       if (started && started.catch) started.catch(function () { /* autoplay refused */ });
     }
+
+    video.addEventListener('loadeddata', function () { wrap.classList.add('is-ready'); });
+    video.addEventListener('playing', function () { wrap.classList.add('is-ready'); });
+    video.addEventListener('error', function () { wrap.remove(); });
 
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
-          layers.forEach(function (layer) {
-            if (layer.section !== entry.target) return;
-            layer.visible = entry.isIntersecting;
-            if (entry.isIntersecting) play(layer);
-            else layer.video.pause();
-          });
+          if (entry.target !== section) return;
+          visible = entry.isIntersecting;
+          if (entry.isIntersecting) play();
+          else video.pause();
         });
       }, { rootMargin: '15% 0px' });
-      layers.forEach(function (layer) { io.observe(layer.section); });
+      io.observe(section);
     } else {
-      // no observer: play the first layer, leave the rest as still frames
-      play(layers[0]);
+      play();
+      visible = true;
     }
 
     document.addEventListener('visibilitychange', function () {
-      layers.forEach(function (layer) {
-        if (document.hidden) { layer.video.pause(); return; }
-        if (layer.visible) play(layer);
-      });
+      if (document.hidden) { video.pause(); return; }
+      if (visible) play();
     });
   }
 

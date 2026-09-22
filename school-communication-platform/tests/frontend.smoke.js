@@ -126,7 +126,7 @@ async function switchView(w, key) {
     check('boots without JS errors', errors.length === 0, errors.slice(0, 3).join(' | '));
     check('home shows welcome', /WELCOME, MR\./.test(text) || /Welcome, MR\./.test(text));
     check('child selector shown', text.includes('SELECT CHILD'));
-    check('children listed', text.includes('Sarah') && text.includes('David') && text.includes('Michael'));
+    check('children listed', text.includes('Sarah') && !text.includes('David') && !text.includes('Michael'));
     const messagesText = await switchView(window, 'messages');
     check('messages view renders (chat UI)', messagesText.includes('Messages'));
     const childrenText = await switchView(window, 'children');
