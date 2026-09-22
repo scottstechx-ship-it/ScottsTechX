@@ -76,7 +76,7 @@ const TEMPLATES = {
       'Fee Name,Amount,Year,Term,Class,Student ID\n' +
       'Term 3 Tuition,850000,2026,Term 3,Senior 2 A,\n' +
       'Development Fee,150000,2026,Term 3,,\n' +
-      'Boarding,400000,2026,Term 3,,STU-2026-100\n' +
+      'Lunch,120000,2026,Term 3,,STU-2026-100\n' +
       '"# Leave Class blank to bill the whole school; put a Class to bill just that class; put a Student ID to bill one student.",,,,,,\n' +
       '"# Amounts are plain numbers in UGX (850000, no commas). Every student in scope is billed automatically.",,,,,,\n',
   },
