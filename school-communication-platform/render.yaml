@@ -11,7 +11,6 @@ services:
                  # For a REAL school: switch to "starter", uncomment the disk
                  # below and the two env vars — then ALL data (users, news,
                  # gallery, messages, fees) survives forever.
-    rootDir: school-communication-platform
     buildCommand: npm install
     startCommand: node backend/server.js
     healthCheckPath: /api/health
