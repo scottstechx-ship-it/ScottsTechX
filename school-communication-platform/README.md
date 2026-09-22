@@ -100,3 +100,8 @@ needed). The remaining suites talk to a server on `http://localhost:4000`:
 | `npm run test:deep` | every view of all 10 dashboards boots and renders, then the same views are re-rendered at 390px and 1280px and checked for layout defects (unwrapped/unlabelled tables, duplicate ids, unnamed icon buttons, missing alt text) |
 | `node tests/imports.test.js` | the guided import pipeline end to end (guide, templates, starter pack, dry runs save nothing, every kind imports and re-imports without duplicating), report cards as PDF and as a zip (matching, unmatched files, the fee gate, parent access), and the Import Center + Report Cards screens rendered in jsdom — the test removes the records it created |
 | `node tests/_audit.js <role> [width]` | clicks every control in every view as that role at 1280px and 390px and reports errors, unhandled rejections and buttons that do nothing. `<role>` is a partial match: `super-admin`, `admin`, `teacher`, `student`, `parent`. A role that matches nothing exits with code 2 instead of reporting a vacuous pass |
+
+## Licence
+This system is proprietary. Copyright (c) 2026 ScottsTechX Enterprise (U) Ltd.
+A buyer may run it for one school and change it for that school. A buyer may not
+resell, publish, or give away the source. The full terms are in `LICENSE`.

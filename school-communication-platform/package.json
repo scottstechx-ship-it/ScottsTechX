@@ -22,7 +22,7 @@
     "education"
   ],
   "author": "",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "engines": {
     "node": ">=22.13.0"
   },
