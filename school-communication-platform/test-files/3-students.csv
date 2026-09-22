@@ -1,0 +1,5 @@
+Full Name,Student ID,Class,Stream,Gender,Date of Birth,Parent Name,Parent Phone,Parent Email,Relationship,Address,Enrollment Date
+Emmanuel Kato,STU-2026-301,Primary 6,A,Male,2010-02-14,John Kato,+256700000060,john.kato@example.com,Father,Kampala,2026-02-03
+Patricia Akello,STU-2026-302,Primary 6,A,Female,2009-11-02,Margaret Akello,+256700000061,,Mother,Ntinda,2026-02-03
+Joshua Wasswa,,Primary 6,A,Male,2010-05-30,,,,,Mukono,
+Sarah Okello,STU-2024-001,Senior 2,A,Female,2010-04-12,Mr. John Okello,+256700000020,parent@school.test,Father,Kampala,

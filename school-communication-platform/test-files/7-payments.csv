@@ -1,0 +1,6 @@
+Receipt No,Student ID,Student Name,Amount,Method,Date,Term,Year,Reference,Note
+RCP-2026-3001,STU-2026-301,,400000,Bank,2026-09-15,Term 3,2026,Stanbic 4412,Tuition + development
+RCP-2026-3002,STU-2026-301,,250000,Mobile Money,2026-09-18,Term 3,2026,MTN 77XX,Boarding fee
+RCP-2026-3003,STU-2026-302,,150000,Mobile Money,2026-09-16,Term 3,2026,MTN 88XX,Part payment
+,,Joshua Wasswa,50000,Cash,2026-09-16,Term 3,2026,,Part payment
+RCP-2026-3004,STU-2024-001,,370000,Bank,2026-09-10,Term 3,2026,,Cleared in full

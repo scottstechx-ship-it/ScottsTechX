@@ -1,0 +1,21 @@
+Day,Start,End,Class,Stream,Subject,Teacher,Room,Year
+Monday,08:00,08:40,Primary 6,A,Mathematics,Ms. Mary Nakato,Room 7,2026
+Monday,08:40,09:20,Primary 6,A,English,Mr. John Okello,Room 7,2026
+Monday,10:00,10:40,Primary 6,A,Biology,Ms. Grace Atim,Lab 1,2026
+Monday,10:40,11:20,Primary 6,A,Physics,Mr. Robert Ssentongo,Lab 2,2026
+Tuesday,08:00,08:40,Primary 6,A,English,Mr. John Okello,Room 7,2026
+Tuesday,08:40,09:20,Primary 6,A,Mathematics,Ms. Mary Nakato,Room 7,2026
+Tuesday,10:00,10:40,Primary 6,A,Chemistry,Ms. Rebecca Auma,Lab 1,2026
+Tuesday,10:40,11:20,Primary 6,A,Biology,Ms. Grace Atim,Lab 1,2026
+Wednesday,08:00,08:40,Primary 6,A,Biology,Ms. Grace Atim,Lab 1,2026
+Wednesday,08:40,09:20,Primary 6,A,Physics,Mr. Robert Ssentongo,Lab 2,2026
+Wednesday,10:00,10:40,Primary 6,A,Mathematics,Ms. Mary Nakato,Room 7,2026
+Wednesday,10:40,11:20,Primary 6,A,English,Mr. John Okello,Room 7,2026
+Thursday,08:00,08:40,Primary 6,A,Chemistry,Ms. Rebecca Auma,Lab 1,2026
+Thursday,08:40,09:20,Primary 6,A,Biology,Ms. Grace Atim,Lab 1,2026
+Thursday,10:00,10:40,Primary 6,A,English,Mr. John Okello,Room 7,2026
+Thursday,10:40,11:20,Primary 6,A,Mathematics,Ms. Mary Nakato,Room 7,2026
+Friday,08:00,08:40,Primary 6,A,Physics,Mr. Robert Ssentongo,Lab 2,2026
+Friday,08:40,09:20,Primary 6,A,Chemistry,Ms. Rebecca Auma,Lab 1,2026
+Friday,10:00,10:40,Primary 6,A,Mathematics,Ms. Mary Nakato,Room 7,2026
+Friday,10:40,11:20,Primary 6,A,,,Field,2026
