@@ -100,8 +100,19 @@ const dayOffset = (n) => new Date(Date.now() - n * 864e5).toISOString().slice(0,
 
   console.log('\n== API: mark all present ==');
   const classes = (await getJson(teacher, '/api/classes')).classes || [];
-  const klass = classes.find((c) => /Senior 2/.test(c.name)) || classes[classes.length - 1];
-  const roster = (await getJson(teacher, `/api/classes/${klass.id}/students`)).students || [];
+  const klass = classes.find((c) => /Senior 2/.test(c.name) && c.stream === 'A') || classes.find((c) => /Senior 2/.test(c.name)) || classes[classes.length - 1];
+  let roster = (await getJson(teacher, `/api/classes/${klass.id}/students`)).students || [];
+  // The demo catalog keeps only Sarah in this class. Corrections need a second
+  // learner, so the test adds one instead of depending on removed demo students.
+  if (roster.length < 2) {
+    const extra = await post(admin, '/api/students', {
+      fullName: 'Attendance Classmate',
+      studentCode: 'STU-ATT-CLASSMATE',
+      classId: klass.id,
+    });
+    check('a classmate can be added so corrections can be tested', extra.status === 201, JSON.stringify(extra.body).slice(0, 180));
+    roster = (await getJson(teacher, `/api/classes/${klass.id}/students`)).students || [];
+  }
   const day = dayOffset(0);
   const all = await post(teacher, '/api/attendance', { classId: klass.id, date: day, markAll: true });
   check('markAll returns 200', all.status === 200, JSON.stringify(all.body));
