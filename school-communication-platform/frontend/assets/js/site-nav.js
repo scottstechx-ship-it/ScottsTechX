@@ -133,6 +133,47 @@
   else build();
 })();
 
+/* About page-nav is a horizontal strip on phones. Keep the active item in view
+   when the page script changes which section is current. Not a card swipe. */
+(function () {
+  'use strict';
+
+  function keepPageNav() {
+    var bar = document.querySelector('.page-nav-bar');
+    if (!bar) return;
+    var reduce = false;
+    try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+
+    function reveal() {
+      if (window.innerWidth > 900) return;
+      var active = bar.querySelector('.pn-item.active');
+      if (!active) return;
+      var left = active.offsetLeft;
+      var right = left + active.offsetWidth;
+      var viewLeft = bar.scrollLeft;
+      var viewRight = viewLeft + bar.clientWidth;
+      if (left >= viewLeft + 8 && right <= viewRight - 8) return;
+      var target = left - (bar.clientWidth - active.offsetWidth) / 2;
+      if (bar.scrollTo) bar.scrollTo({ left: Math.max(0, target), behavior: reduce ? 'auto' : 'smooth' });
+      else bar.scrollLeft = Math.max(0, target);
+    }
+
+    bar.addEventListener('click', function () { setTimeout(reveal, 60); });
+    if (window.MutationObserver) {
+      var items = bar.querySelectorAll('.pn-item');
+      var obs = new MutationObserver(reveal);
+      for (var i = 0; i < items.length; i++) {
+        obs.observe(items[i], { attributes: true, attributeFilter: ['class'] });
+      }
+    }
+    window.addEventListener('resize', reveal);
+    reveal();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', keepPageNav);
+  else keepPageNav();
+})();
+
 
 /* Phone card rows: groups of cards become one sideways swipe instead of a
    tall stack. Forms, navigation and the footer are left alone. Desktop is

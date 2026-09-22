@@ -21,7 +21,6 @@
   <link rel="apple-touch-icon" href="/assets/images/logo.png">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
-  <link rel="stylesheet" href="../assets/css/main.css">
   <link rel="stylesheet" href="/assets/css/main.css">
   <style>
     /* VIDEO BACKGROUND */
@@ -282,7 +281,7 @@
     /* STICKY PAGE NAV */
     .page-nav-bar {
       position: sticky;
-      top: 72px;
+      top: var(--kn-nav-h, 68px);
       z-index: 100;
       display: flex;
       justify-content: center;
@@ -329,9 +328,23 @@
     .page-nav-bar .pn-item:not(.active):hover {
       color: #fff;
     }
-    @media (max-width: 767px) {
-      .page-nav-bar { gap: 2px; padding: 8px 10px; }
-      .page-nav-bar .pn-item { padding: 6px 12px; font-size: 0.75rem; }
+    @media (max-width: 900px) {
+      .page-nav-bar {
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 8px;
+        padding: 10px 12px;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+      .page-nav-bar::-webkit-scrollbar { display: none; height: 0; }
+      .page-nav-bar .pn-item {
+        flex: 0 0 auto;
+        white-space: nowrap;
+        padding: 9px 14px;
+        font-size: 0.84rem;
+      }
     }
 
     /* SECTION ANIMATIONS */
@@ -503,6 +516,7 @@
       justify-content: center;
       font-size: 2rem;
       position: relative;
+      overflow: hidden;
       animation: avatar-float 3s ease-in-out infinite;
     }
     .leader-avatar::before {
@@ -527,8 +541,26 @@
     .leader-avatar span {
       position: relative;
       z-index: 1;
-      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      font-size: 1.05rem;
       line-height: 1;
+      letter-spacing: 0;
+    }
+    .leader-avatar svg,
+    .leader-avatar .role-mark {
+      position: relative;
+      z-index: 1;
+      width: 30px;
+      height: 30px;
+      display: block;
+      flex: none;
+    }
+    @media (max-width: 760px) {
+      .leader-avatar { animation: none; width: 64px; height: 64px; }
     }
     @keyframes avatar-float {
       0%, 100% { transform: translateY(0) rotate(0deg); }
@@ -815,8 +847,8 @@
   </style>
 <link rel="stylesheet" href="/assets/css/theme.css">
   <script src="/assets/js/theme.js"></script>
-<link rel="stylesheet" href="/assets/css/site-nav.css?v=12">
-<script src="/assets/js/site-nav.js?v=12" defer></script>
+<link rel="stylesheet" href="/assets/css/site-nav.css?v=13">
+<script src="/assets/js/site-nav.js?v=13" defer></script>
 <script src="/assets/js/site-film.js?v=12" defer></script>
 <script src="/assets/js/site-animate.js" defer></script>
 <script src="/assets/js/site-perf.js" defer></script>
@@ -949,35 +981,35 @@
     <p class="section-intro">Meet the dedicated team that drives Kalinabiri SS forward with vision, integrity, and commitment to educational excellence.</p>
     <div class="leadership-grid">
       <div class="leader-card">
-        <div class="leader-avatar"><span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span></div>
+        <div class="leader-avatar" aria-hidden="true"><svg class="role-mark" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
         <div class="leader-info">
           <div class="leader-role">Head Teacher</div>
-          <h3>Office of the Head Teacher</h3>
+          <h3>Ms. Patricia Mutesi</h3>
           <p>Provides overall leadership and strategic direction for Kalinabiri SS, overseeing academics, welfare, and school culture.</p>
           <p style="margin-top:10px;font-size:0.82rem;">
-            <a href="tel:+256414222668" style="color:#4ade80;text-decoration:none;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> +256 414 222 668</a>
+            <a href="tel:0792861645" style="color:#4ade80;text-decoration:none;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> 0792 861 645</a>
           </p>
         </div>
       </div>
       <div class="leader-card">
-        <div class="leader-avatar"><span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></span></div>
+        <div class="leader-avatar" aria-hidden="true"><svg class="role-mark" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
         <div class="leader-info">
           <div class="leader-role">Director of Studies (DOS)</div>
-          <h3>Academic Affairs Office</h3>
+          <h3>Mrs. Lukwago Rose</h3>
           <p>Coordinates curriculum delivery, academic calendar, teacher scheduling, and student performance tracking across all levels.</p>
           <p style="margin-top:10px;font-size:0.82rem;">
-            <a href="tel:+256414222668" style="color:#4ade80;text-decoration:none;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> +256 414 222 668</a>
+            <a href="tel:0701120729" style="color:#4ade80;text-decoration:none;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> 0701 120 729</a>
           </p>
         </div>
       </div>
       <div class="leader-card">
-        <div class="leader-avatar"><span><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></span></div>
+        <div class="leader-avatar" aria-hidden="true"><svg class="role-mark" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 13h6"/><path d="M9 17h4"/></svg></div>
         <div class="leader-info">
           <div class="leader-role">Assistant DOS</div>
-          <h3>Examinations &amp; Records Office</h3>
+          <h3>Mr. Ashaba Fredrick</h3>
           <p>Supports the Director of Studies in academic coordination, examinations, and student academic guidance.</p>
           <p style="margin-top:10px;font-size:0.82rem;">
-            <a href="tel:+256414222668" style="color:#4ade80;text-decoration:none;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> +256 414 222 668</a>
+            <a href="tel:0757805368" style="color:#4ade80;text-decoration:none;"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> 0757 805 368</a>
           </p>
         </div>
       </div>
@@ -1129,7 +1161,7 @@
     <h2>Our School &amp; Partnerships</h2>
     <div class="achievements-grid">
       <div class="achievement-stat">
-        <div class="as-number" data-count="95">0</div>
+        <div class="as-number" data-count="95" data-suffix="%">0</div>
         <div class="as-label">UNEB Pass Rate (2025)</div>
       </div>
       <div class="achievement-stat">
@@ -1240,7 +1272,7 @@
       <a href="../teacher-login/teacher-register.html">Teacher Portal</a>
     </div>
     <div class="footer-col"><h3>Contact</h3>
-      <a href="tel:0792861645"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> +256 414 222 668</a>
+      <a href="tel:0792861645"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg> 0792 861 645</a>
       <a href="mailto:kalinabirisecsch@gmail.com"><svg class="ie" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-0.12em" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg> kalinabirisecsch@gmail.com</a>
     </div>
   </div>
@@ -1259,7 +1291,10 @@
 (function() {
   var hero = document.getElementById('aboutHero');
   var heroContent = hero.querySelector('.about-hero-content');
-  
+  var small = window.matchMedia && window.matchMedia('(max-width: 900px)').matches;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (small || reduce) return;
+
   window.addEventListener('scroll', function() {
     var scrolled = window.pageYOffset;
     var heroHeight = hero.offsetHeight;
@@ -1324,7 +1359,9 @@
           var easeOut = 1 - Math.pow(1 - progress, 3);
           var current = Math.floor(easeOut * target);
           
-          el.textContent = current + (target === 100 ? '%' : '');
+          var suffix = el.getAttribute('data-suffix');
+          if (suffix == null) suffix = (target === 100 ? '%' : '');
+          el.textContent = current + suffix;
           
           if (progress < 1) {
             requestAnimationFrame(updateCount);
