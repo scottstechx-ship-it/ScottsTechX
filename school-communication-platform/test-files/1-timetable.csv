@@ -1,21 +1,42 @@
 Day,Start,End,Class,Stream,Subject,Teacher,Room,Year
-Monday,08:00,08:40,Primary 6,A,Mathematics,Ms. Mary Nakato,Room 7,2026
-Monday,08:40,09:20,Primary 6,A,English,Mr. John Okello,Room 7,2026
-Monday,10:00,10:40,Primary 6,A,Biology,Ms. Grace Atim,Lab 1,2026
-Monday,10:40,11:20,Primary 6,A,Physics,Mr. Robert Ssentongo,Lab 2,2026
-Tuesday,08:00,08:40,Primary 6,A,English,Mr. John Okello,Room 7,2026
-Tuesday,08:40,09:20,Primary 6,A,Mathematics,Ms. Mary Nakato,Room 7,2026
-Tuesday,10:00,10:40,Primary 6,A,Chemistry,Ms. Rebecca Auma,Lab 1,2026
-Tuesday,10:40,11:20,Primary 6,A,Biology,Ms. Grace Atim,Lab 1,2026
-Wednesday,08:00,08:40,Primary 6,A,Biology,Ms. Grace Atim,Lab 1,2026
-Wednesday,08:40,09:20,Primary 6,A,Physics,Mr. Robert Ssentongo,Lab 2,2026
-Wednesday,10:00,10:40,Primary 6,A,Mathematics,Ms. Mary Nakato,Room 7,2026
-Wednesday,10:40,11:20,Primary 6,A,English,Mr. John Okello,Room 7,2026
-Thursday,08:00,08:40,Primary 6,A,Chemistry,Ms. Rebecca Auma,Lab 1,2026
-Thursday,08:40,09:20,Primary 6,A,Biology,Ms. Grace Atim,Lab 1,2026
-Thursday,10:00,10:40,Primary 6,A,English,Mr. John Okello,Room 7,2026
-Thursday,10:40,11:20,Primary 6,A,Mathematics,Ms. Mary Nakato,Room 7,2026
-Friday,08:00,08:40,Primary 6,A,Physics,Mr. Robert Ssentongo,Lab 2,2026
-Friday,08:40,09:20,Primary 6,A,Chemistry,Ms. Rebecca Auma,Lab 1,2026
-Friday,10:00,10:40,Primary 6,A,Mathematics,Ms. Mary Nakato,Room 7,2026
-Friday,10:40,11:20,Primary 6,A,,,Field,2026
+Monday,08:00,08:40,S1,A,Mathematics,Ms. Mary Nakato,Room 1,2026
+Tuesday,08:00,08:40,S1,A,English,Mr. John Okello,Room 1,2026
+Wednesday,08:00,08:40,S1,A,Biology,Ms. Grace Atim,Room 1,2026
+Thursday,08:00,08:40,S1,A,Physics,Mr. Robert Ssentongo,Room 1,2026
+Friday,08:00,08:40,S1,A,Chemistry,Ms. Rebecca Auma,Room 1,2026
+Monday,08:00,08:40,S1,B,English,Mr. John Okello,Room 2,2026
+Tuesday,08:00,08:40,S1,B,Biology,Ms. Grace Atim,Room 2,2026
+Wednesday,08:00,08:40,S1,B,Physics,Mr. Robert Ssentongo,Room 2,2026
+Thursday,08:00,08:40,S1,B,Chemistry,Ms. Rebecca Auma,Room 2,2026
+Friday,08:00,08:40,S1,B,Mathematics,Ms. Mary Nakato,Room 2,2026
+Monday,08:00,08:40,S2,A,Biology,Ms. Grace Atim,Room 3,2026
+Tuesday,08:00,08:40,S2,A,Physics,Mr. Robert Ssentongo,Room 3,2026
+Wednesday,08:00,08:40,S2,A,Chemistry,Ms. Rebecca Auma,Room 3,2026
+Thursday,08:00,08:40,S2,A,Mathematics,Ms. Mary Nakato,Room 3,2026
+Friday,08:00,08:40,S2,A,English,Mr. John Okello,Room 3,2026
+Monday,08:00,08:40,S2,B,Physics,Mr. Robert Ssentongo,Room 4,2026
+Tuesday,08:00,08:40,S2,B,Chemistry,Ms. Rebecca Auma,Room 4,2026
+Wednesday,08:00,08:40,S2,B,Mathematics,Ms. Mary Nakato,Room 4,2026
+Thursday,08:00,08:40,S2,B,English,Mr. John Okello,Room 4,2026
+Friday,08:00,08:40,S2,B,Biology,Ms. Grace Atim,Room 4,2026
+Monday,08:50,09:30,S3,A,Chemistry,Ms. Rebecca Auma,Room 5,2026
+Tuesday,08:50,09:30,S3,A,Mathematics,Ms. Mary Nakato,Room 5,2026
+Wednesday,08:50,09:30,S3,A,English,Mr. John Okello,Room 5,2026
+Thursday,08:50,09:30,S3,A,Biology,Ms. Grace Atim,Room 5,2026
+Friday,08:50,09:30,S3,A,Physics,Mr. Robert Ssentongo,Room 5,2026
+Monday,08:50,09:30,S3,B,Mathematics,Ms. Mary Nakato,Room 6,2026
+Tuesday,08:50,09:30,S3,B,English,Mr. John Okello,Room 6,2026
+Wednesday,08:50,09:30,S3,B,Biology,Ms. Grace Atim,Room 6,2026
+Thursday,08:50,09:30,S3,B,Physics,Mr. Robert Ssentongo,Room 6,2026
+Friday,08:50,09:30,S3,B,Chemistry,Ms. Rebecca Auma,Room 6,2026
+Monday,08:50,09:30,S4,A,English,Mr. John Okello,Room 7,2026
+Tuesday,08:50,09:30,S4,A,Biology,Ms. Grace Atim,Room 7,2026
+Wednesday,08:50,09:30,S4,A,Physics,Mr. Robert Ssentongo,Room 7,2026
+Thursday,08:50,09:30,S4,A,Chemistry,Ms. Rebecca Auma,Room 7,2026
+Friday,08:50,09:30,S4,A,Mathematics,Ms. Mary Nakato,Room 7,2026
+Monday,08:50,09:30,S4,B,Biology,Ms. Grace Atim,Room 8,2026
+Tuesday,08:50,09:30,S4,B,Physics,Mr. Robert Ssentongo,Room 8,2026
+Wednesday,08:50,09:30,S4,B,Chemistry,Ms. Rebecca Auma,Room 8,2026
+Thursday,08:50,09:30,S4,B,Mathematics,Ms. Mary Nakato,Room 8,2026
+Friday,08:50,09:30,S4,B,English,Mr. John Okello,Room 8,2026
+Friday,14:00,14:40,S4,B,,,Room 8,2026

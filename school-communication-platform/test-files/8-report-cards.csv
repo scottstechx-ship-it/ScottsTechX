@@ -1,11 +1,13 @@
 Student ID,Student Name,Class,Term,Year,Subject,Score,Out Of,Grade,Remarks,Teacher Comment
-STU-2026-301,,Primary 6 A,Term 3,2026,Mathematics,82,100,D1,Excellent work,Best in class
-STU-2026-301,,Primary 6 A,Term 3,2026,English,74,100,C2,Good,
-STU-2026-301,,Primary 6 A,Term 3,2026,Biology,68,100,C3,,
-STU-2026-301,,Primary 6 A,Term 3,2026,Physics,45,50,B,Strong practical,
-STU-2026-302,,Primary 6 A,Term 3,2026,Mathematics,58,100,C3,Needs practice,
-STU-2026-302,,Primary 6 A,Term 3,2026,English,71,100,C2,,
-STU-2026-302,,Primary 6 A,Term 3,2026,Chemistry,88,100,D1,Outstanding,Encourage her to keep it up
-,Joshua Wasswa,Primary 6 A,Term 3,2026,Mathematics,39,100,E,Must improve,Please meet the parents
-,Joshua Wasswa,Primary 6 A,Term 3,2026,English,52,100,C4,,
+STU-2026-401,,S1 A,Term 3,2026,Mathematics,82,100,D1,Excellent work,Best in class
+STU-2026-401,,S1 A,Term 3,2026,English,74,100,C2,Good,
+STU-2026-401,,S1 A,Term 3,2026,Biology,68,100,C3,,
+STU-2026-401,,S1 A,Term 3,2026,Physics,45,50,B,Strong practical,
+STU-2026-413,,S4 A,Term 3,2026,Mathematics,91,100,D1,Excellent work,
+STU-2026-413,,S4 A,Term 3,2026,Chemistry,88,100,D1,Outstanding,Keep it up
+STU-2026-413,,S4 A,Term 3,2026,English,65,100,C3,,
+,Kenneth Opio,S2 B,Term 3,2026,Mathematics,58,100,C3,Needs practice,
+,Kenneth Opio,S2 B,Term 3,2026,English,71,100,C2,,
+STU-2026-411,,S3 B,Term 3,2026,Biology,77,100,B,,
+STU-2026-411,,S3 B,Term 3,2026,Mathematics,39,100,E,Must improve,Please meet the parents
 STU-2024-001,,Senior 2 A,Term 3,2026,Mathematics,91,100,D1,Excellent work,

@@ -1,8 +1,12 @@
 Class,Stream,Date,Student ID,Student Name,Status,Note
-Primary 6,A,2026-09-14,STU-2026-301,,P,
-Primary 6,A,2026-09-14,STU-2026-302,,Present,
-Primary 6,A,2026-09-14,,Joshua Wasswa,A,Sick
-Primary 6,A,2026-09-15,STU-2026-301,,Present,
-Primary 6,A,2026-09-15,STU-2026-302,,L,
-Senior 2,A,2026-09-14,STU-2024-001,,Present,
-Senior 2,A,2026-09-14,STU-2024-005,,E,Family function
+S1,A,2026-09-14,STU-2026-401,,P,
+S1,B,2026-09-14,STU-2026-403,,Present,
+S2,A,2026-09-14,STU-2026-405,,P,
+S2,B,2026-09-14,STU-2026-407,,Present,
+S3,A,2026-09-14,STU-2026-409,,P,
+S3,B,2026-09-14,STU-2026-411,,Present,
+S4,A,2026-09-14,STU-2026-413,,P,
+S4,B,2026-09-14,STU-2026-415,,Present,
+S2,A,2026-09-15,STU-2026-405,,L,
+S3,A,2026-09-15,,Lydia Amoding,A,Sick
+S3,B,2026-09-15,STU-2026-411,,E,Family function

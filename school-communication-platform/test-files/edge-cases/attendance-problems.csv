@@ -1,6 +1,6 @@
 Class,Stream,Date,Student ID,Student Name,Status,Note
-Primary 6,A,not a date,STU-2026-301,,Present,
-Primary 6,A,2026-09-15,STU-2026-301,,Maybe,
-Primary 6,A,2026-09-15,STU-2026-999,,Present,
-Primary 6,A,2026-09-16,STU-2026-302,,Present,
-Primary 6,A,2026-09-16,STU-2026-302,,Absent,Duplicate of the row above
+S1,A,not a date,STU-2026-401,,Present,
+S1,A,2026-09-15,STU-2026-401,,Maybe,
+S1,A,2026-09-15,STU-2026-999,,Present,
+S1,A,2026-09-16,STU-2026-403,,Present,
+S1,A,2026-09-16,STU-2026-403,,Absent,Duplicate of the row above

@@ -1,5 +1,17 @@
 Full Name,Student ID,Class,Stream,Gender,Date of Birth,Parent Name,Parent Phone,Parent Email,Relationship,Address,Enrollment Date
-Emmanuel Kato,STU-2026-301,Primary 6,A,Male,2010-02-14,John Kato,+256700000060,john.kato@example.com,Father,Kampala,2026-02-03
-Patricia Akello,STU-2026-302,Primary 6,A,Female,2009-11-02,Margaret Akello,+256700000061,,Mother,Ntinda,2026-02-03
-Joshua Wasswa,,Primary 6,A,Male,2010-05-30,,,,,Mukono,
-Sarah Okello,STU-2024-001,Senior 2,A,Female,2010-04-12,Mr. John Okello,+256700000020,parent@school.test,Father,Kampala,
+Emmanuel Kato,STU-2026-401,S1,A,Male,2013-03-12,John Kato,+256700000060,john.kato@example.com,Father,Kampala,2026-02-03
+Joshua Wasswa,,S1,A,Male,2013-07-25,,,,,Mukono,
+Patricia Akello,STU-2026-403,S1,B,Female,2013-11-02,Margaret Akello,+256700000061,,Mother,Ntinda,2026-02-03
+Derrick Mugisha,,S1,B,Male,2013-01-30,,,,,Kampala,
+Aisha Nansubuga,STU-2026-405,S2,A,Female,2012-04-18,Halima Nansubuga,+256700000062,halima.n@example.com,Mother,Kampala,2026-02-03
+Ivan Ssemakula,,S2,A,Male,2012-09-05,,,,,Entebbe,
+Prossy Nabukenya,STU-2026-407,S2,B,Female,2012-06-21,Rose Nabukenya,+256700000063,,Mother,Kampala,2026-02-03
+Kenneth Opio,,S2,B,Male,2012-02-14,,,,,Gulu,
+Lydia Amoding,STU-2026-409,S3,A,Female,2011-08-09,George Amoding,+256700000064,george.amoding@example.com,Father,Mbale,2026-02-03
+Felix Odongo,,S3,A,Male,2011-12-01,,,,,Tororo,
+Sharon Atuhaire,STU-2026-411,S3,B,Female,2011-05-15,Jennifer Atuhaire,+256700000065,,Mother,Mbarara,2026-02-03
+Hassan Kirumira,,S3,B,Male,2011-10-27,,,,,Kampala,
+Nicholas Tumusiime,STU-2026-413,S4,A,Male,2010-02-23,Charles Tumusiime,+256700000066,charles.t@example.com,Father,Kabale,2026-02-03
+Grace Nalubega,,S4,A,Female,2010-09-16,,,,,Masaka,
+Pius Byaruhanga,STU-2026-415,S4,B,Male,2010-04-04,Joyce Byaruhanga,+256700000067,,Mother,Hoima,2026-02-03
+Esther Namara,,S4,B,Female,2010-12-12,,,,,Kampala,

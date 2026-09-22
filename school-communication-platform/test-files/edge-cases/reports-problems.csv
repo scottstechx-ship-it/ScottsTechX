@@ -1,5 +1,5 @@
 Student ID,Student Name,Class,Term,Year,Subject,Score,Out Of,Grade,Remarks,Teacher Comment
-STU-2026-301,,Primary 6 A,Term 3,2026,,75,100,C,,Missing subject
-STU-2026-301,,Primary 6 A,Term 3,2026,History,,,C,,Missing score
-STU-2026-999,,Primary 6 A,Term 3,2026,History,60,100,C,,Unknown student
-,Joshua Wasswa,Primary 6 A,Term 3,2026,English,eighty,100,,,Score is not a number
+STU-2026-401,,S1 A,Term 3,2026,,75,100,C,,Missing subject
+STU-2026-401,,S1 A,Term 3,2026,History,,,C,,Missing score
+STU-2026-999,,S1 A,Term 3,2026,History,60,100,C,,Unknown student
+,Joshua Wasswa,S1 A,Term 3,2026,English,eighty,100,,,Score is not a number

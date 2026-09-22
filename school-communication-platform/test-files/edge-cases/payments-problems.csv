@@ -1,6 +1,6 @@
 Receipt No,Student ID,Student Name,Amount,Method,Date,Term,Year,Reference,Note
-RCP-2026-9999,STU-2026-301,,0,Cash,2026-09-16,Term 3,2026,,Zero amount
+RCP-2026-9999,STU-2026-401,,0,Cash,2026-09-16,Term 3,2026,,Zero amount
 RCP-2026-9998,STU-2026-999,,1000,Cash,2026-09-16,Term 3,2026,,Unknown student
-RCP-2026-3001,STU-2026-302,,100,Cash,2026-09-16,Term 3,2026,,Receipt already recorded
-DUP-RCP,STU-2026-301,,100,Cash,2026-09-16,Term 3,2026,,First copy is fine
-DUP-RCP,STU-2026-302,,100,Cash,2026-09-16,Term 3,2026,,Second copy is caught
+RCP-2026-6001,STU-2026-403,,100,Cash,2026-09-16,Term 3,2026,,Receipt already recorded
+DUP-RCP,STU-2026-401,,100,Cash,2026-09-16,Term 3,2026,,First copy is fine
+DUP-RCP,STU-2026-403,,100,Cash,2026-09-16,Term 3,2026,,Second copy is caught

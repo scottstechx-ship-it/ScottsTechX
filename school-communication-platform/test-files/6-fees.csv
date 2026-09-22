@@ -1,5 +1,11 @@
 Fee Name,Amount,Year,Term,Class,Student ID
-Term 3 Tuition,350000,2026,Term 3,Primary 6 A,
-Term 3 Tuition,320000,2026,Term 3,Senior 2 A,
+Term 3 Tuition,300000,2026,Term 3,S1 A,
+Term 3 Tuition,300000,2026,Term 3,S1 B,
+Term 3 Tuition,300000,2026,Term 3,S2 A,
+Term 3 Tuition,300000,2026,Term 3,S2 B,
+Term 3 Tuition,350000,2026,Term 3,S3 A,
+Term 3 Tuition,350000,2026,Term 3,S3 B,
+Term 3 Tuition,350000,2026,Term 3,S4 A,
+Term 3 Tuition,350000,2026,Term 3,S4 B,
 Development Fee,50000,2026,Term 3,,
-Boarding Fee,250000,2026,Term 3,,STU-2026-301
+Boarding Fee,200000,2026,Term 3,,STU-2026-411
