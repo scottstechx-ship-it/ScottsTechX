@@ -128,6 +128,13 @@ function csrfProtection(req, res, next) {
   const method = (req.method || 'GET').toUpperCase();
   if (['GET', 'HEAD', 'OPTIONS'].includes(method)) return next();
 
+  // The public admission and contact forms do not act as the signed-in person.
+  // A staff member testing the school site still has a session cookie, and that
+  // cookie must not turn a visitor form into a 403. These writes are allowed
+  // without a login, so a missing CSRF header is not a forged staff action.
+  const url = String(req.originalUrl || req.url || '').split('?')[0];
+  if (method === 'POST' && /^\/api\/website\/(admissions|contact)\/?$/.test(url)) return next();
+
   // Only cookie sessions need CSRF protection.
   const cookieToken = sessions.cookieValue(req, sessions.COOKIE_NAME);
   if (!cookieToken) return next();

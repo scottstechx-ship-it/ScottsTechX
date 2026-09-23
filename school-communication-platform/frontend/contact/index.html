@@ -293,48 +293,18 @@
     /* ============================================
        SCROLL REVEAL ANIMATIONS
        ============================================ */
-    .reveal {
-      opacity: 0;
-      transform: translateY(60px);
+    .reveal, .reveal-left, .reveal-right, .reveal-scale {
       transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1), transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
     }
-
-    .reveal.revealed {
+    /* Hidden only after the page script actually starts the observer.
+       A phone, or a blocked decorative library, must not leave the form invisible. */
+    html.stx-reveal-on .reveal:not(.revealed) { opacity: 0; transform: translateY(60px); }
+    html.stx-reveal-on .reveal-left:not(.revealed) { opacity: 0; transform: translateX(-60px); }
+    html.stx-reveal-on .reveal-right:not(.revealed) { opacity: 0; transform: translateX(60px); }
+    html.stx-reveal-on .reveal-scale:not(.revealed) { opacity: 0; transform: scale(0.8); }
+    .reveal.revealed, .reveal-left.revealed, .reveal-right.revealed, .reveal-scale.revealed {
       opacity: 1;
-      transform: translateY(0);
-    }
-
-    .reveal-left {
-      opacity: 0;
-      transform: translateX(-60px);
-      transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1), transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
-    }
-
-    .reveal-left.revealed {
-      opacity: 1;
-      transform: translateX(0);
-    }
-
-    .reveal-right {
-      opacity: 0;
-      transform: translateX(60px);
-      transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1), transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
-    }
-
-    .reveal-right.revealed {
-      opacity: 1;
-      transform: translateX(0);
-    }
-
-    .reveal-scale {
-      opacity: 0;
-      transform: scale(0.8);
-      transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1), transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
-    }
-
-    .reveal-scale.revealed {
-      opacity: 1;
-      transform: scale(1);
+      transform: none;
     }
 
     /* ============================================
@@ -891,9 +861,12 @@
         btn.disabled = true; btn.querySelector('span').textContent = 'Sending…';
         status.style.display = 'none';
         try {
+          var headers = { 'Content-Type': 'application/json' };
+          var csrf = document.cookie.match(/(?:^|; )scp_session_csrf=([^;]*)/);
+          if (csrf) headers['X-CSRF-Token'] = decodeURIComponent(csrf[1]);
           var res = await fetch('/api/website/contact', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: headers,
             body: JSON.stringify({
               name: (document.getElementById('cf-first').value + ' ' + document.getElementById('cf-last').value).trim(),
               email: document.getElementById('cf-email').value.trim(),
@@ -1019,8 +992,9 @@
 
 <script>
 window.addEventListener("load", function() { setTimeout(function() {
-if (!window.THREE || window.innerWidth < 768) return;
-
+// Cards, the message form and the phone links must run even when the
+// decorative canvas is off (a phone, or the library blocked by the browser).
+if (window.THREE && window.innerWidth >= 768) {
 // ============================================
 // THREE.JS ADVANCED PARTICLES WITH GOLD ACCENT
 // ============================================
@@ -1169,6 +1143,7 @@ if (!window.THREE || window.innerWidth < 768) return;
     renderer.setSize(innerWidth, innerHeight);
   });
 })();
+}
 
 // ============================================
 // 3D CARD TILT EFFECT
@@ -1196,6 +1171,7 @@ document.querySelectorAll('[data-tilt]').forEach(function(card) {
 // ============================================
 // SCROLL REVEAL ANIMATIONS
 // ============================================
+document.documentElement.classList.add('stx-reveal-on');
 var revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
 
 var revealObserver = new IntersectionObserver(function(entries) {
@@ -1209,8 +1185,48 @@ var revealObserver = new IntersectionObserver(function(entries) {
   rootMargin: '0px 0px -50px 0px'
 });
 
+function showIfSeen(el) {
+  var r = el.getBoundingClientRect();
+  if (r.top < (window.innerHeight || 800) * 0.96 && r.bottom > 0) el.classList.add('revealed');
+}
 revealElements.forEach(function(el) {
   revealObserver.observe(el);
+  showIfSeen(el);
+});
+// Anything still hidden after a moment (missed observer, odd scroll) must appear.
+setTimeout(function () {
+  document.querySelectorAll('.reveal:not(.revealed), .reveal-left:not(.revealed), .reveal-right:not(.revealed), .reveal-scale:not(.revealed)').forEach(function (el) {
+    el.classList.add('revealed');
+  });
+}, 900);
+
+// Department cards print the office email and phones as plain text, so a tap
+// did nothing. Turn those words into real mail and call links.
+document.querySelectorAll('.department-contact, .contact-card p').forEach(function (el) {
+  var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+  var nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(function (node) {
+    var value = node.nodeValue || '';
+    if (!/[0-9@]/.test(value)) return;
+    var re = /([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})|((?:\+?256|0)\d[\d\s-]{6,}\d)/ig;
+    var frag = document.createDocumentFragment();
+    var last = 0;
+    var m;
+    var found = false;
+    while ((m = re.exec(value))) {
+      found = true;
+      frag.appendChild(document.createTextNode(value.slice(last, m.index)));
+      var a = document.createElement('a');
+      a.textContent = m[0];
+      a.href = m[1] ? ('mailto:' + m[1]) : ('tel:' + m[2].replace(/[^\d+]/g, ''));
+      frag.appendChild(a);
+      last = m.index + m[0].length;
+    }
+    if (!found) return;
+    frag.appendChild(document.createTextNode(value.slice(last)));
+    node.parentNode.replaceChild(frag, node);
+  });
 });
 
 // ============================================

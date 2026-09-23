@@ -79,14 +79,20 @@ function isSameOrigin(origin, host, forwardedHost) {
 function corsHandler(req, res, next) {
   const origin = req.headers.origin;
   const allowed = env.ALLOWED_ORIGINS;
-  const sameOrigin = !origin || isSameOrigin(origin, req.headers.host, req.headers['x-forwarded-host']);
+  // A reverse proxy can rewrite Host so it no longer matches the browser's
+  // Origin, which used to reject the admission and contact form posts with
+  // 403 while the page itself still loaded. The browser sets Sec-Fetch-Site;
+  // a cross-site page cannot claim same-origin.
+  const fetchSite = String(req.headers['sec-fetch-site'] || '').toLowerCase();
+  const browserSameSite = fetchSite === 'same-origin' || fetchSite === 'same-site';
+  const sameOrigin = !origin || browserSameSite || isSameOrigin(origin, req.headers.host, req.headers['x-forwarded-host']);
   const isAllowed = allowed.includes(origin) || allowed.includes('*');
 
   if (sameOrigin || isAllowed) {
     if (origin) res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Vary', 'Origin');
     res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-CSRF-Token');
     res.setHeader('Access-Control-Allow-Credentials', 'false');
   } else if (origin) {
     // Block cross-origin requests from unknown origins.
