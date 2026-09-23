@@ -46,14 +46,23 @@ app.use('/api/', csrfProtection);
 // faster loads, especially on mobile data.
 app.use(require('compression')());
 app.use(express.json({ limit: '2mb' }));
+// Native form posts (no JavaScript) arrive as urlencoded, not JSON.
+app.use(express.urlencoded({ extended: false, limit: '1mb' }));
 
-// General API rate limit
-app.use('/api/', rateLimit({
+// General API rate limit. Public intake has its own limiter, so a busy
+// dashboard on the same address cannot use up this bucket and then reject a
+// parent's application or message.
+const generalLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: env.RATE_LIMIT_PER_MINUTE,
   label: 'requests',
   message: 'Too many requests. Please try again shortly.',
-}));
+});
+app.use('/api/', (req, res, next) => {
+  const pathOnly = String(req.originalUrl || req.url || '').split('?')[0];
+  if (req.method === 'POST' && /^\/api\/website\/(admissions|contact)\/?$/.test(pathOnly)) return next();
+  return generalLimiter(req, res, next);
+});
 
 // ---- routes --------------------------------------------------------------
 app.use('/api/auth', require('./routes/auth.routes'));

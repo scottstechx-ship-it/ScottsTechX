@@ -827,67 +827,148 @@
   <div class="two-column-grid">
     <div class="form-section reveal-left">
       <h2>Send Us a Message</h2>
-      <form id="contactForm">
+      <form id="contactForm" method="post" action="/api/website/contact" accept-charset="UTF-8">
         <div class="form-row">
           <div class="form-group">
             <label class="form-label">First Name</label>
-            <input type="text" class="form-input" id="cf-first" placeholder="Your first name" required>
+            <input type="text" class="form-input" id="cf-first" name="first" placeholder="Your first name" required autocomplete="given-name">
           </div>
           <div class="form-group">
             <label class="form-label">Last Name</label>
-            <input type="text" class="form-input" id="cf-last" placeholder="Your last name" required>
+            <input type="text" class="form-input" id="cf-last" name="last" placeholder="Your last name" required autocomplete="family-name">
           </div>
         </div>
         <div class="form-group">
           <label class="form-label">Email Address</label>
-          <input type="email" class="form-input" id="cf-email" placeholder="your.email@example.com" required>
+          <input type="email" class="form-input" id="cf-email" name="email" placeholder="your.email@example.com" required autocomplete="email">
         </div>
         <div class="form-group">
           <label class="form-label">Subject</label>
-          <input type="text" class="form-input" id="cf-subject" placeholder="How can we help?">
+          <input type="text" class="form-input" id="cf-subject" name="subject" placeholder="How can we help?">
         </div>
         <div class="form-group">
           <label class="form-label">Message</label>
-          <textarea class="form-input" id="cf-message" rows="5" placeholder="Your message here..." required></textarea>
+          <textarea class="form-input" id="cf-message" name="message" rows="5" placeholder="Your message here..." required></textarea>
         </div>
         <button type="submit" class="btn-primary btn-full" id="cf-btn"><span>Send Message</span></button>
         <p id="cf-status" role="status" style="margin-top:12px;font-weight:600;display:none"></p>
       </form>
       <script>
-      document.getElementById('contactForm').addEventListener('submit', async function (e) {
-        e.preventDefault();
+      (function () {
+        var form = document.getElementById('contactForm');
         var btn = document.getElementById('cf-btn');
         var status = document.getElementById('cf-status');
-        btn.disabled = true; btn.querySelector('span').textContent = 'Sending…';
-        status.style.display = 'none';
-        try {
-          var headers = { 'Content-Type': 'application/json' };
-          var csrf = document.cookie.match(/(?:^|; )scp_session_csrf=([^;]*)/);
-          if (csrf) headers['X-CSRF-Token'] = decodeURIComponent(csrf[1]);
-          var res = await fetch('/api/website/contact', {
-            method: 'POST',
-            headers: headers,
-            body: JSON.stringify({
-              name: (document.getElementById('cf-first').value + ' ' + document.getElementById('cf-last').value).trim(),
-              email: document.getElementById('cf-email').value.trim(),
-              subject: document.getElementById('cf-subject').value.trim(),
-              message: document.getElementById('cf-message').value.trim(),
-            }),
-          });
-          var data = await res.json().catch(function(){ return {}; });
-          if (!res.ok) throw new Error(data.error || 'Could not send your message.');
-          status.textContent = (data.message || 'Message sent! We will respond soon.');
-          status.style.color = '#16a34a'; status.style.display = 'block';
-          this.reset();
-          btn.querySelector('span').textContent = 'Send Message';
-          btn.disabled = false;
-        } catch (err) {
-          status.textContent = err.message;
-          status.style.color = '#dc2626'; status.style.display = 'block';
-          btn.querySelector('span').textContent = 'Send Message';
-          btn.disabled = false;
+        var span = btn ? btn.querySelector('span') : null;
+        var original = span ? span.textContent : (btn ? btn.innerHTML : 'Send Message');
+        var sending = false;
+        var token = '';
+        function showStatus(text, ok) {
+          if (!status) return;
+          status.textContent = text;
+          status.style.color = ok ? '#16a34a' : '#dc2626';
+          status.style.display = 'block';
         }
-      });
+        function setBusy(on) {
+          if (btn) btn.disabled = !!on;
+          if (span) span.textContent = on ? 'Sending…' : original;
+          else if (btn) btn.innerHTML = on ? 'Sending…' : original;
+        }
+        function newToken() {
+          if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+          return 't-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 12);
+        }
+        function field(id) {
+          var el = document.getElementById(id);
+          return el && el.value ? el.value.trim() : '';
+        }
+        function wait(ms) { return new Promise(function (resolve) { setTimeout(resolve, ms); }); }
+        function postOnce(body) {
+          var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+          var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 20000) : null;
+          return fetch((form && form.getAttribute('action')) || '/api/website/contact', {
+            method: 'POST',
+            credentials: 'omit',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(body),
+            signal: ctrl ? ctrl.signal : undefined
+          }).then(function (res) {
+            if (timer) clearTimeout(timer);
+            return res.text().then(function (text) {
+              var data = {};
+              try { data = text ? JSON.parse(text) : {}; } catch (e) { data = {}; }
+              return { res: res, data: data };
+            });
+          }, function (err) {
+            if (timer) clearTimeout(timer);
+            throw err;
+          });
+        }
+        function postWithRetry(body) {
+          var delays = [0, 600, 1400];
+          function attempt(i) {
+            return postOnce(body).then(function (out) {
+              var code = out.res.status;
+              if ((code === 408 || code === 500 || code === 502 || code === 503 || code === 504) && i + 1 < delays.length) {
+                return wait(delays[i + 1]).then(function () { return attempt(i + 1); });
+              }
+              return out;
+            }, function (err) {
+              if (i + 1 < delays.length) return wait(delays[i + 1]).then(function () { return attempt(i + 1); });
+              throw err;
+            });
+          }
+          return attempt(0);
+        }
+        try {
+          var params = new URLSearchParams(window.location.search);
+          if (params.get('sent') === '1') showStatus('Message sent. The school has been notified and will respond soon.', true);
+          else if (params.get('error') === 'missing') showStatus('Please enter your name and a message, then try again.', false);
+          else if (params.get('error') === 'save') showStatus('We could not save your message just now. Please try again in a moment.', false);
+        } catch (e) {}
+        if (!form) return;
+        var scrolled = false;
+        form.addEventListener('invalid', function (ev) {
+          var el = ev.target;
+          if (scrolled || !el || !el.scrollIntoView) return;
+          scrolled = true;
+          setTimeout(function () { scrolled = false; }, 600);
+          try { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+          catch (err) { el.scrollIntoView(true); }
+        }, true);
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          if (sending) return;
+          sending = true;
+          if (!token) token = newToken();
+          setBusy(true);
+          if (status) status.style.display = 'none';
+          var body = {
+            clientToken: token,
+            name: (field('cf-first') + ' ' + field('cf-last')).trim(),
+            first: field('cf-first'),
+            last: field('cf-last'),
+            email: field('cf-email'),
+            subject: field('cf-subject'),
+            message: field('cf-message')
+          };
+          postWithRetry(body).then(function (out) {
+            sending = false;
+            setBusy(false);
+            if (out.res.ok) {
+              token = '';
+              showStatus((out.data && out.data.message) || 'Message sent. The school has been notified and will respond soon.', true);
+              form.reset();
+              return;
+            }
+            token = '';
+            showStatus((out.data && out.data.error) || 'Could not send your message. Please try again.', false);
+          }).catch(function () {
+            sending = false;
+            setBusy(false);
+            showStatus('We could not reach the school just now. Your message is still in the form. Please try again, or call the office on 0792 861 645.', false);
+          });
+        });
+      })();
       </script>
     </div>
     <div class="contact-aside">

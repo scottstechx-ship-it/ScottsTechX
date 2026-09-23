@@ -76,16 +76,26 @@ function isSameOrigin(origin, host, forwardedHost) {
   return !!fwd && hostMatches(origin, fwd);
 }
 
+function isPublicIntake(req) {
+  if (req.method !== 'POST' && req.method !== 'OPTIONS') return false;
+  // The API is mounted at /api, not under an extra base path.
+  const url = String(req.originalUrl || req.url || '').split('?')[0];
+  return /^\/api\/website\/(admissions|contact)\/?$/.test(url);
+}
+
 function corsHandler(req, res, next) {
   const origin = req.headers.origin;
   const allowed = env.ALLOWED_ORIGINS;
   // A reverse proxy can rewrite Host so it no longer matches the browser's
   // Origin, which used to reject the admission and contact form posts with
   // 403 while the page itself still loaded. The browser sets Sec-Fetch-Site;
-  // a cross-site page cannot claim same-origin.
+  // a cross-site page cannot claim same-origin. Some browsers and privacy
+  // tools omit Sec-Fetch-Site entirely — the public forms must still be
+  // accepted, because they do not act as a signed-in person.
   const fetchSite = String(req.headers['sec-fetch-site'] || '').toLowerCase();
   const browserSameSite = fetchSite === 'same-origin' || fetchSite === 'same-site';
-  const sameOrigin = !origin || browserSameSite || isSameOrigin(origin, req.headers.host, req.headers['x-forwarded-host']);
+  const publicIntake = isPublicIntake(req);
+  const sameOrigin = !origin || browserSameSite || publicIntake || isSameOrigin(origin, req.headers.host, req.headers['x-forwarded-host']);
   const isAllowed = allowed.includes(origin) || allowed.includes('*');
 
   if (sameOrigin || isAllowed) {

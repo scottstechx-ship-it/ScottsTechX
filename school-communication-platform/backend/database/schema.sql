@@ -459,7 +459,8 @@ CREATE TABLE IF NOT EXISTS admission_applications (
   status        TEXT NOT NULL DEFAULT 'new',   -- new|reviewing|accepted|rejected
   note          TEXT,
   reviewed_by   INTEGER REFERENCES users(id) ON DELETE SET NULL,
-  created_at    TEXT NOT NULL DEFAULT (datetime('now'))
+  created_at    TEXT NOT NULL DEFAULT (datetime('now')),
+  client_token  TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_admissions_status ON admission_applications(status);
 
@@ -501,7 +502,8 @@ CREATE TABLE IF NOT EXISTS contact_messages (
   subject    TEXT,
   message    TEXT NOT NULL,
   status     TEXT NOT NULL DEFAULT 'new',      -- new|read|replied
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  client_token TEXT
 );
 CREATE INDEX IF NOT EXISTS idx_contact_status ON contact_messages(status);
 

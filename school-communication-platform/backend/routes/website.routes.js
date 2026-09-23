@@ -8,7 +8,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const router = express.Router();
-const { all, get, run } = require('../database/db');
+const { all, get, run, ensureIntakeTables } = require('../database/db');
 const env = require('../config/env');
 const { authenticate, requireRole, requireStaffAdmin } = require('../middleware/auth');
 const { cleanString, asInt } = require('../middleware/validate');
@@ -21,6 +21,92 @@ const { rateLimit } = require('../middleware/security');
 
 let io = null;
 function setIO(server) { io = server; }
+
+const OFFICE_PHONE = '0792 861 645';
+
+function intakeBurst(label) {
+  return rateLimit({
+    windowMs: 60 * 1000,
+    // A classroom of parents on the school Wi-Fi can submit together. The cap
+    // still trips a scripted flood inside the intake tests' short loops.
+    max: label.startsWith('admission') ? 35 : 50,
+    label: label + ' burst',
+    message: `Please wait a moment before sending again, or call the school office on ${OFFICE_PHONE}.`,
+  });
+}
+
+function intakeSustained(label) {
+  return rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 200,
+    label,
+    message: `This connection has sent many forms. Please wait a few minutes and try again, or call the school office on ${OFFICE_PHONE}.`,
+  });
+}
+
+function quiet(fn) {
+  try { return fn(); }
+  catch (e) {
+    console.error('[website] intake follow-up failed:', e && e.message ? e.message : e);
+    return null;
+  }
+}
+
+function clientToken(raw) {
+  const token = cleanString(raw, 80);
+  if (!token || !/^[A-Za-z0-9._:-]+$/.test(token)) return null;
+  return token;
+}
+
+function isBusyError(err) {
+  const code = String(err && (err.code || err.errcode) || '');
+  const msg = String(err && err.message || '');
+  return code === 'SQLITE_BUSY' || code === 'SQLITE_LOCKED' || /SQLITE_BUSY|SQLITE_LOCKED|database is locked/i.test(msg);
+}
+
+function isUniqueError(err) {
+  const code = String(err && err.code || '');
+  const msg = String(err && err.message || '');
+  return code === 'SQLITE_CONSTRAINT_UNIQUE' || /UNIQUE constraint failed/i.test(msg);
+}
+
+function waitBriefly(ms) {
+  const until = Date.now() + ms;
+  while (Date.now() < until) { /* a locked database usually clears within a few ms */ }
+}
+
+function insertIntake(sql, params) {
+  ensureIntakeTables();
+  let last;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      return run(sql, params);
+    } catch (err) {
+      last = err;
+      if (!isBusyError(err) || attempt === 3) throw err;
+      waitBriefly(40 * (attempt + 1));
+    }
+  }
+  throw last;
+}
+
+function wantsHtml(req) {
+  const ct = String(req.headers['content-type'] || '');
+  if (ct.includes('application/json')) return false;
+  return ct.includes('application/x-www-form-urlencoded') && String(req.headers.accept || '').includes('text/html');
+}
+
+function finishIntake(req, res, { status, payload, redirect }) {
+  if (wantsHtml(req)) return res.redirect(303, redirect);
+  return res.status(status).json(payload);
+}
+
+function contactName(body) {
+  const direct = cleanString(body.name, 150);
+  if (direct) return direct;
+  return cleanString(`${cleanString(body.first, 80)} ${cleanString(body.last, 80)}`.trim(), 150);
+}
+
 
 const IMAGE_EXT = /\.(png|jpe?g|webp|gif)$/i;
 const VIDEO_EXT = /\.(mp4|webm|mov|mkv)$/i;
@@ -43,55 +129,88 @@ function adminUserIds() {
  * ADMISSIONS
  * ============================================================ */
 
-// Public submission — rate limited to stop abuse.
-// Visitors often arrive through one shared address (school office, or a mobile
-// carrier's NAT, which is the norm on Ugandan phone data), so a very low
-// per-address cap locks out genuine parents while barely slowing an abuser.
-// These caps still stop a scripted flood; the global API limiter sits above.
-router.post('/admissions', rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 25,
-  label: 'admission submissions',
-  message: 'This form has been submitted several times from your connection. Please wait a few minutes and try again, or call the school office on 0792 861 645.',
-}), async (req, res) => {
-  const fullName = cleanString(req.body.fullName, 150);
-  const applyingFor = cleanString(req.body.applyingFor, 60);
-  const parentName = cleanString(req.body.parentName, 150);
-  const parentPhone = cleanString(req.body.parentPhone, 40);
+// Public submission — rate limited to stop abuse, not a shared school address.
+// Visitors often arrive through one address (the office Wi-Fi, or a mobile
+// carrier's NAT). A short burst cap still stops a scripted flood. A saved row
+// is the success: email, notifications and the live refresh must never turn a
+// stored application into a 500.
+router.post('/admissions', intakeBurst('admission submissions'), intakeSustained('admission submissions'), (req, res) => {
+  const body = req.body || {};
+  const fullName = cleanString(body.fullName, 150);
+  const applyingFor = cleanString(body.applyingFor, 80);
+  const parentName = cleanString(body.parentName, 150);
+  const parentPhone = cleanString(body.parentPhone, 40);
   if (!fullName || !applyingFor || !parentName || !parentPhone) {
     log(null, 'ADMISSION_REJECTED', `Incomplete admission application from ${req.ip} (name: "${fullName || '-'}")`, req.ip);
-    return res.status(400).json({ error: 'Student name, class, parent name and parent phone are required.' });
+    return finishIntake(req, res, {
+      status: 400,
+      payload: { error: 'Student name, class, parent name and parent phone are required.' },
+      redirect: '/admissions/?error=missing#application-form',
+    });
   }
-  const info = run(
-    `INSERT INTO admission_applications
-     (full_name, date_of_birth, gender, applying_for, program, combination, parent_name, parent_phone, parent_email, prev_school, motivation)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [fullName, cleanString(req.body.dateOfBirth, 20), cleanString(req.body.gender, 12), applyingFor,
-      cleanString(req.body.program, 40), cleanString(req.body.combination, 120), parentName, parentPhone,
-      cleanString(req.body.parentEmail, 150), cleanString(req.body.prevSchool, 150), cleanString(req.body.motivation, 2000)]
-  );
-  const app_ = get('SELECT * FROM admission_applications WHERE id = ?', [info.lastInsertRowid]);
+  const token = clientToken(body.clientToken);
+  try {
+    ensureIntakeTables();
+    const prior = token ? get('SELECT id FROM admission_applications WHERE client_token = ?', [token]) : null;
+    if (prior) {
+      return finishIntake(req, res, {
+        status: 201,
+        payload: { message: 'Application submitted. The admissions team has been notified.', id: prior.id, emailed: false },
+        redirect: '/admissions/?sent=1#application-form',
+      });
+    }
+    let info;
+    try {
+      info = insertIntake(
+        `INSERT INTO admission_applications
+         (full_name, date_of_birth, gender, applying_for, program, combination, parent_name, parent_phone, parent_email, prev_school, motivation, client_token)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [fullName, cleanString(body.dateOfBirth, 20), cleanString(body.gender, 20), applyingFor,
+          cleanString(body.program, 40), cleanString(body.combination, 160), parentName, parentPhone,
+          cleanString(body.parentEmail, 150), cleanString(body.prevSchool, 150), cleanString(body.motivation, 2000),
+          token]
+      );
+    } catch (err) {
+      if (token && isUniqueError(err)) {
+        const row = get('SELECT id FROM admission_applications WHERE client_token = ?', [token]);
+        if (row) {
+          return finishIntake(req, res, {
+            status: 201,
+            payload: { message: 'Application submitted. The admissions team has been notified.', id: row.id, emailed: false },
+            redirect: '/admissions/?sent=1#application-form',
+          });
+        }
+      }
+      throw err;
+    }
+    const id = info.lastInsertRowid;
+    const app_ = quiet(() => get('SELECT * FROM admission_applications WHERE id = ?', [id])) || {
+      id,
+      date_of_birth: cleanString(body.dateOfBirth, 20),
+      gender: cleanString(body.gender, 20),
+      program: cleanString(body.program, 40),
+      combination: cleanString(body.combination, 160),
+      parent_email: cleanString(body.parentEmail, 150),
+      prev_school: cleanString(body.prevSchool, 150),
+      motivation: cleanString(body.motivation, 2000),
+    };
 
-  // 1. Instant notification to every admin (stored + pushed over Socket.IO)
-  const admins = adminUserIds();
-  notifyMany(admins, 'system', `New admission application: ${fullName}`,
-    `${applyingFor} · Parent: ${parentName} (${parentPhone})`, '/admissions');
+    let admins = [];
+    quiet(() => { admins = adminUserIds(); });
+    quiet(() => notifyMany(admins, 'system', `New admission application: ${fullName}`,
+      `${applyingFor} · Parent: ${parentName} (${parentPhone})`, '/admissions'));
+    if (!admins.length) {
+      console.warn('[website] admission application stored, but no active admin account exists to notify:', fullName);
+    }
+    quiet(() => {
+      if (io) for (const uid of admins) io.to(`user:${uid}`).emit('admission:new', { id, fullName, applyingFor });
+    });
 
-  // If the school has no admin account yet, the dashboard notification above
-  // reaches nobody — say so loudly rather than letting the application sit in a
-  // database nobody looks at.
-  if (!admins.length) {
-    console.warn('[website] admission application stored, but no active admin account exists to notify:', fullName);
-  }
-  // Live dashboard refresh event
-  if (io) for (const id of admins) io.to(`user:${id}`).emit('admission:new', { id: app_.id, fullName, applyingFor });
-
-  // 2. Email the school + confirmation to the parent (best-effort; never blocks)
-  const school = readSettings().school;
-  // Fall back to the office mailbox configured for the deployment when the
-  // school profile has no address saved yet — an enquiry must reach a human.
-  const schoolEmail = school.email || process.env.ADMISSIONS_EMAIL || process.env.SCHOOL_EMAIL || '';
-  const summary = `
+    let emailed = false;
+    quiet(() => {
+      const school = readSettings().school;
+      const schoolEmail = school.email || process.env.ADMISSIONS_EMAIL || process.env.SCHOOL_EMAIL || '';
+      const summary = `
     <h2>New Admission Application</h2>
     <table cellpadding="6" style="border-collapse:collapse">
       <tr><td><b>Student</b></td><td>${fullName}</td></tr>
@@ -104,25 +223,39 @@ router.post('/admissions', rateLimit({
       <tr><td><b>Previous school</b></td><td>${app_.prev_school || '-'}</td></tr>
       <tr><td><b>Motivation</b></td><td>${app_.motivation || '-'}</td></tr>
     </table>`;
-  if (schoolEmail) {
-    sendEmail({ to: schoolEmail, subject: `New admission application — ${fullName} (${applyingFor})`, html: summary });
-  }
-  if (app_.parent_email) {
-    sendEmail({
-      to: app_.parent_email,
-      subject: `Application received — ${school.name || 'Our School'}`,
-      html: `<p>Dear ${parentName},</p>
+      if (schoolEmail) {
+        sendEmail({ to: schoolEmail, subject: `New admission application — ${fullName} (${applyingFor})`, html: summary });
+      }
+      if (app_.parent_email) {
+        sendEmail({
+          to: app_.parent_email,
+          subject: `Application received — ${school.name || 'Our School'}`,
+          html: `<p>Dear ${parentName},</p>
         <p>We received the application for <b>${fullName}</b> (${applyingFor}). Our admissions team will contact you within 5 working days.</p>
         <p>${school.name || ''}<br>${school.phone || ''}</p>`,
+        });
+      }
+      emailed = !!(schoolEmail || app_.parent_email);
+    });
+
+    log(null, 'ADMISSION_RECEIVED', `Website application #${id}: ${fullName} (${applyingFor})`, req.ip);
+    return finishIntake(req, res, {
+      status: 201,
+      payload: {
+        message: 'Application submitted. The admissions team has been notified.',
+        id,
+        emailed,
+      },
+      redirect: '/admissions/?sent=1#application-form',
+    });
+  } catch (err) {
+    console.error('[website] admission save failed:', err && err.message ? err.message : err);
+    return finishIntake(req, res, {
+      status: 500,
+      payload: { error: 'We could not save the application just now. Please try again in a moment.' },
+      redirect: '/admissions/?error=save#application-form',
     });
   }
-
-  log(null, 'ADMISSION_RECEIVED', `Website application #${app_.id}: ${fullName} (${applyingFor})`, req.ip);
-  res.status(201).json({
-    message: 'Application submitted. The admissions team has been notified.',
-    id: app_.id,
-    emailed: !!(schoolEmail || app_.parent_email),
-  });
 });
 
 // Staff: list / manage applications
@@ -160,41 +293,87 @@ router.delete('/admissions/:id', authenticate, requireStaffAdmin, (req, res) => 
  * CONTACT MESSAGES (public POST -> admin inbox + email)
  * ============================================================ */
 
-router.post('/contact', rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 30,
-  label: 'contact messages',
-  message: 'You have sent several messages from this connection. Please wait a few minutes, or call the school office on 0792 861 645.',
-}), async (req, res) => {
-  const name = cleanString(req.body.name, 150);
-  const message = cleanString(req.body.message, 4000);
+router.post('/contact', intakeBurst('contact messages'), intakeSustained('contact messages'), (req, res) => {
+  const body = req.body || {};
+  const name = contactName(body);
+  const message = cleanString(body.message, 4000);
   if (!name || !message) {
     log(null, 'CONTACT_REJECTED', `Incomplete website message from ${req.ip}`, req.ip);
-    return res.status(400).json({ error: 'Your name and a message are required.' });
-  }
-  const email = cleanString(req.body.email, 150);
-  const info = run(
-    'INSERT INTO contact_messages (name, email, phone, subject, message) VALUES (?, ?, ?, ?, ?)',
-    [name, email, cleanString(req.body.phone, 40), cleanString(req.body.subject, 200), message]
-  );
-  const admins = adminUserIds();
-  // The link must be a dashboard section key, not a page path: the bell
-  // navigates by section, and a path like "/contact-messages" silently did
-  // nothing when clicked (the inbox section is "website-contact").
-  notifyMany(admins, 'message', `New website message from ${name}`,
-    (cleanString(req.body.subject, 200) || message).slice(0, 120), '/website-contact');
-  if (io) for (const id of admins) io.to(`user:${id}`).emit('contact:new', { id: info.lastInsertRowid, name });
-  const school = readSettings().school;
-  const officeEmail = school.email || process.env.CONTACT_EMAIL || process.env.SCHOOL_EMAIL || '';
-  if (officeEmail) {
-    sendEmail({
-      to: officeEmail,
-      subject: `Website contact: ${cleanString(req.body.subject, 200) || name}`,
-      html: `<p><b>From:</b> ${name} ${email ? '(' + email + ')' : ''}${cleanString(req.body.phone, 40) ? ' · ' + cleanString(req.body.phone, 40) : ''}</p><p>${message}</p>`,
+    return finishIntake(req, res, {
+      status: 400,
+      payload: { error: 'Your name and a message are required.' },
+      redirect: '/contact/?error=missing#contactForm',
     });
   }
-  log(null, 'CONTACT_RECEIVED', `Website message #${info.lastInsertRowid} from ${name}`, req.ip);
-  res.status(201).json({ message: 'Message sent. The school has been notified and will respond soon.', id: info.lastInsertRowid });
+  const email = cleanString(body.email, 150);
+  const phone = cleanString(body.phone, 40);
+  const subject = cleanString(body.subject, 200);
+  const token = clientToken(body.clientToken);
+  try {
+    ensureIntakeTables();
+    const prior = token ? get('SELECT id FROM contact_messages WHERE client_token = ?', [token]) : null;
+    if (prior) {
+      return finishIntake(req, res, {
+        status: 201,
+        payload: { message: 'Message sent. The school has been notified and will respond soon.', id: prior.id },
+        redirect: '/contact/?sent=1#contactForm',
+      });
+    }
+    let info;
+    try {
+      info = insertIntake(
+        'INSERT INTO contact_messages (name, email, phone, subject, message, client_token) VALUES (?, ?, ?, ?, ?, ?)',
+        [name, email, phone, subject, message, token]
+      );
+    } catch (err) {
+      if (token && isUniqueError(err)) {
+        const row = get('SELECT id FROM contact_messages WHERE client_token = ?', [token]);
+        if (row) {
+          return finishIntake(req, res, {
+            status: 201,
+            payload: { message: 'Message sent. The school has been notified and will respond soon.', id: row.id },
+            redirect: '/contact/?sent=1#contactForm',
+          });
+        }
+      }
+      throw err;
+    }
+    const id = info.lastInsertRowid;
+    let admins = [];
+    quiet(() => { admins = adminUserIds(); });
+    // The link must be a dashboard section key, not a page path: the bell
+    // navigates by section, and a path like "/contact-messages" silently did
+    // nothing when clicked (the inbox section is "website-contact").
+    quiet(() => notifyMany(admins, 'message', `New website message from ${name}`,
+      (subject || message).slice(0, 120), '/website-contact'));
+    quiet(() => {
+      if (io) for (const uid of admins) io.to(`user:${uid}`).emit('contact:new', { id, name });
+    });
+    quiet(() => {
+      const school = readSettings().school;
+      const officeEmail = school.email || process.env.CONTACT_EMAIL || process.env.SCHOOL_EMAIL || '';
+      if (officeEmail) {
+        sendEmail({
+          to: officeEmail,
+          subject: `Website contact: ${subject || name}`,
+          html: `<p><b>From:</b> ${name} ${email ? '(' + email + ')' : ''}${phone ? ' · ' + phone : ''}</p><p>${message}</p>`,
+        });
+      }
+    });
+    log(null, 'CONTACT_RECEIVED', `Website message #${id} from ${name}`, req.ip);
+    return finishIntake(req, res, {
+      status: 201,
+      payload: { message: 'Message sent. The school has been notified and will respond soon.', id },
+      redirect: '/contact/?sent=1#contactForm',
+    });
+  } catch (err) {
+    console.error('[website] contact save failed:', err && err.message ? err.message : err);
+    return finishIntake(req, res, {
+      status: 500,
+      payload: { error: 'We could not save your message just now. Please try again in a moment.' },
+      redirect: '/contact/?error=save#contactForm',
+    });
+  }
 });
 
 router.get('/contact', authenticate, requireStaffAdmin, (req, res) => {

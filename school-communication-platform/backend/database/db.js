@@ -17,6 +17,8 @@ fs.mkdirSync(env.UPLOAD_DIR, { recursive: true });
 const db = openDatabase(env.DATABASE_PATH);
 db.pragma('journal_mode = WAL');
 db.pragma('foreign_keys = ON');
+// Wait out a brief lock instead of failing a parent's form mid-submit.
+try { db.pragma('busy_timeout = 5000'); } catch { /* retry still covers a lock */ }
 
 const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
 db.exec(schema);
@@ -34,6 +36,64 @@ function ensureColumn(table, column, ddl) {
 ensureColumn('documents', 'expire_date', 'TEXT');
 ensureColumn('site_gallery', 'media_type', "TEXT DEFAULT 'image'");
 ensureColumn('announcements', 'expire_date', 'TEXT');
+
+/**
+ * Public admission and contact tables, including the client token that makes a
+ * retried submit the same row instead of a duplicate or a lost application.
+ * Safe to call on every request: CREATE IF NOT EXISTS and ensureColumn no-op
+ * once the database is current.
+ */
+function ensureIntakeTables() {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS admission_applications (
+      id            INTEGER PRIMARY KEY AUTOINCREMENT,
+      full_name     TEXT NOT NULL,
+      date_of_birth TEXT,
+      gender        TEXT,
+      applying_for  TEXT NOT NULL,
+      program       TEXT,
+      combination   TEXT,
+      parent_name   TEXT NOT NULL,
+      parent_phone  TEXT NOT NULL,
+      parent_email  TEXT,
+      prev_school   TEXT,
+      motivation    TEXT,
+      status        TEXT NOT NULL DEFAULT 'new',
+      note          TEXT,
+      reviewed_by   INTEGER REFERENCES users(id) ON DELETE SET NULL,
+      created_at    TEXT NOT NULL DEFAULT (datetime('now')),
+      client_token  TEXT
+    );
+    CREATE INDEX IF NOT EXISTS idx_admissions_status ON admission_applications(status);
+    CREATE TABLE IF NOT EXISTS contact_messages (
+      id         INTEGER PRIMARY KEY AUTOINCREMENT,
+      name       TEXT NOT NULL,
+      email      TEXT,
+      phone      TEXT,
+      subject    TEXT,
+      message    TEXT NOT NULL,
+      status     TEXT NOT NULL DEFAULT 'new',
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      client_token TEXT
+    );
+    CREATE INDEX IF NOT EXISTS idx_contact_status ON contact_messages(status);
+  `);
+  ensureColumn('admission_applications', 'client_token', 'TEXT');
+  ensureColumn('contact_messages', 'client_token', 'TEXT');
+  try {
+    db.exec(`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_admissions_client_token
+        ON admission_applications(client_token)
+        WHERE client_token IS NOT NULL AND client_token != '';
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_contact_client_token
+        ON contact_messages(client_token)
+        WHERE client_token IS NOT NULL AND client_token != '';
+    `);
+  } catch (e) {
+    console.error('[db] intake token index:', e && e.message ? e.message : e);
+  }
+}
+ensureIntakeTables();
 
 // Tables added after the first release are created here too, so existing
 // databases pick them up without a manual migration step.
@@ -258,4 +318,4 @@ function setSetting(key, value) {
   );
 }
 
-module.exports = { db, all, get, run, tx, getSetting, setSetting };
+module.exports = { db, all, get, run, tx, getSetting, setSetting, ensureIntakeTables };
